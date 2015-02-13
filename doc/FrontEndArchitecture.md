@@ -59,9 +59,7 @@ Settings is a masked int, for which each bit represents one of the toggles in th
 
 Loading includes pulling the Lookup Table from the server, as well as generating the map underneath the loading screen.
 
-**The Main Page:**
-
-After the user advances to remove the loading screen, the user is shown the map, filling the screen. The user is given the option of changing settings, searching for a country, clicking on a country/region on the map, or dragging a box around multiple countries/regions. These actions have the following consequences:
+**The Main Page:** After the user advances to remove the loading screen, the user is shown the map, filling the screen. The user is given the option of changing settings, searching for a country, clicking on a country/region on the map, or dragging a box around multiple countries/regions. These actions have the following consequences:
  * Changing settings: At this point, the only change made by changing settings is to the masked int, in which each bit is toggled appropriately to the user's changes.
  * Searching for a country: Search results are returned for the user's query. At this point, the user may select a country/region (or multiple) from the results. After selecting an area, the map is moved to the left, and zooms on the selected area, while the client queries the server for that area's data. When the data is returned (in JSON format), the data is fed to a parser, which outputs the stats as arrays in terms of the above schemes. Then, that data is used to generate graphs for the selected stats. Note that which stats are shown, for which timespans, and whether they include bounds for those that have them, is based on the settings.
  * Clicking a country/region, dragging a box around multiple: This selects an area and executes the same actions as seen above with selection from the search bar.
