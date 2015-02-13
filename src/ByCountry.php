@@ -22,7 +22,7 @@ $countryIDList = explode(",", $_GET['countryIDs']);
 
 $statTables = array();
 $getStatTablesQuery = "SELECT stat_id, stat_table FROM info_stats";
-$getStatTablesResults = $database->query($getStatTablesQuery);
+$getStatTablesResults = $databaseConnection->query($getStatTablesQuery);
 while ($row = $getStatTablesResults->fetch_assoc())
 {
     $statTables[$row['stat_id']] = $row['stat_table'];
@@ -31,12 +31,11 @@ while ($row = $getStatTablesResults->fetch_assoc())
 $countryDataQueries = getCountryQueries($statTables, $countryIDList);
 foreach($countryDataQueries as $stat_id => $query)
 {
-	$getCountryDataResults = $database->query($query);
-    while ($row = $getCountryDataResults->fetch_assoc())
+	$getCountryDataResults = $databaseConnection->query($query);
+    while ($row = $getCountryDataResults->fetch_array(MYSQLI_NUM))
     {
-    	$countryID=$row['country_id'];
-    	unset($row['country_id']);
-    	$returningJson[$countryID][$stat_id]=$row;
+    	$countryID = $row[0];
+    	$returningJson[$countryID][$stat_id] = array_slice($row, 1);
     }	
 }
 

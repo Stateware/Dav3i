@@ -18,7 +18,7 @@ require_once("Toolbox.php");
 
 function GetDatabaseConnection()
 {
-	$databaseConnection = new mysqli(host, user, password, database);
+	$databaseConnection = new mysqli("localhost", "root", "", "peachtree");
 
 	if ($databaseConnection->connect_error)
 	{
