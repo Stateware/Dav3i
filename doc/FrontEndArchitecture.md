@@ -13,38 +13,38 @@ JSVectorMap was chosen based on available online demos, in which we observed tha
 #####Features of the Main Page
 
 The Main Page includes:
-1. A map of the world. This map is colored according to the current state of a selected stat, from green to blue to yellow. In other words, each country is heat mapped based on the value of this stat. By default, the stat is Estimate Measles Mortality.
-2. A search bar. This is used as an auxiliary way of selecting a country or region.
-2. A settings menu. This includes a toggle for turning on and off upper and lower bounds on stats that include them, as well as toggles for showing each stat. This menu also includes a seek bar for manipulating the timespan shown, and a selection for which stat is represented on the heat map.
-3. Graphs of all stats selected within the specified timespan. By default, the timespan is 1980 to present, and the stats shown are (TBD).
+ 1. A map of the world. This map is colored according to the current state of a selected stat, from green to blue to yellow. In other words, each country is heat mapped based on the value of this stat. By default, the stat is Estimate Measles Mortality.
+ 2. A search bar. This is used as an auxiliary way of selecting a country or region.
+ 3. A settings menu. This includes a toggle for turning on and off upper and lower bounds on stats that include them, as well as toggles for showing each stat. This menu also includes a seek bar for manipulating the timespan shown, and a selection for which stat is represented on the heat map.
+ 4. Graphs of all stats selected within the specified timespan. By default, the timespan is 1980 to present, and the stats shown are (TBD).
 
 #####Local Data Setup#####
 
 The Front End stores data in four separate parts:
-1. The Lookup Table
-2. Country/Region Data
-3. Queried CIDs
-4. Settings
+ 1. The Lookup Table
+ 2. Country/Region Data
+ 3. Queried CIDs
+ 4. Settings
 
 The Lookup Table includes the following for each country: 
-1. Country ID (CID)
-2. CC2 code 
-3. Country Name
-4. Current data for default Heat Mapped Stat (HMS)
+ 1. Country ID (CID)
+ 2. CC2 code 
+ 3. Country Name
+ 4. Current data for default Heat Mapped Stat (HMS)
 The Lookup Table exists so that for a selected country or region, a CC2 code can used to find its corresponding CID in order to query a server, and its name can be found to display over the relevant graphs. It also includes data for 1 trend for 1 year, to be used to color the map based on its value (heat map).
 
 Country/Region Data refers to the data stored locally after parsing a country or region's JSON objects after they are received from the server. Each time a new country/region selection is made, a new query is made to the server. Inbetween country/region selections, all data for selected countries/regions is stored client-side. Each stat is stored as either a 1D or 2D array, with 1 of 3 possible schemes:
 
 **Scheme 0:** A[x]: Used for single country/region query, for stats that do not include bounds.
-*x corresponds to the value of the stat at time = 1980 + x.
+ * x corresponds to the value of the stat at time = 1980 + x.
 
 **Scheme 1:** A[x][y]: Used for single country/region query, 
-*x corresponds to upper bound when x = 0, the stat's value when x = 1, and lower bound when x = 2.
-*y corresponds to the value of the upper bound, stat, and lower bound at time = 1980 + y.
+ * x corresponds to upper bound when x = 0, the stat's value when x = 1, and lower bound when x = 2.
+ * y corresponds to the value of the upper bound, stat, and lower bound at time = 1980 + y.
 
 **Scheme 2:** A[x][y]: Used for multiple country/region query.
-*x corresponds to country, enumerated based on the order in which it was queried. 
-*y corresponds to the value of the stat at time = 1980 + y.
+ * x corresponds to country, enumerated based on the order in which it was queried. 
+ * y corresponds to the value of the stat at time = 1980 + y.
 
 For a single country/region, both schemes 0 and 1 will be stored, with each being used dependent on whether the server data has upper and lower bounds.
 For multiple countries/regions, scheme 2 will be used for all stats.
@@ -62,10 +62,10 @@ Loading includes pulling the Lookup Table from the server, as well as generating
 **The Main Page:**
 
 After the user advances to remove the loading screen, the user is shown the map, filling the screen. The user is given the option of changing settings, searching for a country, clicking on a country/region on the map, or dragging a box around multiple countries/regions. These actions have the following consequences:
-*Changing settings: At this point, the only change made by changing settings is to the masked int, in which each bit is toggled appropriately to the user's changes.
-*Searching for a country: Search results are returned for the user's query. At this point, the user may select a country/region (or multiple) from the results. After selecting an area, the map is moved to the left, and zooms on the selected area, while the client queries the server for that area's data. When the data is returned (in JSON format), the data is fed to a parser, which outputs the stats as arrays in terms of the above schemes. Then, that data is used to generate graphs for the selected stats. Note that which stats are shown, for which timespans, and whether they include bounds for those that have them, is based on the settings.
-*Clicking a country/region, dragging a box around multiple: This selects an area and executes the same actions as seen above with selection from the search bar.
+ * Changing settings: At this point, the only change made by changing settings is to the masked int, in which each bit is toggled appropriately to the user's changes.
+ * Searching for a country: Search results are returned for the user's query. At this point, the user may select a country/region (or multiple) from the results. After selecting an area, the map is moved to the left, and zooms on the selected area, while the client queries the server for that area's data. When the data is returned (in JSON format), the data is fed to a parser, which outputs the stats as arrays in terms of the above schemes. Then, that data is used to generate graphs for the selected stats. Note that which stats are shown, for which timespans, and whether they include bounds for those that have them, is based on the settings.
+ * Clicking a country/region, dragging a box around multiple: This selects an area and executes the same actions as seen above with selection from the search bar.
 
 The second state of the main page directly follows from the last 2 options. A selected area is shown on the left, with stats relevant to that area graphed on the right. From here, the user can select another area (by map or search), or change settings. These actions have the following consequences:
-*Changing settings: This has the effect of changing the masked int, as well as refreshing the onscreen graphs to include any newly selected stats, remove any unselected ones, add/remove bounds (for single country/region), change timespan, and change the layout of the graphs to accomodate them.
-*Selecting another area: This has the effect of moving the map to zoom on that area, from wherever the map currently shows, as well as pulling new data for that area from the server, and generating graphs based on it. Again, graph generation is based on settings.
+ * Changing settings: This has the effect of changing the masked int, as well as refreshing the onscreen graphs to include any newly selected stats, remove any unselected ones, add/remove bounds (for single country/region), change timespan, and change the layout of the graphs to accomodate them.
+ * Selecting another area: This has the effect of moving the map to zoom on that area, from wherever the map currently shows, as well as pulling new data for that area from the server, and generating graphs based on it. Again, graph generation is based on settings.
