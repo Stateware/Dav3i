@@ -62,7 +62,7 @@ If writing a very simple loop, the names `i`, `j`, `k` are adequate. However, if
 
 #####Global Variable Names:
 
-All global variables names must include the prefix “g_”, then afterwards follow class naming conventions. (e.g. `g_MyGlobal`, `g_WeProbablyShouldntUseGlobalsAnyway`)
+All global variables names must include the prefix `g_`, then afterwards follow class naming conventions. (e.g. `g_MyGlobal`, `g_WeProbablyShouldntUseGlobalsAnyway`)
 
 #####Boolean Variable Names:
 
