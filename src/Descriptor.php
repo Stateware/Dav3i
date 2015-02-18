@@ -18,6 +18,8 @@
 require_once("Connect.php");
 require_once("Toolbox.php");
 
+$conn = GetDatabaseConnection();
+
 $cc2 = array();
 $cc3 = array();
 $countryName = array();
@@ -29,8 +31,6 @@ $stats = array('-1','births','deaths','vaccinations');
 $cc2[0] = 'KS';
 $cc3[0] = 'KYS';
 $countryName[0] = 'Kylestan';
-
-
 
 /* TODO: Create method to gather year data from database.
  *       Method is something along the lines of this 
@@ -45,21 +45,24 @@ $countryName[0] = 'Kylestan';
 $yearRange = range(1980,2014);
 
 // fill cc2 and country name into array
-$query = "SELECT * FROM descriptor ORDER BY id";
+$query = "SELECT * FROM meta_countries ORDER BY country_id";
 $result = $conn->query($query);
 if($result->num_rows > 0)
 { 
     // fetch the rows from the query result, place them in their respective arrays
     for($id = 1; $row = $result->fetch_assoc(); $id++)
-    {  
+    {   
         $cc2[$id] = $row['cc2'];
         $cc3[$id] = $row['cc3'];
-        $countryName[$id] = $row['CountryName'];
+        $countryName[$id] = $row['common_name'];
     }
+} else 
+{
+    echo "ERROR: Zero results";
 }
-
 // Merge all arrays into single array, then export to json
-$descriptor = json_encode(array("yearRange" => $yearRange, "cc2" => $cc2, "cc3"=> $cc3, "countryName" => $countryName, "stats" => $stats),JSON_PRETTY_PRINT);
+$descriptor = json_encode(array("yearRange" => $yearRange, "cc2" => $cc2, "cc3"=> $cc3, "common_name" => $countryName, "stats" => $stats));
 // return descriptor json string
 echo $descriptor;
+
 ?>
