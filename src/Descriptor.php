@@ -60,7 +60,6 @@ if($result->num_rows > 0)
 
 // Merge all arrays into single array, then export to json
 $descriptor = json_encode(array("yearRange" => $yearRange, "cc2" => $cc2, "cc3"=> $cc3, "countryName" => $countryName, "stats" => $stats),JSON_PRETTY_PRINT);
-
 // return descriptor json string
 echo $descriptor;
 ?>
