@@ -1,27 +1,27 @@
 var Descriptor =
 {
-    "yearRange" : 
+    "YearRange" : 
     {
         1980, 
         2014
     },
-    "cc2" :
+    “CC2" :
     {
         "US",
         "MX",
         "HU"
     },
-    "countryName" : 
+    "CountryName" : 
     {
         "United States of America",
         "Mexico",
         "Hungary"
     },
-    "stats" : 
+    “Stats” : 
     {
-        "births",
-        "deaths",
-        "vaccinations"
+        “births”,
+        “deaths”,
+        “vaccinations”
     }
 };
 

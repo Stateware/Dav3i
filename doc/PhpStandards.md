@@ -1,8 +1,8 @@
-__PHP File names__: Haskell Case (e.g. MyVar) because our API is structured such that the filenames for us are the function calls for front end.
+__PHP File names__: Haskell Case (similar to function names) because our API is structured such that the filenames for us are the function calls for front end.
 
-__PHP Variables__: Camel Case (e.g. myVar) as is typical variable naming convention.
+__PHP Variables__: Camel Case
 
-__MySQL Column Names__: Snake Case (my_var) so that its easy to differentiate between PHP variables and MySQL variables, as they typically have similar names.
+__MySQL Column Names__: Snake Case so that its easy to differentiate between PHP variables and MySQL variables.
 
 __File Form__:
 
