@@ -19,6 +19,7 @@ require_once("Connect.php");
 require_once("Toolbox.php");
 
 $cc2 = array();
+$cc3 = array();
 $countryName = array();
 $yearRange = array();
 
@@ -26,7 +27,10 @@ $yearRange = array();
 $stats = array('-1','births','deaths','vaccinations');
 
 $cc2[0] = 'KS';
+$cc3[0] = 'KYS';
 $countryName[0] = 'Kylestan';
+
+
 
 /* TODO: Create method to gather year data from database.
  *       Method is something along the lines of this 
@@ -49,12 +53,13 @@ if($result->num_rows > 0)
     for($id = 1; $row = $result->fetch_assoc(); $id++)
     {  
         $cc2[$id] = $row['cc2'];
+        $cc3[$id] = $row['cc3'];
         $countryName[$id] = $row['CountryName'];
     }
 }
 
 // Merge all arrays into single array, then export to json
-$descriptor = json_encode(array("yearRange" => $yearRange, "cc2" => $cc2, "countryName" => $countryName, "stats" => $stats),JSON_PRETTY_PRINT);
+$descriptor = json_encode(array("yearRange" => $yearRange, "cc2" => $cc2, "cc3"=> $cc3, "countryName" => $countryName, "stats" => $stats),JSON_PRETTY_PRINT);
 
 // return descriptor json string
 echo $descriptor;
