@@ -26,13 +26,11 @@ Now that we have the architecture of our back end planned out, it's time to dict
 
 All tables will be linked via country id (CID).
 
-**Stats:** This table provides an easy way to search our list of data tables. It has a columns: Stat table ID, Stat id Name, and SQL table name.
+**meta_stats:** This table provides an easy way to search our list of data tables. It has a columns: Stat table ID, Stat id Name, and SQL table name.
 
-**Country:** This table allows us to convert from a variable character name or a two character standardized country code to our country id for use in our database. This will be relevant for the API as having the requests include the MySQL specific CID would not be very portable if we needed to change something, as well as making things less intuitive and harder to read/write. This table has columns: CC2, Name, and CID.
+**meta_countries:** This table provides a list of all countries identifiers, common name, 2-digit country code, and 3-digit country code. This will be called when a call to "descriptor" is made, and when new data is being uploaded.
 
-**Data:** There will be an individual table for each different data statistic (e.g. deaths, births, vaccinations) for each different country. Each of these tables will have columns: CID and as many years columns as needed. This format was chosen to make it more efficient to grab all years of data from a single country by just grabbing a row of data. The other way of doing this would be to have three columns: CID, Year, and Value. This way would be considered the “correct” way, however would take a significantly longer time to query for mass quantities of yearly data. This way has the advantage of having a much greater amount of years, however, the chosen way of creating this table allows for a maximum of 1024 columns, hence 1023 years and it is inconceivable that this program will be used for longer than that span of time. 
-
-**CountryID:** This table will only be used in the input of the data from the original CSV files as these files use the 3 character country code and the graphing API we will be using uses the 2 character country code. This table will used to tie the country to its ID which will be how we will be tying individual countries to each other in each table
+**data_?:** There will be an individual table for each different data statistic (e.g. deaths, births, vaccinations) for each different country. Each of these tables will have columns: CID and as many years columns as needed. This format was chosen to make it more efficient to grab all years of data from a single country by just grabbing a row of data. The other way of doing this would be to have three columns: CID, Year, and Value. This way would be considered the “correct” way, however would take a significantly longer time to query for mass quantities of yearly data. This way has the advantage of having a much greater amount of years, however, the chosen way of creating this table allows for a maximum of 1024 columns, hence 1023 years and it is inconceivable that this program will be used for longer than that span of time. 
 
 #####PHP Functions
 
