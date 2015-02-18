@@ -58,4 +58,5 @@ $descriptor = json_encode(array("yearRange" => $yearRange, "cc2" => $cc2, "count
 
 // return descriptor json string
 echo $descriptor;
+
 ?>

@@ -5,8 +5,8 @@
  * 
  * Date Created:        2/7/2015
  * Contributors:        Will Bittner, Arun Kumar, Drew Lopreiato
- * Date Last Modified:  2/12/2015
- * Last Modified By:    Will Bittner, Arun Kumar, Drew Lopreiato
+ * Date Last Modified:  2/17/2015
+ * Last Modified By:    Will Bittner
  * Dependencies:        Connect.php, Toolbox.php
  * Input:               GET: statID - a positive integer
  *                           year   - a four digit integer
@@ -21,6 +21,10 @@ $returningData = array();
 $byStats = DEFAULT_STRING;
 $inputYear = DEFAULT_NUMBER;
 $inputStatID = DEFAULT_NUMBER;
+//$descriptor = json_decode(include('Descriptor.php'));
+//$yearLow = descriptor.yearRange[0];
+//$yearHigh = descriptor.yearRange[1];
+//$numStats = count(descriptor.stats)
 
 // ========== Error Checking and Variable Initialization ==========
 $databaseConnection = GetDatabaseConnection();
@@ -37,6 +41,7 @@ if (!isset($_GET['year']))
 {
     //TODO:
     //Change to query database for most recent year once data is input
+    //$inputYear = yearHigh;
     $inputYear = 2015;
 }
 else
@@ -44,11 +49,14 @@ else
     $inputYear = $_GET['year'];
 }
 
-if (!IsSanitaryYear($inputYear) || !IsSanitaryStatID($inputStatID))
+//Check inputs are sanitary
+if (!(IsSanitaryYear($inputYear) && IsSanitaryStatID($inputStatID)))
 {
     ThrowFatalError("Input is unsanitary.");
 }
-if (!IsValidYear($inputYear) || !IsValidStatID($inputStatID))
+
+//Check inputs are valid
+if (!(IsValidYear($inputYear) && IsValidStatID($inputStatID)))
 {
     ThrowFatalError("Input is invalid.");
 }
@@ -84,12 +92,14 @@ function IsSanitaryStatID($statID)
 function IsValidYear($year)
 {
     // TODO: CHECK AGAINST THE DATABASE
+    // return (year >= yearLow && year <= yearHigh);
     return true;
 }
 
 function IsValidStatID($statID)
 {
     // TODO: CHECK AGAINST THE DATABASE
+    // return($statID<=$numStats);
     return true;
 }
 
