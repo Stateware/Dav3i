@@ -18,7 +18,7 @@ The Main Page includes:
  3. A settings menu. This includes a toggle for turning on and off upper and lower bounds on stats that include them, as well as toggles for showing each stat. This menu also includes a seek bar for manipulating the timespan shown, and a selection for which stat is represented on the heat map.
  4. Graphs of all stats selected within the specified timespan. By default, the timespan is 1980 to present, and the stats shown are (TBD).
 
-#####Local Data Setup#####
+#####Local Data Setup
 
 The Front End stores data in four separate parts:
  1. The Lookup Table
@@ -33,20 +33,21 @@ The Lookup Table includes the following for each country:
  4. Current data for default Heat Mapped Stat (HMS)
 The Lookup Table exists so that for a selected country or region, a CC2 code can used to find its corresponding CID in order to query a server, and its name can be found to display over the relevant graphs. It also includes data for 1 trend for 1 year, to be used to color the map based on its value (heat map).
 
-Country/Region Data refers to the data stored locally after parsing a country or region's JSON objects after they are received from the server. Each time a new country/region selection is made, a new query is made to the server. Inbetween country/region selections, all data for selected countries/regions is stored client-side. Each stat is stored as either a 1D or 2D array, with 1 of 3 possible schemes:
+Country/Region Data refers to the data stored locally after parsing a country/region's (or many) JSON object(s) after they are received from the server. Each time a new country/region selection is made, a new query is made to the server. Inbetween country/region selections, all data for selected countries/regions is stored client-side. The local data is stored as a 3D array A[x][y][z], where x indicates a particular stat, and y and z fit the following schemes:
 
-**Scheme 0:** A[x]: Used for single country/region query, for stats that do not include bounds.
- * x corresponds to the value of the stat at time = 1980 + x.
+**Scheme 0:** A[y][z]: Used for single country/region query, for stats that do not include bounds.
+ * y is unused, but still exists in the data structure to ensure a uniform return type from the parser. The stat's value exists in the row y = 1, for uniformity with scheme 1.
+ * z corresponds to the value of the stat at time = 1980 + z.
 
-**Scheme 1:** A[x][y]: Used for single country/region query, 
- * x corresponds to upper bound when x = 0, the stat's value when x = 1, and lower bound when x = 2.
- * y corresponds to the value of the upper bound, stat, and lower bound at time = 1980 + y.
+**Scheme 1:** A[y][z]: Used for single country/region query, for stats that include bounds. 
+ * y corresponds to upper bound when y = 0, the stat's value when y = 1, and lower bound when y = 2.
+ * z corresponds to the value of the upper bound, stat, and lower bound at time = 1980 + z.
 
-**Scheme 2:** A[x][y]: Used for multiple country/region query.
- * x corresponds to country, enumerated based on the order in which it was queried. 
- * y corresponds to the value of the stat at time = 1980 + y.
+**Scheme 2:** A[y][z]: Used for multiple country/region query.
+ * y corresponds to country, enumerated based on the order in which it was queried. 
+ * z corresponds to the value of the stat at time = 1980 + z.
 
-For a single country/region, both schemes 0 and 1 will be stored, with each being used dependent on whether the server data has upper and lower bounds.
+For a single country/region, both schemes 0 and 1 will be used, with each being used dependent on whether the stat has upper and lower bounds.
 For multiple countries/regions, scheme 2 will be used for all stats.
 
 Queried CIDs is a 1D array that includes the last queried CIDs, to be used by the graphing function to interpret Scheme 2.
