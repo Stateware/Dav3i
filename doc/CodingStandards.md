@@ -2,28 +2,28 @@
 
 #####File Headers:
 
-All source code files must include headers with the following fields
-// File Name:          example.c
-// Description:        This file is the implementation of the functions
-//                     prototyped in example.h
-// Date Created:       1/28/2015
-// Contributors:       Willy Wonka, Augustus Gloop
-// Date Last Modified: 1/29/2015
-// Last Modified By:   Augustus Gloop
-// Dependencies:       example.h, foo_bar.c
-// Additional Notes:   This program is scrumdiddlyumptious!
+All source code files must include headers with the following fields  
+'// File Name:          example.c'  
+'// Description:        This file is the implementation of the functions'  
+'//                     prototyped in example.h'  
+'// Date Created:       1/28/2015'  
+'// Contributors:       Willy Wonka, Augustus Gloop'  
+'// Date Last Modified: 1/29/2015'  
+'// Last Modified By:   Augustus Gloop'  
+'// Dependencies:       example.h, foo_bar.c'  
+'// Additional Notes:   This program is scrumdiddlyumptious!'  
 
 #####Function Headers:
 
-All functions must include headers with the following fields. PRE and POST conditions MUST unambiguously define the state of inputs and outputs before and after execution of the function.
-// Author:        Dr. Seuss
-// Date Created:  1/28/2015
-// Last Modified: 1/29/2015 by Dr. Seuss
-// Description:   This function takes 2 integer inputs and returns the value of
-//                the larger input
-void Max(int a, int b)
-// PRE:  a and b are initialized
-// POST: if a > b, FCTVAL == a, o.w. FCTVAL == b
+All functions must include headers with the following fields. PRE and POST conditions MUST unambiguously define the state of inputs and outputs before and after execution of the function.  
+'// Author:        Dr. Seuss'  
+'// Date Created:  1/28/2015'  
+'// Last Modified: 1/29/2015 by Dr. Seuss'  
+'// Description:   This function takes 2 integer inputs and returns the value of'  
+'//                the larger input'  
+'void Max(int a, int b)'  
+'// PRE:  a and b are initialized'  
+'// POST: if a > b, FCTVAL == a, o.w. FCTVAL == b'  
 
 #Naming Conventions:
 
