@@ -23,7 +23,7 @@ $conn = GetDatabaseConnection();
 $cc2 = array();
 $cc3 = array();
 $countryName = array();
-$yearRange = array();
+$yearRange = array(1980,2014);
 
 // TODO: Create method to gather stats data from database
 $stats = array('-1','births','deaths','vaccinations');
@@ -42,7 +42,6 @@ $countryName[0] = 'Kylestan';
  * }
  * 
  */
-$yearRange = range(1980,2014);
 
 // fill cc2 and country name into array
 $query = "SELECT * FROM meta_countries ORDER BY country_id";
@@ -60,8 +59,11 @@ if($result->num_rows > 0)
 {
     echo "ERROR: Zero results";
 }
+
+$preJsonDescriptor = array("yearRange" => $yearRange, "cc2" => $cc2, "cc3"=> $cc3, "common_name" => $countryName, "stats" => $stats);
+
 // Merge all arrays into single array, then export to json
-$descriptor = json_encode(array("yearRange" => $yearRange, "cc2" => $cc2, "cc3"=> $cc3, "common_name" => $countryName, "stats" => $stats));
+$descriptor = json_encode($preJsonDescriptor);
 // return descriptor json string
 echo $descriptor;
 
