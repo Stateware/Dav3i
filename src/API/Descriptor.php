@@ -17,7 +17,7 @@
 
 require_once("Connect.php");
 require_once("Toolbox.php");
-require_once("api_library");
+require_once("api_library.php");
 $conn = GetDatabaseConnection();
 
 $cc2 = array();

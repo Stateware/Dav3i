@@ -18,10 +18,9 @@ require_once("Connect.php");
 function GetYearRange($database, $table)
 {
 	$indexOfFirstYearColumn = 1;
-	$indexOfLastYearColumn = count($descriptionArray) - 1;
 	$descriptionArray = array();
 	$yearRange = array();
-	
+		
 	//Create the query and query the query
     $descriptionQuery = "DESCRIBE " . $table;
 	$descriptionResult = $database->query($descriptionQuery);
@@ -39,7 +38,8 @@ function GetYearRange($database, $table)
 	
 	//Put the first and last year into the returning array
 	array_push($yearRange, $descriptionArray[$indexOfFirstYearColumn]);
-	array_push($yearRange, $descriptionArray[$indexOfLastYearColumn]);
+	array_push($yearRange, $descriptionArray[count($descriptionArray) - 1]);
+	
 	
 	return $yearRange;
 } //END GetYearRange
