@@ -1,6 +1,6 @@
 <?php
-require_once("Connect.php");
-require_once("Toolbox.php");
+require_once("connect.php");
+require_once("toolbox.php");
 
 $databaseConnection = GetDatabaseConnection();
 
