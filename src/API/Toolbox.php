@@ -1,11 +1,11 @@
 <?php
-/* File Name:           Toolbox.php
+/* File Name:           toolbox.php
  * Description:         This will be included in nearly every PHP file we write and it will hold commonly
  * 							used functions and any globals we may need.
  * Date Created:        2/12/2015
  * Contributors:        Drew Lopreiato, William Bittner, Kyle Nicholson, Berty Ruan, Arun Kumar
- * Date Last Modified:  2/17/2015
- * Last Modified By:    William Bittner
+ * Date Last Modified:  2/20/2015
+ * Last Modified By:    Drew Lopreiato
  * Dependencies:        none
  * Input:               none
  * Output:              none

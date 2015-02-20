@@ -1,12 +1,12 @@
 <?php
-/* File Name:           ByStats.php
+/* File Name:           by_stats.php
  * Description:         This file queries the database for data from every country for 1 specific year and 1 specifc
  *                      statistic.
  * 
  * Date Created:        2/7/2015
  * Contributors:        Will Bittner, Arun Kumar, Drew Lopreiato
- * Date Last Modified:  2/17/2015
- * Last Modified By:    Will Bittner
+ * Date Last Modified:  2/20/2015
+ * Last Modified By:    Drew Lopreiato
  * Dependencies:        Connect.php, Toolbox.php
  * Input:               GET: statID - a positive integer
  *                           year   - a four digit integer

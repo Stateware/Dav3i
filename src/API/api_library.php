@@ -1,5 +1,5 @@
 <?php
-/* File Name:           api_library
+/* File Name:           api_library.php
  * Description:         This file holds all of the functions which the api calls will return
  * Date Created:        2/19/2015
  * Contributors:        William Bittner, Drew Lopreiato, Kyle Nicholson, Arun Kumar, Dylan Fetch

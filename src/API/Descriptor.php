@@ -1,12 +1,12 @@
 <?php
-/* File Name:           Descriptor.php
+/* File Name:           descriptor.php
  * Description:         This file queries the database for the country names, 
  *                      year range, two character country code (cc2), and the stats
  * 
  * Date Created:        2/7/2015
  * Contributors:        Kyle Nicholson, Berty Ruan
- * Date Last Modified:  2/8/2015
- * Last Modified By:    Kyle Nicholson, Berty Ruan
+ * Date Last Modified:  2/20/2015
+ * Last Modified By:    Drew Lopreiato
  * Dependencies:        connect.php
  * Input:               NONE
  * Output:              Formatted JSON String containing the countryName,
@@ -15,8 +15,8 @@
  *                      database on the correct server
  */
 
-require_once("Connect.php");
-require_once("Toolbox.php");
+require_once("connect.php");
+require_once("toolbox.php");
 require_once("api_library.php");
 $conn = GetDatabaseConnection();
 
