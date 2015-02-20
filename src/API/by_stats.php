@@ -12,8 +12,8 @@
  *                           year   - a four digit integer
  * Output:              Fromatted JSON string containing the data for the specified stat and year for every country.
  */
-require_once("Connect.php");
-require_once("Toolbox.php");
+require_once("connect.php");
+require_once("toolbox.php");
 
 // ===================== Variable Declaration =====================
 $databaseConnection;
