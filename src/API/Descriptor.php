@@ -17,13 +17,13 @@
 
 require_once("Connect.php");
 require_once("Toolbox.php");
-
+require_once("api_library");
 $conn = GetDatabaseConnection();
 
 $cc2 = array();
 $cc3 = array();
 $countryName = array();
-$yearRange = array(1980,2014);
+$yearRange = array();
 
 // TODO: Create method to gather stats data from database
 $stats = array('-1','births','deaths','vaccinations');
@@ -32,16 +32,10 @@ $cc2[0] = 'KS';
 $cc3[0] = 'KYS';
 $countryName[0] = 'Kylestan';
 
-/* TODO: Create method to gather year data from database.
- *       Method is something along the lines of this 
- * 
- * $currentDate = getCurrentDate();
- * if ($yearRange[$yearRange.length()-1] != $currentDate)
- * {
- *      $yearRange[$yearRange.length()] = $currentDate;
- * }
- * 
- */
+ 
+ //TODO: unhardcode table name
+ $yearRange = GetYearRange($conn, "data_births");
+ 
 
 // fill cc2 and country name into array
 $query = "SELECT * FROM meta_countries ORDER BY country_id";
