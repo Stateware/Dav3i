@@ -14,20 +14,23 @@
  */
 require_once("connect.php");
 require_once("toolbox.php");
+require_once("api_library.php");
 
 // ===================== Variable Declaration =====================
 $databaseConnection;
 $returningData = array();
+$yearRange = array();
 $byStats = DEFAULT_STRING;
 $inputYear = DEFAULT_NUMBER;
 $inputStatID = DEFAULT_NUMBER;
 //$descriptor = json_decode(include('Descriptor.php'));
-//$yearLow = descriptor.yearRange[0];
-//$yearHigh = descriptor.yearRange[1];
 //$numStats = count(descriptor.stats)
 
 // ========== Error Checking and Variable Initialization ==========
 $databaseConnection = GetDatabaseConnection();
+
+//      TODO: unhardcode table name
+$yearRange = GetYearRange($databaseConnection, "data_births");
 
 if (!isset($_GET['statID'])) 
 {
@@ -39,10 +42,8 @@ else
 }
 if (!isset($_GET['year']))
 {
-    //TODO:
-    //Change to query database for most recent year once data is input
-    //$inputYear = yearHigh;
-    $inputYear = 2015;
+    // We'll make our default year, the most current one we have data for.
+    $inputYear = $yearRange[1];
 }
 else
 {
@@ -56,7 +57,7 @@ if (!(IsSanitaryYear($inputYear) && IsSanitaryStatID($inputStatID)))
 }
 
 //Check inputs are valid
-if (!(IsValidYear($inputYear) && IsValidStatID($inputStatID)))
+if (!(IsValidYear($yearRange, $inputYear) && IsValidStatID($inputStatID)))
 {
     ThrowFatalError("Input is invalid.");
 }
@@ -89,11 +90,9 @@ function IsSanitaryStatID($statID)
     return preg_match("/^\d+$/", $statID) === 1;
 }
 
-function IsValidYear($year)
+function IsValidYear($yearRange, $year)
 {
-    // TODO: CHECK AGAINST THE DATABASE
-    // return (year >= yearLow && year <= yearHigh);
-    return true;
+    return ($year >= $yearRange[0] && $year <= $yearRange[1]);
 }
 
 function IsValidStatID($statID)
