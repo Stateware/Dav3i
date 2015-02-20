@@ -5,6 +5,9 @@
 *.suo
 *.user
 *.sln.docstates
+*.project
+*.sublime-project
+*.sublime-workspace
 
 # Build results
 [Dd]ebug/
