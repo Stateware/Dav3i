@@ -80,6 +80,10 @@ When using descriptive prefixes and suffixes in variable names, like `total` in 
 
 #Structuring Your Code:
 
+#####Line Length:
+
+For languages where adding newlines does not change the function of your code, keep line width under 120 characters (including comments) in order for your code to be correctly displayed on GitHub.
+
 #####Tabs:
 
 All block indents are to be done using 4 spaces. VS has an option to auto replace tabs with spaces, please use this.
