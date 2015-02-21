@@ -82,11 +82,11 @@ When using descriptive prefixes and suffixes in variable names, like `total` in 
 
 #####Line Length:
 
-For languages where adding newlines does not change the function of your code, keep line width under 120 characters (including comments) in order for your code to be correctly displayed on GitHub.
+For languages where adding newlines does not change the function of your code, keep line width under 120 characters (including comments) in order for your code to be correctly displayed on GitHub. Note that this does not apply to certain languages, like HTML.
 
-#####Tabs:
+#####Indents:
 
-All block indents are to be done using 4 spaces. VS has an option to auto replace tabs with spaces, please use this.
+All block indents are to be done using 4 spaces. VS has an option to auto replace tabs with spaces, please use this. All blocks must be indented to the same place vertically; this organizes your code better for readability.
 
 #####“Magic” Numbers:
 
@@ -98,7 +98,7 @@ Functions (or in the sense of a developed architecture, functional modules) must
 
 #####Commenting:
 
-Comment FREQUENTLY and PRECISELY. Don’t be ambiguous, and be exact in detailing what your code is doing.
+Comment FREQUENTLY and PRECISELY. Don’t be ambiguous, and be exact in detailing what your code is doing. Note that you do not want to repeat your code in the comments; instead, document design and implementation decisions, as well as high level function.
 
 #####Declaring Local Variables:
 
@@ -115,5 +115,42 @@ When returning a value from a function, never use the same variable for multiple
 #####Using Floating Point Numbers:
 
 Because floating point numbers are inexact, any time the value of a `float` is checked, it must not be checked for equality; instead, it should be compared within some defined level of tolerance. (e.g. `if (float > (key - delta) && float < (key + delta))`; rather than `if (float == key)`)
+
+#####Division:
+
+NEVER divide outside of `if` statements. This is an invitation for divide by zero errors. NEVER assume a divisor can never be zero.
+
+#####Mathematical Expressions:
+
+Fully parenthesize each expression. Never rely on default order of operations and assume correct functionality. This invites incorrect functionality, and makes the incorrect assumption that whoever maintains your code will always understand your intention.
+
+#Approach to Coding:
+
+ * Always specify pre and post conditions in headers
+ * Understand your logic and how your program gets from the precondition to the postcondition. You don't have to prove everything, but you have to be able to do it if you want to.
+ * Understand your assumptions, and understand cases in which they are not true. This includes your architecture, platform, OS, language version, etc. Understanding this will help you better understand non-portable components.
+ * Strive for *cumulative* complexity, as opposed to patchwork complexity. Cumulative complexity arises where your program is arranged logically from smaller, simpler modules. Patchwork complexity arises from complicated, ad-hoc, peculiar arrangements of modules.
+ * Rely on layers of abstraction to simplify your understanding of function. No method or function should ever be more than about a page.
+ * Bulletproof programs are built on bulletproof modules. Each module should do one thing and do it well.
+ * Keep functions self contained. Do everything you can to reduce the influence of global or otherwise outside data; this reduces the chances of unexpected program behavior.
+ * Have exactly one entrance and exit point to each module.
+ * Code with the intention of testing. Even just keeping this in mind will encourage you to program defensively, and will save headaches in the process of QA.
+ * Take responsibility for your contributions to the project. Never submit "hacked together" code; you must fully understand how and why your code does what it does.
+ * Bugs are not autonomous malicious entities. If there's a bug, an engineer put it there. Treat it accordingly.
+ * Understand the difference between coding error and design error.
+ * Every function operates with a try...catch structure, even in languages that don't include this syntax. That is, your function does a thing, and if it fails in doing so, must respond to that error. Take advantage of function hierarchy and layers of abstraction to "bubble up" errors and handle them explicitly.
+ * All modules must either throw exceptions or otherwise return error codes in the case of failure.
+ * Validate all input parameters. Check for EVERY possible case. Documenting what valid input is is insufficient. Comments do not execute.
+ * Keep Murphy's Law in mind: Anything that CAN go wrong, WILL go wrong. Plan for edge cases. Think of everything.
+ * Every line of code must be evaluated against this document by at least one person who is not the author. Ideally, it is also reviewed by a second, less experienced person, who can provide a "naive" review, and challenge assumptions made by those familiar with the code.
+ * Avoid changing code. A well written module should never be changed, it should be rewritten (refactored). Poorly written modules should never be contributed. Enhancements always include refactoring.
+ * Avoid temporary variables if they are not necessary to function. Break this rule ONLY if it will ADD to the readability of the program.
+ * Avoid repetitive code. You should also avoid repetitive code. Modularize instead. It is possible to go too far with this, but in most cases it is good practice.
+ * Use standard libraries whenever possible. These are more rigorously tested than code we create, and there is no reason to waste your time re-implementing them.
+ * Test your modules individually. If your modules don't work by themselves, they'll never work put together. Write tests as you code.
+ * Optimize algorithms, not code. Code efficiency is rarely an issue; algorithmic complexity and ease of maintenance are.
+ * All modules must have cyclomatic complexity (the number of unique paths through a module's execution) must be less than 7, though less than 5 is ideal.
+ * Clear code is better than clever code. Don't introduce complexity for the sake of your ego, the engineers that maintain your code won't appreciate it as much as you do.
+ * Refactor! Refactor! Refactor! Refactor! Refactor! Refactor!
 
 *More to be added for PHP/HTML/CSS/JS specific conventions*

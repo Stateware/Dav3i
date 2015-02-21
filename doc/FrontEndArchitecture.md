@@ -2,7 +2,7 @@
 
 #####Introduction to the Front End
 
-The goal of our front end is to meet the needs of the user in interacting with data stored on the server. The user's requirements are to be able to select a country or region, and display relevant data pulled from the server. We will accomplish this by building a webpage in HTML5, using Google Charts API, and JSVectorMap.
+The goal of our front end is to meet the needs of the user in interacting with data stored on the server. The user's must be able to select a country or region, and display relevant data pulled from the server. We accomplish this by building a webpage in HTML5, using Google Charts API, and JSVectorMap.
 
 HTML5 was chosen based on its portability, and ease of use in implementing complex features. In the interest of maintenance, the fact that use of and support for HTML5 is growing gives it a clear advantage over HTML/CSS/JS.
 
@@ -10,11 +10,29 @@ Google Charts API was chosen primarily because it includes the features we need,
 
 JSVectorMap was chosen based on available online demos, in which we observed that it included many user oriented features that would allow us to more easily and more efficiently implement a high quality user interface.
 
+#####Requirements
+
+The front end must:
+
+ * Provide an easy to use interface for selecting one or more countries/regions
+ * Upon country/region selection, fetch all relevant data from server
+ * Use received data to generate easily readable and comparable graphs
+
+Necessary data:
+
+ * Birth Rate
+ * Death Rate
+ * Population
+ * Vaccinations (routine and periodic mass vaccinations)
+ * Observed Measles Cases
+ * Estimated Measles Cases
+ * Estimated Mortality Rate
+
 #####Features of the Main Page
 
 The Main Page includes:
- 1. A map of the world. This map is colored according to the current state of a selected stat, from green to blue to yellow. In other words, each country is heat mapped based on the value of this stat. By default, the stat is Estimate Measles Mortality.
- 2. A search bar. This is used as an auxiliary way of selecting a country or region.
+ 1. A map of the world. This map is colored according to the current state of a selected stat, from green to blue to yellow. In other words, each country is heat mapped based on the value of this stat. By default, the stat is Estimated Measles Mortality.
+ 2. A search bar. This is used as an secondary way of selecting a country or region.
  3. A settings menu. This includes a toggle for turning on and off upper and lower bounds on stats that include them, as well as toggles for showing each stat. This menu also includes a seek bar for manipulating the timespan shown, and a selection for which stat is represented on the heat map.
  4. Graphs of all stats selected within the specified timespan. By default, the timespan is 1980 to present, and the stats shown are (TBD).
 
@@ -35,15 +53,15 @@ The Lookup Table exists so that for a selected country or region, a CC2 code can
 
 Country/Region Data refers to the data stored locally after parsing a country/region's (or many) JSON object(s) after they are received from the server. Each time a new country/region selection is made, a new query is made to the server. Inbetween country/region selections, all data for selected countries/regions is stored client-side. The local data is stored as a 3D array A[x][y][z], where x indicates a particular stat, and y and z fit the following schemes:
 
-**Scheme 0:** A[y][z]: Used for single country/region query, for stats that do not include bounds.
+**Scheme 0:** A[x][y][z]: Used for single country/region query, for stats that do not include bounds.
  * y is unused, but still exists in the data structure to ensure a uniform return type from the parser. The stat's value exists in the row y = 1, for uniformity with scheme 1.
  * z corresponds to the value of the stat at time = 1980 + z.
 
-**Scheme 1:** A[y][z]: Used for single country/region query, for stats that include bounds. 
+**Scheme 1:** A[x][y][z]: Used for single country/region query, for stats that include bounds. 
  * y corresponds to upper bound when y = 0, the stat's value when y = 1, and lower bound when y = 2.
  * z corresponds to the value of the upper bound, stat, and lower bound at time = 1980 + z.
 
-**Scheme 2:** A[y][z]: Used for multiple country/region query.
+**Scheme 2:** A[x][y][z]: Used for multiple country/region query.
  * y corresponds to country, enumerated based on the order in which it was queried. 
  * z corresponds to the value of the stat at time = 1980 + z.
 
