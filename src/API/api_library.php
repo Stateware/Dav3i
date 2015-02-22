@@ -17,7 +17,55 @@ require_once("connect.php");
 
 function ByStat($statID, $year)
 {
+	$heatMapArray = array();
+	$descriptor = Descriptor();
+	$yearRange = $descriptor['yearRange'];
+	$numStats = count($descriptor['stats']);
+	$databaseConnection = GetDatabaseConnection();
 	
+	//if year is set to default, there was no year enter and thus we give it the most recent year
+	//this also means we don't need to check to see if the year is valid or sanitary 
+	if($year == DEFAULT_STRING)
+	{
+		$year = $yearRange[1];
+	}
+	else
+	{
+		//check inputs are sanitary
+		if (!IsSanitaryYear($year))
+		{
+	    	ThrowFatalError("Input is unsanitary: year");
+		}
+
+		//Check inputs are valid
+		if (!IsValidYear($year, $yearRange))
+		{
+		    ThrowFatalError("Input is invalid: year");
+		}
+	}
+	//check inputs are sanitary
+	if (!IsSanitaryStatID($statID))
+	{
+	   	ThrowFatalError("Input is unsanitary: statID");
+	}
+	
+	//Check inputs are valid
+	if (!IsValidStatID($statID,$numStats))
+	{
+	   ThrowFatalError("Input is invalid: statID");
+	}
+	
+	
+	// Retrieve the table name of the inputted stat ID.
+	$tableName = GetFirstRowFromColumn($databaseConnection, "meta_stats", "table_name", "table_id = $statID");
+	$heatMapQuery = "SELECT `" . $year . "` FROM " . $tableName . " ORDER BY country_id ASC";
+	$heatMapResults = $databaseConnection->query($heatMapQuery);
+	while($heatMapRow = $heatMapResults->fetch_assoc())
+	{
+   		array_push($heatMapArray, $heatMapRow[$year]);
+	}
+	
+	return ($heatMapArray);	
 }
 
 
@@ -49,6 +97,31 @@ function Descriptor()
 }
 
 // ======================= Helper Functions =======================
+ 
+function IsSanitaryYear($year)
+{
+    // This matches exclusively 4 digits in a row.
+    return preg_match("/^\d{4}$/", $year) === 1;
+}
+
+function IsSanitaryStatID($statID)
+{
+    // This matches exclusively 1 or more digits in a row.
+    return preg_match("/^\d+$/", $statID) === 1;
+}
+
+function IsValidYear($year, $yearRange)
+{
+    return ($year >= $yearRange[0] && $year <= $yearRange[1]);
+}
+
+function IsValidStatID($statID, $numStats)
+{
+	//As stats are numbered starting at one, the count of the array is equal to the highest value stat.
+	//Check !=0 as sanitary assures us a positive integer, we need to remove 0 as well.
+    return($statID<=$numStats && $statID!=0);
+   
+} 
  
  
 // Author:        William Bittner, Drew Lopreiato, Berty Ruan, Dylan Fetch

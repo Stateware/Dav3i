@@ -1,7 +1,14 @@
 <?php
-require_once("connect.php");
-require_once("toolbox.php");
+require_once("api_library.php");
 
+if (!isset($_GET['countryIDs']))
+{
+	ThrowFatalError("Input is not defined: countryIDs");
+}
+
+$byCountryArray
+
+/*
 $databaseConnection = GetDatabaseConnection();
 
 $returningJson = array();
@@ -45,7 +52,7 @@ echo json_encode($returningJson);
 // Returns an array of queries given a set of tables to be queried, and the countries to be queried
 // $tableNames must be in format: tableID => tableName
 // $countries must be an array of integers
-function getCountryQueries($tableNames, $countries)
+/*function getCountryQueries($tableNames, $countries)
 {
     $returnValue = array();
     // iterate through each table name
@@ -67,5 +74,5 @@ function getCountryQueries($tableNames, $countries)
         $returnValue[$tableID] = $getDataQuery;
     }
     return $returnValue;
-} // END getCountryQueries
+} // END getCountryQueries*/
 ?>

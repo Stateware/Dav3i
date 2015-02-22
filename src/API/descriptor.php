@@ -5,8 +5,8 @@
  * 
  * Date Created:        2/7/2015
  * Contributors:        Kyle Nicholson, Berty Ruan
- * Date Last Modified:  2/20/2015
- * Last Modified By:    Drew Lopreiato
+ * Date Last Modified:  2/22/2015
+ * Last Modified By:    Will Bittner 
  * Dependencies:        connect.php
  * Input:               NONE
  * Output:              Formatted JSON String containing the countryName,
@@ -19,7 +19,9 @@ require_once("api_library.php");
 
 $descriptorArray = Descriptor();
 
+//encode results of Descriptor() into json
 $descriptor = json_encode($descriptorArray);
+
 // return descriptor json string
 echo $descriptor;
 
