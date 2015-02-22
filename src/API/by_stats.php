@@ -5,12 +5,12 @@
  * 
  * Date Created:        2/7/2015
  * Contributors:        Will Bittner, Arun Kumar, Drew Lopreiato
- * Date Last Modified:  2/20/2015
- * Last Modified By:    Drew Lopreiato
+ * Date Last Modified:  2/22/2015
+ * Last Modified By:    Arun Kumar
  * Dependencies:        Connect.php, Toolbox.php
  * Input:               GET: statID - a positive integer
  *                           year   - a four digit integer
- * Output:              Fromatted JSON string containing the data for the specified stat and year for every country.
+ * Output:              Formatted JSON string containing the data for the specified stat and year for every country.
  */
 require_once("connect.php");
 require_once("toolbox.php");

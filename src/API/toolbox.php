@@ -4,8 +4,8 @@
  * 							used functions and any globals we may need.
  * Date Created:        2/12/2015
  * Contributors:        Drew Lopreiato, William Bittner, Kyle Nicholson, Berty Ruan, Arun Kumar
- * Date Last Modified:  2/20/2015
- * Last Modified By:    Drew Lopreiato
+ * Date Last Modified:  2/22/2015
+ * Last Modified By:    Arun Kumar
  * Dependencies:        none
  * Input:               none
  * Output:              none
@@ -15,7 +15,7 @@
 // ===================== Function Definitions =====================	 
 //OUTPUT: This function will cause the program to close itself after echoing an error message.
 //INPUT: string message - optional further description of error
-function ThrowFatalError($message = "An Error has occured.") 
+function ThrowFatalError($message = "An Error has occurred.") 
 {
     echo "{\"error\" : \"" . $message . "\"}";
     die();
