@@ -15,49 +15,11 @@
  *                      database on the correct server
  */
 
-require_once("connect.php");
-require_once("toolbox.php");
 require_once("api_library.php");
-$conn = GetDatabaseConnection();
 
-$cc2 = array();
-$cc3 = array();
-$countryName = array();
-$yearRange = array();
+$descriptorArray = Descriptor();
 
-// TODO: Create method to gather stats data from database
-$stats = array('-1','births','deaths','vaccinations');
-
-$cc2[0] = 'KS';
-$cc3[0] = 'KYS';
-$countryName[0] = 'Kylestan';
-
- 
- //TODO: unhardcode table name
- $yearRange = GetYearRange($conn, "data_births");
- 
-
-// fill cc2 and country name into array
-$query = "SELECT * FROM meta_countries ORDER BY country_id";
-$result = $conn->query($query);
-if($result->num_rows > 0)
-{ 
-    // fetch the rows from the query result, place them in their respective arrays
-    for($id = 1; $row = $result->fetch_assoc(); $id++)
-    {   
-        $cc2[$id] = $row['cc2'];
-        $cc3[$id] = $row['cc3'];
-        $countryName[$id] = $row['common_name'];
-    }
-} else 
-{
-    echo "ERROR: Zero results";
-}
-
-$preJsonDescriptor = array("yearRange" => $yearRange, "cc2" => $cc2, "cc3"=> $cc3, "common_name" => $countryName, "stats" => $stats);
-
-// Merge all arrays into single array, then export to json
-$descriptor = json_encode($preJsonDescriptor);
+$descriptor = json_encode($descriptorArray);
 // return descriptor json string
 echo $descriptor;
 
