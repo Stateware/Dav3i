@@ -69,6 +69,55 @@ function ByStat($statID, $year)
 }
 
 
+function ByCountry($countryIDs)
+{
+	$databaseConnection = GetDatabaseConnection();
+	$byCountryArray = array();
+	$descriptor = Descriptor();
+	$numCountries = count($descriptor['common_name']);
+	$statTables = array();
+	
+	if (!IsSanitaryCountryList($countryIDs))
+	{
+		ThrowFatalError("Input is unsanitary: countryIDs");
+	}
+	
+	$countryIDList = explode(",", $countryIDs);
+	
+	// validate each countryID
+	foreach ($countryIDList as $countryID)
+	{
+		if (!IsValidCountryID($countryID, $numCountries))
+		{
+			ThrowFatalError("Input is invalid: countryID (" . $countryID . ")");
+		}
+	}
+	
+	// put each stat table into an array, where its index is the id for that table
+	$statTablesQuery = "SELECT table_id, table_name FROM meta_stats";
+	$statTablesResults = $databaseConnection->query($statTablesQuery);
+	while ($statTablesRow = $statTablesResults->fetch_assoc())
+	{
+	    $statTables[$statTablesRow['table_id']] = $statTablesRow['table_name'];
+	}
+	
+	// get the queries for each country and stat
+	$countryDataQueries = GetCountryQueries($statTables, $countryIDList);
+	
+	// query the query for each country n stuff.
+	foreach($countryDataQueries as $statID => $query)
+	{
+		$countryDataResults = $databaseConnection->query($query);
+	    while ($countryDataRow = $countryDataResults->fetch_array(MYSQLI_NUM))
+	    {
+	    	$countryID = $countryDataRow[0];
+	    	$byCountryArray[$countryID][$statID] = array_slice($countryDataRow, 1);
+	    }	
+	}
+	
+	
+	return $byCountryArray;
+}
 
 
 function Descriptor()
@@ -110,6 +159,12 @@ function IsSanitaryStatID($statID)
     return preg_match("/^\d+$/", $statID) === 1;
 }
 
+function IsSanitaryCountryList($countryList)
+{
+	// This matches exclusively 1 or more groups of comma delimited digits.
+	return preg_match("/^\d+(,\d+)*$/", $countryList) === 1;
+}
+
 function IsValidYear($year, $yearRange)
 {
     return ($year >= $yearRange[0] && $year <= $yearRange[1]);
@@ -118,10 +173,17 @@ function IsValidYear($year, $yearRange)
 function IsValidStatID($statID, $numStats)
 {
 	//As stats are numbered starting at one, the count of the array is equal to the highest value stat.
-	//Check !=0 as sanitary assures us a positive integer, we need to remove 0 as well.
-    return($statID<=$numStats && $statID!=0);
-   
-} 
+	//Check >0 and <= the number of stats as a stat id can't be less than 1 or more than the number of stats
+    return($statID <= $numStats && $statID > 0);
+}
+
+function IsValidCountryID($countryID, $numCountries)
+{
+	//As countries are numbered starting at one, the count of the array is equal to the highest value country.
+	//Check > 0 and <= the number of countries as a country id can't be less than 1, or more than the number of
+	//countries
+    return($countryID <= $numCountries && $countryID > 0);
+}
  
  
 // Author:        William Bittner, Drew Lopreiato, Berty Ruan, Dylan Fetch
@@ -191,5 +253,32 @@ function GetYearRange($database, $table)
 	
 	return $yearRange;
 } //END GetYearRange
+
+// Returns an array of queries given a set of tables to be queried, and the countries to be queried
+// $tableNames must be in format: tableID => tableName
+// $countries must be an array of integers
+function GetCountryQueries($tableNames, $countries)
+{
+    $returnValue = array();
+    // iterate through each table name
+    foreach ($tableNames as $tableID => $tableName) 
+    {
+        $getDataQuery = "SELECT * FROM " . $tableName . " WHERE";
+        $firstOne=true;
+        // iterate through each country identifier
+        foreach ($countries as $countryID) 
+        {
+            if(!$firstOne)
+            {
+                $getDataQuery.= " OR";
+            }
+            
+            $getDataQuery.= " country_id=" . $countryID;
+            $firstOne=false;
+        }
+        $returnValue[$tableID] = $getDataQuery;
+    }
+    return $returnValue;
+} // END getCountryQueries
 
 ?>

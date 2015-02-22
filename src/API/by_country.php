@@ -1,4 +1,16 @@
 <?php
+/* File Name:           by_country.php
+ * Description:         This file gets all of the stats for a list of of the given countries.
+ * 
+ * Date Created:        2/22/2015
+ * Contributors:        Drew Lopreiato, Will Bittner, Arun Kumar, Dylan Fetch
+ * Date Last Modified:  2/22/2015
+ * Last Modified By:    Drew Lopreiato 
+ * Dependencies:        api_library.php
+ * Input:               NONE
+ * Output:              Formatted JSON String containing the statistics of the countries
+ */
+
 require_once("api_library.php");
 
 if (!isset($_GET['countryIDs']))
@@ -6,73 +18,11 @@ if (!isset($_GET['countryIDs']))
 	ThrowFatalError("Input is not defined: countryIDs");
 }
 
-$byCountryArray
+$byCountryArray = ByCountry($_GET['countryIDs']);
 
-/*
-$databaseConnection = GetDatabaseConnection();
+//encode results of ByCountry into json
+$byCountry = json_encode($byCountryArray);
 
-$returningJson = array();
-
-if (!isset($_GET['countryIDs'])) 
-{
-    ThrowFatalError("Input not defined.");
-}
-
-if (preg_match("/^\d+(,\d+)*$/", $_GET['countryIDs']) === 0)
-{
-    ThrowFatalError("Invalid input.");
-}
-
-// TODO: VALIDATE countryIDs
-
-$countryIDList = explode(",", $_GET['countryIDs']);
-
-$statTables = array();
-$getStatTablesQuery = "SELECT stat_id, stat_table FROM info_stats";
-$getStatTablesResults = $databaseConnection->query($getStatTablesQuery);
-while ($row = $getStatTablesResults->fetch_assoc())
-{
-    $statTables[$row['stat_id']] = $row['stat_table'];
-}
-
-$countryDataQueries = getCountryQueries($statTables, $countryIDList);
-foreach($countryDataQueries as $stat_id => $query)
-{
-	$getCountryDataResults = $databaseConnection->query($query);
-    while ($row = $getCountryDataResults->fetch_array(MYSQLI_NUM))
-    {
-    	$countryID = $row[0];
-    	$returningJson[$countryID][$stat_id] = array_slice($row, 1);
-    }	
-}
-
-echo json_encode($returningJson);
-
-//*/
-// Returns an array of queries given a set of tables to be queried, and the countries to be queried
-// $tableNames must be in format: tableID => tableName
-// $countries must be an array of integers
-/*function getCountryQueries($tableNames, $countries)
-{
-    $returnValue = array();
-    // iterate through each table name
-    foreach ($tableNames as $tableID => $tableName) 
-    {
-        $getDataQuery = "SELECT * FROM " . $tableName . " WHERE";
-        $firstOne=true;
-        // iterate through each country identifier
-        foreach ($countries as $countryID) 
-        {
-            if(!$firstOne)
-            {
-                $getDataQuery.= " OR";
-            }
-            
-            $getDataQuery.= " country_id=" . $countryID;
-            $firstOne=false;
-        }
-        $returnValue[$tableID] = $getDataQuery;
-    }
-    return $returnValue;
-} // END getCountryQueries*/
+// return byCountry json string
+echo $byCountry;
 ?>
