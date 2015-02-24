@@ -14,6 +14,11 @@
  */
 require_once("api_library.php");
 
+// enable foreign access in testing
+if (TESTING)
+{
+	header("Access-Control-Allow-Origin: *");
+}
 
 if(!isset($_GET['statID']))
 {

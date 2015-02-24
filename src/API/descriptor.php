@@ -17,6 +17,12 @@
 
 require_once("api_library.php");
 
+// enable foreign access in testing
+if (TESTING)
+{
+	header("Access-Control-Allow-Origin: *");
+}
+
 $descriptorArray = Descriptor();
 
 //encode results of Descriptor() into json
