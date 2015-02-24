@@ -1,6 +1,6 @@
 #Front End Architecture Document
 
-#####Introduction to the Front End
+###Introduction to the Front End
 
 The goal of our front end is to meet the needs of the user in interacting with data stored on the server. The user's must be able to select a country or region, and display relevant data pulled from the server. We accomplish this by building a webpage in HTML5, using Google Charts API, and JSVectorMap.
 
@@ -10,7 +10,7 @@ Google Charts API was chosen primarily because it includes the features we need,
 
 JSVectorMap was chosen based on available online demos, in which we observed that it included many user oriented features that would allow us to more easily and more efficiently implement a high quality user interface.
 
-#####Requirements
+###Requirements
 
 The front end must:
 
@@ -28,7 +28,7 @@ Necessary data:
  * Estimated Measles Cases
  * Estimated Mortality Rate
 
-#####Features of the Main Page
+###Features of the Main Page
 
 The Main Page includes:
  1. A map of the world. This map is colored according to the current state of a selected stat, from green to blue to yellow. In other words, each country is heat mapped based on the value of this stat. By default, the stat is Estimated Measles Mortality.
@@ -36,7 +36,7 @@ The Main Page includes:
  3. A settings menu. This includes a toggle for turning on and off upper and lower bounds on stats that include them, as well as toggles for showing each stat. This menu also includes a seek bar for manipulating the timespan shown, and a selection for which stat is represented on the heat map.
  4. Graphs of all stats selected within the specified timespan. By default, the timespan is 1980 to present, and the stats shown are (TBD).
 
-#####Local Data Setup
+###Local Data Setup
 
 The Front End stores data in four separate parts:
  1. The Lookup Table
@@ -72,7 +72,7 @@ Queried CIDs is a 1D array that includes the last queried CIDs, to be used by th
 
 Settings is a masked int, for which each bit represents one of the toggles in the settings menu.
 
-#####Files
+###Files
 
 **index.html**
 
@@ -92,7 +92,7 @@ map.js is a JavaScript module that generates a map on an HTML5 canvas. The map t
 
 **data_query.js**
 
-data_query.js is a JavaScript module that takes a comma delimited list of CC2 codes, and finds the corresponding CIDs, then creates an array of the name values, and queries the server using a comma delimited list of CIDs. The array of names is then sent to graphs.js in order to create a legend for the graphs shown (the names are in the order of the enumerated country/region data structure).
+data_query.js is a JavaScript module that takes a comma delimited list of CC2 codes, and finds the corresponding CIDs, then creates an array of the name values, and queries the server using a comma delimited list of CIDs. The array of names is then sent to graphs.js in order to create a legend for the graphs shown (the names are in the order of the enumerated country/region data structure). The received data from the server is outputted to the parser module.
 
 **parser.js**
 
@@ -102,7 +102,7 @@ parser.js is a JavaScript module that takes a JSON object that is composed of co
 
 graphs.js is a JavaScript module that takes the output of data_query.js (only array of names), parser.js, and settings.js, and generates graphs in the HTML5 canvas on the right side of index.html. The graphs are generated based on which stats are desired, which timespan is desired (both from settings.js), and what data is available. Bounds are only shown if one country is selected. The graphs are generated using Google Charts API.
 
-#####Front End Execution Timeline
+###Front End Execution Timeline
 
 **The Loading Screen:** Execution begins at the time when the user opens the page. The first image displayed is a loading screen, including logos for Stateware, the project, and the Ferrari Lab. The page also includes some animation to indicate loading, which changes to a button marked "Begin" when all loading is finished.
 
