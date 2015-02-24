@@ -1,3 +1,14 @@
+/* 
+	 File Name:               loadingScreen.css
+     Description:             Style sheet for the loading screen
+     Date Created:            2/19/2015
+     Contributors:            Emma Roudabush
+     Date Last Modified:      2/23/2015
+     Last Modified By:        Emma Roudabush
+     Dependencies:            loadingScreen.html, loadingScreen.js
+     Additional Notes:        N/A
+*/
+
 .spinner {
     margin: 100px auto 0;
     width: 70px;
