@@ -1,37 +1,118 @@
+/* 
+    File Name:               style.css
+    Description:             Style sheet for the loading screen and main page
+    Date Created:            2/19/2015
+    Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts
+    Date Last Modified:      2/24/2015
+    Last Modified By:        Joshua Crafts
+    Dependencies:            none
+    Additional Notes:        N/A
+*/
 
 #search {
-	height:20vh;
-	width:60%;
-	text-align:center;
-	overflow:auto;
-	background-color:red;
-	
+    height:20vh;
+    width:60%;
+    text-align:center;
+    overflow:auto;
+    background-color:red;
 }
 
 section {
-	height:70vh;
-	width:60%;
-	float:left;
-	overflow:auto;
-    	background-color:grey;
-
+    height:70vh;
+    width:60%;
+    float:left;
+    overflow:auto;
+    background-color:grey;
 }
 
 aside {
-	height:90vh;
-	width:40%;
-	overflow:auto;
-	background-color:black;
-	color:white;
-	float:right;
+    height:90vh;
+    width:40%;
+    overflow:auto;
+    background-color:black;
+    color:white;
+    float:right;
 }
 
 footer {
-	height:5vh;
-	width:100%;
-	clear:both;
-	text-align:center;
-	overflow:auto;
-	background-color:red;
+    height:5vh;
+    width:100%;
+    clear:both;
+    text-align:center;
+    overflow:auto;
+    background-color:red;
 }
 
+.spinner {
+    margin: 100px auto 0;
+    width: 70px;
+    text-align: center;
+}
+
+.spinner > div {
+    width: 18px;
+    height: 18px;
+    background-color: rgb(84, 130, 53);
+    border-radius: 100%;
+    display: inline-block;
+    -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+    animation: bouncedelay 1.4s infinite ease-in-out;
+    /* Prevent first frame from flickering when animation starts */
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+.spinner .bounce1 {
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
+}
+
+@-webkit-keyframes bouncedelay {
+    0%, 80%, 100% {
+        -webkit-transform: scale(0.0)
+    }
+    40% {
+        -webkit-transform: scale(1.0)
+    }
+}
+
+@keyframes bouncedelay {
+    0%, 80%, 100% {
+        transform: scale(0.0);
+        -webkit-transform: scale(0.0);
+    }
+    40% {
+        transform: scale(1.0);
+        -webkit-transform: scale(1.0);
+    }
+}
+
+body {
+    background-color:rgb(217, 237, 255);
+}
+
+.pacifico {
+    color:rgb(255, 184, 153);
+    font-family:"Pacifico", cursive;
+    font-size:100%;
+}
+
+.open_sans {
+    color:black;
+    font-family:'Open Sans Condensed', sans-serif;
+    font-size:100%;
+}
+
+button.begin {
+    background:none;
+    border:none;
+    color:rgb(84, 130, 53);
+    font-family:'Open Sans Condensed', sans-serif;
+    font-size: 30pt;
+    display: none;
+}
