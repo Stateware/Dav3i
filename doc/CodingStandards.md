@@ -33,6 +33,10 @@ All names must be descriptive and unambiguous, though short enough as to not imp
 
 All source code files and assets must be named with all lowercase letters, with underscores to separate words. (e.g. `example.c`, `employee_timecard.h`, `estimated_incidence.csv`, `sponsor_logos.png`)
 
+#####Documentation File Names:
+
+All documentation files must be be named with capital letters to begin words, o.w. lowercase, without underscores. (e.g. `FrontEndArchitecture.md`, `FrontEndBlockDiagram.pdf`)
+
 #####Function Names:
 
 Function names must be named with capital letters to begin words, o.w. lowercase, without underscores. (e.g. `MyFunction()`, `FooBar()`, `GetName()`, `IsVerified()`)
