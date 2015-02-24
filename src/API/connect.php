@@ -14,6 +14,7 @@
 require_once("toolbox.php");
 
 
+//Post: A database connection has been created and returned
 function GetDatabaseConnection()
 {
     $databaseConnection = new mysqli(HOST, USER, PASSWORD, PEACHTREE);
