@@ -72,6 +72,36 @@ Queried CIDs is a 1D array that includes the last queried CIDs, to be used by th
 
 Settings is a masked int, for which each bit represents one of the toggles in the settings menu.
 
+#####Files
+
+**index.html**
+
+index.html is the markup for the main page, including a loading screen, an HTML5 canvas that shows the map, another that shows the graphs, and a div that includes the search bar and settings menu. The layout of this page is roughly outlined in FrontEndMockup.png.
+
+**lookup_table.js**
+
+lookup_table.js is a JavaScript module that queries the server for descriptor.php, as well as for the default heat mapped stat (by_stat.php), and composes a lookup table as defined above.
+
+**settings.js**
+
+settings.js is a JavaScript module that takes user mouse clicks as input to a list of checkboxes (toggle bounds for trends that include them, toggle for showing each stat) and to a 2 ended slider that defines the desired timespan. The output is an array of booleans for each of the checkboxes, as well as 2 ints for the beginning and ending timespan.
+
+**map.js**
+
+map.js is a JavaScript module that generates a map on an HTML5 canvas. The map takes input from the lookup table's heat mapped stat to color each country (green to yellow to red), and also takes user input in the form of mouse clicks or search inputs. It outputs comma delimited lists of CC2 codes, based on which countries are selected. The map is created using JSVectorMap.
+
+**data_query.js**
+
+data_query.js is a JavaScript module that takes a comma delimited list of CC2 codes, and finds the corresponding CIDs, then creates an array of the name values, and queries the server using a comma delimited list of CIDs. The array of names is then sent to graphs.js in order to create a legend for the graphs shown (the names are in the order of the enumerated country/region data structure).
+
+**parser.js**
+
+parser.js is a JavaScript module that takes a JSON object that is composed of concatenated data for the list of countries queried, and outputs that data in the data structure outlined above.
+
+**graphs.js**
+
+graphs.js is a JavaScript module that takes the output of data_query.js (only array of names), parser.js, and settings.js, and generates graphs in the HTML5 canvas on the right side of index.html. The graphs are generated based on which stats are desired, which timespan is desired (both from settings.js), and what data is available. Bounds are only shown if one country is selected. The graphs are generated using Google Charts API.
+
 #####Front End Execution Timeline
 
 **The Loading Screen:** Execution begins at the time when the user opens the page. The first image displayed is a loading screen, including logos for Stateware, the project, and the Ferrari Lab. The page also includes some animation to indicate loading, which changes to a button marked "Begin" when all loading is finished.
