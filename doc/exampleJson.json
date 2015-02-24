@@ -11,7 +11,7 @@ var Descriptor =
         "MX",
         "HU"
     },
-    "countryName" : 
+    "common_name" : 
     {
         "United States of America",
         "Mexico",

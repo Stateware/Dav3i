@@ -35,8 +35,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="index.html" />
+    <Content Include="parser_markup.html" />
     <Content Include="parser.js" />
+    <Content Include="parserTest.js" />
+    <Content Include="pTester.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
