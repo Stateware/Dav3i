@@ -78,9 +78,17 @@ Settings is a masked int, for which each bit represents one of the toggles in th
 
 index.html is the markup for the main page, including a loading screen, an HTML5 canvas that shows the map, another that shows the graphs, and a div that includes the search bar and settings menu. The layout of this page is roughly outlined in FrontEndMockup.png.
 
+**style.css**
+
+style.css includes style for main page and loading screen.
+
 **lookup_table.js**
 
 lookup_table.js is a JavaScript module that queries the server for descriptor.php, as well as for the default heat mapped stat (by_stat.php), and composes a lookup table as defined above.
+
+**loading_script.js**
+
+loading_script.js is a container module that runs during the loading screen. It runs functions from lookup_table.js (gets descriptor.php and default stat from by_stat.php) and map.js (to generate map from default HMS). The loading script gets and composes the lookup table, and generates the map in the HTML5 canvas in the main page markup.
 
 **settings.js**
 
@@ -96,7 +104,7 @@ data_query.js is a JavaScript module that takes a comma delimited list of CC2 co
 
 **parser.js**
 
-parser.js is a JavaScript module that takes a JSON object that is composed of concatenated data for the list of countries queried, and outputs that data in the data structure outlined above.
+parser.js is a JavaScript module that takes a JSON object that is composed of concatenated data for the list of countries queried, as well as an array of CIDs with which to manually order the output, and outputs that data in the data structure outlined above.
 
 **graphs.js**
 
