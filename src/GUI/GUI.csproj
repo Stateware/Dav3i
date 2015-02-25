@@ -35,6 +35,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="index.css" />
+    <Content Include="index.html" />
+    <Content Include="loading_screen.css" />
+    <Content Include="loading_screen.html" />
+    <Content Include="loading_screen.js" />
     <Content Include="parser_markup.html" />
     <Content Include="parser.js" />
     <Content Include="parserTest.js" />
