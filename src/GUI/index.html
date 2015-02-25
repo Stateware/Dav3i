@@ -1,28 +1,61 @@
+<!-- File Name:               loadingScreen.html
+     Description:             Loading Screen for program
+     Date Created:            2/19/2015
+     Contributors:            Emma Roudabush, Vanajam Soni
+     Date Last Modified:      2/24/2015
+     Last Modified By:        Emma Roudabush
+     Dependencies:            style.css, loading_screen.js
+     Additional Notes:        N/A
+-->
+
 <!DOCTYPE html>
 <html>
 
 <head>
-	<link rel="stylesheet" type="text/css" href="index.css">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script type="text/javascript" src="loading_screen.js"></script>
 </head>
 
 <body>
 
+	<div id="loadingScreen" class="loadingScreen">
+		<center>
+			<img src="http://i300.photobucket.com/albums/nn14/Emma_Roudabush/peachtreelogov3_zpsmw4bcftb.png" border="0" alt="peachtreeLogo" width = 250px height = 300px/>
+			<h1><span class = "open_sans"> Project </span><span class = "pacifico">Peachtree</span></h1>
+			<div class="spinner">
+				<div class="bounce1"></div>
+				<div class="bounce2"></div>
+				<div class="bounce3"></div>
+			</div>
+			<button onclick="switchToMain()" class = "begin">Begin</button>
+		</center>
+	</div>
+
 	<section id="search">
-		<h1>Search and settings</h1>
+		<center>
+		<h1>Search and Settings</h1>
+		</center>
 	</section>
 	
 	<aside id = "graph">
+		<center>
 		<h1>Graph</h1>
+		</center>
 	</aside>
 	
 	<section id = "map">
+		<center>
 		<h1>Map</h1>
+		</center>
 	</section>
 	
-	
-	
 	<footer id = "footer">
+		<center>
 		<h3>Footer</h3>
+		</center>
 	</footer>
 
 </body>

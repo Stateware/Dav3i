@@ -14,7 +14,8 @@
     width:60%;
     text-align:center;
     overflow:auto;
-    background-color:red;
+    background-color:rgb(255, 184, 153);
+	display: none;
 }
 
 section {
@@ -23,15 +24,17 @@ section {
     float:left;
     overflow:auto;
     background-color:grey;
+	display: none;
 }
 
 aside {
     height:90vh;
     width:40%;
     overflow:auto;
-    background-color:black;
+    background-color:rgb(84, 130, 53);
     color:white;
     float:right;
+	display: none;
 }
 
 footer {
@@ -40,7 +43,8 @@ footer {
     clear:both;
     text-align:center;
     overflow:auto;
-    background-color:red;
+    background-color:none;
+	display: none;
 }
 
 .spinner {
@@ -94,6 +98,15 @@ footer {
 
 body {
     background-color:rgb(217, 237, 255);
+	/*background-color:rgb(117, 181, 217);*/
+}
+
+h1{
+	font-family:'Open Sans Condensed', sans-serif;
+}
+
+h3{
+	font-family:'Open Sans Condensed', sans-serif;
 }
 
 .pacifico {
