@@ -38,5 +38,5 @@ function switchToMain ()
 	$("footer").show();
 	$("aside").show();
 	$("#search").show();
-	$("section").show();
+	$("section").show().resize();
 }
