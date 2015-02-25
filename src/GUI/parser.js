@@ -2,15 +2,15 @@
 // Description:             Parses JSON, in the format of {stat,country/bound,data}, into a 3D array, to be
 //                          used by the graphs
 // Date Created:            2/12/2015
-// Contributors:            Nicholas Denaro
-// Date Last Modified:      2/19/2015
+// Contributors:            Nicholas Denaro, Vanajam Soni, Paul Jang
+// Date Last Modified:      2/24/2015
 // Last Modified By:        Nicholas Denaro
 // Dependencies:            None
 // Additional Notes:        N/A
 
 // Author:          Nicholas Denaro
 // Date Created:    2/12/15
-// Last Modified:   2/17/15 by Nicholas Denaro
+// Last Modified:   2/24/15 by Nicholas Denaro
 // Description:     Parses the object that is passed in and returns data array.
 //                  Input: json - Assumed to be in the proper format, but checked later in function, and sets a flag
 //                                if the JSON is invalid
@@ -47,9 +47,9 @@ function ParseData(json,cids)
 
 // Author:          Nicholas Denaro
 // Date Created:    2/12/15
-// Last Modified:   2/17/15 by Nicholas Denaro
-// Description:     Passes fake data from the textfield, jsonInput, into the parser and outputs the result into
-//                  the textfield, dataOutput.
+// Last Modified:   2/24/15 by Nicholas Denaro
+// Description:     Passes fake data from the textfields, jsonInput and arrayInput, into the parser and outputs the
+//                  result into the textfield, dataOutput.
 //                  Input: N/A
 //                  Output: N/A
 function ParseFakeData()
@@ -74,8 +74,9 @@ function ParseFakeData()
     //{"1":{"1":[1,2,3]}}
 
     var data = JSON.parse(document.getElementById("jsonInput").value);
+    var array = JSON.parse(document.getElementById("arrayInput").value);
 
-    var retval = ParseData(data, [86, 34, 57]);
+    var retval = ParseData(data, array);
 
     document.getElementById("dataOutput").value = JSON.stringify(retval, "\n", 4);
 }
