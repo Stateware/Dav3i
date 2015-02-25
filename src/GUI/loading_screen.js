@@ -3,7 +3,7 @@
 // Date Created:            2/19/2015
 // Contributors:            Emma Roudabush
 // Date Last Modified:      2/23/2015
-// Last Modified By:        Emma Roudabush
+// Last Modified By:        Vanajam Soni
 // Dependencies:            index.html, style.css
 // Additional Notes:        N/A
 
