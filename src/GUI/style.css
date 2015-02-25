@@ -16,6 +16,7 @@
     overflow:auto;
     background-color:rgb(255, 184, 153);
 	display: none;
+	border-radius: 25px;
 }
 
 section {
@@ -25,6 +26,7 @@ section {
     overflow:auto;
     background-color:grey;
 	display: none;
+	border-radius: 25px;
 }
 
 aside {
@@ -35,6 +37,7 @@ aside {
     color:white;
     float:right;
 	display: none;
+	border-radius: 25px;
 }
 
 footer {
@@ -45,6 +48,7 @@ footer {
     overflow:auto;
     background-color:none;
 	display: none;
+	overflow-y: hidden;
 }
 
 .spinner {
