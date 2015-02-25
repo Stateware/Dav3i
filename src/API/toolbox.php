@@ -10,7 +10,9 @@
  * Input:               none
  * Output:              none
  */ 
-	 
+
+//change to TRUE if testing so the ThrowFatalError doesn't kill the page
+define("TESTING", FALSE);
 	 
 // ===================== Function Definitions =====================	 
 //OUTPUT: This function will cause the program to close itself after echoing an error message.
@@ -18,7 +20,10 @@
 function ThrowFatalError($message = "An Error has occured.") 
 {
     echo "{\"error\" : \"" . $message . "\"}";
-    die();
+    if(!TESTING)
+	{
+		die();
+	}
 } // END ThrowFatalError
 
 
