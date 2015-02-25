@@ -8,7 +8,7 @@ HTML5 was chosen based on its portability, and ease of use in implementing compl
 
 Google Charts API was chosen primarily because it includes the features we need, and showed a clear performance advantage over other APIs considered in quickly generating high quality graphs. In addition, it is free to use under the GPL, and ostensibly seemed to have a low learning curve for our engineers.
 
-JSVectorMap was chosen based on available online demos, in which we observed that it included many user oriented features that would allow us to more easily and more efficiently implement a high quality user interface.
+jVectorMap was chosen based on available online demos, in which we observed that it included many user oriented features that would allow us to more easily and more efficiently implement a high quality user interface.
 
 ###Requirements
 
@@ -96,7 +96,7 @@ settings.js is a JavaScript module that takes user mouse clicks as input to a li
 
 **map.js**
 
-map.js is a JavaScript module that generates a map on an HTML5 canvas. The map takes input from the lookup table's heat mapped stat to color each country (green to yellow to red), and also takes user input in the form of mouse clicks or search inputs. It outputs comma delimited lists of CC2 codes, based on which countries are selected. The map is created using JSVectorMap.
+map.js is a JavaScript module that generates a map on an HTML5 canvas. The map takes input from the lookup table's heat mapped stat to color each country (green to yellow to red), and also takes user input in the form of mouse clicks or search inputs. It outputs comma delimited lists of CC2 codes, based on which countries are selected. The map is created using jVectorMap.
 
 **data_query.js**
 
