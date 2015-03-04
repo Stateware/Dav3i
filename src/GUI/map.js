@@ -8,30 +8,52 @@
 // Additional Notes:        N/A
 
 
-$(function(){
-	var map = new jvm.Map({
+// Author: Vanajam Soni
+// Date Created: 3/4/2015
+// Last Modified: 3/4/2015 by Vanajam Soni
+// Description: This function initializes the map, fills up the textarea 'cc2_
+// 				selected' with the list of selected regions and clears the map
+//				on the click of button "clear"
+// PRE: index.html and div with id "map" exist 
+// POST: The map is initialized in the div "map"
+$(function()
+{
+	var map = new jvm.Map(
+	{
 		container: $('#map'),
 		regionsSelectable: true,
-		regionStyle: {
-			initial: {
+		
+		// colors for selected and non-selected regions
+		regionStyle: 
+		{
+			initial: 
+			{
 				fill: '#FFFFFF'
 			},
-			selected: {
+			selected: 
+			{
 				fill: '#F4A582'
 			}
 		},
 		
-		onRegionSelected: function(){
-			if (window.localStorage) {
+		onRegionSelected: function()
+		{
+			// Storing selected regions in the windows local cache
+			if (window.localStorage) 
+			{
 				window.localStorage.setItem(
 					'jvectormap-selected-regions',
 					JSON.stringify(map.getSelectedRegions())
 				);
 			}
+			
+			// Filling the textarea with list of regions selected 
 			document.getElementById('cc2_selected').value = JSON.stringify(map.getSelectedRegions());
 		},
-		onMarkerSelected: function(){
-			if (window.localStorage) {
+		onMarkerSelected: function()
+		{
+			if (window.localStorage) 
+			{
 				window.localStorage.setItem(
 					'jvectormap-selected-markers',
 					JSON.stringify(map.getSelectedMarkers())
@@ -39,10 +61,15 @@ $(function(){
 			}
 		}
 	});
+	
+	// in case of a refresh, setting selected regions to the list of regions in
+	// cache
 	map.setSelectedRegions( JSON.parse( window.localStorage.getItem('jvectormap-selected-regions') || '[]' ) );
 	map.setSelectedMarkers( JSON.parse( window.localStorage.getItem('jvectormap-selected-markers') || '[]' ) );
 	
-	document.getElementById("clear").onclick = function() {
+	// clearing selected regions when the "clear" button in clicked
+	document.getElementById("clear").onclick = function() 
+	{
 		map.clearSelectedRegions();
 	};
 
