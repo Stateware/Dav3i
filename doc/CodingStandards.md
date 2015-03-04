@@ -1,4 +1,41 @@
-#Approach to Coding
+__PHP File names__: Haskell Case (e.g. MyVar) because our API is structured such that the filenames for us are the function calls for front end.
+
+__PHP Variables__: Camel Case (e.g. myVar) as is typical variable naming convention.
+
+__MySQL Column Names__: Snake Case (my_var) so that its easy to differentiate between PHP variables and MySQL variables, as they typically have similar names.
+
+__File Form__:
+
+ * Documentation
+ ```php
+	/* File Name:           FILENAME
+	 * Description:         DESCRIPTION
+	 * 
+	 * Date Created:        DATE
+	 * Contributors:        CONTRIBUTORS
+	 * Date Last Modified:  DATE
+	 * Last Modified By:    MODIFIER
+	 * Dependencies:        DEPENDENCIES
+	 * Input:               GET : VARIABLES THROUGH GET
+	 *                      POST: VARIABLES THROUGH POST
+	 * Output:              OUTPUT
+	 */
+```
+ * Requireds
+```php
+// ===================== Variable Declaration =====================
+// ========== Error Checking and Variable Initialization ==========
+// ======================= Main Computation =======================
+// ===================== Function Definitions =====================
+```php
+
+__Other Notes__: Queries often require multiple variables. Let *x* be the data you're attempting to query. This is the
+necessary order in which the variables must be assigned.
+
+*$xQuery* should contain the string that is the query.
+*$xResults* should contain the results returned by the query
+*$xRow* should contain each row of the query
+*$x* should return the data#Approach to Coding
 
  * Always specify pre and post conditions in headers
  * Understand your logic and how your program gets from the precondition to the postcondition. You don't have to prove everything, but you have to be able to do it if you want to.
@@ -25,7 +62,7 @@
  * Optimize algorithms, not code. Code efficiency is rarely an issue; algorithmic complexity and ease of maintenance are.
  * All modules must have cyclomatic complexity (the number of unique paths through a module's execution) must be less than 7, though less than 5 is ideal.
  * Clear code is better than clever code. Don't introduce complexity for the sake of your ego, the engineers that maintain your code won't appreciate it as much as you do.
- * Comment FREQUENTLY and PRECISELY. Don’t be ambiguous, and be exact in detailing what your code is doing. Note that you do not want to repeat your code in the comments; instead, document design and implementation decisions, as well as high level function.
+ * Comment FREQUENTLY and PRECISELY. Donï¿½t be ambiguous, and be exact in detailing what your code is doing. Note that you do not want to repeat your code in the comments; instead, document design and implementation decisions, as well as high level function.
  * Refactor! Refactor! Refactor! Refactor! Refactor! Refactor!
 
 #Headers
@@ -122,25 +159,25 @@ For languages where adding newlines does not change the function of your code, k
 
 All block indents are to be done using 4 spaces. VS has an option to auto replace tabs with spaces, please use this. All blocks must be indented to the same place vertically; this organizes your code better for readability.
 
-#####“Magic” Numbers
+#####ï¿½Magicï¿½ Numbers
 
 Any constants used in your code should be named constants, never hardcoded values. This gives flexibility in changing these values easily, especially when they are used more than once.
 
 #####Loose Coupling
 
-Functions (or in the sense of a developed architecture, functional modules) must do one thing and do it well. Functions must take inputs, give outputs, and have good documentation for what these must be. Functions should run to at most a page or so, and more complex logic can be split up among multiple functions, giving the highest level function’s logic a number of easily understood function calls instead of complex logic.
+Functions (or in the sense of a developed architecture, functional modules) must do one thing and do it well. Functions must take inputs, give outputs, and have good documentation for what these must be. Functions should run to at most a page or so, and more complex logic can be split up among multiple functions, giving the highest level functionï¿½s logic a number of easily understood function calls instead of complex logic.
 
 #####Declaring Local Variables
 
-All local variables must be declared at the beginning of a given function, with an unambiguous description of the variable’s meaning in a comment on the same line.
+All local variables must be declared at the beginning of a given function, with an unambiguous description of the variableï¿½s meaning in a comment on the same line.
 
 #####Using Local Variables
 
-Try to consolidate references to variables as closely as you can. That is, if you reference a given variable `myVariable` at any given time, try to structure your logic in such a way that the next reference to `myVariable` doesn’t happen 40 lines later. This makes logic clearer, and gives less chance for unexpected behavior.
+Try to consolidate references to variables as closely as you can. That is, if you reference a given variable `myVariable` at any given time, try to structure your logic in such a way that the next reference to `myVariable` doesnï¿½t happen 40 lines later. This makes logic clearer, and gives less chance for unexpected behavior.
 
 #####Return Values
 
-When returning a value from a function, never use the same variable for multiple different purposes. That is, if a function normally returns an `int` variable, don’t use the same variable to return `-1` for failure. This complicates the purpose of a given variable, and unnecessarily adds complexity.
+When returning a value from a function, never use the same variable for multiple different purposes. That is, if a function normally returns an `int` variable, donï¿½t use the same variable to return `-1` for failure. This complicates the purpose of a given variable, and unnecessarily adds complexity.
 
 #####Using Floating Point Numbers
 
@@ -248,4 +285,41 @@ For now, JavaScript conventions are mostly covered under the general guidelines.
 
 ###PHP
 
-*PHP conventions to be added by backend team*
+__PHP File names__: Haskell Case (e.g. MyVar) because our API is structured such that the filenames for us are the function calls for front end.
+
+__PHP Variables__: Camel Case (e.g. myVar) as is typical variable naming convention.
+
+__MySQL Column Names__: Snake Case (my_var) so that its easy to differentiate between PHP variables and MySQL variables, as they typically have similar names.
+
+__File Form__:
+
+ * Documentation
+ ```php
+	/* File Name:           FILENAME
+	 * Description:         DESCRIPTION
+	 * 
+	 * Date Created:        DATE
+	 * Contributors:        CONTRIBUTORS
+	 * Date Last Modified:  DATE
+	 * Last Modified By:    MODIFIER
+	 * Dependencies:        DEPENDENCIES
+	 * Input:               GET : VARIABLES THROUGH GET
+	 *                      POST: VARIABLES THROUGH POST
+	 * Output:              OUTPUT
+	 */
+```
+ * Requireds
+```php
+// ===================== Variable Declaration =====================
+// ========== Error Checking and Variable Initialization ==========
+// ======================= Main Computation =======================
+// ===================== Function Definitions =====================
+```php
+
+__Other Notes__: Queries often require multiple variables. Let *x* be the data you're attempting to query. This is the
+necessary order in which the variables must be assigned.
+
+*$xQuery* should contain the string that is the query.
+*$xResults* should contain the results returned by the query
+*$xRow* should contain each row of the query
+*$x* should return the data
