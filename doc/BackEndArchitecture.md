@@ -3,20 +3,8 @@
 
 #####Introduction to the back end
 
-The back end is a web server which will serve up the HTML5 and data for the front end. The server will send the HTML5 when the domain is visited, and will send the data when the front end requests it.
-We decided to install a LAMP stack on our server. This choice was made for a few reasons, namely that it is what we are most familiar with and that we know its capabilities extend farther than our requirements for this project. We know that the LAMP stack is a time-tested standard for web servers.
+The back end is a web server which will serve up the HTML5 and data for the front end. The server will send the HTML5 when the domain is visited, and will send the data when the front end requests it. The server will use the LAMP stack(see design decisions section).
 
-#####What is a LAMP stack?
-
-The LAMP stack is made up of four components, each communicating with only one or two of the others, to create an assembly-line type system for outputting dynamic data to websites. 
-
-The L stands for Linux, which is quite self explanatory. Alternate versions of this architecture can of course substitute in other operating systems for the server, including WAMP for Windows. As the server we were provided with is a “bare-bones” Linux server, and as servers typically run Linux so they are not required to expend resources into additional things like GUI's, we have decided to stick with Linux. 
-
-The A stands for Apache. Apache is the tool we will be using to communicate with the Linux OS on the server. Essentially Apache is a sorting utility. Once the server receives a request, it will forward it to Apache who will decide where it should go next. If it just requires a pre-made static web page it will ship it out; however, if it finds different requests, such as things with PHP, it will forward them elsewhere to be dealt with, then when the page is returned to Apache it will return it to the server to be returned to the client. 
-
-The P stands for PHP. Although the acronym is LAMP, the next “machine” in our assembly line is PHP. PHP is how we will be giving variable data to the webpages. It is also how we will be accessing our database, which is the next and final step.
-
-The M stands for MySQL. This is our database. We have done the calculations and, unless this software will be in use for nearly a thousand more years, MySQL, with our configured tables described below, will most certainly be able to hold all of our data as well as providing a fast and easy way to return data to PHP. Another benefit of using PHP and MySQL is how well they mesh together, allowing for incredibly intuitive design and code.
 
 #####Requirements
 The server must
@@ -39,10 +27,72 @@ All tables will be linked via country id (CID).
 
 **data_?:** There will be an individual table for each different data statistic (e.g. deaths, births, vaccinations) for each different country. Each of these tables will have columns: CID and as many years columns as needed. This format was chosen to make it more efficient to grab all years of data from a single country by just grabbing a row of data. The other way of doing this would be to have three columns: CID, Year, and Value. This way would be considered the “correct” way, however would take a significantly longer time to query for mass quantities of yearly data. This way has the advantage of having a much greater amount of years, however, the chosen way of creating this table allows for a maximum of 1024 columns, hence 1023 years and it is inconceivable that this program will be used for longer than that span of time. 
 
-#####PHP Files
-#Needs more detail
+#####Format of Data Sent to Front End
+The data will be encoded in JSON(see design decisions section). This is what it will look like:
 
-**descriptor.php:** API call to get descriptor table, year range, and list of stats, takes no arguments
+
+	var Descriptor =
+	{
+    	"yearRange" : 
+    	{
+        	1980, 
+        	2014
+    	},
+    	"cc2" :
+    	{
+        	"US",
+        	"MX",
+        	"HU"
+    	},
+		"cc3" :
+        {
+			"USA",
+			"MEX",
+			"HUN"
+        },
+        }
+    	"common_name" : 
+    	{
+        	"United States of America",
+        	"Mexico",
+        	"Hungary"
+    	},
+    	"stats" : 
+    	{
+        	"births",
+        	"deaths",
+        	"vaccinations"
+    	}
+	};
+
+
+	var HeatMap =
+	{
+    	123,
+    	134534,
+    	123534647
+	}
+
+	var Data =
+	{
+    	1 :
+    	{
+        	1 : [ 1337, 1338 ],
+        	2 : [ 5, 1338 ],
+        	3 : [ 5, 1338 ]
+    	}, 
+    	2 : 
+    	{
+        	1 : [ 5, 1338 ],
+        	2 : [ 5, 1338 ],
+        	3 : [ 5, 1338 ]
+    	}
+	};
+
+#####PHP Files
+
+
+**descriptor.php:** API call to get descriptor table, year range, and list of stats, encodes data in arrays given by Descriptor library function into JSON, takes no arguments
 
 **by_country.php:** API call to get all data for a country or several countries, takes CountryID or comma delimited list of CountryID's
 
@@ -52,17 +102,38 @@ All tables will be linked via country id (CID).
 
 **toolbox.php** library of functions that are useful in multiple places within the back end
 
-**api_library.php** library of functions that do the calculations for all of the API calls
-
 **test_lib.php** library of unit tests for the functions within the back end
+
+**api_library.php** library of functions that do the calculations for all of the API calls, includes:
+* **ByStat** takes a statID and a year as arguments and returns the data of the input stat for all countries in the input year, if no input year is given it defaults to the current year
+* **ByCountry** takes a CountryID or comma delimited list of CountryID's and returns all data for the input countries
+* **Descriptor** takes no arguments and returns the year range, list of stats, list of cc2, cc3, and country names in the database currently
+
+
 
 
 
 #####Design Decisions
+
+**Server Software Decision**
+We decided to install a LAMP stack on our server. This choice was made for a few reasons, namely that it is what we are most familiar with and that we know its capabilities extend farther than our requirements for this project. We know that the LAMP stack is a time-tested standard for web servers.
+The LAMP stack is made up of four components, each communicating with only one or two of the others, to create an assembly-line type system for outputting dynamic data to websites. 
+
+* The **L** stands for Linux, which is quite self explanatory. Alternate versions of this architecture can of course substitute in other operating systems for the server, including WAMP for Windows. As the server we were provided with is a “bare-bones” Linux server, and as servers typically run Linux so they are not required to expend resources into additional things like GUI's, we have decided to stick with Linux. 
+
+* The **A** stands for Apache. Apache is the tool we will be using to communicate with the Linux OS on the server. Essentially Apache is a sorting utility. Once the server receives a request, it will forward it to Apache who will decide where it should go next. If it just requires a pre-made static web page it will ship it out; however, if it finds different requests, such as things with PHP, it will forward them elsewhere to be dealt with, then when the page is returned to Apache it will return it to the server to be returned to the client. 
+
+* The **P** stands for PHP. Although the acronym is LAMP, the next “machine” in our assembly line is PHP. PHP is how we will be giving variable data to the webpages. It is also how we will be accessing our database, which is the next and final step.
+
+* The **M** stands for MySQL. This is our database. We have done the calculations and, unless this software will be in use for nearly a thousand more years, MySQL, with our configured tables described below, will most certainly be able to hold all of our data as well as providing a fast and easy way to return data to PHP. Another benefit of using PHP and MySQL is how well they mesh together, allowing for incredibly intuitive design and code.
 
 **SQL vs NoSQL:** SQL offers a database management platform that is easy to learn and already known by several team members.  NoSQL offers increased functionality and expandability.  SQL will be used because of the relatively small scale of our back end.  It was ultimately decided that if there comes a time when the backend needs to be scaled up on a large scale that it can be replaced as a whole without affecting the front end, so the design decision can be revisited later.
 
 **Server Decision: PSU Server vs. Microsoft Azure vs. Server4You.com:** We ultimately decided on the Server4You server because it offered the flexibility of a plain virtual LAMP server at a reasonable monthly cost. The PSU server was only accessible via VPN to Penn State's network. Microsoft Azure would give us a dependence on Microsoft software that we did not want to create. With the Server4You server, we are able to pick up and move to a new server if necessary since it is just a plain LAMP server.
 
 **Moving Calculations Out of API Calls:** Originally, the API calls and functions were one and the same. We decided to move the calculations to functions that are called by API calls because we needed to call the calculations elsewhere. If the calculations were done in the API calls, then when the calculations were needed in other functions as well, the data would be sent to the front end as well as used within the back end.
+
+**JSON:** Javascript Object Notation is easy for humans to read and easy for computers to parse. It is just notation, so a format that is agreed upon between the front and back end so that data transfer is simplified. One of the team members had experience with JSON that he was able to pass on to the rest of the team.
+
+**Using 1 as the First Index for data:** SQL is indexed starting at one, so it would be a lot more work to shift all of the data we are pulling from the database than to eliminate the first index of PHP arrays.
 
