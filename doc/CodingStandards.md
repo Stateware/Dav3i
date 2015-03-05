@@ -1,41 +1,4 @@
-__PHP File names__: Haskell Case (e.g. MyVar) because our API is structured such that the filenames for us are the function calls for front end.
-
-__PHP Variables__: Camel Case (e.g. myVar) as is typical variable naming convention.
-
-__MySQL Column Names__: Snake Case (my_var) so that its easy to differentiate between PHP variables and MySQL variables, as they typically have similar names.
-
-__File Form__:
-
- * Documentation
- ```php
-	/* File Name:           FILENAME
-	 * Description:         DESCRIPTION
-	 * 
-	 * Date Created:        DATE
-	 * Contributors:        CONTRIBUTORS
-	 * Date Last Modified:  DATE
-	 * Last Modified By:    MODIFIER
-	 * Dependencies:        DEPENDENCIES
-	 * Input:               GET : VARIABLES THROUGH GET
-	 *                      POST: VARIABLES THROUGH POST
-	 * Output:              OUTPUT
-	 */
-```
- * Requireds
-```php
-// ===================== Variable Declaration =====================
-// ========== Error Checking and Variable Initialization ==========
-// ======================= Main Computation =======================
-// ===================== Function Definitions =====================
-```php
-
-__Other Notes__: Queries often require multiple variables. Let *x* be the data you're attempting to query. This is the
-necessary order in which the variables must be assigned.
-
-*$xQuery* should contain the string that is the query.
-*$xResults* should contain the results returned by the query
-*$xRow* should contain each row of the query
-*$x* should return the data#Approach to Coding
+﻿#Approach to Coding
 
  * Always specify pre and post conditions in headers
  * Understand your logic and how your program gets from the precondition to the postcondition. You don't have to prove everything, but you have to be able to do it if you want to.
@@ -159,7 +122,7 @@ For languages where adding newlines does not change the function of your code, k
 
 All block indents are to be done using 4 spaces. VS has an option to auto replace tabs with spaces, please use this. All blocks must be indented to the same place vertically; this organizes your code better for readability.
 
-#####�Magic� Numbers
+#####"Magic" Numbers
 
 Any constants used in your code should be named constants, never hardcoded values. This gives flexibility in changing these values easily, especially when they are used more than once.
 
@@ -217,8 +180,6 @@ All tags must be written fully in lowercase. *Always* close tags. Open and close
 
 #####Alt Tags
 
-
-
 When using images, *always* include alt tags.
 
 #####ID and Class Names
@@ -249,13 +210,9 @@ Further, if you want to apply a shared style to a group of elements, which has a
 
 #####CSS Selectors
 
-
-
 While selectors like the ones defined above are okay, it's much better for both performance and readability if you only have to specify 3 or less levels. That is, we never want to write a selector like  
 
 `.content .featured .video .classes-on-classes .we-need-to-go-deeper { style }`
-
-
 
 To avoid this, write more specific classes for lower nested elements, or try to eliminate redundancy in your selector. If you must write a class for one element, this is preferable to using an ID in most cases.
 
@@ -274,8 +231,6 @@ Comment where appropriate in HTML. If you're calling a script, describe the beha
 In CSS, comment *every* style block with a note on where the style is applied. You shouldn't have to look at the HTML to find where a particular element or class is to understand where the style is being applied. The stylesheet should be a self-contained reference. Comment with that in mind.
 
 #####Don't Forget What You (or another team member) Wrote
-
-
 
 When writing CSS, it's incredibly easy to break everything and incredibly difficult to compartmentalize damage. Version control is nice for this, but that too involves a lot of work and a lot of parsing the backlog. Be as proactive as possible, and be aware of what's already written, so that you can avoid breaking other styles or selectors as you add code.
 
