@@ -55,6 +55,8 @@ function ByStat($statID, $year)
 	   ThrowFatalError("Input is invalid: statID");
 	}
 	
+	// The statID given to us is expected to be indexed by 0, however our database is indexed by 1, so we'll add 1
+	$statID++;
 	
 	// Retrieve the table name of the inputted stat ID.
 	$tableName = GetFirstRowFromColumn($databaseConnection, "meta_stats", "table_name", "table_id = $statID");
@@ -93,6 +95,12 @@ function ByCountry($countryIDs)
 		}
 	}
 	
+	// The countryIDs given to us is expected to be indexed by 0, however our database is indexed by 1, so we add 1
+	foreach ($countryIDList as $countryID)
+	{
+		$countryID++;
+	}
+
 	// put each stat table into an array, where its index is the id for that table
 	$statTablesQuery = "SELECT table_id, table_name FROM meta_stats";
 	$statTablesResults = $databaseConnection->query($statTablesQuery);
