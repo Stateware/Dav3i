@@ -19,26 +19,29 @@ function CreateLookupTable ()
 
 function GetDescriptor ()
 {
-	g_DescriptorJSON = $.ajax({                                      
+	$.ajax({                                      
 		type: 'post',
 		url: 'http://usve74985.serverprofi24.com/API/descriptor.php',                                                     
 		dataType: 'JSON',                     
 		success: function(data){     
 			console.log("Successfully received descriptor.php");
 			console.log(JSON.stringify(data));
+			g_DescriptorJSON = data; 
 		} 
 	});  
 }
 
 function GetHMS ()
 {
+	
 }
 
 function GenerateLookupTable ()
 {
+	
 }
 
 function GenerateStatReferenceList()
 {
-
+	
 }
