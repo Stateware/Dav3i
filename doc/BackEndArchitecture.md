@@ -89,6 +89,15 @@ The data will be encoded in JSON(see design decisions section). This is what it 
     	}
 	};
 
+	
+#####Syntax for API Calls
+**descriptor.php** url/API/descriptor.php
+**by_stat.php** url/API/by_stat.php?statID=x&year=y
+x must be a single valid statID, y must be a single valid year, if no year is given the current year is used as default
+**by_country.php** url/API/by_country.php?countryID=z
+z must be a single valid countryID or a comma delimited list of countryID's
+
+
 #####PHP Files
 
 
@@ -100,7 +109,7 @@ The data will be encoded in JSON(see design decisions section). This is what it 
 
 **connect.php** establishes a connection to the MySQL database, takes no arguments
 
-**toolbox.php** library of functions that are useful in multiple places within the back end
+**toolbox.php** library of functions and global variables that are useful in multiple places within the back end, when the global variable TESTING is set to TRUE ThrowFatalError doesn't kill the page and API calls can be made from foreign hosts
 
 **test_lib.php** library of unit tests for the functions within the back end
 
@@ -135,5 +144,5 @@ The LAMP stack is made up of four components, each communicating with only one o
 
 **JSON:** Javascript Object Notation is easy for humans to read and easy for computers to parse. It is just notation, so a format that is agreed upon between the front and back end so that data transfer is simplified. One of the team members had experience with JSON that he was able to pass on to the rest of the team.
 
-**Using 1 as the First Index for data:** SQL is indexed starting at one, so it would be a lot more work to shift all of the data we are pulling from the database than to eliminate the first index of PHP arrays.
+**Using 1 as the First Index for data:** SQL is indexed starting at one, so all requests from the front end must have one added
 
