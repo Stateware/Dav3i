@@ -4,44 +4,41 @@
 // Contributors:            Emma Roudabush
 // Date Last Modified:      3/5/2015
 // Last Modified By:        Emma Roudabush
-// Dependencies:            none
+// Dependencies:            Descriptor.php
 // Additional Notes:        N/A
 
 var g_DescriptorJSON;
 
 function CreateLookupTable ()
 {
-    getDescriptor();
+    GetDescriptor();
     GetHMS();
-    createLookupTable();
-    createStatReferenceList();
+    GenerateLookupTable();
+    GenerateStatReferenceList();
 }
 
 function GetDescriptor ()
 {
-    g_DescriptorJSON = $.ajax({
-        type: "get",
-        url: "http://usve74985.serverprofi24.com/API/descriptor.php",
-        dataType: "json",
-        success:function(data) {
-            console.log("success");
-            console.log(JSON.Stringify(data));
-        },
-        error:function(error) {
-            alert("error");
-            console.log(error);
-        }
-    });
+	g_DescriptorJSON = $.ajax({                                      
+		type: 'post',
+		url: 'http://usve74985.serverprofi24.com/API/descriptor.php',                                                     
+		dataType: 'JSON',                     
+		success: function(data){     
+			console.log("Successfully received descriptor.php");
+			console.log(JSON.stringify(data));
+		} 
+	});  
 }
 
 function GetHMS ()
 {
 }
 
-function CreateLookupTable()
+function GenerateLookupTable ()
 {
 }
 
-function CreateStatReferenceList()
+function GenerateStatReferenceList()
 {
+
 }
