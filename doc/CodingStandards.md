@@ -25,7 +25,7 @@
  * Optimize algorithms, not code. Code efficiency is rarely an issue; algorithmic complexity and ease of maintenance are.
  * All modules must have cyclomatic complexity (the number of unique paths through a module's execution) must be less than 7, though less than 5 is ideal.
  * Clear code is better than clever code. Don't introduce complexity for the sake of your ego, the engineers that maintain your code won't appreciate it as much as you do.
- * Comment FREQUENTLY and PRECISELY. Don�t be ambiguous, and be exact in detailing what your code is doing. Note that you do not want to repeat your code in the comments; instead, document design and implementation decisions, as well as high level function.
+ * Comment FREQUENTLY and PRECISELY. Don't be ambiguous, and be exact in detailing what your code is doing. Note that you do not want to repeat your code in the comments; instead, document design and implementation decisions, as well as high level function.
  * Refactor! Refactor! Refactor! Refactor! Refactor! Refactor!
 
 #Headers
@@ -128,19 +128,19 @@ Any constants used in your code should be named constants, never hardcoded value
 
 #####Loose Coupling
 
-Functions (or in the sense of a developed architecture, functional modules) must do one thing and do it well. Functions must take inputs, give outputs, and have good documentation for what these must be. Functions should run to at most a page or so, and more complex logic can be split up among multiple functions, giving the highest level function�s logic a number of easily understood function calls instead of complex logic.
+Functions (or in the sense of a developed architecture, functional modules) must do one thing and do it well. Functions must take inputs, give outputs, and have good documentation for what these must be. Functions should run to at most a page or so, and more complex logic can be split up among multiple functions, giving the highest level function's logic a number of easily understood function calls instead of complex logic.
 
 #####Declaring Local Variables
 
-All local variables must be declared at the beginning of a given function, with an unambiguous description of the variable�s meaning in a comment on the same line.
+All local variables must be declared at the beginning of a given function, with an unambiguous description of the variable's meaning in a comment on the same line.
 
 #####Using Local Variables
 
-Try to consolidate references to variables as closely as you can. That is, if you reference a given variable `myVariable` at any given time, try to structure your logic in such a way that the next reference to `myVariable` doesn�t happen 40 lines later. This makes logic clearer, and gives less chance for unexpected behavior.
+Try to consolidate references to variables as closely as you can. That is, if you reference a given variable `myVariable` at any given time, try to structure your logic in such a way that the next reference to `myVariable` doesn't happen 40 lines later. This makes logic clearer, and gives less chance for unexpected behavior.
 
 #####Return Values
 
-When returning a value from a function, never use the same variable for multiple different purposes. That is, if a function normally returns an `int` variable, don�t use the same variable to return `-1` for failure. This complicates the purpose of a given variable, and unnecessarily adds complexity.
+When returning a value from a function, never use the same variable for multiple different purposes. That is, if a function normally returns an `int` variable, don't use the same variable to return `-1` for failure. This complicates the purpose of a given variable, and unnecessarily adds complexity.
 
 #####Using Floating Point Numbers
 
@@ -250,18 +250,18 @@ __File Form__:
 
  * Documentation
  ```php
-	/* File Name:           FILENAME
-	 * Description:         DESCRIPTION
-	 * 
-	 * Date Created:        DATE
-	 * Contributors:        CONTRIBUTORS
-	 * Date Last Modified:  DATE
-	 * Last Modified By:    MODIFIER
-	 * Dependencies:        DEPENDENCIES
-	 * Input:               GET : VARIABLES THROUGH GET
-	 *                      POST: VARIABLES THROUGH POST
-	 * Output:              OUTPUT
-	 */
+	/* File Name:           FILENAME  
+	 * Description:         DESCRIPTION  
+	 *   
+	 * Date Created:        DATE  
+	 * Contributors:        CONTRIBUTORS  
+	 * Date Last Modified:  DATE  
+	 * Last Modified By:    MODIFIER  
+	 * Dependencies:        DEPENDENCIES  
+	 * Input:               GET : VARIABLES THROUGH GET  
+	 *                      POST: VARIABLES THROUGH POST  
+	 * Output:              OUTPUT  
+	 */  
 ```
  * Requireds
 ```php
