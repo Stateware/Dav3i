@@ -94,7 +94,7 @@ The data will be encoded in JSON(see design decisions section). This is what it 
 **descriptor.php** url/API/descriptor.php
 **by_stat.php** url/API/by_stat.php?statID=x&year=y
 x must be a single valid statID, y must be a single valid year, if no year is given the current year is used as default
-**by_country.php** url/API/by_country.php?countryID=z
+**by_country.php** url/API/by_country.php?countryIDs=z
 z must be a single valid countryID or a comma delimited list of countryID's
 
 
@@ -103,9 +103,9 @@ z must be a single valid countryID or a comma delimited list of countryID's
 
 **descriptor.php:** API call to get descriptor table, year range, and list of stats, encodes data in arrays given by Descriptor library function into JSON, takes no arguments
 
-**by_country.php:** API call to get all data for a country or several countries, takes CountryID or comma delimited list of CountryID's
+**by_country.php:** API call to get all data for a country or several countries, takes country identifiers or comma delimited list of country identifiers
 
-**by_stat.php:** API call to get data for all countries for a stat and a year, takes a StatID and a year as arguments, if no year argument is given it defaults to the current year
+**by_stat.php:** API call to get data for all countries for a stat and a year, takes a statistic identifier and a year as arguments, if no year argument is given it defaults to the current year
 
 **connect.php** establishes a connection to the MySQL database, takes no arguments
 
@@ -114,8 +114,8 @@ z must be a single valid countryID or a comma delimited list of countryID's
 **test_lib.php** library of unit tests for the functions within the back end
 
 **api_library.php** library of functions that do the calculations for all of the API calls, includes:
-* **ByStat** takes a statID and a year as arguments and returns the data of the input stat for all countries in the input year, if no input year is given it defaults to the current year
-* **ByCountry** takes a CountryID or comma delimited list of CountryID's and returns all data for the input countries
+* **ByStat** takes a statistic identifier and a year as arguments and returns the data of the input stat for all countries in the input year, if no input year is given it defaults to the current year
+* **ByCountry** takes a country identifier or comma delimited list of country identifiers and returns all data for the input countries
 * **Descriptor** takes no arguments and returns the year range, list of stats, list of cc2, cc3, and country names in the database currently
 
 
