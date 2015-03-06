@@ -10,10 +10,7 @@
 //
 $(".loadingScreen").ready(function () {
     // Generate lookup table and heat map
-    $.getScript("lookup_table.js", function(){
-		console.log("Script(lookup_table.js) loaded and executed.");
 		CreateLookupTable();
-	});
     // Do below process when heat map is generated
     setTimeout(function () {
         $(".spinner").fadeOut(1250);
