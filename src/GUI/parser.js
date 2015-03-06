@@ -3,23 +3,24 @@
 //                          used by the graphs
 // Date Created:            2/12/2015
 // Contributors:            Nicholas Denaro, Vanajam Soni, Paul Jang
-// Date Last Modified:      2/24/2015
+// Date Last Modified:      3/4/2015
 // Last Modified By:        Nicholas Denaro
 // Dependencies:            None
 // Additional Notes:        N/A
 
 // Author:          Nicholas Denaro
 // Date Created:    2/12/15
-// Last Modified:   2/24/15 by Nicholas Denaro
+// Last Modified:   3/5/15 by Nicholas Denaro
 // Description:     Parses the object that is passed in and returns data array.
 //                  Input: json - Assumed to be in the proper format, but checked later in function, and sets a flag
 //                                if the JSON is invalid
 //                         cids - An array of country IDs in the same order that were sent to the server.
 //                  Output: data - A 3D array in the format of [stat][country/bound][values];
-function ParseData(json,cids)
+function ParseData(json, cids)
+// PRE: json is valid JSON and cids is an array with the same size as the countries in json
+// POST: FCTVAL == a 3d array containing stat, country/bound, data
 {
     var data = new Array(); //Creates the array for the data to be returned
-    var valid = true; //Set flag to true, and chagne to false if the JSON is not valid.
 
     //Loops through the countries in the JSON
     for (var cid=0; cid<cids.length ; cid++)
@@ -34,13 +35,6 @@ function ParseData(json,cids)
         }
     }
 
-    if (!valid) //The JSON was not valid
-    {
-        alert("The data recieved by server is invalid,\n" +
-            "please refresh the page and try again.");
-        return (null);
-    }
-
     return (data);
 }
 
@@ -53,6 +47,8 @@ function ParseData(json,cids)
 //                  Input: N/A
 //                  Output: N/A
 function ParseFakeData()
+// PRE: This function is called from parser_markup.html
+// POST: FCTVAL == null
 {
     //This is how we think the JSON looks.
     /*var data =
