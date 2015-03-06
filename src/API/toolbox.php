@@ -12,7 +12,7 @@
  */ 
 
 //change to TRUE if testing so the ThrowFatalError doesn't kill the page
-define("TESTING", FALSE);
+define("TESTING", TRUE);
 	 
 // ===================== Function Definitions =====================	 
 //OUTPUT: This function will cause the program to close itself after echoing an error message.
