@@ -1,21 +1,22 @@
 #Back End Architecture Document
 
 
-#####Introduction to the back end
+####Introduction to the back end
 
 The back end is a web server which will serve up the HTML5 and data for the front end. The server will send the HTML5 when the domain is visited, and will send the data when the front end requests it. The server will use the LAMP stack(see design decisions section).
 
 
-#####Requirements
+####Requirements
 The server must
 * Display the website when the domain is visited
 * Upon connection, deliver a descriptor table of the contents of the database, along with the year range within the database, and the data for the default year of the default stat for the heatmap
 * Upon receipt of a CountryID or comma delimited list of CountryID's, deliver all data for that country or countries
 * Upon receipt of a StatID with year, deliver all data for that stat in that year(if no year is provided, the current year is given)
+* Be able to receive updated database tables via a secure login
 
 
-#####Database Setup
-#Needs updated when database is filled
+####Database Setup
+
 
 Now that we have the architecture of our back end planned out, it's time to dictate the table setup for our MySQL database. The configuration we decided on involves 4 table types.
 
@@ -25,10 +26,10 @@ All tables will be linked via country id (CID).
 
 **meta_countries:** This table provides a list of all countries identifiers, common name, 2-digit country code, and 3-digit country code. This will be called when a call to "descriptor" is made, and when new data is being uploaded.
 
-**data_?:** There will be an individual table for each different data statistic (e.g. deaths, births, vaccinations) for each different country. Each of these tables will have columns: CID and as many years columns as needed. This format was chosen to make it more efficient to grab all years of data from a single country by just grabbing a row of data. The other way of doing this would be to have three columns: CID, Year, and Value. This way would be considered the “correct” way, however would take a significantly longer time to query for mass quantities of yearly data. This way has the advantage of having a much greater amount of years, however, the chosen way of creating this table allows for a maximum of 1024 columns, hence 1023 years and it is inconceivable that this program will be used for longer than that span of time. 
+**data_?:** There will be an individual table for each different data statistic (e.g. deaths, births, vaccinations) for each different country. Each of these tables will have columns: CID and as many years columns as needed. This format was chosen to make it more efficient to grab all years of data from a single country by just grabbing a row of data. The other way of doing this would be to have three columns: CID, Year, and Value. This way would be considered the “correct” way, however would take a significantly longer time to query for mass quantities of yearly data. The "correct" way has the advantage of having a much greater amount of years, however, the chosen way of creating this table allows for a maximum of 1024 columns, hence 1023 years and it is inconceivable that this program will be used for longer than that span of time. 
 
-#####Format of Data Sent to Front End
-The data will be encoded in JSON(see design decisions section). This is what it will look like:
+####Format of Data Sent to Front End
+The data will be encoded in JSON(see design decisions section). This is how it will be formatted:
 
 
 	var Descriptor =
@@ -90,15 +91,17 @@ The data will be encoded in JSON(see design decisions section). This is what it 
 	};
 
 	
-#####Syntax for API Calls
+####Syntax for API Calls
 **descriptor.php** url/API/descriptor.php
+
 **by_stat.php** url/API/by_stat.php?statID=x&year=y
 x must be a single valid statID, y must be a single valid year, if no year is given the current year is used as default
+
 **by_country.php** url/API/by_country.php?countryIDs=z
 z must be a single valid countryID or a comma delimited list of countryID's
 
 
-#####PHP Files
+####PHP Files
 
 
 **descriptor.php:** API call to get descriptor table, year range, and list of stats, encodes data in arrays given by Descriptor library function into JSON, takes no arguments
@@ -118,11 +121,20 @@ z must be a single valid countryID or a comma delimited list of countryID's
 * **ByCountry** takes a country identifier or comma delimited list of country identifiers and returns all data for the input countries
 * **Descriptor** takes no arguments and returns the year range, list of stats, list of cc2, cc3, and country names in the database currently
 
+####Error Handling
+All error checking will use the ThrowFatalError function from toolbox.php to handle errors. ThrowFatalError will kill the page, and print a concise error message stating the nature and location of the error. The error message is an argument to the function. 
+
+All functions within api_library.php will validate and sanitize their input data.
+
+####Security
+Functions that receive input from the front end will sanitize and validate their data.
+
+New data and updates to data will be submitted via a secure login(not added yet).
 
 
 
 
-#####Design Decisions
+####Design Decisions
 
 **Server Software Decision**
 We decided to install a LAMP stack on our server. This choice was made for a few reasons, namely that it is what we are most familiar with and that we know its capabilities extend farther than our requirements for this project. We know that the LAMP stack is a time-tested standard for web servers.
