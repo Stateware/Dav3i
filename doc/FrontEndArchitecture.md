@@ -79,6 +79,10 @@ Section 3 defines the use cases and how we satisfy them, features of the user in
 
 **timespan** refers to the 2 integers that represent the first and last year for which data exists.
 
+**selected timespan** refers to the 2 integers that represent the first and last year for which data is desired by the user to be represented.
+
+**settings toggles** refers to an array of booleans that represents all boolean settings values, including bounds on/off, and on/off for each available stat.
+
 #Section 1
 
 ###1.0 : Requirements
@@ -134,29 +138,30 @@ lookup_table.js is a JavaScript module that includes functions to:
  * Call by_stat.php to get default HMS
  * Generate lookup table from CC2s, names, and default HMS
  * Call by_stat.php with non-default HMS value and replace stat values in HMS field of lookup table
- * Translate CC2s to CIDs
- * Translate CIDs to names
+ * Translate CC2s to CIDs, and set area selection names (using graphs.js)
+ * Get HMS
 
 **loading_script.js**
 
-loading_script.js is a container module that runs during the loading screen. It calls functions from lookup_table.js and map.js to:
- * Generate lookup table with default HMS
- * Set stat reference list
- * Set timespan
- * Generate map colored by default HMS
+loading_script.js is a container module with a function that runs during the loading screen. It calls functions from lookup_table.js, settings.js, map.js, and graphs.js to:
+ * Generate lookup table from CC2s, names, and default HMS (lookup_table.js)
+ * Set stat reference list (graphs.js)
+ * Set timespan (settings.js)
+ * Generate map colored by default HMS (map.js)
 
 **settings.js**
 
 settings.js is a JavaScript module that takes user mouse clicks as input to a list of checkboxes (toggle bounds on/off, toggle for showing each stat) and to a 2 ended slider that defines the timespan for graph generation. It includes functions to:
- * Return the values of the settings as an array of booleans, and 2 ints for timespan.
- * Set timespan (timespan is argument)
- * Reset the HMS to a newly selected one
+ * Return settings toggles
+ * Return selected timespan
+ * Set timespan
+ * Reset the HMS to a newly selected one (using lookup_table.js)
 
 **map.js**
 
 map.js is a JavaScript module that includes functions to:
- * Generate map
- * Reset map in the case of HMS change
+ * Generate map colored by default HMS (getting HMS using lookup_table.js)
+ * Reset map in the case of HMS change (getting HMS using lookup_table.js)
  * Make area selection and and get parsed data using CC2s (using data_query.js)
  * Call functions from graphs.js using parsed data
 
@@ -173,8 +178,9 @@ parser.js is a JavaScript module that includes a function to:
 **graphs.js**
 
 graphs.js is a JavaScript module includes functions to:
- * Remove displayed graphs if there are any, and generate graphs based on parsed data, and which graphs/timespan are desired based on settings
- * Translate CIDs into names (using lookup_table.js) and generate graph legend using names and stat reference list
+ * Remove displayed graphs if there are any, and generate graphs based on parsed data, settings toggles, and desired timespan
+ * Set area selection names for graph legend
+ * Set stat reference list
 
 ###2.1 : Client/Server Interface
 
