@@ -3,7 +3,7 @@
 
 ####Introduction to the back end
 
-The back end is a web server which will serve up the HTML5 and data for the front end. The server will send the HTML5 when the domain is visited, and will send the data when the front end requests it. The server will use the LAMP stack(see design decisions section).
+The back end is a web server which will host the website and data for the front end. The server will send the HTML5 when the domain is visited, and will send the data when the front end requests it. The server will use the LAMP stack(see design decisions section).
 
 
 ####Requirements
@@ -14,6 +14,45 @@ The server must
 * Upon receipt of a StatID with year, deliver all data for that stat in that year(if no year is provided, the current year is given)
 * Be able to receive updated database tables via a secure login
 
+####PHP Files
+
+
+**descriptor.php:** API call to get descriptor table, year range, and list of stats, encodes data in arrays given by Descriptor library function into JSON, takes no arguments
+
+**by_country.php:** API call to get all data for a country or several countries, takes country identifiers or comma delimited list of country identifiers
+
+**by_stat.php:** API call to get data for all countries for a stat and a year, takes a statistic identifier and a year as arguments, if no year argument is given it defaults to the current year
+
+**connect.php** establishes a connection to the MySQL database, takes no arguments
+
+**toolbox.php** library of functions and global variables that are useful in multiple places within the back end, when the global variable TESTING is set to TRUE ThrowFatalError doesn't kill the page and API calls can be made from foreign hosts
+
+**test_lib.php** library of unit tests for the functions within the back end
+
+**api_library.php** library of functions that do the calculations for all of the API calls, includes:
+* **ByStat** takes a statistic identifier and a year as arguments and returns the data of the input stat for all countries in the input year, if no input year is given it defaults to the current year
+* **ByCountry** takes a country identifier or comma delimited list of country identifiers and returns all data for the input countries
+* **Descriptor** takes no arguments and returns the year range, list of stats, list of cc2, cc3, and country names in the database currently
+
+
+####Syntax for API Calls
+**descriptor.php**  url/API/descriptor.php
+
+**by_stat.php**  url/API/by_stat.php?statID=x&year=y
+x must be a single valid statID, y must be a single valid year, if no year is given the current year is used as default
+
+**by_country.php**  url/API/by_country.php?countryIDs=z
+z must be a single valid countryID or a comma delimited list of countryID's
+
+####Error Handling
+All error checking will use the ThrowFatalError function from toolbox.php to handle errors. ThrowFatalError will kill the page, and print a concise error message stating the nature and location of the error. The error message is an argument to the function. 
+
+All functions within api_library.php will validate and sanitize their input data.  In the case of unsanitary or invalid data, the standard error handling procedure is followed.
+
+####Security
+Functions that receive input from the front end will sanitize and validate their data. This insures that no unforeseen data can be used to attack the system.
+
+New data and updates to data will be submitted via a secure login(not added yet).
 
 ####Database Setup
 
@@ -78,61 +117,19 @@ The data will be encoded in JSON(see design decisions section). This is how it w
 	{
     	1 :
     	{
-        	1 : [ 1337, 1338 ],
-        	2 : [ 5, 1338 ],
-        	3 : [ 5, 1338 ]
+        	1 : [ 1337, 1338, ... ],
+        	2 : [ 5, 1338, ... ],
+        	3 : [ 5, 1338, ... ]
     	}, 
     	2 : 
     	{
-        	1 : [ 5, 1338 ],
-        	2 : [ 5, 1338 ],
-        	3 : [ 5, 1338 ]
+        	1 : [ 5, 1338, ... ],
+        	2 : [ 5, 1338, ... ],
+        	3 : [ 5, 1338, ... ]
     	}
 	};
 
-	
-####Syntax for API Calls
-**descriptor.php** url/API/descriptor.php
-
-**by_stat.php** url/API/by_stat.php?statID=x&year=y
-x must be a single valid statID, y must be a single valid year, if no year is given the current year is used as default
-
-**by_country.php** url/API/by_country.php?countryIDs=z
-z must be a single valid countryID or a comma delimited list of countryID's
-
-
-####PHP Files
-
-
-**descriptor.php:** API call to get descriptor table, year range, and list of stats, encodes data in arrays given by Descriptor library function into JSON, takes no arguments
-
-**by_country.php:** API call to get all data for a country or several countries, takes country identifiers or comma delimited list of country identifiers
-
-**by_stat.php:** API call to get data for all countries for a stat and a year, takes a statistic identifier and a year as arguments, if no year argument is given it defaults to the current year
-
-**connect.php** establishes a connection to the MySQL database, takes no arguments
-
-**toolbox.php** library of functions and global variables that are useful in multiple places within the back end, when the global variable TESTING is set to TRUE ThrowFatalError doesn't kill the page and API calls can be made from foreign hosts
-
-**test_lib.php** library of unit tests for the functions within the back end
-
-**api_library.php** library of functions that do the calculations for all of the API calls, includes:
-* **ByStat** takes a statistic identifier and a year as arguments and returns the data of the input stat for all countries in the input year, if no input year is given it defaults to the current year
-* **ByCountry** takes a country identifier or comma delimited list of country identifiers and returns all data for the input countries
-* **Descriptor** takes no arguments and returns the year range, list of stats, list of cc2, cc3, and country names in the database currently
-
-####Error Handling
-All error checking will use the ThrowFatalError function from toolbox.php to handle errors. ThrowFatalError will kill the page, and print a concise error message stating the nature and location of the error. The error message is an argument to the function. 
-
-All functions within api_library.php will validate and sanitize their input data.
-
-####Security
-Functions that receive input from the front end will sanitize and validate their data.
-
-New data and updates to data will be submitted via a secure login(not added yet).
-
-
-
+Heatmap is a comma delimited list of values because it is the data for one specific stat and year for all countries. Data is a series of nested structures. The first index is the countryID, the second is the statID.
 
 ####Design Decisions
 
