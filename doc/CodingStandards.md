@@ -261,7 +261,7 @@ Snake Case (my_var) so that its easy to differentiate between PHP variables and 
 `   Dependencies:        DEPENDENCIES`  
 `   Input:               GET : VARIABLES THROUGH GET`  
 `                        POST: VARIABLES THROUGH POST`  
-`   Output:              OUTPUT` 
+`   Output:              OUTPUT`  
 `*/`   
  * Requireds
 ```php
