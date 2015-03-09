@@ -130,7 +130,7 @@ style.css includes style for main page and loading screen.
 **lookup_table.js**
 
 lookup_table.js is a JavaScript module that includes functions to:  
- * Call descriptor.php to get CC2s, names, stat reference list, and timespan
+ * Call descriptor.php to get CC2s, names, stat reference list, and set timespan (using settings.js)
  * Call by_stat.php to get default HMS
  * Generate lookup table from CC2s, names, and default HMS
  * Call by_stat.php with non-default HMS value and replace stat values in HMS field of lookup table
@@ -149,6 +149,7 @@ loading_script.js is a container module that runs during the loading screen. It 
 
 settings.js is a JavaScript module that takes user mouse clicks as input to a list of checkboxes (toggle bounds on/off, toggle for showing each stat) and to a 2 ended slider that defines the timespan for graph generation. It includes functions to:
  * Return the values of the settings as an array of booleans, and 2 ints for timespan.
+ * Set timespan (timespan is argument)
  * Reset the HMS to a newly selected one
 
 **map.js**
@@ -193,7 +194,7 @@ Query:       `http://[server-domain]/API/by_stat.php?statID=[ID]&year=[year]`, w
 
 ###2.3 : Module Architecture
 
-The module architecture is defined by the diagram in FrontEndBlockDiagram.png.
+The module architecture is defined in section 2.0 : Files. It can be seen visually in the diagram in FrontEndBlockDiagram.png.
 
 ###2.4 : Data Structure Specifications
 
