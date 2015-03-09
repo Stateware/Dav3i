@@ -1,41 +1,60 @@
 #Back End Architecture Document
 
+###Table of Contents
+* Introduction to the Back End
+* Definitions
+* Requirements
+* PHP Files
+* Syntax for API Calls
+* Error Handling
+* Security
+* Database Setup
+* Format of Data Sent to Front End
+* Design Decisions
 
-####Introduction to the back end
+###Introduction to the Back End
 
-The back end is a web server which will host the website and data for the front end. The server will send the HTML5 when the domain is visited, and will send the data when the front end requests it. The server will use the LAMP stack(see design decisions section).
+The back end is a web server which will host the website for the Spring 2015 iteration of the Stateware Project and the database which contains all of the data that the website will be displaying. The server will send the HTML5 page when the domain is visited, and will send the data to be displayed when the front end requests it. The server will use the LAMP stack to accomplish all of this(see design decisions section).
+
+###Definitions
+1. **descriptor table** JSON object sent to the front end containing the list of countries in the database with their CC2 and CC3 country codes and assigned countryIDs
+2. **countryID** integer assigned in the descriptor table to identify a country for fast communication between the front and back end
+3. **statID** integer assigned in the descriptor table to identify a stat for fast communication between the front and back end
+4. **heatmap** the map displayed on the website will color code the countries according to the magnitude of one stat in one year
+5. **sanitary data** data that is in the correct format to be processed
+6. **valid data** data that is "correct", i.e. within the bounds with which processing will produce meaningful output
 
 
-####Requirements
+###Requirements
 The server must
 * Display the website when the domain is visited
 * Upon connection, deliver a descriptor table of the contents of the database, along with the year range within the database, and the data for the default year of the default stat for the heatmap
-* Upon receipt of a CountryID or comma delimited list of CountryID's, deliver all data for that country or countries
-* Upon receipt of a StatID with year, deliver all data for that stat in that year(if no year is provided, the current year is given)
+* Upon receipt of a countryID or comma delimited list of countryIDs, deliver all data for that country or countries
+* Upon receipt of a statID with year, deliver all data for that stat in that year(if no year is provided, the current year is given)
 * Be able to receive updated database tables via a secure login
 
-####PHP Files
+###PHP Files
 
 
 **descriptor.php:** API call to get descriptor table, year range, and list of stats, encodes data in arrays given by Descriptor library function into JSON, takes no arguments
 
-**by_country.php:** API call to get all data for a country or several countries, takes country identifiers or comma delimited list of country identifiers
+**by_country.php:** API call to get all data for a country or several countries, takes a countryID or comma delimited list of countryIDs
 
-**by_stat.php:** API call to get data for all countries for a stat and a year, takes a statistic identifier and a year as arguments, if no year argument is given it defaults to the current year
+**by_stat.php:** API call to get data for all countries for a stat and a year, takes a statID and a year as arguments, if no year argument is given it defaults to the current year
 
 **connect.php** establishes a connection to the MySQL database, takes no arguments
 
 **toolbox.php** library of functions and global variables that are useful in multiple places within the back end, when the global variable TESTING is set to TRUE ThrowFatalError doesn't kill the page and API calls can be made from foreign hosts
 
-**test_lib.php** library of unit tests for the functions within the back end
+**test_lib.php** library of unit tests for the helper functions within the back end
 
 **api_library.php** library of functions that do the calculations for all of the API calls, includes:
-* **ByStat** takes a statistic identifier and a year as arguments and returns the data of the input stat for all countries in the input year, if no input year is given it defaults to the current year
-* **ByCountry** takes a country identifier or comma delimited list of country identifiers and returns all data for the input countries
+* **ByStat** takes a statIDr and a year as arguments and returns the data of the input stat for all countries in the input year, if no input year is given it defaults to the current year
+* **ByCountry** takes a countryID or comma delimited list of countryIDs and returns all data for the input countries
 * **Descriptor** takes no arguments and returns the year range, list of stats, list of cc2, cc3, and country names in the database currently
 
 
-####Syntax for API Calls
+###Syntax for API Calls
 **descriptor.php**  url/API/descriptor.php
 
 **by_stat.php**  url/API/by_stat.php?statID=x&year=y
@@ -44,17 +63,17 @@ x must be a single valid statID, y must be a single valid year, if no year is gi
 **by_country.php**  url/API/by_country.php?countryIDs=z
 z must be a single valid countryID or a comma delimited list of countryID's
 
-####Error Handling
+###Error Handling
 All error checking will use the ThrowFatalError function from toolbox.php to handle errors. ThrowFatalError will kill the page, and print a concise error message stating the nature and location of the error. The error message is an argument to the function. 
 
 All functions within api_library.php will validate and sanitize their input data.  In the case of unsanitary or invalid data, the standard error handling procedure is followed.
 
-####Security
+###Security
 Functions that receive input from the front end will sanitize and validate their data. This insures that no unforeseen data can be used to attack the system.
 
 New data and updates to data will be submitted via a secure login(not added yet).
 
-####Database Setup
+###Database Setup
 
 
 Now that we have the architecture of our back end planned out, it's time to dictate the table setup for our MySQL database. The configuration we decided on involves 4 table types.
@@ -67,7 +86,7 @@ All tables will be linked via country id (CID).
 
 **data_?:** There will be an individual table for each different data statistic (e.g. deaths, births, vaccinations) for each different country. Each of these tables will have columns: CID and as many years columns as needed. This format was chosen to make it more efficient to grab all years of data from a single country by just grabbing a row of data. The other way of doing this would be to have three columns: CID, Year, and Value. This way would be considered the “correct” way, however would take a significantly longer time to query for mass quantities of yearly data. The "correct" way has the advantage of having a much greater amount of years, however, the chosen way of creating this table allows for a maximum of 1024 columns, hence 1023 years and it is inconceivable that this program will be used for longer than that span of time. 
 
-####Format of Data Sent to Front End
+###Format of Data Sent to Front End
 The data will be encoded in JSON(see design decisions section). This is how it will be formatted:
 
 
@@ -90,7 +109,6 @@ The data will be encoded in JSON(see design decisions section). This is how it w
 			"MEX",
 			"HUN"
         },
-        }
     	"common_name" : 
     	{
         	"United States of America",
@@ -131,7 +149,7 @@ The data will be encoded in JSON(see design decisions section). This is how it w
 
 Heatmap is a comma delimited list of values because it is the data for one specific stat and year for all countries. Data is a series of nested structures. The first index is the countryID, the second is the statID.
 
-####Design Decisions
+###Design Decisions
 
 **Server Software Decision**
 We decided to install a LAMP stack on our server. This choice was made for a few reasons, namely that it is what we are most familiar with and that we know its capabilities extend farther than our requirements for this project. We know that the LAMP stack is a time-tested standard for web servers.
