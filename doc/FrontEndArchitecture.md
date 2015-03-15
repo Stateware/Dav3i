@@ -307,5 +307,6 @@ Keyboard input requires a more secure approach. Input is parsed and sanitized be
 First Reported: March 5, 2015  
 Status: Fixed March 15, 2015  
 Description: When the map is made visible, only a small unselectable vector image appears in the section, rather than the full selectable map.  
-Reason for bug: Firefox doesn't process jVectorMap correctly when the map container is initially hidden. As the main page is hidden before the loading screen is removed, this triggered the bug.
-Description of fix: Set up main page to be visible initially, by layering the loading screen on top of the main page and simply hiding the loading screen to show the main page when needed.
+Reason for bug: Firefox doesn't process jVectorMap correctly when the map container is initially hidden. As the main page is hidden before the loading screen is removed, this triggered the bug.  
+Description of fix: Set up main page to be visible initially, by layering the loading screen on top of the main page and simply hiding the loading screen to show the main page when needed.  
+
