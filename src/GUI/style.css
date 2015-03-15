@@ -3,60 +3,114 @@
     Description:             Style sheet for the loading screen and main page
     Date Created:            2/19/2015
     Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts
-    Date Last Modified:      2/24/2015
+    Date Last Modified:      3/15/2015
     Last Modified By:        Joshua Crafts
     Dependencies:            none
     Additional Notes:        N/A
 */
 
-#search {
-    height:20vh;
-    width:60%;
-    text-align:center;
-    overflow:auto;
-    background-color:rgb(255, 184, 153);
-	display: none;
-	border-radius: 25px;
+/* sets loading screen and main screen to full size of screen, with shared background color and position */
+.loading-screen, .main-screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #efe;
+    top: 0;
+    left: 0;
 }
 
+/* sets loading screen to foreground */
+.loading-screen {
+    z-index: 1;
+}
+
+/* sets main screen to background */
+.main-screen {
+    z-index: 0;
+}
+
+/* sets pacifico font styling */
+.pacifico {
+    color: #fb9;
+    font-family: "Pacifico", cursive;
+    font-size: 100%;
+}
+
+/* sets open sans font styling and font for begin button */
+.open-sans, .begin {
+    font-family: 'Open Sans Condensed', sans-serif;
+}
+
+.loading-screen .open-sans {
+    color: #344;
+}
+
+/* sets begin button styling */
+.begin {
+    background: none;
+    border: none;
+    margin: 50px 0 auto;
+    color: #583;
+    font-size: 30pt;
+    display: none;
+}
+
+/* sets shared style for map and settings section */
 section {
-    height:70vh;
+    float:right;
+    overflow: auto;
     width:60%;
-    float:left;
-    overflow:auto;
-    background-color:grey;
-	display: none;
-	border-radius: 25px;
 }
 
-aside {
-    height:90vh;
+/* sets styling for settings section */
+section.settings {
+    height: 20%;
+    background-color: #594F3B;
+}
+
+/* sets automatic size and placement for logo image */
+.logo {
+    height: 100%;
+    float: right;
+}
+
+/* sets size for map */
+#map {
+    height:72.5%;
+}
+
+/* sets styling for graph section */
+.graph {
+    height:92.5%;
     width:40%;
     overflow:auto;
-    background-color:rgb(84, 130, 53);
-    color:white;
-    float:right;
-	display: none;
-	border-radius: 25px;
+    background-color: #776258;
+    text-align: center;
+    float:left;
 }
 
+/* sets font for graph and settings sections */
+.settings, .graph{
+    font-size: 10pt;
+    color: #efe;
+}
+
+/* sets styling for footer  section*/
 footer {
-    height:5vh;
+    height:7.5%;
     width:100%;
-    clear:both;
     text-align:center;
     overflow:auto;
-    background-color:none;
-	display: none;
-	overflow-y: hidden;
 }
 
+/* sets styling for loading animation container */
 .spinner {
-    margin: 100px auto 0;
+    margin: 100px 0 auto;
     width: 70px;
     text-align: center;
 }
 
+/* sets styling for loading animation bubbles */
 .spinner > div {
     width: 18px;
     height: 18px;
@@ -70,25 +124,19 @@ footer {
     animation-fill-mode: both;
 }
 
+/* sets styling for loading bubble 1 */
 .spinner .bounce1 {
     -webkit-animation-delay: -0.32s;
     animation-delay: -0.32s;
 }
 
+/* sets styling for loading bubble 2 */
 .spinner .bounce2 {
     -webkit-animation-delay: -0.16s;
     animation-delay: -0.16s;
 }
 
-@-webkit-keyframes bouncedelay {
-    0%, 80%, 100% {
-        -webkit-transform: scale(0.0)
-    }
-    40% {
-        -webkit-transform: scale(1.0)
-    }
-}
-
+/* sets keyframe animation for loading bubbles */
 @keyframes bouncedelay {
     0%, 80%, 100% {
         transform: scale(0.0);
@@ -98,38 +146,4 @@ footer {
         transform: scale(1.0);
         -webkit-transform: scale(1.0);
     }
-}
-
-body {
-    background-color:rgb(217, 237, 255);
-	/*background-color:rgb(117, 181, 217);*/
-}
-
-h1{
-	font-family:'Open Sans Condensed', sans-serif;
-}
-
-h3{
-	font-family:'Open Sans Condensed', sans-serif;
-}
-
-.pacifico {
-    color:rgb(255, 184, 153);
-    font-family:"Pacifico", cursive;
-    font-size:100%;
-}
-
-.open_sans {
-    color:black;
-    font-family:'Open Sans Condensed', sans-serif;
-    font-size:100%;
-}
-
-button.begin {
-    background:none;
-    border:none;
-    color:rgb(84, 130, 53);
-    font-family:'Open Sans Condensed', sans-serif;
-    font-size: 30pt;
-    display: none;
 }

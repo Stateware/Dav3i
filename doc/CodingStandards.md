@@ -182,6 +182,10 @@ All tags must be written fully in lowercase. *Always* close tags. Open and close
 
 When using images, *always* include alt tags.
 
+#####Colors
+
+Colors are always defined using hexadecimal notation (e.g. `#ffffff`, `#beeeef`). When possible, abbreviate with 3 character notation (e.g. #efe, #123).
+
 #####ID and Class Names
 
 ID and Class Names are fully lowercase, with hyphens to separate words (e.g. `class-name`, `element-id`).
