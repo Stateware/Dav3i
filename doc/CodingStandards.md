@@ -273,6 +273,7 @@ Snake Case (my_var) so that its easy to differentiate between PHP variables and 
 // ========== Error Checking and Variable Initialization ==========
 // ======================= Main Computation =======================
 // ===================== Function Definitions =====================
+// -------------------------- Subheading --------------------------
 ```php
 
 #####Other Notes

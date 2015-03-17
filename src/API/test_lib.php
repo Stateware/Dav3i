@@ -18,48 +18,50 @@ require_once("api_library.php");
 $databaseConnection = GetDatabaseConnection();
 
 
-//---------------------Testing: GetYearRange()-----------------------
+// ==================================== TEST GetYearRange ====================================
 
-echo "<h1> Testing for GetYearRange</h1>";
-echo "<h4> GetYearRange(databaseConnection, data_birts) == array(1980, 2012)</h4>"; 
+// ------------------------------- TEST GetYearRange => births -------------------------------
+echo "<h4> Test if GetYearRange(databaseConnection, data_births) lower bound is 1980</h4>";
 
-if (GetYearRange($databaseConnection, "data_births") == array("1980", "2012")) 
+$yearRangeArray = GetYearRange($databaseConnection, "data_births");
+
+if($yearRangeArray[0] == "1980") 
 {
-	echo "Test 1 for GetYearRange Passed. <br>";
-	//echo GetYearRange($databaseConnection, "data_births");
+	echo "Test 1 for GetYearRange passed. <br>";
 }
 else
 {
 	echo "Test 1 for GetYearRange failed. <br>";
 }
 
-echo "<h4> GetYearRange(databaseConnection, data_cases) == array(1980, 2012))</h4>";
+echo "<h4>GetYearRange(databaseConnection, data_births) == array(NOT END CASE, 2012))</h4>";
 
-if (GetYearRange($databaseConnection, "data_cases") == array("1980", "2012")) 
+if($yearRangeArray[1] == "2012") 
 {
-	echo "Test 2 for GetYearRange Passed. <br>";
-	//echo GetYearRange($databaseConnection, "data_cases");
+	echo "Test 2 for GetYearRange passed. <br>";
 }
 else
 {
 	echo "Test 2 for GetYearRange failed. <br>";
 }
 
+// ------------------------------- TEST GetYearRange => cases -------------------------------
+echo "<h4> Test if GetYearRange(databaseConnection, data_cases) lower bound is 1980</h4>";
 
-echo "<h4>GetYearRange(databaseConnection, data_births) == array(1900, 2012))</h4>";
+$yearRangeArray = GetYearRange($databaseConnection, "data_cases");
 
-if (GetYearRange($databaseConnection, "data_births") == array("1900", "2012")) 
+if($yearRangeArray[0] == "1980") 
 {
 	echo "Test 3 for GetYearRange passed. <br>";
-}	
+}
 else
 {
 	echo "Test 3 for GetYearRange failed. <br>";
 }
 
-echo "<h4>GetYearRange(databaseConnection, data_births) == array(1980, 2000)</h4>";
+echo "<h4>GetYearRange(databaseConnection, data_cases) == 2012</h4>";
 
-if (GetYearRange($databaseConnection, "data_births") == array("1980", "2012")) 
+if($yearRangeArray[1] == "2012") 
 {
 	echo "Test 4 for GetYearRange passed. <br>";
 }
@@ -68,9 +70,33 @@ else
 	echo "Test 4 for GetYearRange failed. <br>";
 }
 
+// ------------------------------- TEST GetYearRange => deaths -------------------------------
+echo "<h4> Test if GetYearRange(databaseConnection, data_deaths) lower bound is 1980</h4>";
 
+$yearRangeArray = GetYearRange($databaseConnection, "data_deaths");
 
+if($yearRangeArray[0] == "1980") 
+{
+	echo "Test 5 for GetYearRange passed. <br>";
+}
+else
+{
+	echo "Test 5 for GetYearRange failed. <br>";
+}
 
+echo "<h4>GetYearRange(databaseConnection, data_deaths) == 2012</h4>";
+
+if($yearRangeArray[1] == "2012") 
+{
+	echo "Test 6 for GetYearRange passed. <br>";
+}
+else
+{
+	echo "Test 6 for GetYearRange failed. <br>";
+}
+
+// ================================= TEST GetStatNames =================================
+                               
 echo "<h1> Testing for GetStatNames(conn) </h1>";
 
 echo "<h4> GetStatNames(databaseConnection) == array(Births, Cases, Deaths) </h4>";
@@ -106,5 +132,5 @@ else
 	echo "Test 3 for GetStatNames failed. <br>";
 }
 
-
+// ================================= END TEST GETSTATNAMES =================================
 ?>
