@@ -34,7 +34,7 @@ else
 	echo "Test 1 for GetYearRange failed. <br>";
 }
 
-echo "<h4>GetYearRange(databaseConnection, data_births) == array(NOT END CASE, 2012))</h4>";
+echo "<h4>GetYearRange(databaseConnection, data_births) == 2012)</h4>";
 
 if($yearRangeArray[1] == "2012") 
 {
