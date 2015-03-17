@@ -3,23 +3,27 @@
 require_once("connect.php");
 
 $testData = "";
+$fileTemporaryName = $_FILES['userfile']['tmp_name'];
+$testData = file_get_contents($fileTemporaryName);
 
 $databaseConnection = GetDatabaseConnection();
 
-$type = "FLOAT";
-$tableName = "data_deaths";
-$statisticName = "Deaths";
+$type = $_POST['data_type'];
+$tableName = $_POST['table_name'];
+$statisticName = $_POST['stat_name'];
 
-/*$metaTableQuery = "INSERT INTO meta_stats (stat_name, table_name) VALUES ('$statisticName', '$tableName')";
+$metaTableQuery = "INSERT INTO meta_stats (stat_name, table_name) VALUES ('$statisticName', '$tableName')";
 $metaTableResults = $databaseConnection->query($metaTableQuery);
 if ($metaTableResults === false)
 {
     echo "Query failed.";
     die();
-}*/
+}
+
+$testData = preg_replace('~\R~', "|", $testData);
 
 $queryArray = array();
-$tableArray = explode("\n", $testData);
+$tableArray = explode("|", $testData);
 foreach($tableArray as $value)
 {
     $tempArray = explode(",", $value, 2);
@@ -38,12 +42,12 @@ foreach ($columnsArray as $column)
 }
 $createTableQuery .= ");";
 
-/*$createTableResults = $databaseConnection->query($createTableQuery);
+$createTableResults = $databaseConnection->query($createTableQuery);
 if ($createTableQuery === false)
 {
     echo "Query failed.";
     die();
-}*/
+}
 
 // Create lookup table
 $countryLookupTable = array();
@@ -77,16 +81,6 @@ foreach($queryArray as $country => $query)
 		echo "query definately passed.<br />";
 	}
 }
-
-/*$specificResults = $databaseConnection->query($specificQuery);
-if ($specificResults === false)
-{
-	echo "query didn't work";
-}
-else
-{
-	echo "query definately passed.";
-}*/
 //ALTER TABLE data_cases ORDER BY country_id ASC
 
 ?>
