@@ -1,8 +1,8 @@
 // File Name:               lookup_table.js
 // Description:             Generates lookup table
 // Date Created:            3/5/2015
-// Contributors:            Emma Roudabush
-// Date Last Modified:      3/5/2015
+// Contributors:            Emma Roudabush, Vanajam Soni
+// Date Last Modified:      3/17/2015
 // Last Modified By:        Emma Roudabush
 // Dependencies:            Descriptor.php
 // Additional Notes:        N/A
@@ -73,5 +73,31 @@ function GenerateStatReferenceList()
 	{
 		g_Stats[i] = g_DescriptorJSON.stats[i];
 	}
+}
+
+function GetCID(cc2)
+{
+	// Assumptions:
+	// 1. the name of the table is "lookUpTable"
+	// 2. cc2 array is sorted 
+	var cids = new Array();
+	var lookUpIndex = 0;
+	
+	for(var currentCc2 in cc2)
+	{
+		while(currentCc2 > lookUpTable[lookUpIndex][1]) {
+			lookUpIndex++;
+		}
+		
+		if(currentCc2 == lookUpTable[lookUpIndex][1])
+		{
+			cids[cids.length] = lookUpIndex;
+		}
+		lookUpIndex++;
+	
+	}
+	
+	return cids;
+	
 }
 
