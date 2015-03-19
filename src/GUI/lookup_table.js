@@ -7,8 +7,6 @@
 // Dependencies:            descriptor.php, data.js
 // Additional Notes:        N/A
 
-var g_DescriptorJSON;
-
 function CreateLookupTable ()
 {
     GetDescriptor();

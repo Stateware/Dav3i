@@ -7,6 +7,7 @@
 // Dependencies:            index.html
 // Additional Notes:        N/A
 
+var g_DescriptorJSON; // Contains all from descriptor.php
 var g_LookupTable; // CID, CC2, name, and HMS lookup table.
 var g_StatList; // stat reference list, indexed by stat ID.
 var g_FirstYear; // first year for which data is available.
