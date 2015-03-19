@@ -58,21 +58,25 @@ Section 3 defines the use cases and how we satisfy them, features of the user in
 
 **country/region** refers to 1 distinct and indivisible region for which a single set of stats exists in the database.
 
+**country/region data** refers to the data set (all stats for all possible times) for a single country/region, in JSON format.
+
 **area selection** refers to a country/region or list of countries/regions which the user selects, using either the map or search bar, for which stats must be graphed.
 
-**area selection data** refers to the entire set of stat data for an area selection, in JSON format. If the area selection includes more than 1 country/region, the data object is composed of each individual country/region's data, concatenated in the order in which they were queried.
+**area selection data** refers to the entire set of stat data for an area selection contained in the ASDS.
 
-**ASDS** or **area selection data structure** refers to the organization of a 3D array used to store area selection data on the client side.
+**ASDS** or **area selection data structure** refers to the data structure used to store area selection data on the client side (defined in section 2.4).
 
-**parsed data** refers to area selection data parsed to fit ASDS.
+**ASDS node ** refers to one of the nodes of the ASDS corresponding to a single country/region data set.
+
+**parsed data** refers to country/region data parsed to fit within an ASDS node.
 
 **CID** refers to the unique integer ID used to refer to a country/region.
 
-**data query** refers to the process of querying the server for area selection data. The client makes an API call to by_country.php using a comma delimited list of CIDs indicating the area selection, and the server returns the area selection data.
+**data query** refers to the process of querying the server for area selection data. The client makes an API call to by_country.php using a single CID and returns country/region data.
 
-**CID reference list** refers to an array of CIDs used in a data query, in the order in which they were queried. This is used to get names from the lookup table to compose a legend for the corresponding graphs.
+**stat reference list** refers to an array of stat names and names corresponding to upper and lower bounds of stats (Births, Deaths, Estimated Cases Upper, Estimated Cases, Estimated Cases Lower etc.) which are enumerated based on the order in which the stats are returned when a data query is made.
 
-**stat reference list** refers to an array of stat names (births, deaths, estimated cases, etc.) which are enumerated based on the order in which the stats are given when a data query is made.
+**statID** refers to the enumerated value of a stat in the stat reference list.
 
 **CC2** refers to the unique 2 character code used to refer to a country/region.
 
@@ -136,60 +140,77 @@ index.html is the markup for the main page, including a loading screen, an HTML5
 
 style.css includes style for main page and loading screen.
 
+**data.js**
+
+data.js is a JavaScript data module that contains all global variables needed across the program. It includes:  
+ * g_LookupTable : variable containing lookup table
+ * g_StatList : variable containing stat reference list
+ * g_FirstYear : variable containing earliest year for which data exists
+ * g_LastYear : variable containing latest year for which data exists
+ * g_YearStart : variable containing earliest year for which the user wants to see data
+ * g_YearEnd: variable containing latest year for which the user wants to see data
+ * g_Data : variable containing area selection data (in ASDS format)
+ * g_Toggles : variable containing settings toggles
+ * g_HMSID : statID representing which stat is heat mapped
+ * g_HMSYear : variable representing the year for which HMS data is desired
+ * g_isSum : boolean variable that represents whether graph is to be sum or individualized data (true if user wants sum)
+
 **lookup_table.js**
 
 lookup_table.js is a JavaScript module that includes functions to:  
- * Call descriptor.php to get CC2s, names, stat reference list, and set timespan (using settings.js)
- * Call by_stat.php to get default HMS
- * Generate lookup table from CC2s, names, and default HMS
- * Call by_stat.php with non-default HMS value and replace stat values in HMS field of lookup table
- * Translate CC2s to CIDs, and set area selection names (using graphs.js)
- * Get HMS
+ * Call descriptor.php and return response text (including CC2s, names, stat reference list, and timespan)
+ * Call by_stat.php with some statID and return HMS
+ * Generate lookup table from CC2s, names, and 0's for HMS (stored as g_LookupTable)
+ * Set stat reference list (stored as g_StatList)
+ * Set timespan (stored as g_FirstYear and g_LastYear)
+ * Replace HMS values in lookup table with new HMS data (will happen just after lookup table generation for default HMS)
+ * Translate CC2 to CID using g_LookupTable
+ * Translate CC2 to name using g_LookupTable
+ * Get HMS value using CC2 as argument using g_LookupTable
 
 **loading_script.js**
 
-loading_script.js is a container module with a function that runs during the loading screen. It calls functions from lookup_table.js, settings.js, map.js, and graphs.js to:
- * Generate lookup table from CC2s, names, and default HMS (lookup_table.js)
- * Set stat reference list (graphs.js)
- * Set timespan (settings.js)
- * Generate map colored by default HMS (map.js)
+loading_script.js is a container module with a function that runs during the loading screen. It calls functions from lookup_table.js, settings.js, map.js, and graphs.js to:  
+ * Generate lookup table from CC2s, names, and default HMS (using functions from lookup_table.js)
+ * Set stat reference list (using functions from lookup_table.js)
+ * Set timespan (using functions from lookup_table.js)
+ * Generate map colored by default HMS (using functions from lookup_table.js and map.js)
+ * Hide loading screen when the user advances to the main page
 
 **settings.js**
 
-settings.js is a JavaScript module that takes user mouse clicks as input to a list of checkboxes (toggle bounds on/off, toggle for showing each stat) and to a 2 ended slider that defines the timespan for graph generation. It includes functions to:
- * Return settings toggles
- * Return selected timespan
- * Set timespan
- * Reset the HMS to a newly selected one (using lookup_table.js)
+settings.js is a JavaScript module that takes user mouse clicks as input to a list of checkboxes (toggle bounds on/off, toggle for showing each stat) and to a 2 ended slider that defines the timespan for graph generation. It includes functions to:  
+ * Take an index into g_Toggles and flip that value
+ * Set g_YearStart and g_YearEnd
+ * Set g_HMSID
 
 **map.js**
 
-map.js is a JavaScript module that includes functions to:
+map.js is a JavaScript module that includes functions to:  
  * Generate map colored by default HMS (getting HMS using lookup_table.js)
  * Reset map in the case of HMS change (getting HMS using lookup_table.js)
- * Make area selection and and get parsed data using CC2s (using data_query.js)
- * Call functions from graphs.js using parsed data
+ * Make country/region selection and append new ASDS node to area selection data (using data_query.js)
 
 **data_query.js**
 
-data_query.js is a JavaScript module that includes a function to:
- * Take a list of CC2s, translate to CIDs (using lookup_table.js), fills CID reference list, make call to by_country.php using CID reference list to get area selection data, parse area selection data into ASDS (using client_parser.js), and return parsed data
+data_query.js is a JavaScript module that includes a function to:  
+ * Take a CC2, translate it to CID and get name, make call to by_country.php using CID, parse returned data (using client_parser.js) and create and return new ASDS node
+ * Take CID, name, and parsed data and return ASDS node including that data
 
 **client_parser.js**
 
-parser.js is a JavaScript module that includes a function to:
- * Take area selection data, and return parsed data
+parser.js is a JavaScript module that includes a function to:  
+ * Take country/region data, and return parsed data
 
 **graphs.js**
 
-graphs.js is a JavaScript module includes functions to:
- * Remove displayed graphs if there are any, and generate graphs based on parsed data, settings toggles, and desired timespan
- * Set area selection names for graph legend
- * Set stat reference list
+graphs.js is a JavaScript module includes functions to:  
+ * Take first ASDS node of area selection data, and generate graphs for whole list (with stat name over each graph), based on settings toggles and selected timespan (including names in legend)
+ * Take first ASDS node of area selection data, and generate graphs for sum of list (with stat name over each graph), based on settings toggles and selected timespan (including names in legend)
 
 ###2.1 : Client/Server Interface
 
-The front end interacts with the back end using 3 distinct AJAX php calls:
+The front end interacts with the back end using 3 distinct AJAX php calls:  
  * descriptor.php : gets data for lookup table, timespan, and stat reference list
  * by_country.php : gets area selection data based on CID reference list
  * by_stat.php    : gets HMS data
@@ -199,7 +220,7 @@ The front end interacts with the back end using 3 distinct AJAX php calls:
  * descriptor.php    
 Query:       `http://[server-domain]/API/descriptor.php`    
  * by_country.php  
-Query:       `http://[server-domain]/API/by_country.php?CID=[CIDs]`, where [CIDs] is the CID reference list.  
+Query:       `http://[server-domain]/API/by_country.php?CID=[CID]`, where [CID] is the CID corresponding to the desired country/region.  
  * by_stat.php  
 Query:       `http://[server-domain]/API/by_stat.php?statID=[ID]&year=[year]`, where [ID] is the enumerated value from the stat reference list, and [year] is the year desired.  
 
@@ -211,24 +232,15 @@ The module architecture is defined in section 2.0 : Files. It can be seen visual
 
 The area selection data structure is defined below:
 
-When parsed data is returned from client_parser.js, it is returned as a 3D array, with each index meaning a different thing, based on context.
+When a country/region's data is returned from by_country.php, it is sent to the ParseData(json) function of client_parser.js. When parsed data is returned from client_parser.js, it is returned as a 2D array, indexed as a 2D array A[x][y].
 
-For data A[x][y][z], x always refers to the stat that matches its enumerated value in stat reference list.
+For data A[x][y],  
+ * x = statID, where each row stat values in y indexed by x is the time series for the stat corresponding to statID in the stat reference list
+ * y = stat value for the stat corresponding to statID at time t = y + 1980.
 
-**Scheme 0:** A[x][y][z]: Used for single country/region area selection, for stats that do not include bounds.
- * y is unused, but still exists in the data structure to ensure a uniform return type from the parser. The stat value exists in the row y = 1, for uniformity with scheme 1.
- * z corresponds to the stat value at time t = 1980 + z.
+This 2D array is a data member of an ASDS node, which also includes CID and name of the relevant country/region.
 
-**Scheme 1:** A[x][y][z]: Used for single country/region area selection, for stats that include bounds. 
- * y corresponds to upper bound when y = 0, the stat's value when y = 1, and lower bound when y = 2.
- * z corresponds to the value of the upper bound, stat value, and value of the lower bound at time t = 1980 + z.
-
-**Scheme 2:** A[x][y][z]: Used for multiple country/region area selection.
- * y corresponds to country, enumerated based on the order in which it was queried. 
- * z corresponds to the stat value at time t = 1980 + z.
-
-For a single country/region area selection, both schemes 0 and 1 will be used, with each being used dependent on whether the stat has upper and lower bounds. This is checked using the stat reference list.
-For multiple country/region area selection, scheme 2 will be used for all stats.
+The ASDS is a singly-linked list of ASDS nodes.
 
 #Section 3
 
@@ -277,7 +289,7 @@ The front end receives 2 types of input:
  * Mouse input, in the form of country/region selection, settings changes, and various minor actions
  * Keyboard input in the search box
 
-Mouse input is handled differently in each context. In country/region selection, each country/region is selected by clicking it once, toggling the country/region to selected. After a country/region is selected, one can deselect it either by clicking the individual country/region again, or by deselecting the whole area selection by clicking the "clear selection" button in the settings. Settings changes are primarily checkboxes, which function in the way conventionally seen on a website. They can be toggled on and off by a click of the mouse. In certain contexts, some boxes will be grayed out and uncheckable (e.g. including bounds when multiple countries' data is displayed). There are also radio buttons for selecting HMS, which function in such a way that only one of a set is selectable at a time. There is also a slider for selecting timespan, with either end draggable by the mouse.
+Mouse input is handled differently in each context. In country/region selection, each country/region is selected by clicking it once, toggling the country/region to selected. After a country/region is selected, one can deselect it either by clicking the individual country/region again, or by deselecting the whole area selection by clicking the "clear selection" button in the settings. Settings changes are primarily checkboxes, which function in the way conventionally seen on a website. They can be toggled on and off by a click of the mouse. In certain contexts, some boxes will be grayed out and uncheckable (e.g. including bounds when multiple countries' data is displayed). There are also radio buttons for selecting HMS, which function in such a way that only one of a set is selectable at a time. There is also a slider for selecting timespan, with either end draggable by the mouse, and a second slider with 1 draggable part that selects HMS year.
 
 Keyboard input requires a more secure approach. Input is parsed and sanitized before it is used, to avoid malicious or otherwise unpredictable behavior. *section to be expanded as test plan is developed*.
 
@@ -291,7 +303,32 @@ Keyboard input requires a more secure approach. Input is parsed and sanitized be
  * Third Party Resources: Google Charts API and jVectorMap were chosen for their performance and feature sets, as well as their ease of use under the terms of the GPL.
 
 #####Data Structures  
+
+ * ASDS: The ASDS was chosen because data for an area selection composed of both single or multiple countries can be stored losslessly (advantage over not storing bounds for multiple selection in discarded ASDS design) and flexibly, allowing us to call countries/regions one at a time and simply inserting in the list, rather than modifying a static array and potentially contaminating data (advantage over rigid array indices of discarded ASDS design). This also allows us to sum country/region data client side and simplifies the client/server interface.
+
+*Discarded ASDS Design*  
  * ASDS: The ASDS was chosen as the ideal setup for parsed data, as it is a uniform structure that serves all of our unique use cases for parsed data. This way, the parser can run as a single function with low cyclomatic complexity. Additionally, in the event that we may want to display a single time series of a sum of multiple countries, the ASDS will adequately serve that purpose under the single country/region scheme, as it receives the summed data from the server.  
+
+When parsed data is returned from client_parser.js, it is returned as a 3D array, with each index meaning a different thing, based on context.  
+
+For data A[x][y][z], x always refers to the stat that matches its enumerated value in stat reference list.  
+
+**Scheme 0:** A[x][y][z]: Used for single country/region area selection, for stats that do not include bounds.  
+ * y is unused, but still exists in the data structure to ensure a uniform return type from the parser. The stat value exists in the row y = 1, for uniformity with scheme 1.  
+ * z corresponds to the stat value at time t = 1980 + z.  
+
+**Scheme 1:** A[x][y][z]: Used for single country/region area selection, for stats that include bounds.  
+ * y corresponds to upper bound when y = 0, the stat's value when y = 1, and lower bound when y = 2.  
+ * z corresponds to the value of the upper bound, stat value, and value of the lower bound at time t = 1980 + z.  
+
+**Scheme 2:** A[x][y][z]: Used for multiple country/region area selection.  
+ * y corresponds to country, enumerated based on the order in which it was queried.  
+ * z corresponds to the stat value at time t = 1980 + z.  
+
+For a single country/region area selection, both schemes 0 and 1 will be used, with each being used dependent on whether the stat has upper and lower bounds. This is checked using the stat reference list.  
+For multiple country/region area selection, scheme 2 will be used for all stats.  
+*end of discarded design*  
+
  * Lookup Table Structure: The lookup table structure was chosen for its simplicity in being able to index CC2, name, and HMS value for each country/region by its CID.
  * Stat Reference List: The stat reference list's setup as a 1D array is ideal as it is easily used to enumerate the x indices of the ASDS, allowing each module to correctly interpret the parsed data.
  * CID Reference List: The CID reference list's setup as a 1D array is ideal because it can easily be used to retrieve names from the lookup table and generate an accurate legend for the graphs.
