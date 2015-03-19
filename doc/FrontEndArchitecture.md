@@ -232,11 +232,11 @@ The module architecture is defined in section 2.0 : Files. It can be seen visual
 
 The area selection data structure is defined below:
 
-When a country/region's data is returned from by_country.php, it is sent to the ParseData(json) function of client_parser.js. When parsed data is returned from client_parser.js, it is returned as a 2D array, indexed as a 2D array A[x][y].
+When a country/region's data is returned from by_country.php, it is sent to the ParseData(json) function of client_parser.js. When parsed data is returned from client_parser.js, it is returned as a 2D array, indexed as a 2D array `A[x][y]`.
 
-For data A[x][y],  
- * x = statID, where each row stat values in y indexed by x is the time series for the stat corresponding to statID in the stat reference list
- * y = stat value for the stat corresponding to statID at time t = y + 1980.
+For data `A[x][y]`,  
+ * `x =` statID, where each row stat values in `y` indexed by `x` is the time series for the stat corresponding to `statID` in the stat reference list.
+ * `y =` stat value for the stat corresponding to statID at time `t = y + 1980`.
 
 This 2D array is a data member of an ASDS node, which also includes CID and name of the relevant country/region.
 
@@ -304,34 +304,50 @@ Keyboard input requires a more secure approach. Input is parsed and sanitized be
 
 #####Data Structures  
 
- * ASDS: The ASDS was chosen because data for an area selection composed of both single or multiple countries can be stored losslessly (advantage over not storing bounds for multiple selection in discarded ASDS design) and flexibly, allowing us to call countries/regions one at a time and simply inserting in the list, rather than modifying a static array and potentially contaminating data (advantage over rigid array indices of discarded ASDS design). This also allows us to sum country/region data client side and simplifies the client/server interface.
+ASDS:
+
+The ASDS was redone in the new scheme (discarded ASDS below) because it gave us the following advantages:  
+ * Can store bounds for all countries
+ * Can add to or remove from area selection without modifying existing data structures
+ * Single structure fits all cases without varying meaning in different contexts
+ * More flexible structure that is not single-purpose built; the data structure is built to store data, rather than built to be operated upon in a specific way, and will thus have high utility in adding new functionality.
 
 *Discarded ASDS Design*  
- * ASDS: The ASDS was chosen as the ideal setup for parsed data, as it is a uniform structure that serves all of our unique use cases for parsed data. This way, the parser can run as a single function with low cyclomatic complexity. Additionally, in the event that we may want to display a single time series of a sum of multiple countries, the ASDS will adequately serve that purpose under the single country/region scheme, as it receives the summed data from the server.  
+ASDS:
+
+The ASDS was chosen as the ideal setup for parsed data, as it is a uniform structure that serves all of our unique use cases for parsed data. This way, the parser can run as a single function with low cyclomatic complexity. Additionally, in the event that we may want to display a single time series of a sum of multiple countries, the ASDS will adequately serve that purpose under the single country/region scheme, as it receives the summed data from the server.  
 
 When parsed data is returned from client_parser.js, it is returned as a 3D array, with each index meaning a different thing, based on context.  
 
-For data A[x][y][z], x always refers to the stat that matches its enumerated value in stat reference list.  
+For data `A[x][y][z]`, `x` always refers to the stat that matches its enumerated value in stat reference list.  
 
-**Scheme 0:** A[x][y][z]: Used for single country/region area selection, for stats that do not include bounds.  
- * y is unused, but still exists in the data structure to ensure a uniform return type from the parser. The stat value exists in the row y = 1, for uniformity with scheme 1.  
- * z corresponds to the stat value at time t = 1980 + z.  
+**Scheme 0:** `A[x][y][z]`: Used for single country/region area selection, for stats that do not include bounds.  
+ * `y` is unused, but still exists in the data structure to ensure a uniform return type from the parser. The stat value exists in the row `y = 1`, for uniformity with scheme 1.  
+ * `z` corresponds to the stat value at time `t = 1980 + z`.  
 
-**Scheme 1:** A[x][y][z]: Used for single country/region area selection, for stats that include bounds.  
- * y corresponds to upper bound when y = 0, the stat's value when y = 1, and lower bound when y = 2.  
- * z corresponds to the value of the upper bound, stat value, and value of the lower bound at time t = 1980 + z.  
+**Scheme 1:** `A[x][y][z]`: Used for single country/region area selection, for stats that include bounds.  
+ * `y` corresponds to upper bound when y = 0, the stat's value when `y = 1`, and lower bound when `y = 2`.  
+ * `z` corresponds to the value of the upper bound, stat value, and value of the lower bound at time `t = 1980 + z`.  
 
-**Scheme 2:** A[x][y][z]: Used for multiple country/region area selection.  
- * y corresponds to country, enumerated based on the order in which it was queried.  
- * z corresponds to the stat value at time t = 1980 + z.  
+**Scheme 2:** `A[x][y][z]`: Used for multiple country/region area selection.  
+ * `y` corresponds to country, enumerated based on the order in which it was queried.  
+ * `z` corresponds to the stat value at time `t = 1980 + z`.  
 
 For a single country/region area selection, both schemes 0 and 1 will be used, with each being used dependent on whether the stat has upper and lower bounds. This is checked using the stat reference list.  
 For multiple country/region area selection, scheme 2 will be used for all stats.  
 *end of discarded design*  
 
- * Lookup Table Structure: The lookup table structure was chosen for its simplicity in being able to index CC2, name, and HMS value for each country/region by its CID.
- * Stat Reference List: The stat reference list's setup as a 1D array is ideal as it is easily used to enumerate the x indices of the ASDS, allowing each module to correctly interpret the parsed data.
- * CID Reference List: The CID reference list's setup as a 1D array is ideal because it can easily be used to retrieve names from the lookup table and generate an accurate legend for the graphs.
+Lookup Table Structure:
+
+The lookup table structure was chosen for its simplicity in being able to index CC2, name, and HMS value for each country/region by its CID.
+
+Stat Reference List:
+
+The stat reference list's setup as a 1D array is ideal as it is easily used to enumerate the x indices of the ASDS, allowing each module to correctly interpret the parsed data.
+
+CID Reference List:
+
+The CID reference list's setup as a 1D array is ideal because it can easily be used to retrieve names from the lookup table and generate an accurate legend for the graphs.
 
 #####UX  
  * Checkboxes, radio buttons, and a slider were chosen for the settings menu, as they are a simple interface to toggling, selection of one from a set, and selecting a timespan, which are the fundamental requirements of the menu.
