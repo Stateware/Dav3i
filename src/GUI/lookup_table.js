@@ -41,34 +41,23 @@ function CreateTable(cc2, name, size)
 
 function GetDescriptor ()
 {
-	$.ajax({                                      
+	var ajaxresults = $.ajax({                                      
 		url: 'http://usve74985.serverprofi24.com/API/descriptor.php',                                                     
 		dataType: 'JSON',                 
-		async: 'false',
+		async: false,
 		success: function(data){     
 			console.log("Successfully received descriptor.php");
-			console.log(JSON.stringify(data));
-			g_DescriptorJSON = JSON.stringify(data);
+			g_DescriptorJSON = data;
 		} 
 	});
 }
 
-function GetHMS ()
-{
-	
-}
-
-function SetHMS ()
-{
-}
-
-// Generate with HMS column as 0
 function GenerateLookupTable ()
 {
 	var CC2 = [];
 	var CountryName = [];
 	var HMS = []; 
-	for (i = 0; i < 194; i++)
+	for (i = 0; i < g_DescriptorJSON.cc2.length; i++)
 	{
 		CC2[i] = g_DescriptorJSON.cc2[i];
 		CountryName[i] = g_DescriptorJSON.common_name[i];
@@ -81,7 +70,7 @@ function GenerateLookupTable ()
 function GenerateStatReferenceList()
 {
 	g_Stats = []; 
-	for (i = 0; i < 194; i++)
+	for (i = 0; i < g_DescriptorJSON.stats.length; i++)
 	{
 		g_Stats[i] = g_DescriptorJSON.stats[i];
 	}
@@ -109,7 +98,6 @@ function GetCID(cc2)
 	
 	}
 	
-	return cids;
-	
+	return cids;	
 }
 

@@ -18,7 +18,6 @@ $(".loadingScreen").ready(function () {
     }, 1250);
 });
 
-
 //
 function SwitchToMain ()
 {
