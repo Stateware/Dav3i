@@ -155,7 +155,7 @@ data.js is a JavaScript data module that contains all global variables needed ac
  * `g_HMSYear` : variable representing the year for which HMS data is desired
  * `g_isSum` : boolean variable that represents whether graph is to be sum or individualized data (true if user wants sum)
 
-It also includes the function prototypes for the lookup table and ASDS nodes. (defined in section 2.4)
+It also includes the function prototype for the ASDS nodes. (defined in section 2.4)
 
 **lookup_table.js**
 
