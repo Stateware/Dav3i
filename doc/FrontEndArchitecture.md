@@ -66,7 +66,7 @@ Section 3 defines the use cases and how we satisfy them, features of the user in
 
 **ASDS** or **area selection data structure** refers to the data structure used to store area selection data on the client side (defined in section 2.4).
 
-**ASDS node ** refers to one of the nodes of the ASDS corresponding to a single country/region data set.
+**ASDS node** refers to one of the nodes of the ASDS corresponding to a single country/region data set.
 
 **parsed data** refers to country/region data parsed to fit within an ASDS node.
 
@@ -143,17 +143,17 @@ style.css includes style for main page and loading screen.
 **data.js**
 
 data.js is a JavaScript data module that contains all global variables needed across the program. It includes:  
- * g_LookupTable : variable containing lookup table
- * g_StatList : variable containing stat reference list
- * g_FirstYear : variable containing earliest year for which data exists
- * g_LastYear : variable containing latest year for which data exists
- * g_YearStart : variable containing earliest year for which the user wants to see data
- * g_YearEnd: variable containing latest year for which the user wants to see data
- * g_Data : variable containing area selection data (in ASDS format)
- * g_Toggles : variable containing settings toggles
- * g_HMSID : statID representing which stat is heat mapped
- * g_HMSYear : variable representing the year for which HMS data is desired
- * g_isSum : boolean variable that represents whether graph is to be sum or individualized data (true if user wants sum)
+ * `g_LookupTable` : variable containing lookup table
+ * `g_StatList` : variable containing stat reference list
+ * `g_FirstYear` : variable containing earliest year for which data exists
+ * `g_LastYear` : variable containing latest year for which data exists
+ * `g_YearStart` : variable containing earliest year for which the user wants to see data
+ * `g_YearEnd` : variable containing latest year for which the user wants to see data
+ * `g_Data` : variable containing area selection data (in ASDS format)
+ * `g_Toggles` : variable containing settings toggles
+ * `g_HMSID` : statID representing which stat is heat mapped
+ * `g_HMSYear` : variable representing the year for which HMS data is desired
+ * `g_isSum` : boolean variable that represents whether graph is to be sum or individualized data (true if user wants sum)
 
 **lookup_table.js**
 
