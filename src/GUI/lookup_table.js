@@ -1,7 +1,7 @@
 // File Name:               lookup_table.js
 // Description:             Generates lookup table
 // Date Created:            3/5/2015
-// Contributors:            Emma Roudabush, Vanajam Soni, Paul Jang
+// Contributors:            Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Craft
 // Date Last Modified:      3/19/2015
 // Last Modified By:        Emma Roudabush
 // Dependencies:            descriptor.php, data.js
@@ -9,8 +9,7 @@
 
 function CreateLookupTable ()
 {	
-	$.when(GetDescriptor()).done(function(data){
-		var DescriptorJSON = data;
+	$.when(GetDescriptor()).done(function(DescriptorJSON){
 		GenerateLookupTable(DescriptorJSON);
 		GenerateStatReferenceList(DescriptorJSON);
 		console.log(g_StatList); 
@@ -54,15 +53,12 @@ function SetHMS(hms)
 {
 	for (i = 0; i < g_LookupTable.length; i++)
 	{
-		
+		g_LookupTable[i][2] = hms[i];
 	}
 }
 
 function GetCID(cc2)
 {
-	// Assumptions:
-	// 1. the name of the table is "lookUpTable"
-	// 2. cc2 array is sorted 
 	var cids = new Array();
 	var lookUpIndex = 0;
 	
@@ -78,7 +74,6 @@ function GetCID(cc2)
 			cids[cids.length] = lookUpIndex;
 		}
 		lookUpIndex++;
-	
 	}
 	
 	return cids;	
