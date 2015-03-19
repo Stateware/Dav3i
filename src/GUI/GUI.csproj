@@ -35,12 +35,15 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="client_parser.js" />
+    <Content Include="data.js" />
+    <Content Include="data_query.js" />
+    <Content Include="graph.js" />
     <Content Include="index.html" />
     <Content Include="loading_script.js" />
     <Content Include="lookup_table.js" />
     <Content Include="map.js" />
     <Content Include="parser_markup.html" />
-    <Content Include="parser.js" />
     <Content Include="parser_test.js" />
     <Content Include="parser_test_markup.html" />
     <Content Include="style.css" />
