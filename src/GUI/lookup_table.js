@@ -2,46 +2,26 @@
 // Description:             Generates lookup table
 // Date Created:            3/5/2015
 // Contributors:            Emma Roudabush, Vanajam Soni
-// Date Last Modified:      3/17/2015
+// Date Last Modified:      3/19/2015
 // Last Modified By:        Emma Roudabush
 // Dependencies:            descriptor.php, data.js
 // Additional Notes:        N/A
 
 var g_DescriptorJSON;
-var g_LookupTable;
-var g_Stats;
-
-function LookupTable(cc2, countryName, hms) {
-    this.CC2 = cc2;
-    this.CountryName = countryName;
-    this.HMS = hms;
-}
 
 function CreateLookupTable ()
 {
     GetDescriptor();
 	console.log(g_DescriptorJSON);
     GenerateLookupTable();
-	console.log(g_LookupTable);
     GenerateStatReferenceList();
-	console.log(g_Stats); 
-}
-
-function CreateTable(cc2, name, size)
-{
-    g_LookupTable = new Array(size);
-    for (i = 0; i < size; i++)
-    {
-        g_LookupTable[i] = newArray(3);
-        g_LookupTable[i][0] = cc2[i];
-        g_LookupTable[i][1] = name[i];
-        g_LookupTable[i][2] = 0;
-    }
+	console.log(g_StatList); 
+	console.log(g_LookupTable);
 }
 
 function GetDescriptor ()
 {
-	var ajaxresults = $.ajax({                                      
+	$.ajax({                                      
 		url: 'http://usve74985.serverprofi24.com/API/descriptor.php',                                                     
 		dataType: 'JSON',                 
 		async: false,
@@ -52,27 +32,24 @@ function GetDescriptor ()
 	});
 }
 
-function GenerateLookupTable ()
+function GenerateLookupTable()
 {
-	var CC2 = [];
-	var CountryName = [];
-	var HMS = []; 
-	for (i = 0; i < g_DescriptorJSON.cc2.length; i++)
-	{
-		CC2[i] = g_DescriptorJSON.cc2[i];
-		CountryName[i] = g_DescriptorJSON.common_name[i];
-		HMS[i] = 0;
-	}
-	
-	g_LookupTable = new LookupTable(CC2, CountryName, HMS);
+    g_LookupTable = new Array(g_DescriptorJSON.cc2.length);
+    for (i = 0; i < g_DescriptorJSON.cc2.length; i++)
+    {
+		g_LookupTable[i] = new Array(3);
+        g_LookupTable[i][0] = g_DescriptorJSON.cc2[i];
+        g_LookupTable[i][1] = g_DescriptorJSON.common_name[i];
+        g_LookupTable[i][2] = 0;
+    }
 }
 
 function GenerateStatReferenceList()
 {
-	g_Stats = []; 
+	g_StatList = []; 
 	for (i = 0; i < g_DescriptorJSON.stats.length; i++)
 	{
-		g_Stats[i] = g_DescriptorJSON.stats[i];
+		g_StatList[i] = g_DescriptorJSON.stats[i];
 	}
 }
 
@@ -86,11 +63,12 @@ function GetCID(cc2)
 	
 	for(var currentCc2 in cc2)
 	{
-		while(currentCc2 > lookUpTable[lookUpIndex][1]) {
+		while(currentCc2 > g_LookupTable[lookUpIndex][1]) 
+		{
 			lookUpIndex++;
 		}
 		
-		if(currentCc2 == lookUpTable[lookUpIndex][1])
+		if(currentCc2 == g_LookupTable[lookUpIndex][1])
 		{
 			cids[cids.length] = lookUpIndex;
 		}
