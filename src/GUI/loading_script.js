@@ -4,7 +4,7 @@
 // Contributors:            Emma Roudabush, Joshua Crafts
 // Date Last Modified:      3/17/2015
 // Last Modified By:        Joshua Crafts
-// Dependencies:            lookup_table.js, map.js, index.html
+// Dependencies:            lookup_table.js, map.js, data.js, index.html
 // Additional Notes:        N/A
 
 //

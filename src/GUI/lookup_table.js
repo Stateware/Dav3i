@@ -4,7 +4,7 @@
 // Contributors:            Emma Roudabush, Vanajam Soni
 // Date Last Modified:      3/17/2015
 // Last Modified By:        Emma Roudabush
-// Dependencies:            Descriptor.php
+// Dependencies:            descriptor.php, data.js
 // Additional Notes:        N/A
 
 var g_DescriptorJSON;
