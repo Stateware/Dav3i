@@ -76,7 +76,7 @@ Section 3 defines the use cases and how we satisfy them, features of the user in
 
 **stat reference list** refers to an array of stat names and names corresponding to upper and lower bounds of stats (Births, Deaths, Estimated Cases Upper, Estimated Cases, Estimated Cases Lower etc.) which are enumerated based on the order in which the stats are returned when a data query is made.
 
-**statID** refers to the enumerated value of a stat in the stat reference list.
+**stat ID** refers to the enumerated value of a stat in the stat reference list.
 
 **CC2** refers to the unique 2 character code used to refer to a country/region.
 
@@ -90,7 +90,7 @@ Section 3 defines the use cases and how we satisfy them, features of the user in
 
 **selected timespan** refers to the 2 integers that represent the first and last year for which data is desired by the user to be represented.
 
-**settings toggles** refers to an array of booleans that represents all boolean settings values, including bounds on/off, and on/off for each available stat.
+**settings toggles** refers to an array of booleans that represents all boolean settings values, including bounds on/off, and an on/off corresponding to each stat ID that is not a bound.
 
 #Section 1
 
@@ -151,7 +151,7 @@ data.js is a JavaScript data module that contains all global variables needed ac
  * `g_YearEnd` : variable containing latest year for which the user wants to see data
  * `g_Data` : variable containing area selection data (in ASDS format)
  * `g_Toggles` : variable containing settings toggles
- * `g_HMSID` : statID representing which stat is heat mapped
+ * `g_HMSID` : stat ID representing which stat is heat mapped
  * `g_HMSYear` : variable representing the year for which HMS data is desired
  * `g_isSum` : boolean variable that represents whether graph is to be sum or individualized data (true if user wants sum)
 
@@ -194,6 +194,7 @@ map.js is a JavaScript module that includes functions to:
 **data_query.js**
 
 data_query.js is a JavaScript module that includes a function to:  
+ * Prototype ASDS node (defined in section 2.4)
  * Take a CC2, translate it to CID and get name, make call to by_country.php using CID, parse returned data (using client_parser.js) and create and return new ASDS node
  * Take CID, name, and parsed data and return ASDS node including that data
 
@@ -235,10 +236,17 @@ The area selection data structure is defined below:
 When a country/region's data is returned from by_country.php, it is sent to the ParseData(json) function of client_parser.js. When parsed data is returned from client_parser.js, it is returned as a 2D array, indexed as a 2D array `A[x][y]`.
 
 For data `A[x][y]`,  
- * `x =` statID, where each row stat values in `y` indexed by `x` is the time series for the stat corresponding to `statID` in the stat reference list.
+ * `x =` stat ID, where each row stat values in `y` indexed by `x` is the time series for the stat corresponding to stat ID in the stat reference list.
  * `y =` stat value for the stat corresponding to statID at time `t = y + 1980`.
 
-This 2D array is a data member of an ASDS node, which also includes CID and name of the relevant country/region.
+This 2D array is a data member of an ASDS node, which also includes CID and name of the relevant country/region. It is declared in data_query.js as:  
+`function data_node(cid, name, data)`  
+`{`  
+&nbsp;&nbsp;&nbsp;&nbsp;`this.cid=cid;`  
+&nbsp;&nbsp;&nbsp;&nbsp;`this.name=name;`  
+&nbsp;&nbsp;&nbsp;&nbsp;`this.data=data;`  
+&nbsp;&nbsp;&nbsp;&nbsp;`this.next=null;`  
+`}`  
 
 The ASDS is a singly-linked list of ASDS nodes.
 
