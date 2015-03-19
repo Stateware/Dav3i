@@ -236,9 +236,9 @@ The module architecture is defined in section 2.0 : Files. It can be seen visual
 
 The area selection data structure is defined below:
 
-When a country/region's data is returned from by_country.php, it is sent to the ParseData(json) function of client_parser.js. When parsed data is returned from client_parser.js, it is returned as a 2D array, indexed as a 2D array `A[x][y]`.
+When a country/region's data is returned from by_country.php, it is sent to the ParseData(json) function of client_parser.js. When parsed data is returned from client_parser.js, it is returned as a 2D array, indexed as a 2D array `node.data[x][y]` (member `data` of `node`).
 
-For data `A[x][y]`,  
+For data `node.data[x][y]`,  
  * `x =` stat ID, where each row stat values in `y` indexed by `x` is the time series for the stat corresponding to stat ID in the stat reference list.
  * `y =` stat value for the stat corresponding to statID at time `t = y + 1980`.
 
@@ -265,10 +265,14 @@ The structure of the lookup table is a 2D array, defined in lookup_table.js by t
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable[i][0] = cc2[i];`
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable[i][1] = name[i];`
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable[i][2] = 0;`
-&nbsp;&nbsp;&nbsp;&nbsp;`}`
+&nbsp;&nbsp;&nbsp;&nbsp;`}`  
 `}`  
 
 After the lookup table is initially created, its HMS values are replaced by real HMS data.
+
+For `g_LookupTable[x][y]`:
+ * `x =` CID
+ * `y =` CC2 if `y = 0`, name if `y = 1`, or HMS value if `y = 2`.
 
 #Section 3
 

@@ -27,6 +27,18 @@ function CreateLookupTable ()
 	console.log(g_Stats); 
 }
 
+function CreateTable(cc2, name, size)
+{
+    g_LookupTable = new Array(size);
+    for (i = 0; i < size; i++)
+    {
+        g_LookupTable[i] = newArray(3);
+        g_LookupTable[i][0] = cc2[i];
+        g_LookupTable[i][1] = name[i];
+        g_LookupTable[i][2] = 0;
+    }
+}
+
 function GetDescriptor ()
 {
 	$.ajax({                                      
