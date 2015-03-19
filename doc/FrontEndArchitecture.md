@@ -90,7 +90,7 @@ Section 3 defines the use cases and how we satisfy them, features of the user in
 
 **selected timespan** refers to the 2 integers that represent the first and last year for which data is desired by the user to be represented.
 
-**settings toggles** refers to an array of booleans that represents all boolean settings values, including bounds on/off, and an on/off corresponding to each stat ID that is not a bound.
+**settings toggles** refers to an array of booleans that represents all boolean settings values, including bounds on/off, on/off corresponding to each stat ID that is not a bound, and on/off for whether a sum is desired or multiple series (on for sum).
 
 #Section 1
 
@@ -153,7 +153,6 @@ data.js is a JavaScript data module that contains all global variables needed ac
  * `g_Toggles` : variable containing settings toggles
  * `g_HMSID` : stat ID representing which stat is heat mapped
  * `g_HMSYear` : variable representing the year for which HMS data is desired
- * `g_isSum` : boolean variable that represents whether graph is to be sum or individualized data (true if user wants sum)
 
 It also includes the function prototype for the ASDS nodes. (defined in section 2.4)
 
