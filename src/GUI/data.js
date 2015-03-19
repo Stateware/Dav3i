@@ -20,9 +20,10 @@ var g_HMSID; // stat ID corresponding to selected HMS.
 var g_HMSYear; // year for which HMS data is wanted.
 
 // prototype for ASDS node
-function t_AsdsNode(cid, name, data)
+function t_AsdsNode(cid, cc2, name, data)
 {
     this.cid = cid;
+    this.cc2 = cc2;
     this.name = name;
     this.data = data;
     this.next = null;

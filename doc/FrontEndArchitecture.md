@@ -196,7 +196,8 @@ map.js is a JavaScript module that includes functions to:
 
 data_query.js is a JavaScript module that includes a function to:  
  * Take a CC2, translate it to CID and get name, make call to by_country.php using CID, parse returned data (using client_parser.js) and create and return new ASDS node
- * Take CID, name, and parsed data and return ASDS node including that data
+ * Check size of map selection list and size of ASDS list, and either add node for new selection or remove node from list
+ * Take HMS ID and call by_stat.php, return array of HMS data
 
 **client_parser.js**
 
@@ -242,9 +243,10 @@ For data `node.data[x][y]`,
  * `y =` stat value for the stat corresponding to statID at time `t = y + 1980`.
 
 This 2D array is a data member of an ASDS node, which also includes CID and name of the relevant country/region. It is defined in data.js as:  
-`function t_AsdsNode(cid, name, data)`  
+`function t_AsdsNode(cid, cc2, name, data)`  
 `{`  
 &nbsp;&nbsp;&nbsp;&nbsp;`this.cid = cid;`  
+&nbsp;&nbsp;&nbsp;&nbsp;`this.cc2 = cc2;`  
 &nbsp;&nbsp;&nbsp;&nbsp;`this.name = name;`  
 &nbsp;&nbsp;&nbsp;&nbsp;`this.data = data;`  
 &nbsp;&nbsp;&nbsp;&nbsp;`this.next = null;`  
@@ -255,15 +257,15 @@ The ASDS is a singly-linked list of ASDS nodes.
 #####Lookup Table Structure
 
 The structure of the lookup table is a 2D array, defined in lookup_table.js by the table generation function as:  
-`function CreateTable(cc2, name, size)`
-`{`
-&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable = new Array(size);`
-&nbsp;&nbsp;&nbsp;&nbsp;`for (i = 0; i < size; i++)`
-&nbsp;&nbsp;&nbsp;&nbsp;`{`
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable[i] = newArray(3);`
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable[i][0] = cc2[i];`
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable[i][1] = name[i];`
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable[i][2] = 0;`
+`function CreateTable(cc2, name, size)`  
+`{`  
+&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable = new Array(size);`  
+&nbsp;&nbsp;&nbsp;&nbsp;`for (i = 0; i < size; i++)`  
+&nbsp;&nbsp;&nbsp;&nbsp;`{`  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable[i] = newArray(3);`  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable[i][0] = cc2[i];`  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable[i][1] = name[i];`  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g_LookupTable[i][2] = 0;`  
 &nbsp;&nbsp;&nbsp;&nbsp;`}`  
 `}`  
 
