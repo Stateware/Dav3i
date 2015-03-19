@@ -1,12 +1,21 @@
 // File Name:               lookup_table.js
 // Description:             Generates lookup table
 // Date Created:            3/5/2015
-// Contributors:            Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Craft
+// Contributors:            Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts
 // Date Last Modified:      3/19/2015
 // Last Modified By:        Emma Roudabush
 // Dependencies:            descriptor.php, data.js
 // Additional Notes:        N/A
 
+// Author: Emma Roudabush
+// Date Created: 
+// Last Modified: 3/19/2015 by Emma Roudabush
+// Description: Fills g_DescriptorJSON with the contents of descriptor.php,
+//				fills g_LookupTable and g_StatList with their corresponding data
+//				and logs the resulting variables to the console.
+// PRE: DescriptorJSON, g_StatList, and g_LookupTable exist,
+//		GenerateLookupTable and GenerateStatReferenceList function correctly
+// POST: DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
 function CreateLookupTable ()
 {	
 	$.when(GetDescriptor()).done(function(DescriptorJSON){
@@ -17,6 +26,12 @@ function CreateLookupTable ()
 	});
 }
 
+// Author: Emma Roudabush
+// Date Created:
+// Last Modified: 3/19/2015 by Emma Roudabush
+// Description: Retrieves descriptor.php from the server				
+// PRE: descriptor.php exists on the server.
+// POST: returns the contents of descriptor.php
 function GetDescriptor()
 {
 	return $.ajax({                                      
@@ -28,6 +43,15 @@ function GetDescriptor()
 	});
 }
 
+// Author: Emma Roudabush
+// Date Created: 
+// Last Modified: 3/19/2015 by Emma Roudabush
+// Description: Fills the contents of g_LookupTable with data from
+//				DescriptorJSON. This includes the CC2 codes, the 
+//				names, and the HMS values are set to 0.
+// PRE: DescriptorJSON exists with the correct data from descriptor.php,
+//		g_LookupTable exists
+// POST: g_LookupTable has the correct CC2, name, and HMS values
 function GenerateLookupTable(DescriptorJSON)
 {
     g_LookupTable = new Array(DescriptorJSON.cc2.length);
@@ -40,6 +64,15 @@ function GenerateLookupTable(DescriptorJSON)
     }
 }
 
+// Author: Emma Roudabush
+// Date Created: 
+// Last Modified: 3/19/2015 by Emma Roudabush
+// Description: Fills the contents of g_StatList with the stats
+//				data from DescriptorJSON			
+// PRE: g_DescriptorJSON exists with the correct data from descriptor.php,
+//		g_StatList exists
+// POST: g_StatList has the correct stat values
+
 function GenerateStatReferenceList(DescriptorJSON)
 {
 	g_StatList = new Array(DescriptorJSON.stats.length); 
@@ -49,6 +82,12 @@ function GenerateStatReferenceList(DescriptorJSON)
 	}
 }
 
+// Author: Emma Rouabush
+// Date Created:
+// Last Modified: 3/19/2015
+// Description:
+// PRE: 
+// POST:
 function SetHMS(hms)
 {
 	for (i = 0; i < g_LookupTable.length; i++)
@@ -57,6 +96,12 @@ function SetHMS(hms)
 	}
 }
 
+// Author: Emma Rouabush
+// Date Created:
+// Last Modified: 3/19/2015
+// Description:
+// PRE: 
+// POST:
 function GetCID(cc2)
 {
 	var cids = new Array();
