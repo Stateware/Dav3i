@@ -6,6 +6,8 @@ $testData = "";
 $fileTemporaryName = $_FILES['userfile']['tmp_name'];
 $testData = file_get_contents($fileTemporaryName);
 
+$testData = preg_replace("/\,NA\,|,,/", ",-1,", preg_replace("/\,NA\,|,,/", ",-1,", $testData));
+
 $databaseConnection = GetDatabaseConnection();
 
 $type = $_POST['data_type'];
