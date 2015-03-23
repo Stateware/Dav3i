@@ -4,19 +4,19 @@
 // Contributors:            Emma Roudabush, Joshua Crafts
 // Date Last Modified:      3/17/2015
 // Last Modified By:        Joshua Crafts
-// Dependencies:            lookup_table.js, map.js, data.js, index.html
+// Dependencies:            descriptor.php, by_stat.php, lookup_table.js, map.js, data.js, index.html
 // Additional Notes:        N/A
 
 // Author: Emma Roudabush
 // Date Created: 3/5/2015
-// Last Modified: 3/17/2015 by Joshua Crafts
+// Last Modified: 3/23/2015 by Joshua Crafts
 // Description: Generates lookup table and heat map while 
 //              displaying loading screen
 // PRE: N/A
 // POST: lookup table is generated, generate map colored by default HMS
-$(".loadingScreen").ready(function () {
+$(".loading-screen").ready(function () {
 // Generate lookup table and heat map
-    CreateLookupTable();
+    ParseDescriptor();
 // Do below process when heat map is generated
     $(".spinner").fadeOut(1250);
     setTimeout(function () {

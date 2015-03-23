@@ -40,32 +40,11 @@ function GetData(cc2)
 	return newNode;
 }
 
-
-function AddToData(var newNode) {
+function AddToData(newNode) {
 	
 }
 
 
-function RemoveFromData(var cid) {
+function RemoveFromData(cid) {
 
-}
-
-function GetHMS(hmsId)
-{
-	var hmsData;
-	// 1. Query by_stat.php
-	
-	$.ajax({                                      
-		url: 'http://usve74985.serverprofi24.com/API/by_stat.php?statID='.concat(hmsID.toString()),                                                     
-		dataType: 'JSON',                 
-		async: false,
-		success: function(data){     
-			console.log("Successfully received descriptor.php");
-			hmsData = data;
-		} 
-	});
-	
-	
-	
-	return hmsData;
 }
