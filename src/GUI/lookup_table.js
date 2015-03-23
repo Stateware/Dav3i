@@ -1,10 +1,10 @@
-// File Name:				lookup_table.js
-// Description:				Generates lookup table
-// Date Created:			3/5/2015
-// Contributors:			Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts
+// File Name:			lookup_table.js
+// Description:			Generates lookup table
+// Date Created:		3/5/2015
+// Contributors:		Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts
 // Date Last Modified:		3/19/2015
 // Last Modified By:		Emma Roudabush
-// Dependencies:			descriptor.php, data.js
+// Dependencies:		descriptor.php, data.js
 // Additional Notes:		N/A
 
 // Author: Emma Roudabush
@@ -18,12 +18,12 @@
 // POST: DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
 function CreateLookupTable ()
 {	
-	$.when(GetDescriptor()).done(function(DescriptorJSON){
-		GenerateLookupTable(DescriptorJSON);
-		GenerateStatReferenceList(DescriptorJSON);
-		console.log(g_StatList); 
-		console.log(g_LookupTable);
-	});
+    $.when(GetDescriptor()).done(function(DescriptorJSON){
+        GenerateLookupTable(DescriptorJSON);
+        GenerateStatReferenceList(DescriptorJSON);
+        console.log(g_StatList); 
+        console.log(g_LookupTable);
+    });
 }
 
 // Author: Emma Roudabush
@@ -34,13 +34,13 @@ function CreateLookupTable ()
 // POST: returns the contents of descriptor.php
 function GetDescriptor()
 {
-	return $.ajax({										 
-		url: 'http://usve74985.serverprofi24.com/API/descriptor.php',													  
-		dataType: 'JSON',				  
-		success: function(data){	 
-			console.log("Successfully received descriptor.php");
-		} 
-	});
+    return $.ajax({										 
+        url: 'http://usve74985.serverprofi24.com/API/descriptor.php',													  
+        dataType: 'JSON',				  
+        success: function(data){	 
+            console.log("Successfully received descriptor.php");
+        } 
+    });
 }
 
 // Author: Emma Roudabush
@@ -54,14 +54,14 @@ function GetDescriptor()
 // POST: g_LookupTable has the correct CC2, name, and HMS values
 function GenerateLookupTable(DescriptorJSON)
 {
-	g_LookupTable = new Array(DescriptorJSON.cc2.length);
-	for (i = 0; i < DescriptorJSON.cc2.length; i++)
-	{
-		g_LookupTable[i] = new Array(3);
-		g_LookupTable[i][0] = DescriptorJSON.cc2[i];
-		g_LookupTable[i][1] = DescriptorJSON.common_name[i];
-		g_LookupTable[i][2] = 0;
-	}
+    g_LookupTable = new Array(DescriptorJSON.cc2.length);
+    for (i = 0; i < DescriptorJSON.cc2.length; i++)
+    {
+        g_LookupTable[i] = new Array(3);
+        g_LookupTable[i][0] = DescriptorJSON.cc2[i];
+        g_LookupTable[i][1] = DescriptorJSON.common_name[i];
+        g_LookupTable[i][2] = 0;
+    }
 }
 
 // Author: Emma Roudabush
@@ -74,11 +74,11 @@ function GenerateLookupTable(DescriptorJSON)
 // POST: g_StatList has the correct stat values
 function GenerateStatReferenceList(DescriptorJSON)
 {
-	g_StatList = new Array(DescriptorJSON.stats.length); 
-	for (i = 0; i < DescriptorJSON.stats.length; i++)
-	{
-		g_StatList[i] = DescriptorJSON.stats[i];
-	}
+    g_StatList = new Array(DescriptorJSON.stats.length); 
+    for (i = 0; i < DescriptorJSON.stats.length; i++)
+    {
+        g_StatList[i] = DescriptorJSON.stats[i];
+    }
 }
 
 // Author: Emma Rouabush
@@ -89,37 +89,30 @@ function GenerateStatReferenceList(DescriptorJSON)
 // POST: g_LookupTable has heat map values of hms
 function SetHMS(hms)
 {
-	for (i = 0; i < g_LookupTable.length; i++)
-	{
-		g_LookupTable[i][2] = hms[i];
-	}
+    for (i = 0; i < g_LookupTable.length; i++)
+    {
+        g_LookupTable[i][2] = hms[i];
+    }
 }
 
-// Author: Emma Rouabush
+// Author: Emma Rouabush, Joshua Crafts
 // Date Created: 3/17/2015
-// Last Modified: 3/19/2015 by Emma Roudabush
+// Last Modified: 3/22/2015 by Joshua Crafts
 // Description: Translate CC2 to CID using g_LookupTable
-// PRE: cc2 is sorted
-// POST: Correct CID(s) are returned
+// PRE: cc2 is a valid CC2 code corresponding to a country/region in the lookup table
+// POST: FCTVAL = cid (CID corresponding to the input CC2 in the lookup table)
 function GetCID(cc2)
 {
-	var cids = new Array();
-	var lookUpIndex = 0;
-	
-	for(var currentCc2 in cc2)
-	{
-		while(currentCc2 > g_LookupTable[lookUpIndex][1]) 
-		{
-			lookUpIndex++;
-		}
-		
-		if(currentCc2 == g_LookupTable[lookUpIndex][1])
-		{
-			cids[cids.length] = lookUpIndex;
-		}
-		lookUpIndex++;
-	}
-	
-	return cids;	
-}
+    var length = g_LookupTable.length;
+    var cid;
+    
+    for (var i in g_LookupTable)
+    {
+        if (g_LookupTable[i][0] === cc2)
+        {
+            cid = i;
+        }
+    }
 
+    return cid;	
+}
