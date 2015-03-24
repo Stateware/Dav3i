@@ -3,7 +3,7 @@
 // Date Created:            3/19/2015
 // Contributors:            Joshua Crafts, Vanajam Soni
 // Date Last Modified:      3/24/2015
-// Last Modified By:        Vanajam Crafts
+// Last Modified By:        Vanajam Soni
 // Dependencies:            index.html
 // Additional Notes:        N/A
 
