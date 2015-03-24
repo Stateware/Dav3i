@@ -42,17 +42,19 @@ $(function(){
         map: 'world_mill_en',
         container: $('#map'),
         regionsSelectable: true, // allows us to select regions
-        backgroundColor: '#7779a7',
+        backgroundColor: '#698091',
         regionStyle: {
             initial: {
-                fill: '#ffffff'
+                fill: '#999999',
+                "stroke-width": 0.2,
+                stroke: '#223322'
             },
             hover: {
                 "fill-opacity": 0.7
             },
             selected: {
                 "stroke-width": 0.4,
-                stroke: '#223322',
+                stroke: '#445544',
                 fill: '#94C9A9'
             }
         },
@@ -61,7 +63,7 @@ $(function(){
                 attribute: 'fill',
                 // needs some random init values, otherwise dynamic region coloring won't work
                 values: { ID: 148576, PG: 13120.4, MX: 40264.8, EE: 78.6, DZ: 30744.6, MA: 24344.4, MR: 14117.6, SN: 39722.6, GM: 7832.6, GW: 9902.2 },
-                scale: ['#eeffee', '#005533'],
+                scale: ['#eeffee', '#115a2a'],
                 normalizeFunction: 'polynomial'
             }]
         },
