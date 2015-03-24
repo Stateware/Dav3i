@@ -35,16 +35,33 @@ $(function(){
         console.log(data);
 
         return data;
-    }, map;
+    }
 
-    var map = new jvm.Map(
+    map = new jvm.Map(
     {
-        container: $('#map'), // container div for the map
+        map: 'world_mill_en',
+        container: $('#map'),
         regionsSelectable: true, // allows us to select regions
+        backgroundColor: '#777DA7',
+        regionStyle: {
+            initial: {
+                fill: '#ffffff'
+            },
+            hover: {
+                "fill-opacity": 0.7
+            },
+            selected: {
+                "stroke-width": 0.4,
+                stroke: '#223322',
+                fill: '#94C9A9'
+            }
+        },
         series: {
             regions: [{
-                scale: ['#DEEBF7', '#08519C'],
                 attribute: 'fill',
+                values: { ID: 148576, PG: 13120.4, MX: 40264.8, EE: 78.6, DZ: 30744.6, MA: 24344.4, MR: 14117.6, SN: 39722.6, GM: 7832.6, GW: 9902.2 },
+                scale: ['#ffffff', '#002233'],
+                normalizeFunction: 'polynomial'
             }]
         },
         // script to run when a region is selected
@@ -55,10 +72,9 @@ $(function(){
         }
     });
     setTimeout(function(){
-        map.series.regions[0].setValues(ColorByHMS());
-        map.series.regions[0].setScale(['#C8EEFF', '#0071A4']);
-        map.series.regions[0].setNormalizeFunction('polynomial');
-        }, 1000);
+        var values = ColorByHMS();
+        map.series.regions[0].setValues(values);
+    }, 1000);
     // clearing selected regions when the "clear" button in clicked
     document.getElementById("clear").onclick = function()
     {
