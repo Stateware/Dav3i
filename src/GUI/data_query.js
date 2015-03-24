@@ -45,11 +45,16 @@ function ModifyData(selectedRegions) {
 
 	if(selectedRegions.length > g_DataList.length) 
 	{
-		// look for cc2 to add 
-
-		// call getdata with cc2
-
-		// call g_dataList.add with the node
+		// look for cc2 to add
+		var CC2Found = false; 
+		for(var i; i <= selectedRegions.length && CC2Found === false; i++)
+		{
+			if(CC2Found = g_DataList.contains(selectedRegions[i]))
+			{
+				// call getdata with cc2 && call g_dataList.add with the node
+				g_DataList.add(GetData(selectedRegions[i]));
+			}
+		}
 	}
 	else
 	{
