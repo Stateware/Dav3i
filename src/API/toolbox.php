@@ -14,7 +14,7 @@
 // ===================== Function Definitions =====================     
 //OUTPUT: This function will cause the program to close itself after echoing an error message.
 //INPUT: string message - optional further description of error
-function ThrowFatalError($message = "An Error has occured.") 
+function ThrowFatalError($message = "An error has occured - the program has been terminated.") 
 {
     echo "{\"error\" : \"" . $message . "\"}";
     if(!TESTING)
@@ -22,6 +22,11 @@ function ThrowFatalError($message = "An Error has occured.")
         die();
     }
 } // END ThrowFatalError
+
+function ThrowInconvenientError($message = "An inconvenient error has occured - program flow will continue.") 
+{
+    echo "Error: " . $message;
+} // END ThrowInconvenientError
 
 
 //OUTPUT: The first row from the "columnName" column of the "tableName" table of the "database" database
