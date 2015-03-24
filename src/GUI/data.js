@@ -32,7 +32,7 @@ function t_AsdsNode(cid, cc2, name, data)
 function c_List() {
   this.start = null; 
   this.end = null; 
-  this.size = 0;
+  this.length = 0;
   
   this.add = function(node) { 
     if (this.start === null) { 
@@ -43,7 +43,7 @@ function c_List() {
       this.end.next = node; 
       this.end = this.end.next; 
     }  
-    this.size++;
+    this.length++;
  }; 
 
   this.delete = function(cc2) { 
@@ -51,7 +51,7 @@ function c_List() {
     var previous = this.start; 
     while (current !== null) { 
       if (cc2 === current.cc2) {
-        this.size--;
+        this.length--;
         if (current === this.start) { 
           this.start = current.next; 
           return; 
