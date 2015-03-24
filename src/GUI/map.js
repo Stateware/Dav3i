@@ -46,7 +46,7 @@ $(function(){
         regionStyle: {
             initial: {
                 fill: '#999999',
-                "stroke-width": 0.2,
+                "stroke-width": 0.4,
                 stroke: '#223322'
             },
             hover: {
@@ -55,7 +55,7 @@ $(function(){
             selected: {
                 "stroke-width": 0.4,
                 stroke: '#445544',
-                fill: '#94C9A9'
+                fill: '#eebb99'
             }
         },
         series: {
