@@ -42,7 +42,7 @@ $(function(){
         map: 'world_mill_en',
         container: $('#map'),
         regionsSelectable: true, // allows us to select regions
-        backgroundColor: '#777DA7',
+        backgroundColor: '#7779a7',
         regionStyle: {
             initial: {
                 fill: '#ffffff'
@@ -59,8 +59,9 @@ $(function(){
         series: {
             regions: [{
                 attribute: 'fill',
+                // needs some random init values, otherwise dynamic region coloring won't work
                 values: { ID: 148576, PG: 13120.4, MX: 40264.8, EE: 78.6, DZ: 30744.6, MA: 24344.4, MR: 14117.6, SN: 39722.6, GM: 7832.6, GW: 9902.2 },
-                scale: ['#ffffff', '#002233'],
+                scale: ['#eeffee', '#005533'],
                 normalizeFunction: 'polynomial'
             }]
         },
@@ -69,10 +70,27 @@ $(function(){
         {
             // Filling the textarea with list of regions selected
             document.getElementById('cc2-selected').value = JSON.stringify(map.getSelectedRegions());
+        },
+        onRegionTipShow: function(e, label, key){
+            var tipString = "";
+            tipString += label.html()+' (';
+            if (map.series.regions[0].values[key] !== undefined)
+            {
+                tipString += g_StatList[g_HMSID]+' - '+map.series.regions[0].values[key];
+            }
+            else
+            {
+                tipString += 'No Data Available';
+            }
+            tipString += ')';
+            label.html(tipString);
         }
     });
+    // after lookup table is loaded, color map
     setTimeout(function(){
         var values = ColorByHMS();
+        // have to manually set min because API function doesn't work correctly, may have to change if we have stats that can be negative
+        map.series.regions[0].params.min = 0;
         map.series.regions[0].setValues(values);
     }, 1000);
     // clearing selected regions when the "clear" button in clicked
