@@ -26,7 +26,7 @@ function GetData(cc2)
 		dataType: 'JSON',                 
 		async: false,
 		success: function(data){     
-			console.log("Successfully received descriptor.php");
+			console.log("Successfully received data.php");
 			dataJSON = data;
 		} 
 	});
@@ -43,7 +43,7 @@ function ModifyData(selectedRegions) {
 	if(g_DataList == null)
 		g_DataList = new c_List();
 
-	if(selectedRegions.length > g_DataList.size) 
+	if(selectedRegions.length > g_DataList.length) 
 	{
 		// look for cc2 to add 
 
@@ -54,8 +54,12 @@ function ModifyData(selectedRegions) {
 	else
 	{
 		// look for cc2 to remove
-
-		// call g_datalist with cc2
+		for(var i = 0; i<g_DataList.length;i++)
+		{	
+			cc2ToRemove = g_DataList.item(i).cc2;
+			if(selectedRegions.indexOf(cc2ToRemove) == -1)
+				g_DataList.delete(cc2ToRemove)
+		}		
 	}
 
 }

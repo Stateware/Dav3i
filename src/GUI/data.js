@@ -76,4 +76,15 @@ function c_List() {
     } 
     return null; 
   }; 
+
+  this.contains = function(cc2) {
+
+  	for(var i=0;i<length;i++) {
+  		if(this.item(i).cc2 == cc2)
+  			return true;
+  	}
+  	return false;
+
+  }
+
 } 
