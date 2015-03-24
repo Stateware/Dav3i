@@ -25,7 +25,7 @@ $(function(){
         for (key in map.regions) {
             for (var i in g_LookupTable)
             {
-                if (key === g_LookupTable[i][0])
+                if (key === g_LookupTable[i][0] && g_LookupTable[i][2] != 0)
                 {
                     data[key] = g_LookupTable[i][2];
                 }
