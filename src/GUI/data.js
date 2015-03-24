@@ -13,7 +13,7 @@ var g_FirstYear; // first year for which data is available.
 var g_LastYear; // last year for which data is available.
 var g_YearStart; // first year for which user wants data.
 var g_YearEnd; // last year for which user wants data.
-var g_Data; // first node of area selection data list; points to all other nodes. Is initially set on first area selection.
+var g_DataList; // first node of area selection data list; points to all other nodes. Is initially set on first area selection.
 var g_Toggles; // array of booleans for settings toggles. Only set at 'true' or 'false', never numerically.
 var g_HMSID; // stat ID corresponding to selected HMS.
 var g_HMSYear; // year for which HMS data is wanted.
@@ -27,3 +27,53 @@ function t_AsdsNode(cid, cc2, name, data)
     this.data = data;
     this.next = null;
 }
+
+// prototype for list of nodes
+function c_List() {
+  this.start = null; 
+  this.end = null; 
+  this.size = 0;
+  
+  this.add = function(node) { 
+    if (this.start === null) { 
+      this.start = node; 
+      this.end = this.start; 
+    } 
+    else {
+      this.end.next = node; 
+      this.end = this.end.next; 
+    }  
+    this.size++;
+ }; 
+
+  this.delete = function(cc2) { 
+    var current = this.start; 
+    var previous = this.start; 
+    while (current !== null) { 
+      if (cc2 === current.cc2) {
+        this.size--;
+        if (current === this.start) { 
+          this.start = current.next; 
+          return; 
+        } 
+        if (current === this.end) 
+          this.end = previous;
+        previous.next = current.next; 
+        return; 
+      }
+      previous = current; 
+      current = current.next; 
+    }
+  }; 
+
+  this.item = function(i) { 
+    var current = this.start; 
+    while (current !== null) { 
+       
+      if (i === 0) return current; 
+      current = current.next; 
+      i--;
+    } 
+    return null; 
+  }; 
+} 

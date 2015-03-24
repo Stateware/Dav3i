@@ -34,17 +34,29 @@ function GetData(cc2)
 	
 	var parsedData = ParseJSON(dataJSON);
 	
-	var newNode = new t_AsdsNode(cid,g_LookupTable[cid][1],parsedData);
-	
+	var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],parsedData);
 	
 	return newNode;
 }
 
-function AddToData(newNode) {
-	
+function ModifyData(selectedRegions) {
+	if(g_DataList == null)
+		g_DataList = new c_List();
+
+	if(selectedRegions.length > g_DataList.size) 
+	{
+		// look for cc2 to add 
+
+		// call getdata with cc2
+
+		// call g_dataList.add with the node
+	}
+	else
+	{
+		// look for cc2 to remove
+
+		// call g_datalist with cc2
+	}
+
 }
 
-
-function RemoveFromData(cid) {
-
-}
