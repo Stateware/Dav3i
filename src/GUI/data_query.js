@@ -2,7 +2,7 @@
 // Description:             takes CC2 codes and sends them to lookup_table.js, receives CIDs, queries the database,
 //                          parses the JSON and returns the array
 // Date Created:            3/5/2015
-// Contributors:            Paul Jang
+// Contributors:            Paul Jang, Vanajam Soni, Kyle Nicholson
 // Date Last Modified:      3/5/2015
 // Last Modified By:        Paul Jang
 // Dependencies:            lookup_table.js, byCountry.php, parser.js
@@ -39,6 +39,12 @@ function GetData(cc2)
 	return newNode;
 }
 
+// Author:          Vanajam Soni, Kyle Nicholson
+// Date Created:    3/24/15
+// Last Modified:   3/24/15 Kyle Nicholson
+// Description:     adds or removes a node to the list
+// Input: Selected regions string array
+// Output: adds or removes a node to the list
 function ModifyData(selectedRegions) {
 	if(g_DataList == null)
 		g_DataList = new c_List();
@@ -63,7 +69,7 @@ function ModifyData(selectedRegions) {
 		{	
 			cc2ToRemove = g_DataList.item(i).cc2;
 			if(selectedRegions.indexOf(cc2ToRemove) == -1)
-				g_DataList.delete(cc2ToRemove)
+				g_DataList.delete(cc2ToRemove);
 		}		
 	}
 
