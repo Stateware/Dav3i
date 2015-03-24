@@ -1,9 +1,9 @@
 // File Name:               data.js
 // Description:             This module holds all global data for the other modules of the project
 // Date Created:            3/19/2015
-// Contributors:            Joshua Crafts
-// Date Last Modified:      3/19/2015
-// Last Modified By:        Joshua Crafts
+// Contributors:            Joshua Crafts, Vanajam Soni
+// Date Last Modified:      3/24/2015
+// Last Modified By:        Vanajam Crafts
 // Dependencies:            index.html
 // Additional Notes:        N/A
 
@@ -28,7 +28,7 @@ function t_AsdsNode(cid, cc2, name, data)
     this.next = null;
 }
 
-// prototype for list of nodes
+// prototype for variable containing list of nodes
 function c_List() {
   this.start = null; 
   this.end = null; 

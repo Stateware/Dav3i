@@ -3,8 +3,8 @@
 //			defines a listener for the button "clear"
 // Date Created:	2/24/2015
 // Contributors:	Vanajam Soni, Joshua Crafts
-// Date Last Modified:	3/23/2015
-// Last Modified By:	Joshua Crafts
+// Date Last Modified:	3/24/2015
+// Last Modified By:	Vanajam Soni
 // Dependencies:	index.html, descriptor.php, by_stat.php, lookup_table.js, loading_script.js, data.js
 // Additional Notes:	N/A
 
@@ -72,6 +72,7 @@ $(function(){
         {
             // Filling the textarea with list of regions selected
             document.getElementById('cc2-selected').value = JSON.stringify(map.getSelectedRegions());
+            ModifyData(map.getSelectedRegions());
         },
         onRegionTipShow: function(e, label, key){
             var tipString = "";
