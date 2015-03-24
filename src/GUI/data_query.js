@@ -3,8 +3,8 @@
 //                          parses the JSON and returns the array
 // Date Created:            3/5/2015
 // Contributors:            Paul Jang, Vanajam Soni, Kyle Nicholson
-// Date Last Modified:      3/5/2015
-// Last Modified By:        Paul Jang
+// Date Last Modified:      3/24/2015
+// Last Modified By:        Kyle Nicholson
 // Dependencies:            lookup_table.js, byCountry.php, parser.js
 // Additional Notes:        N/A
 
