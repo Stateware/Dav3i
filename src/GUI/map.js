@@ -59,7 +59,7 @@ $(function(){
         regionStyle: {
             initial: {
                 fill: '#999999',
-                "stroke-width": 0.4,
+                "stroke-width": 0.2,
                 stroke: '#112211'
             },
             hover: {
@@ -105,6 +105,11 @@ $(function(){
     // after lookup table is loaded, color map
     setTimeout(function(){
         var values = ColorByHMS();
+        // try HMS coloring until valid data is available
+        while (values === undefined)
+        {
+            setTimeout(function(){values = ColorByHMS()}, 1000);
+        }
         // have to manually set min because API function doesn't work correctly, may have to change if we have stats that can be negative
         map.series.regions[0].params.min = 0;
         map.series.regions[0].setValues(values);
