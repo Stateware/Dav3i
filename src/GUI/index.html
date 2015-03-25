@@ -2,7 +2,7 @@
      Description:             Web interface for data visualization
      Date Created:            2/19/2015
      Contributors:            Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts
-     Date Last Modified:      3/17/2015
+     Date Last Modified:      3/25/2015
      Last Modified By:        Joshua Crafts
      Dependencies:            style.css, loading_script.js, lookup_table.js, map.js, data.js
      Additional Notes:        N/A
@@ -43,7 +43,7 @@
         </center>
     </div>
 
-    <div class="main-screen">
+    <div class="control-panel">
         <section class="settings">
             <img class="logo" src="../res/logo.png" alt="Logo"/>
             <h1 class="open-sans">Settings and Search Section<h1>
@@ -54,15 +54,19 @@
         <section class="graph">
             <h1 class="open-sans">Graph Section</h1>
         </section>
-	
+    </div>
+    
+    <div class="main-screen">
+        <section class="spacer">
+        </section>
         <section id="map">
         </section>
     	
-        <footer>
+        <section class="footer">
             <center>
-                <p class="open-sans">Licensed under the version 3 of the <a href="http://www.gnu.org/licenses/">GNU General Public License</a>.</h3>
+                <p class="open-sans">Licensed under the version 3 of the <strong><a href="http://www.gnu.org/licenses/">GNU General Public License</a></strong>.</h3>
             </center>
-        </footer>
+        </section>
     </div>
 
 </body>

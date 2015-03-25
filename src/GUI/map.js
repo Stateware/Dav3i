@@ -3,8 +3,8 @@
 //			defines a listener for the button "clear"
 // Date Created:	2/24/2015
 // Contributors:	Vanajam Soni, Joshua Crafts
-// Date Last Modified:	3/24/2015
-// Last Modified By:	Vanajam Soni
+// Date Last Modified:	3/23/2015
+// Last Modified By:	Joshua Crafts
 // Dependencies:	index.html, descriptor.php, by_stat.php, lookup_table.js, loading_script.js, data.js
 // Additional Notes:	N/A
 
@@ -42,20 +42,20 @@ $(function(){
         map: 'world_mill_en',
         container: $('#map'),
         regionsSelectable: true, // allows us to select regions
-        backgroundColor: '#698091',
+        backgroundColor: 'transparent',
         regionStyle: {
             initial: {
                 fill: '#999999',
                 "stroke-width": 0.4,
-                stroke: '#223322'
+                stroke: '#112211'
             },
             hover: {
                 "fill-opacity": 0.7
             },
             selected: {
                 "stroke-width": 0.4,
-                stroke: '#445544',
-                fill: '#eebb99'
+                stroke: '#000000',
+                fill: '#7FDBFF'
             }
         },
         series: {
@@ -63,7 +63,7 @@ $(function(){
                 attribute: 'fill',
                 // needs some random init values, otherwise dynamic region coloring won't work
                 values: { ID: 148576, PG: 13120.4, MX: 40264.8, EE: 78.6, DZ: 30744.6, MA: 24344.4, MR: 14117.6, SN: 39722.6, GM: 7832.6, GW: 9902.2 },
-                scale: ['#eeffee', '#115a2a'],
+                scale: ['#22FF70', '#1D7950'],
                 normalizeFunction: 'polynomial'
             }]
         },
@@ -72,7 +72,6 @@ $(function(){
         {
             // Filling the textarea with list of regions selected
             document.getElementById('cc2-selected').value = JSON.stringify(map.getSelectedRegions());
-            ModifyData(map.getSelectedRegions());
         },
         onRegionTipShow: function(e, label, key){
             var tipString = "";
