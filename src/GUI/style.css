@@ -21,7 +21,7 @@
 
 /* sets loading screen to foreground */
 .loading-screen {
-    z-index: 2;
+    z-index: 4;
     background-color: #efe;
 }
 
@@ -86,14 +86,16 @@
 /* sets up background div to create margin under control panel */
 .spacer {
     height: 92.5%;
-    width: 27.6%;
+    width: 27%;
     float: left;
 }
 
 /* sets size for map */
 #map {
-    height:92.5%;
-    width: 72.4%;
+    position: relative;
+    top: 1%;
+    height:91.5%;
+    width: 73%;
     float: right;
 }
 
