@@ -272,7 +272,7 @@ jQuery.fn.vectorMap(
 			"name": "Tuvalu"
 		},
 		"NR": {
-			"path": "M921,352v2l-1.3,2h2l2,2L921,352z",
+			"path": "M921,352l-0.5,2l-1.3,2l2,0.5l3,2L921,352z",
 			"name": "Nauru"
 		},
 		"PH": {
