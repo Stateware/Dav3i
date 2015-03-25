@@ -13,18 +13,31 @@
 // Date Created: 2/24/2015
 // Last Modified: 3/23/2015 by Joshua Crafts
 // Description: This function initializes the map, fills up the textarea 'cc2_
-//		selected' with the list of selected regions and clears the map
+//		selected' with the list of selected regions and clears the selection
 //		on the click of button "clear"
 // PRE: index.html and div with id "map" exist 
 // POST: The map is initialized in the div "map"
 $(function(){
+    // Author: Joshua Crafts
+    // Date Created: 3/21/2015
+    // Last Modified: 3/24/2015 by Joshua Crafts
+    // Description: This function matches each country/region object in the vector map
+    //              to its corresponding value in the HMS section of g_LookupTable and
+    //              returns the array, indexed by CC2
+    // PRE: the HMS section of g_LookupTable is initialized
+    // POST: FCTVAL == object containing the as many elements as the total number of 
+    //       initialized elements of g_LookupTable, composed of cc2 and the related
+    //       HMS value. Should be used as argument to maps.series.regions[0].setValues()
     ColorByHMS = function(){
         var data = {},
             key;
 
+        // iterate through regions by key
         for (key in map.regions) {
+            // iterate through lookup table by index
             for (var i in g_LookupTable)
             {
+                // set value by key if key is equal to cc2 in lookup table
                 if (key === g_LookupTable[i][0] && g_LookupTable[i][2] != 0)
                 {
                     data[key] = g_LookupTable[i][2];
@@ -67,12 +80,13 @@ $(function(){
                 normalizeFunction: 'polynomial'
             }]
         },
-        // script to run when a region is selected
+        // runs when a region is selected
         onRegionSelected: function()
         {
             // Filling the textarea with list of regions selected
             document.getElementById('cc2-selected').value = JSON.stringify(map.getSelectedRegions());
         },
+        // runs when region is hovered over
         onRegionTipShow: function(e, label, key){
             var tipString = "";
             tipString += label.html()+' (';
