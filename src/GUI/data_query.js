@@ -9,34 +9,43 @@
 // Additional Notes:        N/A
 
 
+// Author:          Nicholas Denaro
+// Date Created:    2/12/15
+// Last Modified:   3/19/15 by Nicholas Denaro
+// Description:     Parses the object that is passed in and returns data array.
+//                  Input: json - Assumed to be in the proper format
+//                                if the JSON is invalid
+//                  Output: data - A 2D array in the form [stat][year]
+function ParseData(json)
+// PRE: json is valid JSON with data for only one country
+// POST: FCTVAL == a 2d array containing stat, year
+{
+    var data = new Array(); // Creates the array for the data to be returned
+    data = json[Object.keys(json)[0]];// Since there will only be one country in each json,
+                                      // we can simply get the first key, and use that to
+                                      // get the value for the data.
+
+    return (data);
+}
+
+
 // Author:          Vanajam Soni, Paul Jang
 // Date Created:    3/5/15
 // Last Modified:   3/26/15 by Vanajam Soni
-// Description:     Calls all of the functions to take the CC2 and output the array for the map
-//                  Input: CC2 codes
-//                  Output: array of data for the map
-function GetData(cc2)
+// Description:     Makes Ajax call to get country data from server
+//                  Input: CID
+//                  Output: data from the server for the specific country
+function GetData(cid)
 {
-	var cid = GetCID(cc2);
-	var dataJSON ;
-	// the code to get data from server (block below) is going to change
-	
-	$.ajax({                                      
-		url: 'http://usve74985.serverprofi24.com/API/by_country.php?CID='.concat(cid.toString()),                                                     
-		dataType: 'JSON',                 
-		async: false,
+	return $.ajax({                                      
+		url: 'http://usve74985.serverprofi24.com/API/by_country.php?countryIDs='.concat(cid.toString()), 
+		async: false,                                                    
+		dataType: 'JSON',
 		success: function(data){     
-			console.log("Successfully received data.php");
-			dataJSON = data;
+			console.log("Successfully received by_country.php?countryIDs=".concat(cid.toString()));
 		} 
 	});
-	  
-	
-	var parsedData = ParseJSON(dataJSON);
-	
-	var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],parsedData);
-	
-	return newNode;
+
 }
 
 // Author:          Vanajam Soni, Kyle Nicholson
@@ -60,11 +69,19 @@ function ModifyData(selectedRegions) {
 			if(selectedRegions[i]!= null && !g_DataList.contains(selectedRegions[i]))
 			{
 				CC2Found = true;
-				// call getdata with cc2 && call g_dataList.add with the node
-				//g_DataList.add(GetData(selectedRegions[i]));
-				g_DataList.add(new t_AsdsNode(null,selectedRegions[i],null,null));
-				g_DataList.delete(null);
-				
+
+				var cid = GetCID(selectedRegions[i]);
+
+				$.when(GetData(cid)).done(function(data){
+		
+					var parsedData = ParseData(data);
+			
+					var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],parsedData);
+			
+					g_DataList.add(newNode);
+
+
+				});
 			}
 		}
 	}
@@ -73,9 +90,11 @@ function ModifyData(selectedRegions) {
 		// look for cc2 to remove
 		for(var i = 0; i<g_DataList.size;i++)
 		{	
-			cc2ToRemove = g_DataList.item(i).cc2;
-			if(selectedRegions.indexOf(cc2ToRemove) == -1)
-				g_DataList.delete(cc2ToRemove);
+			if(g_DataList != null) {
+				cc2ToRemove = g_DataList.item(i).cc2;
+				if(selectedRegions.indexOf(cc2ToRemove) == -1)
+					g_DataList.delete(cc2ToRemove);
+			}
 		}	
 
 	}
