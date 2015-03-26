@@ -149,7 +149,7 @@ data.js is a JavaScript data module that contains all global variables needed ac
  * `g_LastYear` : variable containing latest year for which data exists
  * `g_YearStart` : variable containing earliest year for which the user wants to see data
  * `g_YearEnd` : variable containing latest year for which the user wants to see data
- * `g_Data` : variable containing area selection data (in ASDS format)
+ * `g_DataList` : variable containing area selection data (in ASDS format)
  * `g_Toggles` : variable containing settings toggles
  * `g_HMSID` : stat ID representing which stat is heat mapped
  * `g_HMSYear` : variable representing the year for which HMS data is desired
