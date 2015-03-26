@@ -3,8 +3,8 @@
 //                          parses the JSON and returns the array
 // Date Created:            3/5/2015
 // Contributors:            Paul Jang, Vanajam Soni, Kyle Nicholson
-// Date Last Modified:      3/24/2015
-// Last Modified By:        Kyle Nicholson
+// Date Last Modified:      3/26/2015
+// Last Modified By:        Vanajam Soni
 // Dependencies:            lookup_table.js, byCountry.php, parser.js
 // Additional Notes:        N/A
 
@@ -41,37 +41,46 @@ function GetData(cc2)
 
 // Author:          Vanajam Soni, Kyle Nicholson
 // Date Created:    3/24/15
-// Last Modified:   3/24/15 Kyle Nicholson
+// Last Modified:   3/26/15 Vanajam Soni
 // Description:     adds or removes a node to the list
 // Input: Selected regions string array
 // Output: adds or removes a node to the list
 function ModifyData(selectedRegions) {
-	if(g_DataList == null)
+	if(g_DataList == null){
 		g_DataList = new c_List();
-
-	if(selectedRegions.length > g_DataList.length) 
+	}
+	
+	if(selectedRegions.length > g_DataList.size) 
 	{
 		// look for cc2 to add
 		var CC2Found = false; 
-		for(var i; i <= selectedRegions.length && CC2Found === false; i++)
+		for(var i=0; i <= selectedRegions.length && !CC2Found; i++)
 		{
-			if(CC2Found = g_DataList.contains(selectedRegions[i]))
+
+			if(selectedRegions[i]!= null && !g_DataList.contains(selectedRegions[i]))
 			{
+				CC2Found = true;
 				// call getdata with cc2 && call g_dataList.add with the node
-				g_DataList.add(GetData(selectedRegions[i]));
+				//g_DataList.add(GetData(selectedRegions[i]));
+				g_DataList.add(new t_AsdsNode(null,selectedRegions[i],null,null));
+				g_DataList.delete(null);
+				
 			}
 		}
 	}
-	else
+	else if(selectedRegions.length < g_DataList.size)
 	{
 		// look for cc2 to remove
-		for(var i = 0; i<g_DataList.length;i++)
+		for(var i = 0; i<g_DataList.size;i++)
 		{	
 			cc2ToRemove = g_DataList.item(i).cc2;
 			if(selectedRegions.indexOf(cc2ToRemove) == -1)
 				g_DataList.delete(cc2ToRemove);
-		}		
-	}
+		}	
 
+	}
+	else
+		return;
+	
 }
 

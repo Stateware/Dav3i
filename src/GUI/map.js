@@ -3,8 +3,8 @@
 //			defines a listener for the button "clear"
 // Date Created:	2/24/2015
 // Contributors:	Vanajam Soni, Joshua Crafts
-// Date Last Modified:	3/23/2015
-// Last Modified By:	Joshua Crafts
+// Date Last Modified:	3/26/2015
+// Last Modified By:	Vanajam Soni
 // Dependencies:	index.html, descriptor.php, by_stat.php, lookup_table.js, loading_script.js, data.js
 // Additional Notes:	N/A
 
@@ -20,7 +20,7 @@
 $(function(){
     // Author: Joshua Crafts
     // Date Created: 3/21/2015
-    // Last Modified: 3/24/2015 by Joshua Crafts
+    // Last Modified: 3/26/2015 by Vanajam Soni
     // Description: This function matches each country/region object in the vector map
     //              to its corresponding value in the HMS section of g_LookupTable and
     //              returns the array, indexed by CC2
@@ -84,7 +84,15 @@ $(function(){
         onRegionSelected: function()
         {
             // Filling the textarea with list of regions selected
-            document.getElementById('cc2-selected').value = JSON.stringify(map.getSelectedRegions());
+            //document.getElementById('cc2-selected').value = JSON.stringify(map.getSelectedRegions());
+            ModifyData(map.getSelectedRegions());
+
+            var cc2_list = [];
+            for(var i = 0;i<g_DataList.size;i++) {
+                    if(g_DataList.item(i) != null)
+                        cc2_list[cc2_list.length] = g_DataList.item(i).cc2;
+            }
+            document.getElementById('cc2-selected').value = JSON.stringify(cc2_list);
         },
         // runs when region is hovered over
         onRegionTipShow: function(e, label, key){
