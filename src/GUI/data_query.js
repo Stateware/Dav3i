@@ -38,8 +38,7 @@ function ParseData(json)
 function GetData(cid)
 {
 	return $.ajax({                                      
-		url: 'http://usve74985.serverprofi24.com/API/by_country.php?countryIDs='.concat(cid.toString()), 
-		async: false,                                                    
+		url: 'http://usve74985.serverprofi24.com/API/by_country.php?countryIDs='.concat(cid.toString()),                                                    
 		dataType: 'JSON',
 		success: function(data){     
 			console.log("Successfully received by_country.php?countryIDs=".concat(cid.toString()));
@@ -71,17 +70,21 @@ function ModifyData(selectedRegions) {
 				CC2Found = true;
 
 				var cid = GetCID(selectedRegions[i]);
+				var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
 
 				$.when(GetData(cid)).done(function(data){
 		
 					var parsedData = ParseData(data);
 			
-					var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],parsedData);
-			
-					g_DataList.add(newNode);
-
-
+					for(var j = 0;j<g_DataList.size;j++)
+					{
+						if(g_DataList.item(j).cid == cid) {
+							g_DataList.item(j).data = parsedData;
+						}
+					}
 				});
+
+				g_DataList.add(newNode);
 			}
 		}
 	}
