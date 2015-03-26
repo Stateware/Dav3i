@@ -15,7 +15,7 @@
 // Description: Takes 1 stat ID and stat data and generates a graph (Google Charts API)
 // PRE: N/A
 // POST: N/A
-function GenerateSingle(statID, data)
+function GenerateSingle()//statID, data)
 {
 	//code below is the supposed inputs statID and data
 	/* 
