@@ -2,7 +2,7 @@
 // Description:             This module holds all global data for the other modules of the project
 // Date Created:            3/19/2015
 // Contributors:            Joshua Crafts, Vanajam Soni
-// Date Last Modified:      3/24/2015
+// Date Last Modified:      3/26/2015
 // Last Modified By:        Vanajam Soni
 // Dependencies:            index.html
 // Additional Notes:        N/A
@@ -29,62 +29,75 @@ function t_AsdsNode(cid, cc2, name, data)
 }
 
 // prototype for variable containing list of nodes
-function c_List() {
-  this.start = null; 
-  this.end = null; 
-  this.length = 0;
-  
-  this.add = function(node) { 
-    if (this.start === null) { 
-      this.start = node; 
-      this.end = this.start; 
-    } 
-    else {
-      this.end.next = node; 
-      this.end = this.end.next; 
-    }  
-    this.length++;
- }; 
+function c_List() 
+{
+	this.start = null; 
+	this.end = null; 
+	this.length = 0;
 
-  this.delete = function(cc2) { 
-    var current = this.start; 
-    var previous = this.start; 
-    while (current !== null) { 
-      if (cc2 === current.cc2) {
-        this.length--;
-        if (current === this.start) { 
-          this.start = current.next; 
-          return; 
-        } 
-        if (current === this.end) 
-          this.end = previous;
-        previous.next = current.next; 
-        return; 
-      }
-      previous = current; 
-      current = current.next; 
-    }
-  }; 
+	this.add = function(node) 
+	{ 
+		if (this.start === null) 
+		{ 
+			this.start = node; 
+			this.end = this.start; 
+		} 
+		else 
+		{
+			this.end.next = node; 
+			this.end = this.end.next; 
+		}  
+		this.length++;
+	}; 
 
-  this.item = function(i) { 
-    var current = this.start; 
-    while (current !== null) { 
-       
-      if (i === 0) return current; 
-      current = current.next; 
-      i--;
-    } 
-    return null; 
-  }; 
+	this.delete = function(cc2) 
+	{ 
+		var current = this.start; 
+		var previous = this.start; 
+		while (current !== null) 
+		{ 
+			if (cc2 === current.cc2) 
+			{
+				this.length--;
+				if (current === this.start) 
+				{ 
+					this.start = current.next; 
+					return; 
+				} 
+				if (current === this.end) 
+					this.end = previous;
+				previous.next = current.next; 
+				return; 
+			}
+			previous = current; 
+			current = current.next; 
+		}
+	}; 
 
-  this.contains = function(cc2) {
+	this.item = function(i) 
+	{ 
+		var current = this.start; 
+		while (current !== null) 
+		{ 
 
-  	for(var i=0;i<length;i++) {
-  		if(this.item(i).cc2 == cc2)
-  			return true;
-  	}
-  	return false;
+			if (i === 0) 
+				return current; 
+			current = current.next; 
+			i--;
+		} 
+		return null; 
+	}; 
 
-  }
+	this.contains = function(cc2) 
+	{
+
+		for(var i=0;i<length;i++) 
+		{
+			if(this.item(i).cc2 == cc2)
+				return true;
+		}
+		return false;
+
+	}
 
 } 
