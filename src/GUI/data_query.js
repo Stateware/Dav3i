@@ -9,9 +9,9 @@
 // Additional Notes:        N/A
 
 
-// Author:          Paul Jang
+// Author:          Vanajam Soni, Paul Jang
 // Date Created:    3/5/15
-// Last Modified:   3/5/15 by Paul Jang
+// Last Modified:   3/26/15 by Vanajam Soni
 // Description:     Calls all of the functions to take the CC2 and output the array for the map
 //                  Input: CC2 codes
 //                  Output: array of data for the map
