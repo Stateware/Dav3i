@@ -59,8 +59,9 @@ function GenerateSingle()//statID, data)
 	series: {5: {type: "line"}}
 	};
 
-	var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+	var chart = new google.visualization.ComboChart(document.getElementById('graph'));
 	chart.draw(data, options);
+
 }
 google.load("visualization", "1", {packages:["corechart"]});
 google.setOnLoadCallback(GenerateSingle);
