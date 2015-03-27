@@ -122,6 +122,32 @@
     text-decoration: none;
 }
 
+/* Button Stylization */
+.flat-button {
+  border: 0 none;
+  border-radius: 2px 2px 2px 2px;
+  color: #7FDBFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 12px;
+  line-height: 20px;
+  margin-bottom: 0;
+  margin-top: 10px;
+  padding: 7px 10px;
+  text-transform: none;
+  transition: all 0.3s ease 0s;
+  -moz-transition: all 0.3s ease 0s;
+  -webkit-transition: all 0.3s ease 0s;
+  width: auto;
+  background: none repeat scroll 0 0 #001f3f;
+}
+
+.flat-button:hover {
+	background: none repeat scroll 0 0 #000b17;
+	color: #7FDBFF;
+}
+
 /* sets styling for loading animation container */
 .spinner {
     margin: 100px 0 auto;
