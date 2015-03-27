@@ -7,64 +7,73 @@
 // Dependencies: client_parser.js, ..., [Google Charts API]
 // Additional Notes: N/A
 
-
-
-// Author: Nicholas Dyszel, Berty Ruan, Arun Kumar
-// Date Created: 3/17/2015
-// Last Modified: 3/21/2015 by Berty Ruan
-// Description: Takes 1 stat ID and stat data and generates a graph (Google Charts API)
+// Author: Joshua Crafts
+// Date Created: 3/27/2015
+// Last Modified: 3/27/2015 by Joshua Crafts
+// Description: Gets stat data and generates a graph (Google Charts API)
 // PRE: N/A
 // POST: N/A
-function GenerateSingle()//statID, data)
+function GenerateGraph()
 {
-	//code below is the supposed inputs statID and data
-	/* 
-	$.getScript("parser_test.js");
+    var data = PrepareData();
 
-	var data1 =                         // JSON of random    numbers
-    {
-    1:
-    {
-       1: [Math.floor(Math.random() * 100), Math.floor(Math.random() * 100), Math.floor(Math.random() * 100)],
-       2: [Math.floor(Math.random() * 100), Math.floor(Math.random() * 100), Math.floor(Math.random() * 100)],
-       3: [Math.floor(Math.random() * 100), Math.floor(Math.random() * 100), Math.floor(Math.random() * 100)]
-    },
-    };
+    var options = {'title': g_StatList[g_HMSID]};
 
-    var cids1 = [1]; 
- 	var outputArray1 = ParseData(data1,cids1); // fills outputArray with parsed JSON data
-	var data = google.visualization.arrayToDataTable(outputArray1);
-	*/
-
-	//input comes from client_parser.js
-	//statID -> String
-	//data   -> Array of floats
-
-	
-	// Some raw data (not necessarily accurate)
-	var data = google.visualization.arrayToDataTable([
-	['Month', 'Bolivia', 'Ecuador', 'Madagascar', 'Papua New Guinea', 'Rwanda', 'Average'],
-	['2004/05',  165,      938,         522,             998,           450,      614.6],
-	['2005/06',  135,      1120,        599,             1268,          288,      682],
-	['2006/07',  157,      1167,        587,             807,           397,      623],
-	['2007/08',  139,      1110,        615,             968,           215,      609.4],
-	['2008/09',  136,      691,         629,             1026,          366,      569.6]
-	]);
-	
-	var options = {
-	title : 'Monthly Coffee Production by Country',
-	vAxis: {title: "Cups"},
-	hAxis: {title: "Month"},
-	seriesType: "bars",
-	series: {5: {type: "line"}}
-	};
-
-	var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
-	chart.draw(data, options);
+    // instantiate and draw chart using prepared data
+    var chart = new google.visualization.LineChart(document.getElementById('graph'));
+    chart.draw(data, options);
 }
-google.load("visualization", "1", {packages:["corechart"]});
-google.setOnLoadCallback(GenerateSingle);
 
+// Author: Joshua Crafts
+// Date Created: 3/27/2015
+// Last Modified: 3/27/2015 by Joshua Crafts
+// Description: Prepares data in terms of the data type needed by graphing api
+// PRE: N/A
+// POST: N/A
+function PrepareData()
+{
+    // create array with indices for all years plus a header row
+    var dataArray = new Array(34);
+    var dataTable;
+    var currentNode;
+    var i, j;
+
+    // fill array
+    for (i = 0; i < 34; i++)
+    {
+        // create array in each index the length of the data list, plus a column for year
+        dataArray[i] = new Array(g_DataList.size + 1);
+        currentNode = g_DataList.start;
+        // fill header row with region names
+        if (i == 0)
+        {
+            dataArray[i][0] = 'Region';
+            for (j = 1; j < g_DataList.size + 1; j++)
+            {
+                dataArray[i][j] = currentNode.name;
+                currentNode = currentNode.next;
+            }
+        }
+        // fill first column with years and the rest with data
+        else
+        {
+            dataArray[i][0] = i + 1979;
+            for (j = 1; j < g_DataList.size + 1; j++)
+            {
+                // data is set using currently selected stat ID
+                dataArray[i][j] = Number(currentNode.data[g_HMSID][i-1]);
+                currentNode = currentNode.next;
+            }
+        }
+    }
+
+    console.log(dataArray);
+
+    // turns 2D array into data table for graph, second argument denotes that 0 indices are headers, see documentation for more info
+    dataTable = google.visualization.arrayToDataTable(dataArray, false);
+
+    return dataTable;
+}
 
 
 
