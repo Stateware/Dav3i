@@ -7,7 +7,7 @@ Section 0
  * 0.1 : Definitions  
 &nbsp;&nbsp;&nbsp;&nbsp; 0.1.0 : Components  
 &nbsp;&nbsp;&nbsp;&nbsp; 0.1.1 : Objects  
-&nbsp;&nbsp;&nbsp;&nbsp; 0.1.2 : Processes 
+&nbsp;&nbsp;&nbsp;&nbsp; 0.1.2 : Processes  
 &nbsp;&nbsp;&nbsp;&nbsp; 0.1.3 : Identifiers  
 &nbsp;&nbsp;&nbsp;&nbsp; 0.1.4 : Data  
 
@@ -75,6 +75,8 @@ Section 4 defines major design decisions, including previously specification of 
 
 **bounds** refers to the upper and lower bounds of stats whose values are estimated.
 
+**control panel** refers to the section of the page which includes graphs, stat selection tabs, and the search bar.
+
 **graphs** refers to the graph or graphs drawn to represent the values of the selected stat for an area selection over the selected timespan.
 
 **heat mapped stat** or **HMS** refers to the data set for which values are used to color the heat map. This is equivalent to the data for all countries for the selected stat for a single year.
@@ -86,6 +88,8 @@ Section 4 defines major design decisions, including previously specification of 
 **map** refers to the region-selectable map component of the UI.
 
 **region** refers to 1 distinct and indivisible region for which a single set of stats exists in the database.
+
+**search bar** refers to the text input box where a user can search for a country to add to the ASDS.
 
 **selected stat** refers to the currently selected stat whose values are used to draw the graphs and color the map.
 
