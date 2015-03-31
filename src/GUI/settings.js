@@ -19,3 +19,26 @@ function SetTimespan()
 	
 }
 
+<<<<<<< HEAD
+// Author: Emma Roudabush
+// Date Created: 3/26/2015
+// Last Modified: 3/26/2015 by Emma Roudabush
+// Description: Set Heat Map Stat ID
+// PRE: 
+// POST: 
+function SetHMSID()
+{
+	
+}
+
+function OpenSettings()
+{
+	 $(".settings-screen, .settings-overlay").fadeIn(400);
+	
+}
+
+function CloseSettings()
+{
+	 $(".settings-screen, .settings-overlay").fadeOut(400);
+}
+

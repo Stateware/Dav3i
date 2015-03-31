@@ -12,6 +12,7 @@
 <html>
 
 <head>
+	<title>DAV3I</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="GUI/style.css">
     <link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
@@ -23,16 +24,22 @@
     <script type="text/javascript" src="GUI/map.js"></script>
     <script type="text/javascript" src="GUI/data.js"></script>
     <script type="text/javascript" src="GUI/lookup_table.js"></script>
+    <script type="text/javascript" src="GUI/settings.js"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script type="text/javascript" src="GUI/graph.js"></script>
     <script src="GUI/jvectormap/jquery.js"></script>
     <script src="GUI/jvectormap/jquery-jvectormap-2.0.1.min.js"></script>
     <script src="GUI/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+<!-- Vanajam, Kyle, Berty, and Arun, these 2 lines are required for graphs to work -->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load('visualization', '1.0', {'packages':['corechart']});
+    </script>
+<!-- Vanajam, Kyle, Berty, and Arun, these 2 lines are required for graphs to work -->
 </head>
 
 <body>
-
     <div class="loading-screen">
         <center>
             <img src="res/logo.png" alt="Logo"/>
@@ -45,25 +52,33 @@
             <button onclick="SwitchToMain()" class="begin">Begin</button>
         </center>
     </div>
-    
+	
+	<div class="settings-overlay">
+	</div>
+	
+	<div class="settings-screen">
+		<h1 class="open-sans">Settings Menu<h1>
+		<button id="settings" class="flat-button" onclick="CloseSettings()">Close</button>
+	</div>
+	
     <div class="main-screen">
         <section class="spacer">
         </section>
 
-    <div class="control-panel">
-        <section class="settings">
-            <img class="logo" src="res/logo.png" alt="Logo"/>
-            <h1 class="open-sans">Settings and Search Section<h1>
-            <textarea id="cc2-selected"> </textarea>
-            <button id="clear" onclick>Clear</button> 
-        </section>
+		<div class="control-panel">
+			<section class="settings">
+				<img class="logo" src="res/logo.png" alt="Logo"/>
+				<h1 class="open-sans">Settings and Search Section<h1>
+				<textarea id="cc2-selected"> </textarea>
+				<button id="clear" class="flat-button" onclick>Clear</button>
+				<button id="settings" class="flat-button" onclick="OpenSettings()">Advanced Settings</button>
+			</section>
+			
+			<section class="graph" id="graph">
+				<h1 class="open-sans">Graph Section</h1>
+			</section>
+		</div>
 	
-        <section class="graph" id="graph">
-            <h1 class="open-sans">Graph Section</h1>
-            	<div id="graph"></div>
-        </section>
-    </div>
-
         <div id="map">
         </div>
     	
@@ -73,7 +88,7 @@
             </center>
         </section>
     </div>
-
+	
     <div id="map">
     </div>
 

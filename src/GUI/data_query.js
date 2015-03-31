@@ -75,16 +75,16 @@ function ModifyData(selectedRegions) {
 				$.when(GetData(cid)).done(function(data){
 		
 					var parsedData = ParseData(data);
-			
-					for(var j = 0;j<g_DataList.size;j++)
-					{
-						if(g_DataList.item(j).cid == cid) {
-							g_DataList.item(j).data = parsedData;
-						}
-					}
-				});
 
-				g_DataList.add(newNode);
+					newNode.data = parsedData;
+
+                                	console.log(newNode);
+
+					g_DataList.add(newNode);
+
+                                        // draw graph with new node
+                                        GenerateGraph();
+				});
 			}
 		}
 	}
@@ -98,8 +98,9 @@ function ModifyData(selectedRegions) {
 				if(selectedRegions.indexOf(cc2ToRemove) == -1)
 					g_DataList.delete(cc2ToRemove);
 			}
-		}	
-
+		}
+                // draw graph without removed node
+                GenerateGraph();
 	}
 	else
 		return;

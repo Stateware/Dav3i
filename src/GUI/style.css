@@ -148,6 +148,34 @@
 	color: #7FDBFF;
 }
 
+/* sets styling for popup settings menu */
+.settings-screen{
+    position: relative;
+	z-index:999;
+    margin-left: auto;
+	margin-right: auto;
+	margin-top: auto;
+    height: 500px;
+    width: 500px;
+	background-color: #776258;
+	display: none;
+	text-align: center;
+}
+
+/*Black overlay*/
+.settings-overlay {
+    position   : absolute;
+    top        : 0;
+    left       : 0;
+    width      : 100%;
+    height     : 100%;
+    background : #000;
+    opacity    : 0.6;
+    filter     : alpha(opacity=60);
+    z-index    : 5;
+    display    : none;
+}
+
 /* sets styling for loading animation container */
 .spinner {
     margin: 100px 0 auto;
