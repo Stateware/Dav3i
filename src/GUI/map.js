@@ -93,6 +93,7 @@ $(function(){
                         cc2_list[cc2_list.length] = g_DataList.item(i).cc2;
             }
             document.getElementById('cc2-selected').value = JSON.stringify(cc2_list);
+            //GenerateSingle();
         },
         // runs when region is hovered over
         onRegionTipShow: function(e, label, key){
