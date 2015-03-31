@@ -37,7 +37,6 @@
 </head>
 
 <body>
-
     <div class="loading-screen">
         <center>
             <img src="res/logo.png" alt="Logo"/>
@@ -50,25 +49,33 @@
             <button onclick="SwitchToMain()" class="begin">Begin</button>
         </center>
     </div>
-    
+	
+	<div class="settings-overlay">
+	</div>
+	
+	<div class="settings-screen">
+		<h1 class="open-sans">Settings Menu<h1>
+		<button id="settings" class="flat-button" onclick="CloseSettings()">Close</button>
+	</div>
+	
     <div class="main-screen">
         <section class="spacer">
         </section>
 
-    <div class="control-panel">
-        <section class="settings">
-            <img class="logo" src="res/logo.png" alt="Logo"/>
-            <h1 class="open-sans">Settings and Search Section<h1>
-            <textarea id="cc2-selected"> </textarea>
-            <button id="clear" class="flat-button" onclick>Clear</button>
-			<button id="settings" class="flat-button">Advanced Settings</button>
-        </section>
+		<div class="control-panel">
+			<section class="settings">
+				<img class="logo" src="res/logo.png" alt="Logo"/>
+				<h1 class="open-sans">Settings and Search Section<h1>
+				<textarea id="cc2-selected"> </textarea>
+				<button id="clear" class="flat-button" onclick>Clear</button>
+				<button id="settings" class="flat-button" onclick="OpenSettings()">Advanced Settings</button>
+			</section>
+			
+			<section class="graph" id="graph">
+				<h1 class="open-sans">Graph Section</h1>
+			</section>
+		</div>
 	
-        <section class="graph" id="graph">
-            <h1 class="open-sans">Graph Section</h1>
-        </section>
-    </div>
-
         <div id="map">
         </div>
     	
@@ -78,7 +85,7 @@
             </center>
         </section>
     </div>
-
+	
     <div id="map">
     </div>
 

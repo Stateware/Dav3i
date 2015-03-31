@@ -39,3 +39,15 @@ function SetHMSID()
 {
 	
 }
+
+function OpenSettings()
+{
+	 $(".settings-screen, .settings-overlay").fadeIn(400);
+	
+}
+
+function CloseSettings()
+{
+	 $(".settings-screen, .settings-overlay").fadeOut(400);
+}
+
