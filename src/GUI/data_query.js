@@ -47,63 +47,53 @@ function GetData(cid)
 
 }
 
-// Author:          Vanajam Soni, Kyle Nicholson
-// Date Created:    3/24/15
-// Last Modified:   3/26/15 Vanajam Soni
-// Description:     adds or removes a node to the list
+
+// Author: Vanajam Soni, Kyle Nicholson
+// Date Created: 3/24/15
+// Last Modified: 3/26/15 Vanajam Soni
+// Description: adds or removes a node to the list
 // Input: Selected regions string array
 // Output: adds or removes a node to the list
 function ModifyData(selectedRegions) {
-	if(g_DataList == null){
-		g_DataList = new c_List();
-	}
-	
-	if(selectedRegions.length > g_DataList.size) 
-	{
-		// look for cc2 to add
-		var CC2Found = false; 
-		for(var i=0; i <= selectedRegions.length && !CC2Found; i++)
-		{
-
-			if(selectedRegions[i]!= null && !g_DataList.contains(selectedRegions[i]))
-			{
-				CC2Found = true;
-
-				var cid = GetCID(selectedRegions[i]);
-				var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
-
-				$.when(GetData(cid)).done(function(data){
-		
-					var parsedData = ParseData(data);
-
-					newNode.data = parsedData;
-
-                                	console.log(newNode);
-
-					g_DataList.add(newNode);
-
-                                        // draw graph with new node
-                                        GenerateGraph();
-				});
-			}
-		}
-	}
-	else if(selectedRegions.length < g_DataList.size)
-	{
-		// look for cc2 to remove
-		for(var i = 0; i<g_DataList.size;i++)
-		{	
-			if(g_DataList != null) {
-				cc2ToRemove = g_DataList.item(i).cc2;
-				if(selectedRegions.indexOf(cc2ToRemove) == -1)
-					g_DataList.delete(cc2ToRemove);
-			}
-		}
-                // draw graph without removed node
-                GenerateGraph();
-	}
-	else
-		return;
-	
+    if(g_DataList == null){
+        g_DataList = new c_List();
+    }
+    if(selectedRegions.length > g_DataList.size)
+    {
+        // look for cc2 to add
+        var CC2Found = false;
+        for(var i=0; i <= selectedRegions.length && !CC2Found; i++)
+        {
+            if(selectedRegions[i]!= null && !g_DataList.contains(selectedRegions[i]))
+            {
+                CC2Found = true;
+                var cid = GetCID(selectedRegions[i]);
+                var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
+                $.when(GetData(cid)).done(function(data){
+                    var parsedData = ParseData(data);
+                    newNode.data = parsedData;
+                    console.log(newNode);
+                    g_DataList.add(newNode);
+                    // draw graph with new node
+                    GenerateGraph();
+                });
+            }
+        }
+    }
+    else if(selectedRegions.length < g_DataList.size)
+    {
+        // look for cc2 to remove
+        for(var i = 0; i<g_DataList.size;i++)
+        {
+            if(g_DataList != null) {
+                cc2ToRemove = g_DataList.item(i).cc2;
+                if(selectedRegions.indexOf(cc2ToRemove) == -1)
+                    g_DataList.delete(cc2ToRemove);
+                }
+            }
+            // draw graph without removed node
+            GenerateGraph();
+        }
+    else
+        return;
 }
-
