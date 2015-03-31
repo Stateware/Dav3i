@@ -366,9 +366,9 @@ To satisfy these use cases and deliver the ideal user experience, we must:
  * A map of the world, from which a user can make an area selection.  
  * A control panel, which contains the following:  
 &nbsp;&nbsp;&nbsp;&nbsp;- The Dav3i logo  
-&nbsp;&nbsp;&nbsp;&nbsp;- A search bar for finding individual regions and adding them to the area selection  
-&nbsp;&nbsp;&nbsp;&nbsp;- A tab for each stat, generated from dynamic_markup.js  
-&nbsp;&nbsp;&nbsp;&nbsp;- A section on which graphs are generated  
+&nbsp;&nbsp;&nbsp;&nbsp;- The search bar  
+&nbsp;&nbsp;&nbsp;&nbsp;- Stat selection tabs  
+&nbsp;&nbsp;&nbsp;&nbsp;- Graph section  
 &nbsp;&nbsp;&nbsp;&nbsp;- A button to extend the graph section  
  * A footer, which includes links to contact information and a legal notice with a link to a copy of the GPL.  
 
@@ -444,10 +444,23 @@ The CID reference list's setup as a 1D array is ideal because it can easily be u
 
 ### 4.0.2 : UX  
 
+####4.0.2.0 : Control Panel
+
+The design of the control panel was chosen so that a lot of functionality could fit into the small area allotted to it, while allowing the user to expand it out. The tab selection was chosen so that heat mapping and graph selection could be done easily and transparently. We also wanted to include a logo, so we put that on top with the search bar and the settings menu link.
+
+####4.0.2.1 : Map
+
+The map was chosen from the available vectors because it included more of the countries we needed, and the polygonal style made it easier to add the rest of them. The toggle selection on the map was chosen because that is the inherent functionality of jVectorMap. While this decision was made for us, we found that it made for a better user experience than what we had planned on. In order to make deselection easier, we added a clear selection button as well.
+
+####4.0.2.2 : Main Screen Layout
+
+The main screen layout was chosen because the original design left the map feeling claustrophobic and closed off due to the border sections surrounding it. Instead, the map now fills most of the screen. It is on the right side so that user attention is directed mostly toward the control panel when viewing data, as users generally look left when using web applications according to eye tracking studies.
+
 *discarded UX design*  
  * Checkboxes, radio buttons, and a slider were chosen for the settings menu, as they are a simple interface to toggling, selection of one from a set, and selecting a timespan, which are the fundamental requirements of the menu.  
  * Toggle selecting country/region was chosen as a bit of an accident. Originally, we had the idea to select one country/region by clicking, and ctrl+click to add to the list, or simply click to start a new one. However, we saw in implementing map.js that toggling was a much better experience in interfacing with the map, so we used that. To remove the hassle of untoggling every country when selecting a new area selection, we added a "clear selection" button.  
  * Based on eyetracking studies, most of the user's attention focuses to the left side of the page. Thus, we decided to put the graphs on that side, and put the easily viewable map on the right. This way, the user is able to focus on the data as it is presented, rather than being distracted by the map being overprominent.  
+
 *end of discarded design*  
 
 ###4.1 : Bug History
