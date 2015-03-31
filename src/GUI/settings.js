@@ -19,7 +19,6 @@ function SetTimespan()
 	
 }
 
-<<<<<<< HEAD
 // Author: Emma Roudabush
 // Date Created: 3/26/2015
 // Last Modified: 3/26/2015 by Emma Roudabush
