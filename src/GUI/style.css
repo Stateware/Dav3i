@@ -78,6 +78,11 @@
     text-align: center;
 }
 
+#graphs {
+    width: 100%;
+    height: 100%;
+}
+
 
 /* sets styling for the tabs for the graph section */
 .graph-tab {

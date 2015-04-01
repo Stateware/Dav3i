@@ -54,10 +54,17 @@ function BuildDiv(stat)
 	var div=document.createElement("DIV");
 	div.id="id"+stat+"Graphs";
 	div.style.display="none";
+	div.className="graph";
 	div.innerHTML="graph of "+stat;
 	document.getElementById("graphs").appendChild(div);
 }
 
+// Author: Paul Jang, Nicholas Denaro
+// Date Created: 3/26/2015
+// Last Modified: 3/31/2015 by Nicholas Denaro
+// Description: build divs where the graphs go in index.html
+// PRE: Called from the onclick of a tab
+// POST: previous tab is switched out, and now tab is switched in
 function ChooseTab(element)
 {
 	//alert("clicked: "+element.id);
@@ -92,10 +99,12 @@ function Expand()
 {
 	$(".control-panel").animate({width:"97.5%"}, 500);
 	$("#expand").attr("onclick","Shrink()");
+	$("#graph-tab-tooltip").fadeOut(400);
 }
 
 function Shrink()
 {
 	$(".control-panel").animate({width:"25%"}, 500);
 	$("#expand").attr("onclick","Expand()");
+	$("#graph-tab-tooltip").fadeIn(400);
 }

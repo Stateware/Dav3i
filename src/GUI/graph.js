@@ -9,7 +9,7 @@
 
 // Author: Joshua Crafts
 // Date Created: 3/27/2015
-// Last Modified: 3/31/2015 by Paul Jang
+// Last Modified: 3/31/2015 by Nicholas Denaro
 // Description: Gets stat data and generates a graph (Google Charts API)
 // PRE: N/A
 // POST: N/A
@@ -29,7 +29,8 @@ function GenerateGraph()
 		backgroundColor: '#F4EBBE'
 	};
     // instantiate and draw chart using prepared data
-    var chart = new google.visualization.LineChart(document.getElementById('graph'));
+    var tab=document.getElementById("tabsDiv").children[g_HMSID];
+    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"Graphs"));//Rather than using the active tab, we need to find out which graph the data is for?
     chart.draw(data, options);
 	
 }
