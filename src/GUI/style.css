@@ -92,6 +92,7 @@
         -ms-transition: all 0.5s linear;
          -o-transition: all 0.5s linear;
             transition: all 0.5s linear;
+    pointer-events: all;
 }
 
 /* darkens the tabs as you hover over them*/
@@ -106,12 +107,26 @@
     white-space: nowrap;
 }
 
-.tabWrapper:hover:after{
+/* allows for the showing of the tooltip*/
+.tab-tooltip{
+    width: 30px;
+    height: 29px;
+    right: 0;
+    position: absolute;
+    z-index: 1;
+    font-size: 16px;
+    font-weight: normal;
+    text-transform: uppercase;
+    background-color: #877268;
+}
+
+/* while hovering ver the ..., it shows the title*/
+.tab-tooltip:hover:after{
     background: #333;
     background: rgba(0,0,0,.8);
     border-radius: 5px;
     color: #fff;
-    content: attr(title);
+    content: attr(tooltip);
     left: 100%;
     padding: 5px 15px;
     position: absolute;
