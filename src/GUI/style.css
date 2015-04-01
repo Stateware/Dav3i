@@ -34,6 +34,7 @@
     background-color: #efe;
     top: 2%;
     left: 1.3%;
+	border: 1px solid black;
 }
 
 /* sets main screen to background */
@@ -63,7 +64,7 @@
     left: 0;
     height: 20%;
     width: 100%;
-    background-color: #594F3B;
+    background-color: #F4EBBE;
 }
 
 /* sets styling for graph section */
@@ -73,7 +74,7 @@
     left: 0;
     height: 75%;
     width: 100%;
-    background-color: #776258;
+    background-color: #F4EBBE;
     text-align: center;
 }
 
@@ -83,7 +84,7 @@
     left: 0;
     height: 5%;
     width: 100%;
-    background-color: #776258;
+    background-color: #F4EBBE;
     text-align: right;
 }
 
@@ -113,7 +114,7 @@
 /* sets font for graph and settings sections */
 .settings, .graph, .expand{
     font-size: 10pt;
-    color: #efe;
+    color: #000;
 }
 
 /* sets styling for footer  section*/
@@ -167,7 +168,7 @@
 	margin-top: auto;
     height: 500px;
     width: 500px;
-	background-color: #776258;
+	background-color: #F4EBBE;
 	display: none;
 	text-align: center;
 }
