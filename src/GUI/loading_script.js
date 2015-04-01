@@ -2,8 +2,8 @@
 // Description:             For loading screen
 // Date Created:            3/5/2015
 // Contributors:            Emma Roudabush, Joshua Crafts
-// Date Last Modified:      3/17/2015
-// Last Modified By:        Joshua Crafts
+// Date Last Modified:      3/31/2015
+// Last Modified By:        Emma Roudabush
 // Dependencies:            descriptor.php, by_stat.php, lookup_table.js, map.js, data.js, index.html
 // Additional Notes:        N/A
 
@@ -24,14 +24,4 @@ $(".loading-screen").ready(function () {
     }, 1250);
 });
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 3/17/2015 by Joshua Crafts
-// Description: Fades the screen back to the main page
-// PRE: N/A
-// POST: Screen is switched to the main page
-function SwitchToMain ()
-{
-    $(".loading-screen").fadeOut(750);
-}
 

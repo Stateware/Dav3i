@@ -1,25 +1,39 @@
 // File Name: graph.js
 // Description: This file generates graphs based on parsed data
 // Date Created: 3/17/2015
-// Contributors: Nicholas Dyszel, Berty Ruan, Arun Kumar
-// Date Last Modified: 3/19/2015
-// Last Modified By: Nicholas Dyszel, Berty Ruan, Arun Kumar
+// Contributors: Nicholas Dyszel, Berty Ruan, Arun Kumar, Paul Jang
+// Date Last Modified: 3/31/2015
+// Last Modified By: Paul Jang
 // Dependencies: client_parser.js, ..., [Google Charts API]
 // Additional Notes: N/A
+
 // Author: Joshua Crafts
 // Date Created: 3/27/2015
-// Last Modified: 3/27/2015 by Joshua Crafts
+// Last Modified: 3/31/2015 by Paul Jang
 // Description: Gets stat data and generates a graph (Google Charts API)
 // PRE: N/A
 // POST: N/A
 function GenerateGraph()
 {
-var data = PrepareData();
-var options = {'title': g_StatList[g_HMSID]};
-// instantiate and draw chart using prepared data
-var chart = new google.visualization.LineChart(document.getElementById('graph'));
-chart.draw(data, options);
+    var data = PrepareData();
+    var options = {
+		vAxis: {
+			minValue: 0
+		},
+		hAxis: {
+			format: '####'
+		},
+		legend: {
+			position: 'bottom'
+		},
+		backgroundColor: '#F4EBBE'
+	};
+    // instantiate and draw chart using prepared data
+    var chart = new google.visualization.LineChart(document.getElementById('graph'));
+    chart.draw(data, options);
+	
 }
+
 // Author: Joshua Crafts
 // Date Created: 3/27/2015
 // Last Modified: 3/27/2015 by Joshua Crafts
@@ -28,44 +42,45 @@ chart.draw(data, options);
 // POST: N/A
 function PrepareData()
 {
-// create array with indices for all years plus a header row
-var dataArray = new Array(34);
-var dataTable;
-var currentNode;
-var i, j;
-// fill array
-for (i = 0; i < 34; i++)
-{
-// create array in each index the length of the data list, plus a column for year
-dataArray[i] = new Array(g_DataList.size + 1);
-currentNode = g_DataList.start;
-// fill header row with region names
-if (i == 0)
-{
-dataArray[i][0] = 'Region';
-for (j = 1; j < g_DataList.size + 1; j++)
-{
-dataArray[i][j] = currentNode.name;
-currentNode = currentNode.next;
+    // create array with indices for all years plus a header row
+    var dataArray = new Array(34);
+    var dataTable;
+    var currentNode;
+    var i, j;
+    // fill array
+    for (i = 0; i < 34; i++)
+    {
+        // create array in each index the length of the data list, plus a column for year
+        dataArray[i] = new Array(g_DataList.size + 1);
+        currentNode = g_DataList.start;
+        // fill header row with region names
+        if (i == 0)
+        {
+            dataArray[i][0] = 'Region';
+            for (j = 1; j < g_DataList.size + 1; j++)
+            {
+                dataArray[i][j] = currentNode.name;
+                currentNode = currentNode.next;
+            }
+        }
+        // fill first column with years and the rest with data
+        else
+        {
+            dataArray[i][0] = i + 1979;
+            for (j = 1; j < g_DataList.size + 1; j++)
+            {
+                // data is set using currently selected stat ID
+                dataArray[i][j] = Number(currentNode.data[g_HMSID][i-1]);
+                currentNode = currentNode.next;
+            }
+        }
+    }
+    console.log(dataArray);
+    // turns 2D array into data table for graph, second argument denotes that 0 indices are headers, see documentation for more info
+    dataTable = google.visualization.arrayToDataTable(dataArray, false);
+    return dataTable;
 }
-}
-// fill first column with years and the rest with data
-else
-{
-dataArray[i][0] = i + 1979;
-for (j = 1; j < g_DataList.size + 1; j++)
-{
-// data is set using currently selected stat ID
-dataArray[i][j] = Number(currentNode.data[g_HMSID][i-1]);
-currentNode = currentNode.next;
-}
-}
-}
-console.log(dataArray);
-// turns 2D array into data table for graph, second argument denotes that 0 indices are headers, see documentation for more info
-dataTable = google.visualization.arrayToDataTable(dataArray, false);
-return dataTable;
-}
+
 // Author:
 // Date Created:
 // Last Modified:
@@ -75,6 +90,7 @@ return dataTable;
 // POST:
 function GenerateSingleBounded(statID, data) {
 }
+
 // Author:
 // Date Created:
 // Last Modified:
@@ -84,6 +100,7 @@ function GenerateSingleBounded(statID, data) {
 // POST:
 function GraphMultiple(statID, list) {
 }
+
 // Author:
 // Date Created:
 // Last Modified:
@@ -93,6 +110,7 @@ function GraphMultiple(statID, list) {
 // POST:
 function GenerateSum(statID, list) {
 }
+
 // Author:
 // Date Created:
 // Last Modified:

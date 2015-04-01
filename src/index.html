@@ -25,12 +25,12 @@
     <script type="text/javascript" src="GUI/data.js"></script>
     <script type="text/javascript" src="GUI/lookup_table.js"></script>
     <script type="text/javascript" src="GUI/settings.js"></script>
+    <script type="text/javascript" src="GUI/graph.js"></script>
     <script type="text/javascript" src="GUI/dynamic_markup.js"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
         google.load('visualization', '1.0', {'packages':['corechart']});
     </script>
-    <script type="text/javascript" src="GUI/graph.js"></script>
     <script src="GUI/jvectormap/jquery.js"></script>
     <script src="GUI/jvectormap/jquery-jvectormap-2.0.1.min.js"></script>
     <script src="GUI/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
@@ -62,14 +62,14 @@
         <section class="spacer">
         </section>
 
-		<div class="control-panel">
-			<section class="settings">
-				<img class="logo" src="res/logo.png" alt="Logo"/>
-				<h1 class="open-sans">Settings and Search Section<h1>
-				<textarea id="cc2-selected"> </textarea>
-				<button id="clear" class="flat-button" onclick>Clear</button>
-				<button id="settings" class="flat-button" onclick="OpenSettings()">Advanced Settings</button>
-			</section>
+        <div class="control-panel">
+            <section class="settings">
+                <img class="logo" src="res/logo.png" alt="Logo"/>
+                <h1 class="open-sans">Settings and Search Section<h1>
+                <textarea id="cc2-selected"> </textarea>
+                <button id="clear" class="flat-button" onclick>Clear</button>
+                <button id="settings" class="flat-button" onclick="OpenSettings()">Advanced Settings</button>
+            </section>
 			
 			<section class="graph" id="graph">
                 <!--<div style="overflow: hidden; overflow-y: hidden; white-space: nowrap;">-->
@@ -83,9 +83,11 @@
 				<h1 class="open-sans">Graph Section</h1>
                 <div id="graphs">
                 </div>
+			<section class="expand">
+				<img src="http://i300.photobucket.com/albums/nn14/Emma_Roudabush/Editing-Expand-icon_zpspeq3tht2.png" id="expand" width="30" height="30" onclick="Expand()" style="PADDING-RIGHT: 10px"/>
 			</section>
-		</div>
-
+        </div>
+        
         <div id="map">
         </div>
     	

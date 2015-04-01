@@ -2,8 +2,8 @@
 // Description:             This module contains the code needed to dynamically create modules on the client
 // Date Created:            3/26/2015
 // Contributors:            Paul Jang, Nicholas Denaro
-// Date Last Modified:      3/26/2015
-// Last Modified By:        Paul Jang
+// Date Last Modified:      3/31/2015
+// Last Modified By:        Emma Roudabush
 // Dependencies:            index.html, lookup_table.js
 // Additional Notes:        N/A
 
@@ -58,12 +58,44 @@ function BuildDiv(stat)
 	document.getElementById("graphs").appendChild(div);
 }
 
-
-
 function ChooseTab(element)
 {
 	//alert("clicked: "+element.id);
 	document.getElementById(g_ActiveTab.id+"Graphs").style.display="none";
 	document.getElementById(element.id+"Graphs").style.display="block";
 	g_ActiveTab=element;
+}
+
+// Author: Emma Roudabush
+// Date Created: 3/5/2015
+// Last Modified: 3/31/2015 by Emma Roudabush
+// Description: Fades the screen back to the main page
+// PRE: N/A
+// POST: Screen is switched to the main page
+function SwitchToMain ()
+{
+    $(".loading-screen").fadeOut(750);
+}
+
+
+function OpenSettings()
+{
+	 $(".settings-screen, .settings-overlay").fadeIn(400);
+}
+
+function CloseSettings()
+{
+	 $(".settings-screen, .settings-overlay").fadeOut(400);
+}
+
+function Expand()
+{
+	$(".control-panel").animate({width:"97.5%"}, 500);
+	$("#expand").attr("onclick","Shrink()");
+}
+
+function Shrink()
+{
+	$(".control-panel").animate({width:"25%"}, 500);
+	$("#expand").attr("onclick","Expand()");
 }
