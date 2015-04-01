@@ -4,7 +4,7 @@
     Date Created:            2/19/2015
     Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts, Paul Jang, Nicholas Denaro
     Date Last Modified:      4/1/2015
-    Last Modified By:        Nicholas Denaro
+    Last Modified By:        Emma Roudabush
     Dependencies:            none
     Additional Notes:        N/A
 */
@@ -80,14 +80,22 @@
     text-align: center;
 }
 
+/* sets styling for tab graphs */
+#graphs {
+	border-top: 1px solid #bbb89b;
+}
+
 /* sets styling for the tabs for the graph section */
 .graph-tab {
     display: inline-block;
 	font-family: 'Open Sans Condensed', sans-serif;
     padding: 7px 16px 2px 4px;
     border-radius: 2px 2px 0 0;
+	border: 1px solid #bbb89b;
+	box-shadow: 1px 1px 5px #888888;
     font-size: 16px;
     font-weight: normal;
+	text-align: center;
     text-transform: uppercase;
     background-color: #EAE7C2;
     top: 4px;
@@ -118,6 +126,7 @@
     right: 0;
     position: absolute;
     z-index: 1;
+	font-family: 'Open Sans Condensed', sans-serif;
     font-size: 16px;
     font-weight: normal;
     text-transform: uppercase;
