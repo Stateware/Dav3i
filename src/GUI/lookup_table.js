@@ -29,7 +29,8 @@ function ParseDescriptor()
         g_HMSID=1;
         GenerateStatReferenceList(DescriptorJSON);
         console.log(g_LookupTable);
-        console.log(g_StatList); 
+        console.log(g_StatList);
+        BuildTabs();
     });
 }
 

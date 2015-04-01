@@ -1,10 +1,10 @@
 /* 
     File Name:               style.css
     Description:             Style sheet for the loading screen and main page
-    Date Created:            2/19/2015
-    Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts
+    Date Created:            3/31/2015
+    Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts, Nicholas Denaro
     Date Last Modified:      3/15/2015
-    Last Modified By:        Joshua Crafts
+    Last Modified By:        Nicholas Denaro
     Dependencies:            none
     Additional Notes:        N/A
 */
@@ -75,6 +75,48 @@
     width: 100%;
     background-color: #776258;
     text-align: center;
+}
+
+/* sets styling for the tabs for the graph section */
+.graph-tab {
+    display: inline-block;
+    padding: 7px 16px 2px 4px;
+    border-radius: 2px 2px 0 0;
+    font-size: 16px;
+    font-weight: normal;
+    text-transform: uppercase;
+    background-color: #877268;
+    top: 4px;
+    -webkit-transition: all 0.5s linear;
+       -moz-transition: all 0.5s linear;
+        -ms-transition: all 0.5s linear;
+         -o-transition: all 0.5s linear;
+            transition: all 0.5s linear;
+}
+
+/* darkens the tabs as you hover over them*/
+.graph-tab:hover{
+    background-color: #675248;
+}
+
+/* aligns the tabs to same line*/
+.tabWrapper{
+    overflow: hidden;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+.tabWrapper:hover:after{
+    background: #333;
+    background: rgba(0,0,0,.8);
+    border-radius: 5px;
+    color: #fff;
+    content: attr(title);
+    left: 100%;
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    width: 220px;
 }
 
 /* sets automatic size and placement for logo image */
