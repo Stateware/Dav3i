@@ -26,7 +26,7 @@ function GenerateGraph()
 		legend: {
 			position: 'bottom'
 		},
-		backgroundColor: '#F4EBBE'
+		backgroundColor: '#EAE7C2'
 	};
     // instantiate and draw chart using prepared data
     var chart = new google.visualization.LineChart(document.getElementById('graph'));

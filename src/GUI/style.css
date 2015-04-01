@@ -31,7 +31,7 @@
     position: absolute;
     width: 25%;
     height: 88.5%;
-    background-color: #efe;
+    background-color: #EAE7C2;
     top: 2%;
     left: 1.3%;
 	border: 1px solid black;
@@ -65,7 +65,7 @@
 	z-index: 3;
     height: 20%;
     width: 100%;
-    background-color: #F4EBBE;
+    background-color: #EAE7C2;
 }
 
 /* sets styling for graph section */
@@ -76,7 +76,7 @@
 	z-index: 3;
     height: 75%;
     width: 100%;
-    background-color: #F4EBBE;
+    background-color: #EAE7C2;
     text-align: center;
 }
 
