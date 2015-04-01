@@ -83,12 +83,13 @@
 /* sets styling for the tabs for the graph section */
 .graph-tab {
     display: inline-block;
+	font-family: 'Open Sans Condensed', sans-serif;
     padding: 7px 16px 2px 4px;
     border-radius: 2px 2px 0 0;
     font-size: 16px;
     font-weight: normal;
     text-transform: uppercase;
-    background-color: #877268;
+    background-color: #EAE7C2;
     top: 4px;
     -webkit-transition: all 0.5s linear;
        -moz-transition: all 0.5s linear;
@@ -100,7 +101,7 @@
 
 /* darkens the tabs as you hover over them*/
 .graph-tab:hover{
-    background-color: #675248;
+    background-color: #d2cfae;
 }
 
 /* aligns the tabs to same line*/
@@ -120,12 +121,13 @@
     font-size: 16px;
     font-weight: normal;
     text-transform: uppercase;
-    background-color: #877268;
+    background-color: #EAE7C2;
 }
 
 /* while hovering ver the ..., it shows the title*/
 .tab-tooltip:hover:after{
     background: #333;
+	font-family: 'Open Sans Condensed', sans-serif;
     background: rgba(0,0,0,.8);
     border-radius: 5px;
     color: #fff;
