@@ -2,14 +2,14 @@
 // Description: This file generates graphs based on parsed data
 // Date Created: 3/17/2015
 // Contributors: Nicholas Dyszel, Berty Ruan, Arun Kumar, Paul Jang
-// Date Last Modified: 3/31/2015
-// Last Modified By: Paul Jang
+// Date Last Modified: 4/1/2015
+// Last Modified By: Nicholas Denaro
 // Dependencies: client_parser.js, ..., [Google Charts API]
 // Additional Notes: N/A
 
 // Author: Joshua Crafts
 // Date Created: 3/27/2015
-// Last Modified: 3/31/2015 by Nicholas Denaro
+// Last Modified: 4/1/2015 by Nicholas Denaro
 // Description: Gets stat data and generates a graph (Google Charts API)
 // PRE: N/A
 // POST: N/A
@@ -26,7 +26,7 @@ function GenerateGraph()
 		legend: {
 			position: 'bottom'
 		},
-		backgroundColor: '#F4EBBE'
+		backgroundColor: '#EAE7C2'
 	};
     // instantiate and draw chart using prepared data
     var tab=document.getElementById("tabsDiv").children[g_HMSID];

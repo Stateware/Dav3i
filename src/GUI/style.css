@@ -1,9 +1,9 @@
 /* 
     File Name:               style.css
     Description:             Style sheet for the loading screen and main page
-    Date Created:            3/31/2015
-    Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts, Nicholas Denaro
-    Date Last Modified:      3/15/2015
+    Date Created:            2/19/2015
+    Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts, Paul Jang, Nicholas Denaro
+    Date Last Modified:      4/1/2015
     Last Modified By:        Nicholas Denaro
     Dependencies:            none
     Additional Notes:        N/A
@@ -21,20 +21,20 @@
 
 /* sets loading screen to foreground */
 .loading-screen {
-    z-index: 4;
+    z-index: 5;
     background-color: #efe;
 }
 
 /* sets control panel size and to foreground on main screen */
 .control-panel {
-    z-index: 1;
+    z-index: 3;
     position: absolute;
     width: 25%;
     height: 88.5%;
-    background-color: #efe;
+    background-color: #EAE7C2;
     top: 2%;
     left: 1.3%;
-	border: 1px solid black;
+	box-shadow: 1px 1px 5px #888888;
 }
 
 /* sets main screen to background */
@@ -62,9 +62,10 @@
     position: absolute;
     top: 0;
     left: 0;
+	z-index: 3;
     height: 20%;
     width: 100%;
-    background-color: #F4EBBE;
+    background-color: #EAE7C2;
 }
 
 /* sets styling for graph section */
@@ -72,17 +73,12 @@
     position: absolute;
     top: 20%;
     left: 0;
+	z-index: 3;
     height: 75%;
     width: 100%;
-    background-color: #F4EBBE;
+    background-color: #EAE7C2;
     text-align: center;
 }
-
-#graphs {
-    width: 100%;
-    height: 100%;
-}
-
 
 /* sets styling for the tabs for the graph section */
 .graph-tab {
@@ -141,14 +137,58 @@
     width: 220px;
 }
 
+/* sets stylings for expanding and shrinking section */
 .expand{
 	position: absolute;
     top: 95%;
     left: 0;
+	z-index: 3;
     height: 5%;
     width: 100%;
-    background-color: #F4EBBE;
+    background-color: #EAE7C2;
     text-align: right;
+}
+
+/* sets styling for black mask for expanded state */
+.expand-black {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+    z-index: 1;
+    display: none;
+}
+
+/* sets styling for overlay settings menu */
+.settings-screen{
+    position: relative;
+	z-index: 5;
+    margin-left: auto;
+	margin-right: auto;
+	margin-top: auto;
+    height: 500px;
+    width: 500px;
+	background-color: #EAE7C2;
+	display: none;
+	text-align: center;
+}
+
+/* sets styling for black mask for settings overlay */
+.settings-black {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+    z-index: 1;
+    display: none;
 }
 
 /* sets automatic size and placement for logo image */
@@ -174,7 +214,7 @@
     float: right;
 }
 
-/* sets font for graph and settings sections */
+/* sets font for graph, settings, and expand sections */
 .settings, .graph, .expand{
     font-size: 10pt;
     color: #000;
@@ -220,34 +260,6 @@
 .flat-button:hover {
 	background: none repeat scroll 0 0 #000b17;
 	color: #7FDBFF;
-}
-
-/* sets styling for popup settings menu */
-.settings-screen{
-    position: relative;
-	z-index:999;
-    margin-left: auto;
-	margin-right: auto;
-	margin-top: auto;
-    height: 500px;
-    width: 500px;
-	background-color: #F4EBBE;
-	display: none;
-	text-align: center;
-}
-
-/*Black overlay*/
-.settings-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    opacity: 0.6;
-    filter: alpha(opacity=60);
-    z-index: 5;
-    display: none;
 }
 
 /* sets styling for loading animation container */

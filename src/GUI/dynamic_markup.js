@@ -1,9 +1,9 @@
 // File Name:               dynamic_markup.js
 // Description:             This module contains the code needed to dynamically create modules on the client
 // Date Created:            3/26/2015
-// Contributors:            Paul Jang, Nicholas Denaro
-// Date Last Modified:      3/31/2015
-// Last Modified By:        Emma Roudabush
+// Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
+// Date Last Modified:      4/1/2015
+// Last Modified By:        Nicholas Denaro
 // Dependencies:            index.html, lookup_table.js
 // Additional Notes:        N/A
 
@@ -84,27 +84,52 @@ function SwitchToMain ()
     $(".loading-screen").fadeOut(750);
 }
 
-
+// Author: Emma Roudabush
+// Date Created: 3/30/2015
+// Last Modified: 3/31/2015 by Emma Roudabush
+// Description: Opens the settings overlay
+// PRE: N/A
+// POST: Settings overlay is showing with black backing mask
 function OpenSettings()
 {
-	 $(".settings-screen, .settings-overlay").fadeIn(400);
+	 $(".settings-screen, .settings-black").fadeIn(400);
 }
 
+// Author: Emma Roudabush
+// Date Created: 3/5/2015
+// Last Modified: 3/31/2015 by Emma Roudabush
+// Description: Closes the settings overlay
+// PRE: Settings overlay is currently showing on screen
+// POST: Settings overlay and mask is gone
 function CloseSettings()
 {
-	 $(".settings-screen, .settings-overlay").fadeOut(400);
+	 $(".settings-screen, .settings-black").fadeOut(400);
 }
 
+// Author: Emma Roudabush
+// Date Created: 3/5/2015
+// Last Modified: 4/1/2015 by Nicholas Denaro
+// Description: Expands the control panel
+// PRE: N/A
+// POST: Control panel is expanded and black mask is in place behind
 function Expand()
 {
 	$(".control-panel").animate({width:"97.5%"}, 500);
 	$("#expand").attr("onclick","Shrink()");
 	$("#graph-tab-tooltip").fadeOut(400);
+	$(".expand-black").fadeIn(400);
 }
 
+// Author: Emma Roudabush
+// Date Created: 3/5/2015
+// Last Modified: 4/1/2015 by Nicholas Denaro
+// Description: Shrinks the control panel
+// PRE: Control panel is currently expanded
+// POST: Control panel shrinks back to original size and black mask is gone
 function Shrink()
 {
 	$(".control-panel").animate({width:"25%"}, 500);
 	$("#expand").attr("onclick","Expand()");
 	$("#graph-tab-tooltip").fadeIn(400);
+	$(".expand-black").fadeOut(400);
 }
