@@ -506,11 +506,11 @@ The main screen layout was chosen because the original design left the map feeli
 ##4.1 : Bug History
  * \#4: API call to by_country.php returns wrong data
 First Reported: April 2, 2015  
-Status: Active
+Status: Fixed
 Description: When a country is selected, the API call to by_country.php does not return the data for the intended country. For example, Indonesia's data is received instead of India's, and India's data is received instead of Ireland's.
 Reason for bug: Array indices in PHP start from 1, whereas those in JavaScript start from 0. This has created a mismatch in the indices of the lookup table(used as CIDs), and CIDs stored in the database.
 Suggestion for fix: Change back end implentation of the API call to by_country.php so that it returns the data for (CID + 1) instead of CID.
-Additional Notes: N/A
+Additional Notes: Fixed on 4/2/2015
 
  * \#3: Graph shows wrong data
 First Reported: March 31, 2015
