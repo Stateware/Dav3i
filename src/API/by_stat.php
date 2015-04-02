@@ -5,7 +5,7 @@
  * 
  * Date Created:        2/7/2015
  * Contributors:        Will Bittner, Arun Kumar, Drew Lopreiato
- * Date Last Modified:  2/20/2015
+ * Date Last Modified:  4/2/2015
  * Last Modified By:    Drew Lopreiato
  * Dependencies:        Connect.php, Toolbox.php
  * Input:               GET: statID - a positive integer
@@ -15,7 +15,7 @@
 require_once("api_library.php");
 
 // enable foreign access in testing
-if (TESTING)
+if (EXTERNAL_ACCESS)
 {
 	header("Access-Control-Allow-Origin: *");
 }

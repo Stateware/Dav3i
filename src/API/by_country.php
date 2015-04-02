@@ -4,7 +4,7 @@
  * 
  * Date Created:        2/22/2015
  * Contributors:        Drew Lopreiato, Will Bittner, Arun Kumar, Dylan Fetch
- * Date Last Modified:  2/22/2015
+ * Date Last Modified:  4/2/2015
  * Last Modified By:    Drew Lopreiato 
  * Dependencies:        api_library.php
  * Input:               NONE
@@ -14,7 +14,7 @@
 require_once("api_library.php");
 
 // enable foreign access in testing
-if (TESTING)
+if (EXTERNAL_ACCESS)
 {
 	header("Access-Control-Allow-Origin: *");
 }

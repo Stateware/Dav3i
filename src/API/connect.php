@@ -4,7 +4,7 @@
  * 
  * Date Created:        2/7/2015
  * Contributors:        Kyle Nicholson, Berty Ruan
- * Date Last Modified:  2/20/2015
+ * Date Last Modified:  4/2/2015
  * Last Modified By:    Drew Lopreiato
  * Dependencies:        Toolbox.php
  * Input:               NONE
@@ -17,7 +17,7 @@ require_once("toolbox.php");
 //Post: A database connection has been created and returned
 function GetDatabaseConnection()
 {
-    $databaseConnection = new mysqli(HOST, USER, PASSWORD, PEACHTREE);
+    $databaseConnection = new mysqli(HOST, USER, PASSWORD, DATABASE);
     
     if ($databaseConnection->connect_error)
     {
