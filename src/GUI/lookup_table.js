@@ -23,10 +23,9 @@ function ParseDescriptor()
 
     $.when(GetDescriptor()).done(function(DescriptorJSON){
         GenerateLookupTable(DescriptorJSON);
-        $.when(GetHMS(HMSID=1)).done(function(hmsData){
+        $.when(GetHMS(g_StatID=1)).done(function(hmsData){
             SetHMS(hmsData)
         });
-        g_HMSID=1;
         GenerateStatReferenceList(DescriptorJSON);
         console.log(g_LookupTable);
         console.log(g_StatList);

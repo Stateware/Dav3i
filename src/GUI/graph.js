@@ -29,7 +29,7 @@ function GenerateGraph()
 		backgroundColor: '#EAE7C2'
 	};
     // instantiate and draw chart using prepared data
-    var tab=document.getElementById("tabsDiv").children[g_HMSID];
+    var tab=document.getElementById("tabsDiv").children[g_StatID];
     var chart = new google.visualization.LineChart(document.getElementById(tab.id+"Graphs"));//Rather than using the active tab, we need to find out which graph the data is for?
     chart.draw(data, options);
 	
@@ -71,7 +71,7 @@ function PrepareData()
             for (j = 1; j < g_DataList.size + 1; j++)
             {
                 // data is set using currently selected stat ID
-                dataArray[i][j] = Number(currentNode.data[g_HMSID][i-1]);
+                dataArray[i][j] = Number(currentNode.data[g_StatID][i-1]);
                 currentNode = currentNode.next;
             }
         }
