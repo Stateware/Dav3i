@@ -23,7 +23,7 @@ function ParseDescriptor()
 
     $.when(GetDescriptor()).done(function(DescriptorJSON){
         GenerateLookupTable(DescriptorJSON);
-        $.when(GetHMS(HMSID=1)).done(function(hmsData){
+        $.when(GetHMS(g_HMSID=1)).done(function(hmsData){
             SetHMS(hmsData)
         });
         g_HMSID=1;

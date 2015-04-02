@@ -24,10 +24,8 @@ function BuildTabs()
 			var temp=g_StatList[i];
 			var div=document.createElement("DIV");
 			div.id="id"+temp;
-			//div.class="graph-tab";
-			//div.setAttribute("class","graph-tab");
+			div.setAttribute("stat",""+i);
 			div.className="graph-tab";
-			//div.onclick=ChooseTab;
 			div.setAttribute("onclick","ChooseTab(this)");
 			div.innerHTML=temp;
 			document.getElementById("tabsDiv").appendChild(div);
@@ -36,8 +34,9 @@ function BuildTabs()
 
 			if(i==0)
 			{
-				g_ActiveTab=div;
-				document.getElementById("id"+temp+"Graphs").style.display="block";
+				//g_ActiveTab=div;
+				g_StatID=i;
+				document.getElementById("id-"+temp+"-graphs").style.display="block";
 			}
 		}
 	}
@@ -52,7 +51,7 @@ function BuildTabs()
 function BuildDiv(stat)
 {
 	var div=document.createElement("DIV");
-	div.id="id"+stat+"Graphs";
+	div.id="id-"+stat+"-graphs";
 	div.style.display="none";
 	div.className="graph";
 	div.innerHTML="graph of "+stat;
@@ -67,10 +66,11 @@ function BuildDiv(stat)
 // POST: previous tab is switched out, and now tab is switched in
 function ChooseTab(element)
 {
-	//alert("clicked: "+element.id);
-	document.getElementById(g_ActiveTab.id+"Graphs").style.display="none";
-	document.getElementById(element.id+"Graphs").style.display="block";
-	g_ActiveTab=element;
+	document.getElementById("id-"+g_StatList[g_StatID]+"-graphs").style.display="none";
+	document.getElementById(element.id+"-graphs").style.display="block";
+	g_StatID=element.getAttribute("stat");
+
+	GenerateGraph();
 }
 
 // Author: Emma Roudabush
