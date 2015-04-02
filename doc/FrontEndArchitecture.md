@@ -25,6 +25,7 @@ Section 2
  * 2.4 : Data Structure Specifications  
 &nbsp;&nbsp;&nbsp;&nbsp;2.4.0 : ASDS  
 &nbsp;&nbsp;&nbsp;&nbsp;2.4.1 : Lookup Table Structure  
+&nbsp;&nbsp;&nbsp;&nbsp;2.4.2 : Parsed Stat List  
 
 Section 3  
  * 3.0 : Use cases
@@ -35,6 +36,16 @@ Section 3
 
 Section 4
  * 4.0 : Major Design Decisions
+&nbsp;&nbsp;&nbsp;&nbsp;4.0.0 : Architecture
+&nbsp;&nbsp;&nbsp;&nbsp;4.0.1 : Data Structures
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.0 : ASDS  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.1 : Lookup Table Structure  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.2 : Stat Reference List  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.3 : Parsed Stat List  
+&nbsp;&nbsp;&nbsp;&nbsp;4.0.2 : UX  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.2.0 : Control Panel  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.2.1 : Map  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.2.2 : Main Screen Layout  
  * 4.1 : Bug History
 
 #Section 0
@@ -130,15 +141,19 @@ Section 4 defines major design decisions, including previously specification of 
 
 **area selection data** refers to the entire set of data stored for an area selection.
 
-**area selection data structure** or **ASDS** refers to the list structure used to store area selection data (defined in section 2.4).
+**area selection data structure** or **ASDS** refers to the list structure used to store area selection data (defined in section 2.4.0).
 
 **ASDS node** refers to a single node of the ASDS list, containing region data, metadata, and a pointer to the next node of the list.
+
+**head stat** is the stat used to identify a data set in the parsed stat list (each case defined in section 2.4.2).
 
 **lookup table** refers to the table containing CC2, name, and the value of a default selected stat for each region, indexed by CID.
 
 **parsed data** refers to region data parsed to fit the specification of the ASDS node.
 
 **region data** refers to the data set (all stats for all possible times) for a single region, in JSON format.
+
+**parsed stat list** refers to the 2D array used to interpret which graph function should be used for each type of data in each case of graph type.
 
 **stat reference list** refers to the array of stat names, indexed in the order in which they are received from descriptor.php.
 
@@ -200,6 +215,7 @@ style.css includes style for the main screen and loading screen.
 data.js is a JavaScript data module that contains all global variables needed across the program. It includes:  
  * `g_LookupTable` : variable containing lookup table
  * `g_StatList` : variable containing stat reference list
+ * `g_ParsedStatList` : variable containing parsed stat list
  * `g_FirstYear` : variable containing earliest year for which data exists
  * `g_LastYear` : variable containing latest year for which data exists
  * `g_YearStart` : variable containing earliest year for which the user wants to see data
@@ -218,6 +234,7 @@ lookup_table.js is a front end script that includes functions to:
  * Call by_stat.php with some stat ID and year and return HMS
  * Generate lookup table from CC2s, names, and 0's for HMS (stored as g_LookupTable)
  * Set stat reference list (stored as g_StatList)
+ * Parse stat reference list and store as g_ParsedStatList
  * Set timespan (stored as g_FirstYear and g_LastYear)
  * Replace HMS values in lookup table with new HMS (will happen just after lookup table generation for default HMS and whenever selected stat changes)
  * Translate CC2 to CID using g_LookupTable
@@ -258,8 +275,8 @@ data_query.js is a front end script that includes a function to:
 **graphs.js**
 
 graphs.js is a front end script that includes functions to:  
- * Prepare area selection data for each case of g_GraphType
- * Draw graphs
+ * Prepare area selection data for each case covered in parsed stat list
+ * Draw graphs for each case covered in parsed stat list
 
 **dynamic_markup.js**
 
@@ -337,6 +354,30 @@ After the lookup table is initially created, its HMS values are replaced by real
 For `g_LookupTable[x][y]`:
  * `x =` CID
  * `y =` CC2 if `y = 0`, name if `y = 1`, or HMS value if `y = 2`.
+
+###2.4.2 : Parsed Data List Structure
+
+The Parsed Data List is set up as a 2D array A[x][y], in which each x value represents a selectable stat, and each y value either represents graph type (0-2), indicates head stat (4), or indicates associated stats (5+).
+
+The values of the elements themselves are the enumerated values of the data preparation and graphing functions for y indices 0-2, or the indices of stats in the stat reference list for y indices 4+.
+
+Example:
+
+`[0] [0] [0] [3]` - Graphing function for g_GraphType = 0  
+`[1] [1] [1] [3]` - Graphing function for g_GraphType = 1  
+`[2] [2] [2] [4]` - Graphing function for g_GraphType = 2  
+`[3] [4] [7] [9]` - Head Stat  
+`[0] [N] [1] [6]` - Associated Stat  
+`[2] [N] [5] [8]` - Associated Stat  
+
+ * The head stat at x = 0 is at index 3 in the stat reference list. Its associated upper and lower bounds, respectively, are at indices 0 and 2. For graph type 0, it chooses data preparation and graphing functions 0 (each region graphed in separate graphs with bounds if available). For type 1, it chooses functions 1 (each region graphed together on a single graph without bounds). For type 2, it chooses functions 2 (each region graphed together as a sum (representing stat for whole area selection) with bounds if available)
+ * The head stat at x = 1 is at index 4 in the stat reference list. It has no upper or lower bounds, indicated by the NULLs in its associated data indices. However, the functions chosen for each case are the same as with the stat at x = 0 because those functions contain logic which allows them to be used in both cases.
+ * The head stat at x = 2 is at index 7 in the stat reference list. Its associated upper and lower bounds, respectively, are at indices 1 and 5. As it is a bounded stat, it chooses the same functions as the stat at x = 0.
+ * The head stat at x = 3 is at index 9 in the stat reference list. Its associated data are at indices 6 and 8. In some cases, there may be more than 2 sets of associated data for this stat. Graphs are approached differently because this data set indicates vaccinations, which occur both routinely and periodically. The two sets of routine vaccinations are the head stat and the first associated stat (MCV1 and MCV2). The second associated stat is the data set on periodic vaccinations (SIA). For graph types 0 and 1, it chooses data preparation and graphing functions 3 (head stat and first associated stat graphed as time series, second associated stat as bars, each region graphed separately). Because the data could be confusing if multiple regions were graphed together, each region is graphed separately, even when the user specifies otherwise for other stats (when graph type is 0). For graph type 2, it chooses functions 4 (each region graphed together as a sum, with combined time series' and bars representing stats for whole area selection). 
+
+ * each region graphed in separate graphs with bounds
+ * each region graphed together on a single graph without bounds
+ * each region graphed together as a sum (representing stat for whole area selection) with bounds
 
 #Section 3
 
@@ -438,9 +479,9 @@ The lookup table structure was chosen for its simplicity in being able to index 
 
 The stat reference list's setup as a 1D array is ideal as it is easily used to enumerate the indices of parsed data contained in ASDS nodes, allowing each module to correctly interpret the data.
 
-####4.0.1.3 : CID Reference List:
+####4.0.1.3 : Parsed Stat List:
 
-The CID reference list's setup as a 1D array is ideal because it can easily be used to retrieve CC2's and names from the lookup table to create ASDS nodes.
+The Parsed Stat List Structure was chosen because it allowed an easy way for us to interpret which graphing function is appropriate to call based on the type of data to be graphed. The graph type enumeration was put first because the number of enumerated values is constant, regardless of stat, while the number of values for vaccinations may vary. By putting the enumeration first, there is a constant index into the head stat across all stats.
 
 ### 4.0.2 : UX  
 
@@ -463,7 +504,7 @@ The main screen layout was chosen because the original design left the map feeli
 
 *end of discarded design*  
 
-###4.1 : Bug History
+##4.1 : Bug History
 
  * \#2: Map objects do not set data correctly  
 First Reported: March 23, 2015  
