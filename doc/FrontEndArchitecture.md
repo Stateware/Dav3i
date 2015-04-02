@@ -35,9 +35,9 @@ Section 3
  * 3.4 : Input Handling
 
 Section 4
- * 4.0 : Major Design Decisions
-&nbsp;&nbsp;&nbsp;&nbsp;4.0.0 : Architecture
-&nbsp;&nbsp;&nbsp;&nbsp;4.0.1 : Data Structures
+ * 4.0 : Major Design Decisions  
+&nbsp;&nbsp;&nbsp;&nbsp;4.0.0 : Architecture  
+&nbsp;&nbsp;&nbsp;&nbsp;4.0.1 : Data Structures  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.0 : ASDS  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.1 : Lookup Table Structure  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.2 : Stat Reference List  
@@ -194,7 +194,7 @@ Our front end is a web page, which will communicate with a LAMP stack server usi
 
 Our front end web page is built using HTML, CSS, and JavaScript, including some JavaScript libraries like jQuery.
 
-###1.3 : Third Party Resources
+##1.3 : Third Party Resources
 
 In building the front end, we utilize Google Charts API to generate graphs, and jVectorMap to generate the map.
 
@@ -370,14 +370,13 @@ Example:
 `[0] [N] [1] [6]` - Associated Stat  
 `[2] [N] [5] [8]` - Associated Stat  
 
- * The head stat at x = 0 is at index 3 in the stat reference list. Its associated upper and lower bounds, respectively, are at indices 0 and 2. For graph type 0, it chooses data preparation and graphing functions 0 (each region graphed in separate graphs with bounds if available). For type 1, it chooses functions 1 (each region graphed together on a single graph without bounds). For type 2, it chooses functions 2 (each region graphed together as a sum (representing stat for whole area selection) with bounds if available)
- * The head stat at x = 1 is at index 4 in the stat reference list. It has no upper or lower bounds, indicated by the NULLs in its associated data indices. However, the functions chosen for each case are the same as with the stat at x = 0 because those functions contain logic which allows them to be used in both cases.
- * The head stat at x = 2 is at index 7 in the stat reference list. Its associated upper and lower bounds, respectively, are at indices 1 and 5. As it is a bounded stat, it chooses the same functions as the stat at x = 0.
- * The head stat at x = 3 is at index 9 in the stat reference list. Its associated data are at indices 6 and 8. In some cases, there may be more than 2 sets of associated data for this stat. Graphs are approached differently because this data set indicates vaccinations, which occur both routinely and periodically. The two sets of routine vaccinations are the head stat and the first associated stat (MCV1 and MCV2). The second associated stat is the data set on periodic vaccinations (SIA). For graph types 0 and 1, it chooses data preparation and graphing functions 3 (head stat and first associated stat graphed as time series, second associated stat as bars, each region graphed separately). Because the data could be confusing if multiple regions were graphed together, each region is graphed separately, even when the user specifies otherwise for other stats (when graph type is 0). For graph type 2, it chooses functions 4 (each region graphed together as a sum, with combined time series' and bars representing stats for whole area selection). 
+ * The head stat at x = 0 is at index 3 in the stat reference list. Its associated upper and lower bounds, respectively, are at indices 0 and 2. For graph type 0, it chooses data preparation and graphing functions 0 (each region graphed in separate graphs with bounds if available). For type 1, it chooses functions 1 (each region graphed together on a single graph without bounds). For type 2, it chooses functions 2 (each region graphed together as a sum (representing stat for whole area selection) with bounds if available).
 
- * each region graphed in separate graphs with bounds
- * each region graphed together on a single graph without bounds
- * each region graphed together as a sum (representing stat for whole area selection) with bounds
+ * The head stat at x = 1 is at index 4 in the stat reference list. It has no upper or lower bounds, indicated by the NULLs in its associated data indices. However, the functions chosen for each case are the same as with the stat at x = 0 because those functions contain logic which allows them to be used in both cases.
+
+ * The head stat at x = 2 is at index 7 in the stat reference list. Its associated upper and lower bounds, respectively, are at indices 1 and 5. As it is a bounded stat, it chooses the same functions as the stat at x = 0.
+
+ * The head stat at x = 3 is at index 9 in the stat reference list. Its associated data are at indices 6 and 8. In some cases, there may be more than 2 sets of associated data for this stat. Graphs are approached differently because this data set indicates vaccinations, which occur both routinely and periodically. The two sets of routine vaccinations are the head stat and the first associated stat (MCV1 and MCV2). The second associated stat is the data set on periodic vaccinations (SIA). For graph types 0 and 1, it chooses data preparation and graphing functions 3 (head stat and first associated stat graphed as time series, second associated stat as bars, each region graphed separately). Because the data could be confusing if multiple regions were graphed together, each region is graphed separately, even when the user specifies otherwise for other stats (when graph type is 0). For graph type 2, it chooses functions 4 (each region graphed together as a sum, with combined time series' and bars representing stats for whole area selection).
 
 #Section 3
 
@@ -505,6 +504,14 @@ The main screen layout was chosen because the original design left the map feeli
 *end of discarded design*  
 
 ##4.1 : Bug History
+
+ * \#3: Graph shows wrong data
+First Reported: March 31, 2015
+Status: Active
+Description: When country is selected to display data, end values do not align with the confirmed correct heat mapped values shown in the hover tip, meaning the whole data sets are likely incorrect.
+Reason for bug: (suspected) as India's graphed final value for "deaths" is greater than any recorded value for deaths, and the time series looks like normal growth, it's possible we're graphing the wrong data set, rather than graphing wrong countries for each time series.
+Suggestion for fix: Talk to back end team and make sure indices to returned data are correct, otherwise check all points at which data is handled to diagnose where bug occurs.
+Additional Notes: N/A
 
  * \#2: Map objects do not set data correctly  
 First Reported: March 23, 2015  
