@@ -2,9 +2,9 @@
 // Description:             This module contains the code needed to dynamically create modules on the client
 // Date Created:            3/26/2015
 // Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
-// Date Last Modified:      4/1/2015
-// Last Modified By:        Nicholas Denaro
-// Dependencies:            index.html, lookup_table.js
+// Date Last Modified:      4/2/2015
+// Last Modified By:        Paul Jang
+// Dependencies:            index.html, lookup_table.js, data.js
 // Additional Notes:        N/A
 
 // Author: Paul Jang, Nicholas Denaro
@@ -132,4 +132,52 @@ function Shrink()
 	$("#expand").attr("onclick","Expand()");
 	$("#graph-tab-tooltip").fadeIn(400);
 	$(".expand-black").fadeOut(400);
+}
+
+// Author: Paul Jang
+// Date Created: 4/2/2015
+// Last Modified: 4/2/2015 by Paul Jang
+// Description: Calls CreateDiv to dynamically generate subgraph divs and generate graphs
+// PRE: CreateDiv functions correctly, g_DataList is properly full
+// POST: Divs are created based on how many countries are selected
+function GenerateSubDivs()
+{
+	var head = g_DataList;
+	var statIndex = g_ActiveTab.getAttribute("stat");
+	var chart;
+	var data;
+	var options = {
+		vAxis: {
+			minValue: 0
+		},
+		hAxis: {
+			format: '####'
+		},
+		legend: {
+			position: 'bottom'
+		},
+		backgroundColor: '#EAE7C2'
+	};
+	while(head != NULL)
+	{
+		CreateSubDiv("id-"+head.name+'-'+g_StatList[statIndex]+"-subgraphs", "id-"+g_StatList[statIndex]+"-graphs");
+		head = head.next;
+		chart = new google.visualization.LineChart(document.getElementById("id-"+head.name+'-'+g_StatList[statIndex]+"-subgraphs"));
+		chart.draw(data,options);
+	}
+}
+
+// Author: Paul Jang
+// Date Created: 4/2/2015
+// Last Modified: 4/2/2015 by Paul Jang
+// Description: Creates a single div with an inputted id and
+//              appends it to the specified parent div
+// PRE: Parent div exists
+// POST: Single div is appended to the parent div
+function CreateSubDiv(id,parent)
+{
+	var elem = document.createElement('div');
+	elem.id = id;
+	document.getElementById(parent).appendChild(elem);
+	document.body.appendChild(elem);
 }

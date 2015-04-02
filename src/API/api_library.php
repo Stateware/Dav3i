@@ -3,8 +3,8 @@
  * Description:         This file holds all of the functions which the api calls will return
  * Date Created:        2/19/2015
  * Contributors:        William Bittner, Drew Lopreiato, Kyle Nicholson, Arun Kumar, Dylan Fetch
- * Date Last Modified:  2/19/2015
- * Last Modified By:    William Bittner, Drew Lopreiato, Kyle Nicholson, Arun Kumar, Dylan Fetch
+ * Date Last Modified:  4/2/2015
+ * Last Modified By:    Drew Lopreiato
  * Dependencies:        connect.php, toolbox.php
  * Input:               none                     
  * Output:              none
@@ -56,18 +56,21 @@ function ByStat($statID, $year)
 	}
 	
 	// The statID given to us is expected to be indexed by 0, however our database is indexed by 1, so we'll add 1
-	$statID++;
+	$databaseIndexedStatID = $statID + 1;
 	
 	// Retrieve the table name of the inputted stat ID.
-	$tableName = GetFirstRowFromColumn($databaseConnection, "meta_stats", "table_name", "table_id = $statID");
+	$tableName = GetFirstRowFromColumn($databaseConnection, "meta_stats", "table_name", "table_id = $databaseIndexedStatID");
 	$heatMapQuery = "SELECT `" . $year . "` FROM " . $tableName . " ORDER BY country_id ASC";
 	$heatMapResults = $databaseConnection->query($heatMapQuery);
 	while($heatMapRow = $heatMapResults->fetch_assoc())
 	{
    		array_push($heatMapArray, $heatMapRow[$year]);
 	}
-	
-	return ($heatMapArray);	
+	// if we don't return an array with more than one element in it, it'll come out not as an object, but as an array
+	// this line of code forces the json_decode to output the data as an object.
+	$containingArray = array($statID => $heatMapArray, 'force' => "object");
+
+	return ($containingArray);	
 }
 
 
@@ -85,7 +88,8 @@ function ByCountry($countryIDs)
 	}
 	
 	$countryIDList = explode(",", $countryIDs);
-	
+	$databaseIndexedCountryIDList = array();
+
 	// validate each countryID
 	foreach ($countryIDList as $countryID)
 	{
@@ -98,7 +102,7 @@ function ByCountry($countryIDs)
 	// The countryIDs given to us is expected to be indexed by 0, however our database is indexed by 1, so we add 1
 	foreach ($countryIDList as $countryID)
 	{
-		$countryID++;
+		array_push($databaseIndexedCountryIDList, $countryID + 1);
 	}
 
 	// put each stat table into an array, where its index is the id for that table
@@ -110,7 +114,7 @@ function ByCountry($countryIDs)
 	}
 	
 	// get the queries for each country and stat
-	$countryDataQueries = GetCountryQueries($statTables, $countryIDList);
+	$countryDataQueries = GetCountryQueries($statTables, $databaseIndexedCountryIDList);
 	
 	// query the query for each country n stuff.
 	foreach($countryDataQueries as $statID => $query)
@@ -118,7 +122,7 @@ function ByCountry($countryIDs)
 		$countryDataResults = $databaseConnection->query($query);
 	    while ($countryDataRow = $countryDataResults->fetch_array(MYSQLI_NUM))
 	    {
-	    	$countryID = $countryDataRow[0];
+	    	$countryID = $countryDataRow[0] - 1;
 	    	$byCountryArray[$countryID][$statID] = array_slice($countryDataRow, 1);
 	    }	
 	}
@@ -182,7 +186,7 @@ function IsValidStatID($statID, $numStats)
 {
 	//As stats are numbered starting at one, the count of the array is equal to the highest value stat.
 	//Check >0 and <= the number of stats as a stat id can't be less than 1 or more than the number of stats
-    return($statID <= $numStats && $statID > 0);
+    return($statID < $numStats && $statID >= 0);
 }
 
 function IsValidCountryID($countryID, $numCountries)
@@ -190,7 +194,7 @@ function IsValidCountryID($countryID, $numCountries)
 	//As countries are numbered starting at one, the count of the array is equal to the highest value country.
 	//Check > 0 and <= the number of countries as a country id can't be less than 1, or more than the number of
 	//countries
-    return($countryID <= $numCountries && $countryID > 0);
+    return($countryID < $numCountries && $countryID >= 0);
 }
  
  

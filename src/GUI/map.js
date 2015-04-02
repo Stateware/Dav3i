@@ -101,7 +101,7 @@ $(function(){
             tipString += label.html()+' (';
             if (map.series.regions[0].values[key] !== undefined)
             {
-                tipString += g_StatList[g_HMSID]+' - '+map.series.regions[0].values[key];
+                tipString += g_StatList[g_StatID]+' - '+map.series.regions[0].values[key];
             }
             else
             {

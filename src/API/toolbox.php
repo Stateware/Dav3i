@@ -4,7 +4,7 @@
  *                             used functions and any globals we may need.
  * Date Created:        2/12/2015
  * Contributors:        Drew Lopreiato, William Bittner, Kyle Nicholson, Berty Ruan, Arun Kumar
- * Date Last Modified:  2/20/2015
+ * Date Last Modified:  4/2/2015
  * Last Modified By:    Drew Lopreiato
  * Dependencies:        none
  * Input:               none
@@ -55,7 +55,10 @@ define("DEFAULT_NUMBER", -1);
 define("DEFAULT_STRING", "");
 /*      EFFECTS OF TESTING == TRUE:
  * 1. the ThrowFatalError doesn't kill the page
- * 2. the API calls can be made from 
  */
-define("TESTING", TRUE);
+define("TESTING", FALSE);
+/*  EFFECTS OF EXTERNAL_ACCESS == TRUE:
+ * 1. all API calls are allowed to be accessed by non-server users
+ */
+define("EXTERNAL_ACCESS", TRUE);
 ?>
