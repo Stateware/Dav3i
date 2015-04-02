@@ -9,7 +9,7 @@
 
 // Author: Joshua Crafts
 // Date Created: 3/27/2015
-// Last Modified: 4/1/2015 by Nicholas Denaro
+// Last Modified: 4/2/2015 by Nicholas Denaro
 // Description: Gets stat data and generates a graph (Google Charts API)
 // PRE: N/A
 // POST: N/A
@@ -29,15 +29,23 @@ function GenerateGraph()
 		backgroundColor: '#EAE7C2'
 	};
     // instantiate and draw chart using prepared data
-    var tab=document.getElementById("tabsDiv").children[g_HMSID];
-    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"Graphs"));//Rather than using the active tab, we need to find out which graph the data is for?
-    chart.draw(data, options);
+    //for(var stat in g_StatList)
+    {
+        
+        //var tab=document.getElementById("tabsDiv").children[stat];
+        var tab=g_ActiveTab;
+        if(tab!=undefined)
+        {
+            var chart = new google.visualization.LineChart(document.getElementById(tab.id+"-graphs"));//Rather than using the active tab, we need to find out which graph the data is for?
+            chart.draw(data, options);
+        }
+    }
 	
 }
 
 // Author: Joshua Crafts
 // Date Created: 3/27/2015
-// Last Modified: 3/27/2015 by Joshua Crafts
+// Last Modified: 4/2/2015 by Nicholas Denaro
 // Description: Prepares data in terms of the data type needed by graphing api
 // PRE: N/A
 // POST: N/A
@@ -71,7 +79,7 @@ function PrepareData()
             for (j = 1; j < g_DataList.size + 1; j++)
             {
                 // data is set using currently selected stat ID
-                dataArray[i][j] = Number(currentNode.data[g_HMSID][i-1]);
+                dataArray[i][j] = Number(currentNode.data[g_StatID][i-1]);
                 currentNode = currentNode.next;
             }
         }
