@@ -388,7 +388,7 @@ The Parsed Data List is set up as a 2D array A[x][y], in which each x value repr
 
 The values of the elements themselves are the enumerated stat type in y = 0, or the indices of stats in the stat reference list for y indices 1+.
 
-The master graphing function uses the value a given column's stat type to decide which function to execute, and uses the head stat and associated data values to index into an ASDS node's data table to pull the correct information for the purposes of graphing.
+The master graphing function uses the value of a given column's stat type to decide which function to execute, and uses the head stat and associated data values to index into an ASDS node's data table to pull the correct data to graph.
 
 Example:
 
