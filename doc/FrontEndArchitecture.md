@@ -397,6 +397,9 @@ Example:
 `[0] [N] [1] [6]` - Associated Stat  
 `[2] [N] [5] [8]` - Associated Stat  
 
+Stat type 0 represents a regular time series, either bounded or unbounded. If it has bounds, they are its associated data. If not, its associated data values are just NULL.
+
+Stat type 1 represents vaccinations. Its head stat is MCV1, and its associated data is MCV2 and SIA.
 
 #Section 3
 
