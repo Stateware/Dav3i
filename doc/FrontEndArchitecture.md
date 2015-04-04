@@ -527,20 +527,20 @@ The main screen layout was chosen because the original design left the map feeli
 *end of discarded design*  
 
 ##4.1 : Bug History
- * \#4: API call to by_country.php returns wrong data
-First Reported: April 2, 2015  
-Status: Fixed April 2, 2015
+ * \#4: API call to by_country.php returns wrong data  
+First Reported: April 2, 2015    
+Status: Fixed April 2, 2015  
 Description: When a country is selected, the API call to by_country.php does not return the data for the intended country. For example, Indonesia's data is received instead of India's, and India's data is received instead of Ireland's.
-Reason for bug: Array indices in PHP start from 1, whereas those in JavaScript start from 0. This has created a mismatch in the indices of the lookup table(used as CIDs), and CIDs stored in the database.
-Description of fix: Changed back end implentation of the API call to by_country.php so that it returns the data for (CID + 1) instead of CID.
+Reason for bug: Array indices in PHP start from 1, whereas those in JavaScript start from 0. This has created a mismatch in the indices of the lookup table(used as CIDs), and CIDs stored in the database.  
+Description of fix: Changed back end implentation of the API call to by_country.php so that it returns the data for (CID + 1) instead of CID.  
 Additional Notes: N/A
 
- * \#3: Graph shows wrong data
-First Reported: March 31, 2015
-Status: Active
-Description: When country is selected to display data, end values do not align with the confirmed correct heat mapped values shown in the hover tip, meaning the whole data sets are likely incorrect.
-Reason for bug: (suspected) as India's graphed final value for "deaths" is greater than any recorded value for deaths, and the time series looks like normal growth, it's possible we're graphing the wrong data set, rather than graphing wrong countries for each time series.
-Suggestion for fix: Talk to back end team and make sure indices to returned data are correct, otherwise check all points at which data is handled to diagnose where bug occurs.
+ * \#3: Graph shows wrong data  
+First Reported: March 31, 2015  
+Status: Active  
+Description: When country is selected to display data, end values do not align with the confirmed correct heat mapped values shown in the hover tip, meaning the whole data sets are likely incorrect.  
+Reason for bug: (suspected) as India's graphed final value for "deaths" is greater than any recorded value for deaths, and the time series looks like normal growth, it's possible we're graphing the wrong data set, rather than graphing wrong countries for each time series.  
+Suggestion for fix: Talk to back end team and make sure indices to returned data are correct, otherwise check all points at which data is handled to diagnose where bug occurs.  
 Additional Notes: N/A
 
  * \#2: Map objects do not set data correctly  
