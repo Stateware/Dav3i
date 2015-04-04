@@ -131,6 +131,7 @@ Section 4 defines major design decisions, including previously specification of 
  * each region graphed together on a single graph without bounds
  * each region graphed together as a sum (representing stat for whole area selection) with bounds
 
+**head stat** refers to the stat used to identify a single statistic's data set in the parsed stat list (defined in section 2.4.2).
 
 **name** refers to the name of a region.
 
