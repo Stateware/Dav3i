@@ -131,6 +131,7 @@ Section 4 defines major design decisions, including previously specification of 
  * each region graphed together on a single graph without bounds
  * each region graphed together as a sum (representing stat for whole area selection) with bounds
 
+
 **name** refers to the name of a region.
 
 **stat ID** refers to a stat's index in the stat reference list.
@@ -145,7 +146,7 @@ Section 4 defines major design decisions, including previously specification of 
 
 **ASDS node** refers to a single node of the ASDS list, containing region data, metadata, and a pointer to the next node of the list.
 
-**head stat** is the stat used to identify a data set in the parsed stat list (each case defined in section 2.4.2).
+**associated data** refers to the stats in the stat reference list that are associated with some head stat. These are bundled with the head stat in the parsed stat list (defined in section 2.4.2).
 
 **lookup table** refers to the table containing CC2, name, and the value of a default selected stat for each region, indexed by CID.
 
@@ -269,14 +270,39 @@ map.js is a front end script that includes functions to:
 data_query.js is a front end script that includes a function to:  
  * Take a CC2, translate it to CID and get name, make call to by_country.php using CID, parse returned data and create and return new ASDS node
  * Check size of map selection list and size of ASDS list, and either add node for new selection or remove node from list
- * Take HMS ID and call by_stat.php, return array of HMS data
+ * Take stat ID and call by_stat.php, return HMS
  * Take region data(JSON), and return parsed data
 
 **graphs.js**
 
-graphs.js is a front end script that includes functions to:  
- * Prepare area selection data for each case covered in parsed stat list
- * Draw graphs for each case covered in parsed stat list
+graphs.js is a front end script that includes functions to graph a stat and its associated data based on its stat type and the selected graph type. The following functions are necessary:  
+
+ * A master graphing function that will generate all graphs in the appropriate divs, interpreting the parsed stat list and choosing the appropriate data preparation and graphing functions to execute.
+
+Data Preparation:
+
+Used for stat type 0 when graph type = 0:  
+ * Iterate through the ASDS list and compose a data table of all values for all nodes for one head stat, without its associated data. This table will yield a graph of containing each region's time series for a stat all together.
+
+Used for stat type 0 when graph type = 1:  
+ * Take a single ASDS node and compose a data table of all values for one head stat, with its associated data. This table will yield a graph of one region's time series for a stat, with bounds if they are available.
+
+Used for stat type 1 when graph type = 0 or graph type = 1:  
+ * Take a single ASDS node and compose a data table of all values for one head stat, with its associated data. This table will yield a graph of one region's MCV1 and MCV2 time series, as well as bars of SIA data.
+
+Used to sum stat data when graph type = 2:  
+ * Sum the values of a head stat and its associated data over the entire area selection and return a dummy ASDS node containing summed data. This node can be used by the single ASDS node data preparation functions to create a data table that represents data over the whole area selection.
+
+Graphing:
+
+Used for stat type 0 when graph type = 0:  
+ * Take data table for whole area selection and graph all time series for one head stat together, without its associated data.
+
+Used for stat type 0 when graph type = 0 or graph type = 2:  
+ * Take data table for one node (either a single region node or the dummy sum node) and graph one head stat for that table, with its associated data if available.
+
+Used for stat type 1 for all graph types:  
+ * Take data table for one node (either a single region node or the dummy sum node) and graph MCV1 (the head stat) and MCV2 as time series, as well as SIA as bars.
 
 **dynamic_markup.js**
 
@@ -357,26 +383,19 @@ For `g_LookupTable[x][y]`:
 
 ###2.4.2 : Parsed Data List Structure
 
-The Parsed Data List is set up as a 2D array A[x][y], in which each x value represents a selectable stat, and each y value either represents graph type (0-2), indicates head stat (4), or indicates associated stats (5+).
+The Parsed Data List is set up as a 2D array A[x][y], in which each x value represents a selectable stat, and each y value either represents stat type (0), indicates head stat (1), or indicates associated data (2-3).
 
-The values of the elements themselves are the enumerated values of the data preparation and graphing functions for y indices 0-2, or the indices of stats in the stat reference list for y indices 4+.
+The values of the elements themselves are the enumerated stat type in y = 0, or the indices of stats in the stat reference list for y indices 1+.
+
+The master graphing function uses the value a given column's stat type to decide which function to execute, and uses the head stat and associated data values to index into an ASDS node's data table to pull the correct information for the purposes of graphing.
 
 Example:
 
-`[0] [0] [0] [3]` - Graphing function for g_GraphType = 0  
-`[1] [1] [1] [3]` - Graphing function for g_GraphType = 1  
-`[2] [2] [2] [4]` - Graphing function for g_GraphType = 2  
+`[0] [0] [0] [1]` - Stat type  
 `[3] [4] [7] [9]` - Head Stat  
 `[0] [N] [1] [6]` - Associated Stat  
 `[2] [N] [5] [8]` - Associated Stat  
 
- * The head stat at x = 0 is at index 3 in the stat reference list. Its associated upper and lower bounds, respectively, are at indices 0 and 2. For graph type 0, it chooses data preparation and graphing functions 0 (each region graphed in separate graphs with bounds if available). For type 1, it chooses functions 1 (each region graphed together on a single graph without bounds). For type 2, it chooses functions 2 (each region graphed together as a sum (representing stat for whole area selection) with bounds if available).
-
- * The head stat at x = 1 is at index 4 in the stat reference list. It has no upper or lower bounds, indicated by the NULLs in its associated data indices. However, the functions chosen for each case are the same as with the stat at x = 0 because those functions contain logic which allows them to be used in both cases.
-
- * The head stat at x = 2 is at index 7 in the stat reference list. Its associated upper and lower bounds, respectively, are at indices 1 and 5. As it is a bounded stat, it chooses the same functions as the stat at x = 0.
-
- * The head stat at x = 3 is at index 9 in the stat reference list. Its associated data are at indices 6 and 8. In some cases, there may be more than 2 sets of associated data for this stat. Graphs are approached differently because this data set indicates vaccinations, which occur both routinely and periodically. The two sets of routine vaccinations are the head stat and the first associated stat (MCV1 and MCV2). The second associated stat is the data set on periodic vaccinations (SIA). For graph types 0 and 1, it chooses data preparation and graphing functions 3 (head stat and first associated stat graphed as time series, second associated stat as bars, each region graphed separately). Because the data could be confusing if multiple regions were graphed together, each region is graphed separately, even when the user specifies otherwise for other stats (when graph type is 0). For graph type 2, it chooses functions 4 (each region graphed together as a sum, with combined time series' and bars representing stats for whole area selection).
 
 #Section 3
 
