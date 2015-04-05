@@ -24,7 +24,8 @@ function ParseDescriptor()
     $.when(GetDescriptor()).done(function(DescriptorJSON){
         GenerateLookupTable(DescriptorJSON);
         $.when(GetHMS(g_StatID=1)).done(function(hmsData){
-            SetHMS(hmsData)
+            SetHMS(hmsData);
+            console.log(hmsData);
         });
         GenerateStatReferenceList(DescriptorJSON);
         console.log(g_LookupTable);
@@ -96,9 +97,9 @@ function GenerateStatReferenceList(DescriptorJSON)
 // POST: g_LookupTable has heat map values of hms
 function SetHMS(hmsData)
 {
-    for (i = 0; i < g_LookupTable.length; i++)
+    for (var i = 0; i < g_LookupTable.length; i++)
     {
-        g_LookupTable[i][2] = Number(hmsData[i]);
+        g_LookupTable[i][2] = hmsData[i];
     }
 }
 

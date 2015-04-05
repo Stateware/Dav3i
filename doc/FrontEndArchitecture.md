@@ -527,8 +527,17 @@ The main screen layout was chosen because the original design left the map feeli
 *end of discarded design*  
 
 ##4.1 : Bug History
+
+ * \#5: HMS data is set in lookup table incorrectly  
+First Reported: April 5, 2015  
+Status: Active  
+Description: HMS is received correctly from the server, and is successfully passed into the set HMS function. However, after the HMS fields of the lookup table are set, the result is a table in which the HMS field of Angola (AO) is the entire HMS array, and the rest are undefined.  
+Reason for bug: It may have something to do with the indexing of the loop. We have previously tried explicitly declaring i as a var in the function (as excluding the var declaration makes the variable global) and using a for in loop, neither of which worked.  
+Suggestion for fix: none.  
+Additional Notes: N/A  
+
  * \#4: API call to by_country.php returns wrong data  
-First Reported: April 2, 2015    
+First Reported: April 2, 2015  
 Status: Fixed April 2, 2015  
 Description: When a country is selected, the API call to by_country.php does not return the data for the intended country. For example, Indonesia's data is received instead of India's, and India's data is received instead of Ireland's.
 Reason for bug: Array indices in PHP start from 1, whereas those in JavaScript start from 0. This has created a mismatch in the indices of the lookup table(used as CIDs), and CIDs stored in the database.  
