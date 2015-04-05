@@ -546,10 +546,10 @@ Additional Notes: N/A
 
  * \#3: Graph shows wrong data  
 First Reported: March 31, 2015  
-Status: Active  
+Status: Fixed April 5, 2015  
 Description: When country is selected to display data, end values do not align with the confirmed correct heat mapped values shown in the hover tip, meaning the whole data sets are likely incorrect.  
-Reason for bug: (suspected) as India's graphed final value for "deaths" is greater than any recorded value for deaths, and the time series looks like normal growth, it's possible we're graphing the wrong data set, rather than graphing wrong countries for each time series.  
-Suggestion for fix: Talk to back end team and make sure indices to returned data are correct, otherwise check all points at which data is handled to diagnose where bug occurs.  
+Reason for bug: Since the bug appears to have been fixed along with the indexing bug (\#4), it's likely that this was due to an incorrect indexing into the ASDS node's data table.  
+Description of fix: Bug appears to have been fixed along with indexing bug (\#4).  
 Additional Notes: N/A
 
  * \#2: Map objects do not set data correctly  
