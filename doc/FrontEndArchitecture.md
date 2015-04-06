@@ -274,9 +274,9 @@ data_query.js is a front end script that includes a function to:
  * Take stat ID and call by_stat.php, return HMS
  * Take region data(JSON), and return parsed data
 
-**graphs.js**
+**graph.js**
 
-graphs.js is a front end script that includes functions to graph a stat and its associated data based on its stat type and the selected graph type. The following functions are necessary:  
+graph.js is a front end script that includes functions to graph a stat and its associated data based on its stat type and the selected graph type. The following functions are necessary:  
 
  * A master graphing function that will generate all graphs in the appropriate divs, interpreting the parsed stat list and choosing the appropriate data preparation and graphing functions to execute.
 
