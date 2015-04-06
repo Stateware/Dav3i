@@ -299,7 +299,7 @@ Graphing:
 Used for stat type 0 when graph type = 0:  
  * Take data table for whole area selection and graph all time series for one head stat together, without its associated data.
 
-Used for stat type 0 when graph type = 0 or graph type = 2:  
+Used for stat type 0 when graph type = 1 or graph type = 2:  
  * Take data table for one node (either a single region node or the dummy sum node) and graph one head stat for that table, with its associated data if available.
 
 Used for stat type 1 for all graph types:  
