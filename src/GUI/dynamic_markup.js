@@ -23,7 +23,7 @@ function BuildTabs()
 		{
 			var temp=g_StatList[i];
 			var div=document.createElement("DIV");
-			div.id="id"+temp;
+			div.id="id-"+temp;
 			div.setAttribute("stat",""+i);
 			div.className="graph-tab";
 			div.setAttribute("onclick","ChooseTab(this)");

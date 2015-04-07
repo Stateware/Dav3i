@@ -33,7 +33,7 @@ function GenerateGraph()
     {
         
         //var tab=document.getElementById("tabsDiv").children[stat];
-        var tab=g_ActiveTab;
+        var tab=document.getElementById("id-"+g_StatList[g_StatID]);
         if(tab!=undefined)
         {
             var chart = new google.visualization.LineChart(document.getElementById(tab.id+"-graphs"));//Rather than using the active tab, we need to find out which graph the data is for?
