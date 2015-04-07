@@ -1,20 +1,20 @@
-// File Name:			lookup_table.js
-// Description:			Generates lookup table
-// Date Created:		3/5/2015
-// Contributors:		Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts
-// Date Last Modified:		4/7/2015
-// Last Modified By:		Emma Roudabush
-// Dependencies:		descriptor.php, by_stat.php, data.js
-// Additional Notes:		N/A
+// File Name:           lookup_table.js
+// Description:         Generates lookup table
+// Date Created:        3/5/2015
+// Contributors:        Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts
+// Date Last Modified:  4/7/2015
+// Last Modified By:    Emma Roudabush
+// Dependencies:        descriptor.php, by_stat.php, data.js
+// Additional Notes:    N/A
 
 // Author: Emma Roudabush, Joshua Crafts
 // Date Created: 3/5/2015
 // Last Modified: 4/7/2015 by Emma Roudabush
 // Description: Fills g_DescriptorJSON with the contents of descriptor.php,
-//				fills g_LookupTable and g_StatList with their corresponding data
-//				and logs the resulting variables to the console.
+//              fills g_LookupTable and g_StatList with their corresponding data
+//              and logs the resulting variables to the console.
 // PRE: DescriptorJSON, g_StatList, and g_LookupTable exist,
-//		GenerateLookupTable and GenerateStatReferenceList function correctly
+//      GenerateLookupTable and GenerateStatReferenceList function correctly
 // POST: DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
 function ParseDescriptor()
 {
@@ -24,7 +24,7 @@ function ParseDescriptor()
     $.when(GetDescriptor()).done(function(DescriptorJSON){
         GenerateLookupTable(DescriptorJSON);
         $.when(GetHMS(g_StatID=1)).done(function(hmsData){
-            SetHMS(hmsData[1]); 	// Need to index in due to by_stat.php
+            SetHMS(hmsData[1]);     // Need to index in due to by_stat.php
         });
         GenerateStatReferenceList(DescriptorJSON);
         console.log(g_LookupTable);
@@ -36,15 +36,15 @@ function ParseDescriptor()
 // Author: Emma Roudabush
 // Date Created: 3/5/2015
 // Last Modified: 3/19/2015 by Emma Roudabush
-// Description: Retrieves descriptor.php from the server				
+// Description: Retrieves descriptor.php from the server                
 // PRE: descriptor.php exists on the server.
 // POST: returns the contents of descriptor.php
 function GetDescriptor()
 {
-    return $.ajax({										 
-        url: 'http://usve74985.serverprofi24.com/API/descriptor.php',													  
-        dataType: 'JSON',				  
-        success: function(data){	 
+    return $.ajax({                                      
+        url: 'http://usve74985.serverprofi24.com/API/descriptor.php',                                                     
+        dataType: 'JSON',                 
+        success: function(data){     
             console.log("Successfully received descriptor.php");
         } 
     });
@@ -54,10 +54,10 @@ function GetDescriptor()
 // Date Created: 3/5/2015
 // Last Modified: 3/19/2015 by Emma Roudabush
 // Description: Fills the contents of g_LookupTable with data from
-//				DescriptorJSON. This includes the CC2 codes, the 
-//				names, and the HMS values are set to 0.
+//              DescriptorJSON. This includes the CC2 codes, the 
+//              names, and the HMS values are set to 0.
 // PRE: DescriptorJSON exists with the correct data from descriptor.php,
-//		g_LookupTable exists
+//      g_LookupTable exists
 // POST: g_LookupTable has the correct CC2, name, and HMS values
 function GenerateLookupTable(DescriptorJSON)
 {
@@ -75,9 +75,9 @@ function GenerateLookupTable(DescriptorJSON)
 // Date Created: 3/5/2015
 // Last Modified: 3/19/2015 by Emma Roudabush
 // Description: Fills the contents of g_StatList with the stats
-//				data from DescriptorJSON			
+//              data from DescriptorJSON            
 // PRE: g_DescriptorJSON exists with the correct data from descriptor.php,
-//		g_StatList exists
+//      g_StatList exists
 // POST: g_StatList has the correct stat values
 function GenerateStatReferenceList(DescriptorJSON)
 {
@@ -138,7 +138,7 @@ function GetCID(cc2)
         }
     }
 
-    return cid;	
+    return cid; 
 }
 
 
@@ -153,49 +153,49 @@ function GetCID(cc2)
 // to test make this happen on load! wee!
 function parseStatList()
 {
-	var sortedStatList = g_StatList;
-	sortedStatList.sort();					// sort the stat list
-	var parsedStatList;						// 2d array
-	var index = 0;
-	
-	// this loop searches through the g_statList and places only single stats
-	// in the parsedStatList in the appropriate slot
-	for(var i = 0; i<sortedStatList.length; i++)
-	{
-		var currentStat = sortedStatList[i];
-		var isAssociatedStat = false;
-		var headStat = 1;
-		
-		if(i > 0 && currentStat.indexOf(SortedStatList[i-1]) >= 0)
-		{
-			isAssociatedStat = true;
-		}
-		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) >= 0)
-		{
-			isAssociatedStat = true;
-		}
-		
-		if(!isAssociatedStat)
-		{
-			parsedStatList[index++][headStat] = g_StatList.indexOf(currentStat);
-		}
-	}
-	
-	// goes through the head stats of the parsedStatList finds the associated stats and places their 
-	// real indexes (from the g_statList) into the parsedStatList in the appropriate locations
-	for(var i = 0; i<parsedStatList.length; i++)
-	{
-		var associatedStat = 2;
-		var headIndex = parsedStatList[i][3];	
-		if(sortedStatList[headIndex+1] != null && sortedStatList[headIndex+1].indexOf(sortedStatList[headIndex]) >= 0)
-		{
-			parsedArray[i][associatedStat++] = g_statList.indexOf(sortedStatList[headIndex+1]);
-		}
-		if(sortedStatList[headIndex+2] != null && sortedStatList[headIndex+2].indexOf(sortedStatList[headIndex]) >= 0)
-		{
-			parsedArray[i][associatedStat] = g_statList.indexOf(sortedStatList[headIndex+2]);
-		}
-	}	
+    var sortedStatList = g_StatList;
+    sortedStatList.sort();                  // sort the stat list
+    var parsedStatList;                     // 2d array
+    var index = 0;
+    
+    // this loop searches through the g_statList and places only single stats
+    // in the parsedStatList in the appropriate slot
+    for(var i = 0; i<sortedStatList.length; i++)
+    {
+        var currentStat = sortedStatList[i];
+        var isAssociatedStat = false;
+        var headStat = 1;
+        
+        if(i > 0 && currentStat.indexOf(SortedStatList[i-1]) >= 0)
+        {
+            isAssociatedStat = true;
+        }
+        else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) >= 0)
+        {
+            isAssociatedStat = true;
+        }
+        
+        if(!isAssociatedStat)
+        {
+            parsedStatList[index++][headStat] = g_StatList.indexOf(currentStat);
+        }
+    }
+    
+    // goes through the head stats of the parsedStatList finds the associated stats and places their 
+    // real indexes (from the g_statList) into the parsedStatList in the appropriate locations
+    for(var i = 0; i<parsedStatList.length; i++)
+    {
+        var associatedStat = 2;
+        var headIndex = parsedStatList[i][3];   
+        if(sortedStatList[headIndex+1] != null && sortedStatList[headIndex+1].indexOf(sortedStatList[headIndex]) >= 0)
+        {
+            parsedArray[i][associatedStat++] = g_statList.indexOf(sortedStatList[headIndex+1]);
+        }
+        if(sortedStatList[headIndex+2] != null && sortedStatList[headIndex+2].indexOf(sortedStatList[headIndex]) >= 0)
+        {
+            parsedArray[i][associatedStat] = g_statList.indexOf(sortedStatList[headIndex+2]);
+        }
+    }   
 }
 
 

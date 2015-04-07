@@ -37,13 +37,13 @@ function ParseData(json)
 //                  Output: data from the server for the specific country
 function GetData(cid)
 {
-	return $.ajax({                                      
-		url: 'http://usve74985.serverprofi24.com/API/by_country.php?countryIDs='.concat(cid.toString()),                                                    
-		dataType: 'JSON',
-		success: function(data){     
-			console.log("Successfully received by_country.php?countryIDs=".concat(cid.toString()));
-		} 
-	});
+    return $.ajax({                                      
+        url: 'http://usve74985.serverprofi24.com/API/by_country.php?countryIDs='.concat(cid.toString()),                                                    
+        dataType: 'JSON',
+        success: function(data){     
+            console.log("Successfully received by_country.php?countryIDs=".concat(cid.toString()));
+        } 
+    });
 
 }
 
@@ -75,7 +75,7 @@ function ModifyData(selectedRegions) {
                     console.log(newNode);
                     g_DataList.add(newNode);
                     // draw graph with new node
-                    GenerateGraph();
+                    GenerateSubDivs();
                 });
             }
         }
@@ -92,7 +92,7 @@ function ModifyData(selectedRegions) {
                 }
             }
             // draw graph without removed node
-            GenerateGraph();
+            GenerateSubDivs();
         }
     else
         return;

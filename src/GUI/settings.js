@@ -15,7 +15,7 @@
 // POST: 
 function SetTimespan()
 {
-	
+    
 }
 
 // Author: Emma Roudabush
@@ -26,5 +26,5 @@ function SetTimespan()
 // POST: 
 function SetHMSID()
 {
-	
+    
 }
