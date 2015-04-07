@@ -2,7 +2,7 @@
 // Description:             This module holds all global data for the other modules of the project
 // Date Created:            3/19/2015
 // Contributors:            Joshua Crafts, Vanajam Soni, Paul Jang
-// Date Last Modified:      4/2/2015
+// Date Last Modified:      4/7/2015
 // Last Modified By:        Paul Jang
 // Dependencies:            index.html
 // Additional Notes:        N/A
@@ -100,4 +100,4 @@ function c_List()
 
 	}
 
-} 
+}
