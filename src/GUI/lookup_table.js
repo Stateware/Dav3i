@@ -2,14 +2,14 @@
 // Description:			Generates lookup table
 // Date Created:		3/5/2015
 // Contributors:		Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts
-// Date Last Modified:		3/19/2015
+// Date Last Modified:		4/7/2015
 // Last Modified By:		Emma Roudabush
 // Dependencies:		descriptor.php, by_stat.php, data.js
 // Additional Notes:		N/A
 
 // Author: Emma Roudabush, Joshua Crafts
 // Date Created: 3/5/2015
-// Last Modified: 3/23/2015 by Joshua Crafts
+// Last Modified: 4/7/2015 by Emma Roudabush
 // Description: Fills g_DescriptorJSON with the contents of descriptor.php,
 //				fills g_LookupTable and g_StatList with their corresponding data
 //				and logs the resulting variables to the console.
@@ -24,8 +24,7 @@ function ParseDescriptor()
     $.when(GetDescriptor()).done(function(DescriptorJSON){
         GenerateLookupTable(DescriptorJSON);
         $.when(GetHMS(g_StatID=1)).done(function(hmsData){
-            SetHMS(hmsData);
-            console.log(hmsData);
+            SetHMS(hmsData[1]); 	// Need to index in due to by_stat.php
         });
         GenerateStatReferenceList(DescriptorJSON);
         console.log(g_LookupTable);
