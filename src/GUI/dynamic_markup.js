@@ -118,6 +118,9 @@ function Expand()
 	$("#expand").attr("onclick","Shrink()");
 	$("#graph-tab-tooltip").fadeOut(400);
 	$(".expand-black").fadeIn(400);
+	setTimeout(function () {
+		GenerateGraph();
+	}, 500);
 }
 
 // Author: Emma Roudabush
@@ -132,6 +135,9 @@ function Shrink()
 	$("#expand").attr("onclick","Expand()");
 	$("#graph-tab-tooltip").fadeIn(400);
 	$(".expand-black").fadeOut(400);
+	setTimeout(function () {
+		GenerateGraph();
+	}, 500);
 }
 
 // Author: Paul Jang
