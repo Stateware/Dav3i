@@ -25,6 +25,11 @@
     background-color: #efe;
 }
 
+.GraphChoice {
+	 font-family: 'Open Sans Condensed', sans-serif;
+	 font-size: 15pt; 
+}
+
 /* sets control panel size and to foreground on main screen */
 .control-panel {
     z-index: 3;
@@ -35,7 +40,6 @@
     top: 2%;
     left: 1.3%;
     box-shadow: 1px 1px 5px #888888;
-	overflow-x: hidden;
 }
 
 /* sets main screen to background */
@@ -46,6 +50,7 @@
 /* sets open sans font styling and font for begin button */
 .open-sans, .begin {
     font-family: 'Open Sans Condensed', sans-serif;
+	padding-top: 10px;
 }
 
 /* sets begin button styling */
@@ -115,7 +120,7 @@
 
 /* aligns the tabs to same line*/
 .tabWrapper{
-    overflow: hidden;
+    overflow: hidden; 
     overflow-y: hidden;
     white-space: nowrap;
 }
