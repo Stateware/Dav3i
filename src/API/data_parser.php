@@ -17,12 +17,12 @@ $tableName = $_POST['table_name'];
 $statisticName = $_POST['stat_name'];
 
 $metaTableQuery = "INSERT INTO meta_stats (stat_name, table_name) VALUES ('$statisticName', '$tableName')";
-/*$metaTableResults = $databaseConnection->query($metaTableQuery);
+$metaTableResults = $databaseConnection->query($metaTableQuery);
 if ($metaTableResults === false)
 {
     echo "Query failed.";
     die();
-}*/
+}
 
 //$testData = preg_replace('~\R~', "|", preg_replace("/[\r\n]/", "|", $testData));
 $testData = trim(preg_replace('~\R~', "|", $testData));
@@ -42,7 +42,7 @@ foreach($tableArray as $value)
 $headers = array_shift($queryArray);
 
 $columnsArray = explode(",", $headers);
-
+//TODO: Make the country_id column be the index
 $createTableQuery = "CREATE TABLE $tableName (`country_id` int(10)";
 foreach ($columnsArray as $column)
 {
@@ -51,12 +51,12 @@ foreach ($columnsArray as $column)
 }
 $createTableQuery .= ");";
 
-/*$createTableResults = $databaseConnection->query($createTableQuery);
+$createTableResults = $databaseConnection->query($createTableQuery);
 if ($createTableQuery === false)
 {
     echo "Query failed.";
     die();
-}*/
+}
 
 // Create lookup table
 $countryLookupTable = array();
@@ -85,8 +85,8 @@ foreach($queryArray as $country => $query)
 
   	$specificQuery .= ");";
 	
-    echo $specificQuery;
-	/*$specificResults = $databaseConnection->query($specificQuery);
+    //echo $specificQuery;
+	$specificResults = $databaseConnection->query($specificQuery);
 	if ($specificResults === false)
 	{
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!query didn't work<br />";
@@ -94,7 +94,7 @@ foreach($queryArray as $country => $query)
 	else
 	{
 		echo "query definately passed.<br />";
-	}*/
+	}
 }
 //ALTER TABLE data_cases ORDER BY country_id ASC//*/
 

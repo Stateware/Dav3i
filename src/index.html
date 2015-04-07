@@ -3,7 +3,7 @@
      Date Created:            2/19/2015
      Contributors:            Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts, Nicholas Denaro
      Date Last Modified:      4/7/2015
-     Last Modified By:        Paul Jang
+     Last Modified By:        Emma Roudabush
      Dependencies:            style.css, loading_script.js, lookup_table.js, map.js, data.js
      Additional Notes:        N/A
 -->
@@ -55,6 +55,13 @@
 	
 	<div class="settings-screen">
 		<h1 class="open-sans">Settings Menu<h1>
+		<form action="">
+			<p class="GraphChoice">
+				<input type="radio" name="GraphChoice" value="0">Regional&emsp;
+				<input type="radio" name="GraphChoice" value="1">Combined&emsp;
+				<input type="radio" name="GraphChoice" value="2">Whole Selection <br>
+			<p>
+		</form>
 		<button id="settings" class="flat-button" onclick="CloseSettings()">Close</button>
 	</div>
 	
@@ -71,7 +78,7 @@
             </section>
 			
             <section class="graph" id="graph">
-                <div id="graph-tab-tooltip" class="tab-tooltip" tooltip="Expand the graphs section to see more stats."><b>...</b></div>
+                <div id="graph-tab-tooltip" class="tab-tooltip" onclick="Expand()" tooltip="Expand the graphs section to see more stats."><b>...</b></div>
                 <div class="tabWrapper">
                     <div id="tabsDiv" class="tabWrapper">
 

@@ -22,6 +22,7 @@ function ParseDescriptor()
     var hmsData;
 
     $.when(GetDescriptor()).done(function(DescriptorJSON){
+		SetYears(DescriptorJSON);
         GenerateLookupTable(DescriptorJSON);
         $.when(GetHMS(g_StatID=1)).done(function(hmsData){
             SetHMS(hmsData[1]);     // Need to index in due to by_stat.php
@@ -48,6 +49,21 @@ function GetDescriptor()
             console.log("Successfully received descriptor.php");
         } 
     });
+}
+
+// Author: Emma Roudabush
+// Date Created: 4/7/2015
+// Last Modified: 4/7/2015 by Emma Roudabush
+// Description: Sets the time span to the correct span given by descriptor.php				
+// PRE: descriptor.php has been successfully retrieved 
+// POST: g_FirstYear and g_YearStart have the correct beginning year of statistics.
+// 		 g_LastYear and g_YearEnd have the correct ending year of statistics. 
+function SetYears(DescriptorJSON)
+{
+	g_FirstYear = DescriptorJSON.yearRange[0];
+	g_YearStart = DescriptorJSON.yearRange[0];
+	g_LastYear = DescriptorJSON.yearRange[1];
+	g_YearEnd = DescriptorJSON.yearRange[1];
 }
 
 // Author: Emma Roudabush

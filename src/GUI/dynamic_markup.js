@@ -2,8 +2,8 @@
 // Description:             This module contains the code needed to dynamically create modules on the client
 // Date Created:            3/26/2015
 // Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
-// Date Last Modified:      4/2/2015
-// Last Modified By:        Paul Jang
+// Date Last Modified:      4/7/2015
+// Last Modified By:        Emma Roudabush
 // Dependencies:            index.html, lookup_table.js, data.js
 // Additional Notes:        N/A
 
@@ -114,10 +114,13 @@ function CloseSettings()
 // POST: Control panel is expanded and black mask is in place behind
 function Expand()
 {
-    $(".control-panel").animate({width:"97.5%"}, 500);
-    $("#expand").attr("onclick","Shrink()");
-    $("#graph-tab-tooltip").fadeOut(400);
-    $(".expand-black").fadeIn(400);
+	$(".control-panel").animate({width:"97.5%"}, 500);
+	$("#expand").attr("onclick","Shrink()");
+	$("#graph-tab-tooltip").fadeOut(400);
+	$(".expand-black").fadeIn(400);
+	setTimeout(function () {
+		GenerateGraph();
+	}, 500);
 }
 
 // Author: Emma Roudabush
@@ -128,10 +131,13 @@ function Expand()
 // POST: Control panel shrinks back to original size and black mask is gone
 function Shrink()
 {
-    $(".control-panel").animate({width:"25%"}, 500);
-    $("#expand").attr("onclick","Expand()");
-    $("#graph-tab-tooltip").fadeIn(400);
-    $(".expand-black").fadeOut(400);
+	$(".control-panel").animate({width:"25%"}, 500);
+	$("#expand").attr("onclick","Expand()");
+	$("#graph-tab-tooltip").fadeIn(400);
+	$(".expand-black").fadeOut(400);
+	setTimeout(function () {
+		GenerateGraph();
+	}, 500);
 }
 
 // Author: Paul Jang

@@ -1,10 +1,10 @@
 <?php
 /* File Name:           api_library.php
- * Description:         This file holds all of the functions which the api calls will return
+ * Description:         This file holds all of the functions which the api calls will return as well as helper functions to those calls
  * Date Created:        2/19/2015
  * Contributors:        William Bittner, Drew Lopreiato, Kyle Nicholson, Arun Kumar, Dylan Fetch
- * Date Last Modified:  4/2/2015
- * Last Modified By:    Drew Lopreiato
+ * Date Last Modified:  4/7/2015
+ * Last Modified By:    William Bittner
  * Dependencies:        connect.php, toolbox.php
  * Input:               none                     
  * Output:              none
@@ -15,7 +15,17 @@ require_once("connect.php");
  
 // ======================== API Functions =========================
 
+
+// Author:        William Bittner, Drew Lopreiato
+// Date Created:  2/22/2015  
+// Last Modified: 4/7/2015 by William Bittner  
+// Description:   This function queries the database for one specific stat for one specific year for every country
 function ByStat($statID, $year)
+// PRE: statID is a valid ID of a stat in the database, and year is a valid year in the database
+// POST: returns an array of key value pairs whose index are:
+//			0: key: statID, value: an array containing each countries data for that stat in the index that corresponds to the countries ID
+//			1: key: "force", value: "object" - this is so that the json returned the the caller of this function returns an object, not an array
+//						of one element.
 {
     $heatMapArray = array();
     $descriptor = Descriptor();
@@ -74,7 +84,14 @@ function ByStat($statID, $year)
 }
 
 
+
+// Author:        William Bittner, Drew Lopreiato
+// Date Created:  2/22/2015  
+// Last Modified: 4/7/2015 by William Bittner  
+// Description:   This function queries the database for every stat for every year for any number of countries
 function ByCountry($countryIDs)
+// PRE: countryIDs a string of valid countryIDs separated by a comma, or just one valid countryID
+// POST: an array containing all of the stats for each country ID input, with each stat in the index corresponding to its stat ID
 {
     $databaseConnection = GetDatabaseConnection();
     $byCountryArray = array();
@@ -134,8 +151,18 @@ function ByCountry($countryIDs)
     return $byCountryArray;
 }
 
-
+// Author:        Kyle Nicholson, Berty Ruan
+// Date Created:  2/7/2015
+// Last Modified: 4/7/2015 William Bittner
+// Description: Returns an array of the indecies that get turned into 
+// 				the Descriptor Table - See BackEndArchitecture.md for contents of Descriptor Table
 function Descriptor()
+// POST: FCTVAL = an array of key value pairs whose indecies are: 	
+//		0: year range of data in database
+//		1: cc2: the 2 digit country code for each country in the database
+//		2: cc3: the 3 digit country code for each country in the database
+//		3: common_name: the name for each country, in american english
+//		4: stats: an array of all the stats, where the index of the stat is its stat ID
 {
     $databaseConnection = GetDatabaseConnection();
     $cc2 = array();
@@ -220,7 +247,14 @@ function IsValidStatID($statID, $numStats)
     return($statID < $numStats && $statID >= 0);
 }
 
+
+// Author:        William Bittner, Andrew Lopreiato
+// Date Created:  2/22/2015
+// Last Modified: 4/7/2015 by William Bittner
+// Description:   This function determines if a country ID falls within the valid countryID range.
 function IsValidCountryID($countryID, $numCountries)
+// PRE:	countryID is a number, and numCountries is a number
+// POST: true if countryID falls between 0 and numCountries
 {
     //As countries are numbered starting at one, the count of the array is equal to the highest value country.
     //Check > 0 and <= the number of countries as a country id can't be less than 1, or more than the number of
@@ -233,9 +267,9 @@ function IsValidCountryID($countryID, $numCountries)
 // Date Created:  2/22/2015 
 // Last Modified: 2/22/2015 by William Bittner, Drew Lopreiato, Berty Ruan, Dylan Fetch  
 // Description:   This function returns an array containing every statistic that is in the database
+function GetStatNames($database)
 // PRE:  $database is a mysqli database connection
 // POST: FCTVAL == array of the names of all statistics in the database
-function GetStatNames($database)
 {
     //returning array
     $statArray = array();
@@ -266,9 +300,9 @@ function GetStatNames($database)
 // Date Created:  2/19/2015 
 // Last Modified: 2/19/2015 by William Bittner, Drew Lopreiato  
 // Description:   This function returns the first and last year of a given table, which is the second and last columns header 
+function GetYearRange($database, $table)
 // PRE:  $database is a mysqli database connection, and table is a valid table in that connection
 // POST: return an array with exactly two indices: index 0 is the lowest year, index 1 is the highest year  
-function GetYearRange($database, $table)
 {
     $indexOfFirstYearColumn = 1;
     $descriptionArray = array();
@@ -297,10 +331,14 @@ function GetYearRange($database, $table)
     return $yearRange;
 } //END GetYearRange
 
-// Returns an array of queries given a set of tables to be queried, and the countries to be queried
-// $tableNames must be in format: tableID => tableName
-// $countries must be an array of integers
+
+// Author:        William Bittner, Drew Lopreiato  
+// Date Created:  2/19/2015 
+// Last Modified: 4/7/2015 by William Bittner  
+// Description:   Returns an array of queries given a set of tables to be queried, and the countries to be queried
 function GetCountryQueries($tableNames, $countries)
+// PRE: $tableNames must be in format: tableID => tableName, $countries must be an array of integers
+// POST: Returns an array of queries given a set of tables to be queried, and the countries to be queried
 {
     $returnValue = array();
     // iterate through each table name

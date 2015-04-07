@@ -90,42 +90,71 @@ function PrepareData()
     return dataTable;
 }
 
-// Author:
+// Author: Arun Kumar
 // Date Created:
-// Last Modified:
-// Description: Takes 1 stat ID and stat data and generates a graph
-// using the
-// PRE: statID indicates a valid and bounded stat
+// Last Modified: 4/2/2015
+// Description: Takes stat data and divID to generate a graph
+// using the Google Charts API
+// PRE:
 // POST:
-function GenerateSingleBounded(statID, data) {
+function GraphSingle(divID) {
 }
 
 // Author:
 // Date Created:
 // Last Modified:
-// Description: Takes 1 stat ID and stat list and generates a graph
+// Description: Takes stat data from multiple countries and generates a graph
 // using data from multiple countries
 // PRE:
 // POST:
-function GraphMultiple(statID, list) {
+function GraphMultipleCountries(divID) {
+	var data= PrepareData();
+	var options = {
+		vAxis: {
+			minValue: 0
+		},
+		hAxis: {
+			format: '####'
+		},
+		legend: {
+			position: 'bottom'
+		},
+		backgroundColor: '#EAE7C2'
+	};
+    // instantiate and draw chart using prepared data
+    var tab=document.getElementById("divID").children[g_HMSID];
+    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"GenSingle"));
+    chart.draw(data, options);
 }
 
 // Author:
 // Date Created:
 // Last Modified:
-// Description: Takes 1 stat ID and stat list and generates a graph
-// of the sum of the countries' data
+// Description: Takes stat data from multiple countries and generates multiple graphs
+// depending on the countries selected
 // PRE:
 // POST:
-function GenerateSum(statID, list) {
+function GenerateMultipleGraphs(divID) {
 }
 
 // Author:
 // Date Created:
 // Last Modified:
-// Description: Takes 1 stat ID and stat list and generates a graph
-// of the sum of the countries' data as well as their bounds
-// PRE: statID indicates a valid and bounded stat
+// Description: Takes stat data from multiple countries and generates a graph
+// using data from multiple countries
+// PRE:
 // POST:
-function GenerateSumBounded(statID, list) {
+function GraphVaccine(divID) {
+	var options = {
+		vAxis: {
+			minValue: 0
+		},
+		hAxis: {
+			title: "Years", format: '####'
+		},
+		seriesType: "bars",
+		series: {
+			0: {type: "line"}
+		}
+	};
 }
