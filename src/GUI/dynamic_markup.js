@@ -136,16 +136,17 @@ function Shrink()
 
 // Author: Paul Jang
 // Date Created: 4/2/2015
-// Last Modified: 4/2/2015 by Paul Jang
+// Last Modified: 4/7/2015 by Paul Jang
 // Description: Calls CreateDiv to dynamically generate subgraph divs and generate graphs
 // PRE: CreateDiv functions correctly, g_DataList is properly full
-// POST: Divs are created based on how many countries are selected
+// POST: Divs are created based on how many countries are selected,
+//		 Correct graphs are filled in the appropriate divs
 function GenerateSubDivs()
 {
 	var head = g_DataList;
 	var statIndex = g_ActiveTab.getAttribute("stat");
 	var chart;
-	var data;
+	var data = PrepareData();
 	var options = {
 		vAxis: {
 			minValue: 0
@@ -158,12 +159,13 @@ function GenerateSubDivs()
 		},
 		backgroundColor: '#EAE7C2'
 	};
+	
 	while(head != NULL)
 	{
 		CreateSubDiv("id-"+head.name+'-'+g_StatList[statIndex]+"-subgraphs", "id-"+g_StatList[statIndex]+"-graphs");
+	//	chart = new google.visualization.LineChart(document.getElementById("id-"+head.name+'-'+g_StatList[statIndex]+"-subgraphs"));
+	//	chart.draw(data,options);
 		head = head.next;
-		chart = new google.visualization.LineChart(document.getElementById("id-"+head.name+'-'+g_StatList[statIndex]+"-subgraphs"));
-		chart.draw(data,options);
 	}
 }
 

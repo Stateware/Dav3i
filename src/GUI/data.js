@@ -2,7 +2,7 @@
 // Description:             This module holds all global data for the other modules of the project
 // Date Created:            3/19/2015
 // Contributors:            Joshua Crafts, Vanajam Soni, Paul Jang
-// Date Last Modified:      4/2/2015
+// Date Last Modified:      4/7/2015
 // Last Modified By:        Paul Jang
 // Dependencies:            index.html
 // Additional Notes:        N/A
@@ -16,7 +16,6 @@ var g_YearEnd; // last year for which user wants data.
 var g_DataList; // first node of area selection data list; points to all other nodes. Is initially set on first area selection.
 var g_StatID; // stat ID corresponding to selected HMS.
 var g_HMSYear; // year for which HMS data is wanted.
-var g_ActiveTab; // currently selected tab in the graphs section
 
 // prototype for ASDS node
 function t_AsdsNode(cid, cc2, name, data)
