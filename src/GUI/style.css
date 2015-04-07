@@ -162,6 +162,12 @@
     width: 220px;
 }
 
+/* sets styling for subgraph section */
+.subgraph {
+    positive: relative;
+	float: right;
+}
+
 /* sets stylings for expanding and shrinking section */
 .expand{
     position: absolute;
