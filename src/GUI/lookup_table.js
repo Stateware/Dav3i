@@ -141,3 +141,62 @@ function GetCID(cc2)
 
     return cid;	
 }
+
+
+// Author: Kyle Nicholson
+// Date Created: 4/2/2015
+// Last Modified: 4/2/2015 by Kyle Nicholson
+// Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
+// PRE: stat list is 
+// POST: 
+
+// console.log(name of variable) -> this shows the data inside a variable
+// to test make this happen on load! wee!
+function parseStatList()
+{
+	var sortedStatList = g_StatList;
+	sortedStatList.sort();					// sort the stat list
+	var parsedStatList;						// 2d array
+	var index = 0;
+	
+	// this loop searches through the g_statList and places only single stats
+	// in the parsedStatList in the appropriate slot
+	for(var i = 0; i<sortedStatList.length; i++)
+	{
+		var currentStat = sortedStatList[i];
+		var isAssociatedStat = false;
+		var headStat = 1;
+		
+		if(i > 0 && currentStat.indexOf(SortedStatList[i-1]) >= 0)
+		{
+			isAssociatedStat = true;
+		}
+		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) >= 0)
+		{
+			isAssociatedStat = true;
+		}
+		
+		if(!isAssociatedStat)
+		{
+			parsedStatList[index++][headStat] = g_StatList.indexOf(currentStat);
+		}
+	}
+	
+	// goes through the head stats of the parsedStatList finds the associated stats and places their 
+	// real indexes (from the g_statList) into the parsedStatList in the appropriate locations
+	for(var i = 0; i<parsedStatList.length; i++)
+	{
+		var associatedStat = 2;
+		var headIndex = parsedStatList[i][3];	
+		if(sortedStatList[headIndex+1] != null && sortedStatList[headIndex+1].indexOf(sortedStatList[headIndex]) >= 0)
+		{
+			parsedArray[i][associatedStat++] = g_statList.indexOf(sortedStatList[headIndex+1]);
+		}
+		if(sortedStatList[headIndex+2] != null && sortedStatList[headIndex+2].indexOf(sortedStatList[headIndex]) >= 0)
+		{
+			parsedArray[i][associatedStat] = g_statList.indexOf(sortedStatList[headIndex+2]);
+		}
+	}	
+}
+
+
