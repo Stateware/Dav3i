@@ -73,6 +73,54 @@ function ChooseTab(element)
 	GenerateGraph();
 }
 
+// Author: Paul Jang
+// Date Created: 4/2/2015
+// Last Modified: 4/2/2015 by Paul Jang
+// Description: Calls CreateDiv to dynamically generate subgraph divs and generate graphs
+// PRE: CreateDiv functions correctly, g_DataList is properly full
+// POST: Divs are created based on how many countries are selected
+function GenerateSubDivs()
+{
+	var head = g_DataList;
+	var statIndex = g_ActiveTab.getAttribute("stat");
+	var chart;
+	var data;
+	var options = {
+		vAxis: {
+			minValue: 0
+		},
+		hAxis: {
+			format: '####'
+		},
+		legend: {
+			position: 'bottom'
+		},
+		backgroundColor: '#EAE7C2'
+	};
+	while(head != NULL)
+	{
+		CreateSubDiv("id-"+head.name+'-'+g_StatList[statIndex]+"-subgraphs", "id-"+g_StatList[statIndex]+"-graphs");
+		head = head.next;
+		chart = new google.visualization.LineChart(document.getElementById("id-"+head.name+'-'+g_StatList[statIndex]+"-subgraphs"));
+		chart.draw(data,options);
+	}
+}
+
+// Author: Paul Jang
+// Date Created: 4/2/2015
+// Last Modified: 4/2/2015 by Paul Jang
+// Description: Creates a single div with an inputted id and
+//              appends it to the specified parent div
+// PRE: Parent div exists
+// POST: Single div is appended to the parent div
+function CreateSubDiv(id,parent)
+{
+	var elem = document.createElement('div');
+	elem.id = id;
+	document.getElementById(parent).appendChild(elem);
+	document.body.appendChild(elem);
+}
+
 // Author: Emma Roudabush
 // Date Created: 3/5/2015
 // Last Modified: 3/31/2015 by Emma Roudabush

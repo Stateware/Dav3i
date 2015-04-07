@@ -122,12 +122,15 @@ function ByCountry($countryIDs)
 		$countryDataResults = $databaseConnection->query($query);
 	    while ($countryDataRow = $countryDataResults->fetch_array(MYSQLI_NUM))
 	    {
-	    	$countryID = $countryDataRow[0] - 1;
-	    	$byCountryArray[$countryID][$statID] = array_slice($countryDataRow, 1);
+	    	$countryID = $countryDataRow[0];
+	    	$byCountryArray[$countryID - 1][$statID - 1] = array_slice($countryDataRow, 1);
 	    }	
 	}
 	
-	
+	// if we don't return an array with more than one element in it, it'll come out not as an object, but as an array
+	// this line of code forces the json_decode to output the data as an object.
+	$byCountryArray['force'] = "object";
+
 	return $byCountryArray;
 }
 

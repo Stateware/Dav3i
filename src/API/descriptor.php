@@ -5,8 +5,8 @@
  * 
  * Date Created:        2/7/2015
  * Contributors:        Kyle Nicholson, Berty Ruan
- * Date Last Modified:  2/22/2015
- * Last Modified By:    Will Bittner 
+ * Date Last Modified:  4/2/2015
+ * Last Modified By:    Andrew Lopreiato
  * Dependencies:        connect.php
  * Input:               NONE
  * Output:              Formatted JSON String containing the countryName,
@@ -18,7 +18,7 @@
 require_once("api_library.php");
 
 // enable foreign access in testing
-if (TESTING)
+if (EXTERNAL_ACCESS)
 {
 	header("Access-Control-Allow-Origin: *");
 }

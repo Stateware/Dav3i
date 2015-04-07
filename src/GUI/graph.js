@@ -45,7 +45,7 @@ function GenerateGraph()
 
 // Author: Joshua Crafts
 // Date Created: 3/27/2015
-// Last Modified: 4/2/2015 by Nicholas Denaro
+// Last Modified: 3/27/2015 by Joshua Crafts
 // Description: Prepares data in terms of the data type needed by graphing api
 // PRE: N/A
 // POST: N/A
