@@ -2,8 +2,8 @@
 // Description:             This module contains the code needed to dynamically create modules on the client
 // Date Created:            3/26/2015
 // Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
-// Date Last Modified:      4/2/2015
-// Last Modified By:        Paul Jang
+// Date Last Modified:      4/7/2015
+// Last Modified By:        Emma Roudabush
 // Dependencies:            index.html, lookup_table.js, data.js
 // Additional Notes:        N/A
 
