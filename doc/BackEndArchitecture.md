@@ -61,15 +61,21 @@ The server must
 x must be a single valid statID, y must be a single valid year, if no year is given the current year is used as default
 
 **by_country.php**  url/API/by_country.php?countryIDs=z
-z must be a single valid countryID or a comma delimited list of countryID's
+z must be a single valid countryID or a comma delimited list of countryID's; the front end only sends single countryIDs
 
 ###Error Handling
-All error checking will use the ThrowFatalError function from toolbox.php to handle errors. ThrowFatalError will kill the page, and print a concise error message stating the nature and location of the error. The error message is an argument to the function. 
+All error checking will use the ThrowFatalError and ThrowInconvenientError functions from toolbox.php to handle errors. ThrowFatalError will kill the page, and print a concise error message stating the nature and location of the error. 
+ThrowInconvenientError will be used in cases where it isn't necessary for the page to be killed, it will print a concise error message stating the nature and location of the error.  For each function the error message is an argument to the function.
 
 All functions within api_library.php will validate and sanitize their input data.  In the case of unsanitary or invalid data, the standard error handling procedure is followed.
 
 ###Security
 Functions that receive input from the front end will sanitize and validate their data. This insures that no unforeseen data can be used to attack the system.
+
+The program pixy(https://github.com/oliverklee/pixy) was used to scan for cross site scripting(XSS) and SQL injection vulnerabilities. Pixy found several XSS vulnerabilities in the form of echoing a variable
+highlighted in NoteablePixyResults. These vulnerabilities were determined to be unimportant because no user input could make it to these vulnerabilities without being sanitized and validated
+
+We plan to use PHP-IDS(https://github.com/PHPIDS/PHPIDS) to deal with server attacks.
 
 New data and updates to data will be submitted via a secure login(not added yet).
 
@@ -103,13 +109,7 @@ The data will be encoded in JSON(see design decisions section). This is how it w
         	"MX",
         	"HU"
     	},
-		"cc3" :
-        {
-			"USA",
-			"MEX",
-			"HUN"
-        },
-    	"common_name" : 
+		"common_name" : 
     	{
         	"United States of America",
         	"Mexico",
@@ -124,30 +124,27 @@ The data will be encoded in JSON(see design decisions section). This is how it w
 	};
 
 
-	var HeatMap =
+	var ByStat =
 	{
-    	123,
-    	134534,
-    	123534647
+		"1":
+		[
+			"123",
+			"134534",
+			"123534647"
+		]
 	}
 
-	var Data =
+	var ByCountry =
 	{
     	1 :
-    	{
-        	1 : [ 1337, 1338, ... ],
-        	2 : [ 5, 1338, ... ],
-        	3 : [ 5, 1338, ... ]
-    	}, 
-    	2 : 
-    	{
-        	1 : [ 5, 1338, ... ],
-        	2 : [ 5, 1338, ... ],
-        	3 : [ 5, 1338, ... ]
-    	}
-	};
+    	[
+        	[ "1337", "1338", ... ],
+        	[ "5", "1338", ... ],
+        	[ "5", "1338", ... ]
+    	] 
+   	};
 
-Heatmap is a comma delimited list of values because it is the data for one specific stat and year for all countries. Data is a series of nested structures. The first index is the countryID, the second is the statID.
+ByStat is a key-value pair with the key being the StatID and the value being an array containing the value of the stat in the requested year indexed by CountryID. ByCountry returns a key-value pair with the key being the CountryID and the value being an array indexed by StatID, each index being the data for that stat for the requested country indexed by years after 1980(1980+index=year of data).
 
 ###Design Decisions
 
