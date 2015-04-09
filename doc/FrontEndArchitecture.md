@@ -225,7 +225,7 @@ data.js is a JavaScript data module that contains all global variables needed ac
  * `g_DataList` : variable containing area selection data (in ASDS format)
  * `g_statID` : stat ID representing selected stat
  * `g_HMSYear` : variable representing the year for which HMS data is stored
- * `g_GraphType` : variable representing the graph type, enumerated 0 to 2 (same as order defined in section 1.1.2)
+ * `g_GraphType` : variable representing the graph type, enumerated 0 to 2 (same as order defined in section 0.1.3)
 
 It also includes the function prototype for the ASDS nodes and list, as well as insertion to and deletion from the list. (defined in section 2.4)
 
