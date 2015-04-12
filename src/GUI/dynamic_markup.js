@@ -119,7 +119,7 @@ function Expand()
 	$("#graph-tab-tooltip").fadeOut(400);
 	$(".expand-black").fadeIn(400);
 	setTimeout(function () {
-		GenerateGraph();
+		GenerateSubDivs();
 	}, 500);
 }
 
@@ -136,7 +136,7 @@ function Shrink()
 	$("#graph-tab-tooltip").fadeIn(400);
 	$(".expand-black").fadeOut(400);
 	setTimeout(function () {
-		GenerateGraph();
+		GenerateSubDivs();
 	}, 500);
 }
 
@@ -171,11 +171,14 @@ function GenerateSubDivs()
     {
         tabDivName = "id-"+head.name+'-'+g_StatList[g_StatID]+"-subgraphs";
         parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
-        CreateSubDiv(tabDivName,parentTabDivName);
-        chart = new google.visualization.LineChart(document.getElementById("id-"+head.name+'-'+g_StatList[g_StatID]+"-subgraphs"));
-        chart.draw(data,options);
-        head = head.next;
-    }
+		if(document.getElementById(tabDivName)== null)
+		{
+			CreateSubDiv(tabDivName,parentTabDivName);
+		}
+		chart = new google.visualization.LineChart(document.getElementById("id-"+head.name+'-'+g_StatList[g_StatID]+"-subgraphs"));
+		chart.draw(data,options);
+		head = head.next;
+	}
 }
 
 // Author: Paul Jang

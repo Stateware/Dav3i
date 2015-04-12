@@ -76,6 +76,7 @@
 
 /* sets styling for graph section */
 .graph {
+	display: inline-block;
     position: absolute;
     top: 20%;
     left: 0;
@@ -84,6 +85,7 @@
     width: 100%;
     background-color: #EAE7C2;
     text-align: center;
+	overflow-y: auto;
 }
 
 /* sets styling for tab graphs */
@@ -164,8 +166,8 @@
 
 /* sets styling for subgraph section */
 .subgraph {
-    positive: relative;
-	float: right;
+    position: relative;
+	max-width: 400px;
 }
 
 /* sets stylings for expanding and shrinking section */
