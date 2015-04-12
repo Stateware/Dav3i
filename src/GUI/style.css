@@ -3,7 +3,7 @@
     Description:             Style sheet for the loading screen and main page
     Date Created:            2/19/2015
     Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts, Paul Jang, Nicholas Denaro
-    Date Last Modified:      4/7/2015
+    Date Last Modified:      4/12/2015
     Last Modified By:        Nicholas Denaro
     Dependencies:            none
     Additional Notes:        N/A
@@ -86,6 +86,7 @@
     background-color: #EAE7C2;
     text-align: center;
 	overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* sets styling for tab graphs */
@@ -167,7 +168,7 @@
 /* sets styling for subgraph section */
 .subgraph {
     position: relative;
-	max-width: 400px;
+    float: left;
 }
 
 /* sets stylings for expanding and shrinking section */

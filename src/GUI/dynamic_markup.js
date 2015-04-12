@@ -2,8 +2,8 @@
 // Description:             This module contains the code needed to dynamically create modules on the client
 // Date Created:            3/26/2015
 // Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
-// Date Last Modified:      4/7/2015
-// Last Modified By:        Emma Roudabush
+// Date Last Modified:      4/12/2015
+// Last Modified By:        Nicholas Denaro
 // Dependencies:            index.html, lookup_table.js, data.js
 // Additional Notes:        N/A
 
@@ -59,7 +59,7 @@ function BuildDiv(stat)
 
 // Author: Paul Jang, Nicholas Denaro
 // Date Created: 3/26/2015
-// Last Modified: 3/31/2015 by Nicholas Denaro
+// Last Modified: 4/12/2015 by Nicholas Denaro
 // Description: build divs where the graphs go in index.html
 // PRE: Called from the onclick of a tab
 // POST: previous tab is switched out, and now tab is switched in
@@ -70,7 +70,7 @@ function ChooseTab(element)
     g_StatID=element.getAttribute("stat");
 
     //GenerateGraph();
-    GeneratSubDivs();
+    GenerateSubDivs();
 }
 
 // Author: Emma Roudabush
@@ -142,7 +142,7 @@ function Shrink()
 
 // Author: Paul Jang
 // Date Created: 4/2/2015
-// Last Modified: 4/7/2015 by Paul Jang
+// Last Modified: 4/12/2015 by Nicholas Denaro
 // Description: Calls CreateDiv to dynamically generate subgraph divs and generate graphs
 // PRE: CreateDiv functions correctly, g_DataList is properly full
 // POST: Divs are created based on how many countries are selected,
@@ -174,16 +174,23 @@ function GenerateSubDivs()
 		if(document.getElementById(tabDivName)== null)
 		{
 			CreateSubDiv(tabDivName,parentTabDivName);
+            $(tabDivName).ready(function()
+            {
+                chart = new google.visualization.LineChart(document.getElementById("id-"+head.name+'-'+g_StatList[g_StatID]+"-subgraphs"));
+                chart.draw(data,options);
+                chart = new google.visualization.LineChart(document.getElementById("id-"+head.name+'-'+g_StatList[g_StatID]+"-subgraphs"));
+                chart.draw(data,options);
+            });
+        
 		}
-		chart = new google.visualization.LineChart(document.getElementById("id-"+head.name+'-'+g_StatList[g_StatID]+"-subgraphs"));
-		chart.draw(data,options);
+        
 		head = head.next;
 	}
 }
 
 // Author: Paul Jang
 // Date Created: 4/2/2015
-// Last Modified: 4/7/2015 by Paul Jang
+// Last Modified: 4/12/2015 by Nicholas Denaro
 // Description: Creates a single div with an inputted id and
 //              appends it to the specified parent div
 // PRE: Parent div exists
@@ -193,5 +200,13 @@ function CreateSubDiv(id,parent)
     var elem = document.createElement('div');
     elem.id = id;
     elem.className = "subgraph";
+    var divs=document.getElementsByTagName("div");
+    for(var i in divs)
+    {
+        if(divs[i].className=="control-panel")
+        {
+            elem.style="max-width: "+divs[i].clientWidth+"px;";
+        }
+    }
     document.getElementById(parent).appendChild(elem);
 }
