@@ -28,8 +28,8 @@ The back end is a web server which will host the website for the Spring 2015 ite
 ###Requirements
 The server must
 * Display the website when the domain is visited
-* Upon connection, deliver a descriptor table of the contents of the database, along with the year range within the database, and the data for the default year of the default stat for the heatmap
-* Upon receipt of a countryID or comma delimited list of countryIDs, deliver all data for that country or countries
+* Upon connection, deliver a descriptor table of the contents of the database, along with the year range within the database
+* Upon receipt of a countryID  deliver all data for that country
 * Upon receipt of a statID with year, deliver all data for that stat in that year(if no year is provided, the current year is given)
 * Be able to receive updated database tables via a secure login
 
