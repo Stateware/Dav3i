@@ -100,11 +100,11 @@ function PrepareData()
 function GraphSingle(divID) {
 	var data= PrepareData();
 	var options = {
-      title: 'Country's Record',
+      title: "Country's Record",
       seriesType: "line",
       vAxis: {title: 'cases'},
-        colors:['black'],
-        legend: 'bottom'
+      colors:['black'],
+      legend: 'bottom',
 	  hAxis: {title: 'Years'},
 	  backgroundColor: '#EAE7C2'
     };
@@ -184,7 +184,7 @@ function GraphVaccine(divID) {
 		hAxis: {
 			title: "Years", format: '####'
 		},
-		seriesTypes: "bars", "lines"
+		seriesTypes: "bars",
 		series: {
 			0: {type: "line"}
 		}

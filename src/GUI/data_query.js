@@ -88,12 +88,14 @@ function ModifyData(selectedRegions) {
             if(g_DataList != null) {
                 cc2ToRemove = g_DataList.item(i).cc2;
                 if(selectedRegions.indexOf(cc2ToRemove) == -1)
+                {
                     g_DataList.delete(cc2ToRemove);
                 }
             }
-            // draw graph without removed node
+            // redraw graphs
             GenerateSubDivs();
         }
+    }
     else
         return;
 }

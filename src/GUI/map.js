@@ -11,7 +11,7 @@
 
 // Author: Vanajam Soni, Joshua Crafts
 // Date Created: 2/24/2015
-// Last Modified: 3/23/2015 by Joshua Crafts
+// Last Modified: 4/14/2015 by Paul Jang
 // Description: This function initializes the map, fills up the textarea 'cc2_
 //      selected' with the list of selected regions and clears the selection
 //      on the click of button "clear"
@@ -20,8 +20,7 @@
 $(function(){
     // Author: Joshua Crafts
     // Date Created: 3/21/2015
-    // Last Modified: 4/14/2015
-	// Last Modified By: Paul Jang
+    // Last Modified: 4/14/2015 by Paul Jang
     // Description: This function matches each country/region object in the vector map
     //              to its corresponding value in the HMS section of g_LookupTable and
     //              returns the array, indexed by CC2
@@ -87,7 +86,6 @@ $(function(){
             // Filling the textarea with list of regions selected
             //document.getElementById('cc2-selected').value = JSON.stringify(map.getSelectedRegions());
             ModifyData(map.getSelectedRegions());
-
             var cc2_list = [];
             for(var i = 0;i<g_DataList.size;i++) {
                     if(g_DataList.item(i) != null)
@@ -128,10 +126,9 @@ $(function(){
     document.getElementById("clear").onclick = function()
     {
 		var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
-		var children = document.getElementById(parentTabDivName).childNodes;
-		map.clearSelectedRegions();
 		// removes graphs subdivs
-		for(var i=0; i<children.length; i++)
-			document.getElementById(parentTabDivName).remove(children[i].id);
+		document.getElementById(parentTabDivName).innerHTML = "";
+		// removes map selections
+		map.clearSelectedRegions();
 	}
 });

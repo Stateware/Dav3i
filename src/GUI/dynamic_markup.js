@@ -65,11 +65,14 @@ function BuildDiv(stat)
 // POST: previous tab is switched out, and now tab is switched in
 function ChooseTab(element)
 {
+    // remove divs in previous tab
+    var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+    document.getElementById(parentTabDivName).innerHTML = "";
+    
     document.getElementById("id-"+g_StatList[g_StatID]+"-graphs").style.display="none";
     document.getElementById(element.id+"-graphs").style.display="block";
     g_StatID=element.getAttribute("stat");
-
-    //GenerateGraph();
+    
     GenerateSubDivs();
 }
 
@@ -114,13 +117,13 @@ function CloseSettings()
 // POST: Control panel is expanded and black mask is in place behind
 function Expand()
 {
-	$(".control-panel").animate({width:"97.5%"}, 500);
-	$("#expand").attr("onclick","Shrink()");
-	$("#graph-tab-tooltip").fadeOut(400);
-	$(".expand-black").fadeIn(400);
-	setTimeout(function () {
-		GenerateSubDivs();
-	}, 500);
+    $(".control-panel").animate({width:"97.5%"}, 500);
+    $("#expand").attr("onclick","Shrink()");
+    $("#graph-tab-tooltip").fadeOut(400);
+    $(".expand-black").fadeIn(400);
+    setTimeout(function () {
+        GenerateSubDivs();
+    }, 500);
 }
 
 // Author: Emma Roudabush
@@ -131,61 +134,44 @@ function Expand()
 // POST: Control panel shrinks back to original size and black mask is gone
 function Shrink()
 {
-	$(".control-panel").animate({width:"25%"}, 500);
-	$("#expand").attr("onclick","Expand()");
-	$("#graph-tab-tooltip").fadeIn(400);
-	$(".expand-black").fadeOut(400);
-	setTimeout(function () {
-		GenerateSubDivs();
-	}, 500);
+    $(".control-panel").animate({width:"25%"}, 500);
+    $("#expand").attr("onclick","Expand()");
+    $("#graph-tab-tooltip").fadeIn(400);
+    $(".expand-black").fadeOut(400);
+    setTimeout(function () {
+        GenerateSubDivs();
+    }, 500);
 }
 
 // Author: Paul Jang
 // Date Created: 4/2/2015
-// Last Modified: 4/12/2015 by Nicholas Denaro
+// Last Modified: 4/14/2015 by Paul Jang
 // Description: Calls CreateDiv to dynamically generate subgraph divs and generate graphs
 // PRE: CreateDiv functions correctly, g_DataList is properly full
 // POST: Divs are created based on how many countries are selected,
 //       Correct graphs are filled in the appropriate divs
 function GenerateSubDivs()
 {
-    var head = g_DataList.start;
-    var chart;
-    var data = PrepareData();
-    var tabDivName;
-    var parentTabDivName;
-    var options = {
-        vAxis: {
-            minValue: 0
-        },
-        hAxis: {
-            format: '####'
-        },
-        legend: {
-            position: 'bottom'
-        },
-        backgroundColor: '#EAE7C2'
-    };
-    
-    while(head != null)
+    var size = g_DataList.size;
+    var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+    var currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
+    var children = document.getElementById(parentTabDivName).childNodes;
+    var newNumDivs = size - currentNumDivs;
+    // if we are adding divs
+    if(newNumDivs > 0)
     {
-        tabDivName = "id-"+head.name+'-'+g_StatList[g_StatID]+"-subgraphs";
-        parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
-		if(document.getElementById(tabDivName)== null)
-		{
-			CreateSubDiv(tabDivName,parentTabDivName);
-            $(tabDivName).ready(function()
-            {
-                chart = new google.visualization.LineChart(document.getElementById("id-"+head.name+'-'+g_StatList[g_StatID]+"-subgraphs"));
-                chart.draw(data,options);
-                chart = new google.visualization.LineChart(document.getElementById("id-"+head.name+'-'+g_StatList[g_StatID]+"-subgraphs"));
-                chart.draw(data,options);
-            });
-        
-		}
-        
-		head = head.next;
-	}
+        for(var i = 1; i<=newNumDivs; i++)
+            CreateSubDiv("region-graphs-"+(currentNumDivs+i),parentTabDivName);
+    }
+    // if we are removing divs
+    else if(newNumDivs < 0)
+    {
+        // delete all the elements and remake all the divs
+        newNumDivs *= (-1);
+        document.getElementById(parentTabDivName).innerHTML = "";
+        for(var i=1; i<=(currentNumDivs - newNumDivs); i++)
+            CreateSubDiv("region-graphs-"+i,parentTabDivName);
+    }   
 }
 
 // Author: Paul Jang
