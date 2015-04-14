@@ -161,6 +161,7 @@ function GraphVaccine(divID) {
 }
 
 
+
 // Author: Vanajam Soni
 // Date Created: 4/7/2015
 // Last Modified: 4/13/2015 by Vanajam Soni
@@ -171,7 +172,7 @@ function GraphVaccine(divID) {
 // POST: N/A
 function GenerateSingleData(data)
 {
-    int type = 0;
+    var type = 0;
 
     // type = 0 => unbounded
     // type = 1 => only lower bound exists
@@ -285,8 +286,9 @@ function GenerateVaccineData(data)
     var i,j;
     for(i=0;i<33;i++)
     {
-        data.addRow([1980+i,parseFloat(data[mcv1ID][i])*100,parseFloat(data[mcv2ID][i])*100,parseFloat(data[siaID][i])*100);
+        data.addRow([1980+i,parseFloat(data[mcv1ID][i])*100,parseFloat(data[mcv2ID][i])*100,parseFloat(data[siaID][i])*100]);
     }
     
     return data;   
 }
+
