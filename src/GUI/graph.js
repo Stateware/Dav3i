@@ -92,18 +92,33 @@ function PrepareData()
 }
 
 // Author: Arun Kumar
-// Date Created:
-// Last Modified: 4/2/2015
+// Date Created:4/2/2015
+// Last Modified: 4/14/2015
 // Description: Takes stat data and divID to generate a graph
 // using the Google Charts API
 // PRE:
 // POST:
 function GraphSingle(divID) {
+	var data= PrepareData();
+	var options = {
+      title: 'Country's Record',
+      seriesType: "line",
+      vAxis: {title: 'cases'},
+        colors:['black'],
+        legend: 'bottom'
+	  hAxis: {title: 'Years'},
+	  backgroundColor: '#EAE7C2'
+    };
+	
+    // instantiate and draw chart using prepared data
+    var tab=document.getElementById("divID").children[g_HMSID];
+    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"GenSingle"));
+    chart.draw(data, options);
 }
 
-// Author:
+// Author: Arun Kumar
 // Date Created:
-// Last Modified:
+// Last Modified: 4/14/2015
 // Description: Takes stat data from multiple countries and generates a graph
 // using data from multiple countries
 // PRE:
@@ -124,22 +139,39 @@ function GraphMultipleCountries(divID) {
 	};
     // instantiate and draw chart using prepared data
     var tab=document.getElementById("divID").children[g_HMSID];
-    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"GenSingle"));
+    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"GenMultipleCount"));
     chart.draw(data, options);
 }
 
-// Author:
+// Author: Arun Kumar
 // Date Created:
-// Last Modified:
+// Last Modified: 4/14/2015
 // Description: Takes stat data from multiple countries and generates multiple graphs
 // depending on the countries selected
 // PRE:
 // POST:
 function GenerateMultipleGraphs(divID) {
+	var data= PrepareData();
+	var options = {
+		vAxis: {
+			minValue: 0
+		},
+		hAxis: {
+			format: '####'
+		},
+		legend: {
+			position: 'bottom'
+		},
+		backgroundColor: '#EAE7C2'
+	};
+    // instantiate and draw chart using prepared data
+    var tab=document.getElementById("divID").children[g_HMSID];
+    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"GenMultipleGraph"));
+    chart.draw(data, options);
 }
 
-// Author:
-// Date Created:
+// Author: Arun Kumar
+// Date Created: 4/14/2015
 // Last Modified:
 // Description: Takes stat data from multiple countries and generates a graph
 // using data from multiple countries
@@ -153,11 +185,15 @@ function GraphVaccine(divID) {
 		hAxis: {
 			title: "Years", format: '####'
 		},
-		seriesType: "bars",
+		seriesTypes: "bars", "lines"
 		series: {
 			0: {type: "line"}
 		}
 	};
+	
+	var tab=document.getElementById("divID").children[g_HMSID];
+    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"GenVaccineGraph"));
+    chart.draw(data, options);
 }
 
 
