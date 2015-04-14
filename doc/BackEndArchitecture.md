@@ -64,16 +64,16 @@ x must be a single valid statID, y must be a single valid year, if no year is gi
 z must be a single valid countryID or a comma delimited list of countryID's; the front end only sends single countryIDs
 
 ###Error Handling
-All error checking will use the ThrowFatalError and ThrowInconvenientError functions from toolbox.php to handle errors. ThrowFatalError will kill the page, and print a concise error message stating the nature and location of the error. 
-ThrowInconvenientError will be used in cases where it isn't necessary for the page to be killed, it will print a concise error message stating the nature and location of the error.  For each function the error message is an argument to the function.
+All error checking will use the ThrowFatalError and ThrowInconvenientError functions from toolbox.php to handle errors.
+* **ThrowFatalError** will kill the page, and print a concise error message stating the nature and location of the error.
+*  **ThrowInconvenientError** will be used in cases where it isn't necessary for the page to be killed, it will print a concise error message stating the nature and location of the error.  For each function the error message is an argument to the function.
 
 All functions within api_library.php will validate and sanitize their input data.  In the case of unsanitary or invalid data, the standard error handling procedure is followed.
 
 ###Security
 Functions that receive input from the front end will sanitize and validate their data. This insures that no unforeseen data can be used to attack the system.
 
-The program pixy(https://github.com/oliverklee/pixy) was used to scan for cross site scripting(XSS) and SQL injection vulnerabilities. Pixy found several XSS vulnerabilities in the form of echoing a variable
-highlighted in NoteablePixyResults. These vulnerabilities were determined to be unimportant because no user input could make it to these vulnerabilities without being sanitized and validated
+The program pixy(https://github.com/oliverklee/pixy) was used to scan for cross site scripting(XSS) and SQL injection vulnerabilities. Pixy found several XSS vulnerabilities in the form of echoing a variable without first sanitizing the variable highlighted in the document NoteablePixyResults. These vulnerabilities were determined to be unimportant because no user input could make it to these vulnerabilities without being sanitized and validated beforehand.
 
 We plan to use PHP-IDS(https://github.com/PHPIDS/PHPIDS) to deal with server attacks.
 
@@ -81,16 +81,27 @@ New data and updates to data will be submitted via a secure login(not added yet)
 
 ###Database Setup
 
-
-Now that we have the architecture of our back end planned out, it's time to dictate the table setup for our MySQL database. The configuration we decided on involves 4 table types.
-
 All tables will be linked via country id (CID).
 
 **meta_stats:** This table provides an easy way to search our list of data tables. It has a columns: Stat table ID, Stat id Name, and SQL table name.
 
 **meta_countries:** This table provides a list of all countries identifiers, common name, 2-digit country code, and 3-digit country code. This will be called when a call to "descriptor" is made, and when new data is being uploaded.
 
-**data_?:** There will be an individual table for each different data statistic (e.g. deaths, births, vaccinations) for each different country. Each of these tables will have columns: CID and as many years columns as needed. This format was chosen to make it more efficient to grab all years of data from a single country by just grabbing a row of data. The other way of doing this would be to have three columns: CID, Year, and Value. This way would be considered the “correct” way, however would take a significantly longer time to query for mass quantities of yearly data. The "correct" way has the advantage of having a much greater amount of years, however, the chosen way of creating this table allows for a maximum of 1024 columns, hence 1023 years and it is inconceivable that this program will be used for longer than that span of time. 
+**data_?:** There is an individual table for each different data statistic 
+* births = data_births
+* reported cases =  data_cases
+* deaths = data_deaths
+* estimated cases = data_estcases
+* estimated mortality rate = data_estmortal
+* lower bound for estimated cases = data_lbecases
+* lower bound for estimated mortality = data_lbemortal
+* MCV1(first dose of measles containing vaccine) = data_mcv1
+* MCV2(second dose of measles containing vaccine) = data_mcv2
+* population = data_popula
+* upper bound for estimated cases = data_ubecases
+* upper bound for estimated mortality = data_ubemortal
+
+The tables have columns: CID and as many years columns as needed. This format was chosen to make it more efficient to grab all years of data from a single country by just grabbing a row of data. The other way of doing this would be to have three columns: CID, Year, and Value. This way would be considered the “correct” way, however would take a significantly longer time to query for mass quantities of yearly data. The "correct" way has the advantage of having a much greater amount of years, however, the chosen way of creating this table allows for a maximum of 1024 columns, hence 1023 years and it is inconceivable that this program will be used for longer than that span of time. 
 
 ###Format of Data Sent to Front End
 The data will be encoded in JSON(see design decisions section). This is how it will be formatted:
@@ -131,7 +142,8 @@ The data will be encoded in JSON(see design decisions section). This is how it w
 			"123",
 			"134534",
 			"123534647"
-		]
+		],
+        "force":"object"
 	}
 
 	var ByCountry =
@@ -141,10 +153,11 @@ The data will be encoded in JSON(see design decisions section). This is how it w
         	[ "1337", "1338", ... ],
         	[ "5", "1338", ... ],
         	[ "5", "1338", ... ]
-    	] 
+    	],
+        "force":"object"
    	};
 
-ByStat is a key-value pair with the key being the StatID and the value being an array containing the value of the stat in the requested year indexed by CountryID. ByCountry returns a key-value pair with the key being the CountryID and the value being an array indexed by StatID, each index being the data for that stat for the requested country indexed by years after 1980(1980+index=year of data).
+ByStat is a key-value pair with the key being the StatID and the value being an array containing the value of the stat in the requested year indexed by CountryID. ByCountry returns a key-value pair with the key being the CountryID and the value being an array indexed by StatID, each index being the data for that stat for the requested country indexed by years after 1980(1980+index=year of data). Both sets of data have the key-value pair "force":"object" as a second entry. The purpose of this key-value pair is to force the JSON encoding function in PHP to output the data as an object rather than an array. When only one key-value pair is output, the whole thing is converted to an array which affects the ability to parse it.
 
 ###Design Decisions
 
@@ -169,4 +182,6 @@ The LAMP stack is made up of four components, each communicating with only one o
 **JSON:** Javascript Object Notation is easy for humans to read and easy for computers to parse. It is just notation, so a format that is agreed upon between the front and back end so that data transfer is simplified. One of the team members had experience with JSON that he was able to pass on to the rest of the team.
 
 **Using 1 as the First Index for data:** SQL is indexed starting at one, so all requests from the front end must have one added
+
+**Docker** Docker was first introduced to us as a framework to make making multiplatform applications easier, but upon further investigation, it was actually a framework to make multiplatform development easier. It converts your application to a format that is stored on Docker's cloud that can run on a Docker virtual environment which makes it easier for large companies to all work on a project in different development environments. We determined that we did not need to use it. 
 
