@@ -165,9 +165,8 @@ function GraphVaccine(divID) {
 // Author: Vanajam Soni
 // Date Created: 4/7/2015
 // Last Modified: 4/13/2015 by Vanajam Soni
-// Description: Prepares Data given for a single country (taken as argument) into data table, for the global statID
-//          bounds = 1, if data with bounds is needed
-//          bounds = 0, if data without bounds is needed
+// Description: Prepares Data given for a single country (taken as argument) into data table, for the global statID, 
+//              Also depends on graph type for bounded or unbounded data
 // PRE: N/A
 // POST: N/A
 function GenerateSingleData(data)
@@ -187,8 +186,18 @@ function GenerateSingleData(data)
     data.addColumn({type: 'boolean', role: 'certainty'});   // false for dotted line, true for solid line
 
     // get the bound stats from parsed stat list
-    var lowerBoundID;
-    var upperBoundId;
+    var lowerBoundID = -1;
+    var upperBoundId = -1;
+
+    for(i=0;i<g_ParsedStatList[1].length;i++)
+    {
+        if(g_StatID == g_ParsedStatList[1][i])
+        {
+            lowerBoundID = g_ParsedStatList[2][i];
+            lowerBoundID = g_ParsedStatList[3][i];   
+        }
+    }
+
 
     if(lowerBoundID != -1 && g_GraphType == 1)
     {
@@ -210,16 +219,16 @@ function GenerateSingleData(data)
         switch(type) 
         {
             case 0:
-                data.addRow([1980+i,Number(data[g_statID][i]),true]);
+                data.addRow([1980+i,Number(data[g_StatID][i]),true]);
                 break;
             case 1:
-                data.addRow([1980+i,Number(data[g_statID][i]),true,Number(data[lowerBoundId][i]),false]);
+                data.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[lowerBoundId][i]),false]);
                 break;
             case 2:
-                data.addRow([1980+i,Number(data[g_statID][i]),true,Number(data[upperBoundId][i]),false]);
+                data.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[upperBoundId][i]),false]);
                 break;
             case 3:
-                data.addRow([1980+i,Number(data[g_statID][i]),true,Number(data[lowerBoundId][i]),false,Number(data[upperBoundId][i]),false]);
+                data.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[lowerBoundId][i]),false,Number(data[upperBoundId][i]),false]);
                 break;
         }
     }
@@ -279,8 +288,9 @@ function GenerateVaccineData(data)
     
     var mcv1ID, mcv2ID,siaID;
 
-    mcv1ID = g_statID;
-    
+    mcv1ID = g_StatID;
+    mcv2ID = g_ParsedStatList[2][0];
+    siaID = g_ParsedStatList[3][0];
     // use parsed stat list to mcv2 and sia ids
 
     var i,j;

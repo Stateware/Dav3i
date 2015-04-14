@@ -16,6 +16,7 @@ var g_YearEnd; // last year for which user wants data.
 var g_DataList; // first node of area selection data list; points to all other nodes. Is initially set on first area selection.
 var g_StatID; // stat ID corresponding to selected HMS.
 var g_HMSYear; // year for which HMS data is wanted.
+var g_ParsedStatList; // parsed stat reference list
 
 // prototype for ASDS node
 function t_AsdsNode(cid, cc2, name, data)
