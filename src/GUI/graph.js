@@ -1,3 +1,4 @@
+
 // File Name: graph.js
 // Description: This file generates graphs based on parsed data
 // Date Created: 3/17/2015
@@ -157,4 +158,135 @@ function GraphVaccine(divID) {
 			0: {type: "line"}
 		}
 	};
+}
+
+
+// Author: Vanajam Soni
+// Date Created: 4/7/2015
+// Last Modified: 4/13/2015 by Vanajam Soni
+// Description: Prepares Data given for a single country (taken as argument) into data table, for the global statID
+//          bounds = 1, if data with bounds is needed
+//          bounds = 0, if data without bounds is needed
+// PRE: N/A
+// POST: N/A
+function GenerateSingleData(data)
+{
+    int type = 0;
+
+    // type = 0 => unbounded
+    // type = 1 => only lower bound exists
+    // type = 2 => only upper bound exists
+    // type = 3 => bounded
+
+    var data = new google.visualization.DataTable();
+    
+    data.addColumn('number','year');
+    
+    data.addColumn('number', 'statistic');
+    data.addColumn({type: 'boolean', role: 'certainty'});   // false for dotted line, true for solid line
+
+    // get the bound stats from parsed stat list
+    var lowerBoundID;
+    var upperBoundId;
+
+    if(lowerBoundID != -1 && g_GraphType == 1)
+    {
+        data.addColumn('number','lower bound');
+        data.addColumn({type: 'boolean', role: 'certainty'});   // false for dotted line, true for solid line
+        type = 1;
+    }
+
+    if(upperBoundId != -1 && g_GraphType == 1)
+    {
+        data.addColumn('number', 'upper bound');
+        data.addColumn({type: 'boolean', role: 'certainty'});
+        type = type + 2;
+    }    
+
+    // filling the data table
+    for(i=0;i<33;i++)
+    {   
+        switch(type) 
+        {
+            case 0:
+                data.addRow([1980+i,Number(data[g_statID][i]),true]);
+                break;
+            case 1:
+                data.addRow([1980+i,Number(data[g_statID][i]),true,Number(data[lowerBoundId][i]),false]);
+                break;
+            case 2:
+                data.addRow([1980+i,Number(data[g_statID][i]),true,Number(data[upperBoundId][i]),false]);
+                break;
+            case 3:
+                data.addRow([1980+i,Number(data[g_statID][i]),true,Number(data[lowerBoundId][i]),false,Number(data[upperBoundId][i]),false]);
+                break;
+        }
+    }
+
+
+}
+
+// Author: Vanajam Soni
+// Date Created: 4/7/2015
+// Last Modified: 4/13/2015 by Vanajam Soni
+// Description: Generates an ASDS node with all data summed over selected regions
+// PRE: N/A
+// POST: N/A
+function GenerateSumNode(){
+    
+    var data = new Array(10);   // data for the new node
+
+    var i,j;
+    var currentNode;    // list iterator
+    
+    for(i=0;i<10;i++)   // for each stat
+    {
+        data[i] = new Array(33);    //  create array to contain data for all years
+        for(j=0;j<33;j++)   // for each year
+        {   
+            currentNode = g_DataList.start;
+            for(k=0;k<g_DataList.size;k++)  // for each year, go through all nodes in data list
+            {
+                if(currentNode.data[i][j] != -1)    // checking for missing data
+                        data[i][j] += currentNode.data[i][j];
+
+                currentNode = currentNode.next;
+            }
+        }
+    }
+    
+    var newNode = new t_AsdsNode(-1,"SUM","SUM",data);
+
+    return newNode;
+}
+
+
+// Author: Vanajam Soni
+// Date Created: 4/7/2015
+// Last Modified: 4/13/2015 by Vanajam Soni
+// Description: Prepares data for vaccination stats, for a given country
+//              Takes data of the country as input.
+// PRE: N/A
+// POST: N/A
+function GenerateVaccineData(data)
+{
+    var data = new google.visualization.DataTable();
+    data.addColumn('number','year');
+    data.addColumn('number', 'MC1');
+    data.addColumn('number', 'MC2');
+    data.addColumn('number', 'SIA');
+    
+    var mcv1ID, mcv2ID,siaID;
+
+    mcv1ID = g_statID;
+    
+    // use parsed stat list to mcv2 and sia ids
+
+    var i,j;
+    for(i=0;i<33;i++)
+    {
+        data.addRow([1980+i,parseFloat(data[mcv1ID][i])*100,parseFloat(data[mcv2ID][i])*100,parseFloat(data[siaID][i])*100);
+    }
+    
+    return data;   
 }
