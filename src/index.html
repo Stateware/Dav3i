@@ -56,10 +56,10 @@
 	<div class="settings-screen">
 		<h1 class="open-sans">Settings Menu<h1>
 		<form action="">
-			<p class="GraphChoice">
-				<input type="radio" name="GraphChoice" value="0">Regional&emsp;
-				<input type="radio" name="GraphChoice" value="1">Combined&emsp;
-				<input type="radio" name="GraphChoice" value="2">Whole Selection <br>
+			<p class="graph-choice">
+				<input type="radio" onclick="SetGraphType(0)" name="graphType" checked="checked" value="0">Regional&emsp;
+				<input type="radio" onclick="SetGraphType(1)" name="graphType" value="1">Combined&emsp;
+				<input type="radio" onclick="SetGraphType(2)" name="graphType" value="2">Whole Selection <br>
 			<p>
 		</form>
 		<button id="settings" class="flat-button" onclick="CloseSettings()">Close</button>
@@ -89,7 +89,7 @@
             </section>
 			
             <section class="expand">
-                <img src="res/expand.png" id="expand" width="30" height="30" onclick="Expand()" style="PADDING-RIGHT: 10px"/>
+                <img src="res/arrow_left.png" id="expand" width="30" height="30" onclick="Expand()" style="PADDING-RIGHT: 10px"/>
             </section>
         </div>
         
