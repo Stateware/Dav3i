@@ -3,7 +3,7 @@
     Description:             Style sheet for the loading screen and main page
     Date Created:            2/19/2015
     Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts, Paul Jang, Nicholas Denaro
-    Date Last Modified:      4/12/2015
+    Date Last Modified:      4/14/2015
     Last Modified By:        Nicholas Denaro
     Dependencies:            none
     Additional Notes:        N/A
@@ -91,7 +91,7 @@
 
 /* sets styling for tab graphs */
 #graphs {
-    border-top: 1px solid #bbb89b;
+    /*border-top: 1px solid #bbb89b;*/
 }
 
 /* sets styling for the tabs for the graph section */
@@ -114,6 +114,10 @@
          -o-transition: all 0.5s linear;
             transition: all 0.5s linear;
     pointer-events: all;
+}
+
+.selected-tab{
+    background-color: #FFF;
 }
 
 /* darkens the tabs as you hover over them*/

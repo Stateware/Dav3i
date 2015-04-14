@@ -9,7 +9,7 @@
 
 // Author: Paul Jang, Nicholas Denaro
 // Date Created: 3/26/2015
-// Last Modified: 3/26/2015 by Paul Jang
+// Last Modified: 4/14/2015 by Nicholas Denaro
 // Description: Retrieve stat values from the lookup_table,
 //              Builds the tabs and inserts them into index.html
 // PRE: lookup_table is filled correctly, index.html exists
@@ -32,11 +32,10 @@ function BuildTabs()
 
             BuildDiv(temp);
 
-            if(i==0)
+            if(i==g_StatID)
             {
-                //g_ActiveTab=div;
-                g_StatID=i;
                 document.getElementById("id-"+temp+"-graphs").style.display="block";
+                div.className="graph-tab selected-tab";
             }
         }
     }
@@ -59,12 +58,15 @@ function BuildDiv(stat)
 
 // Author: Paul Jang, Nicholas Denaro
 // Date Created: 3/26/2015
-// Last Modified: 4/12/2015 by Nicholas Denaro
+// Last Modified: 4/14/2015 by Nicholas Denaro
 // Description: build divs where the graphs go in index.html
 // PRE: Called from the onclick of a tab
 // POST: previous tab is switched out, and now tab is switched in
 function ChooseTab(element)
 {
+    var prevTab=document.getElementById("id-"+g_StatList[g_StatID]);
+    prevTab.className="graph-tab";
+    element.className="graph-tab selected-tab";
     document.getElementById("id-"+g_StatList[g_StatID]+"-graphs").style.display="none";
     document.getElementById(element.id+"-graphs").style.display="block";
     g_StatID=element.getAttribute("stat");
