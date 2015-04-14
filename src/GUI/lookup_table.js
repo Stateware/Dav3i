@@ -22,10 +22,10 @@ function ParseDescriptor()
     var hmsData;
 
     $.when(GetDescriptor()).done(function(DescriptorJSON){
-		SetYears(DescriptorJSON);
+        SetYears(DescriptorJSON);
         GenerateLookupTable(DescriptorJSON);
         $.when(GetHMS(g_StatID=1)).done(function(hmsData){
-            SetHMS(hmsData[1]);     // Need to index in due to by_stat.php
+            SetHMS(hmsData[1]);     // Need to index in due to JSON format of by_stat.php
         });
         GenerateStatReferenceList(DescriptorJSON);
         console.log(g_LookupTable);
