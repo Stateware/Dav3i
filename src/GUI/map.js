@@ -20,7 +20,8 @@
 $(function(){
     // Author: Joshua Crafts
     // Date Created: 3/21/2015
-    // Last Modified: 3/26/2015 by Vanajam Soni
+    // Last Modified: 4/14/2015
+	// Last Modified By: Paul Jang
     // Description: This function matches each country/region object in the vector map
     //              to its corresponding value in the HMS section of g_LookupTable and
     //              returns the array, indexed by CC2
@@ -126,6 +127,11 @@ $(function(){
     // clearing selected regions when the "clear" button in clicked
     document.getElementById("clear").onclick = function()
     {
-        map.clearSelectedRegions();
-    };
+		var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+		var children = document.getElementById(parentTabDivName).childNodes;
+		map.clearSelectedRegions();
+		// removes graphs subdivs
+		for(var i=0; i<children.length; i++)
+			document.getElementById(parentTabDivName).remove(children[i].id);
+	}
 });
