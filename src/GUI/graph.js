@@ -100,7 +100,7 @@ function PrepareData()
 function GraphSingle(divID) {
 	var data= PrepareData();
 	var options = {
-      title: 'Country's Record',
+      title: 'Country\'s Record',
       seriesType: "line",
       vAxis: {title: 'cases'},
         colors:['black'],

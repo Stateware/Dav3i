@@ -22,7 +22,8 @@ function ParseDescriptor()
     var hmsData;
 
     $.when(GetDescriptor()).done(function(DescriptorJSON){
-        SetYears(DescriptorJSON);
+        SetInitalYears(DescriptorJSON);
+		SetGraphType(0);
         GenerateLookupTable(DescriptorJSON);
         $.when(GetHMS(g_StatID=1)).done(function(hmsData){
             SetHMS(hmsData[1]);     // Need to index in due to JSON format of by_stat.php
@@ -58,7 +59,7 @@ function GetDescriptor()
 // PRE: descriptor.php has been successfully retrieved 
 // POST: g_FirstYear and g_YearStart have the correct beginning year of statistics.
 // 		 g_LastYear and g_YearEnd have the correct ending year of statistics. 
-function SetYears(DescriptorJSON)
+function SetInitalYears(DescriptorJSON)
 {
 	g_FirstYear = DescriptorJSON.yearRange[0];
 	g_YearStart = DescriptorJSON.yearRange[0];

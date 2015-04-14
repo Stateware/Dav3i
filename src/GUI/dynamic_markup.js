@@ -2,8 +2,8 @@
 // Description:             This module contains the code needed to dynamically create modules on the client
 // Date Created:            3/26/2015
 // Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
-// Date Last Modified:      4/12/2015
-// Last Modified By:        Nicholas Denaro
+// Date Last Modified:      4/14/2015
+// Last Modified By:        Emma Roudabush
 // Dependencies:            index.html, lookup_table.js, data.js
 // Additional Notes:        N/A
 
@@ -118,6 +118,7 @@ function Expand()
 {
 	$(".control-panel").animate({width:"97.5%"}, 500);
 	$("#expand").attr("onclick","Shrink()");
+	$("#expand").attr("src","res/arrow_right.png");
 	$("#graph-tab-tooltip").fadeOut(400);
 	$(".expand-black").fadeIn(400);
 	setTimeout(function () {
@@ -135,6 +136,7 @@ function Shrink()
 {
 	$(".control-panel").animate({width:"25%"}, 500);
 	$("#expand").attr("onclick","Expand()");
+	$("#expand").attr("src","res/arrow_left.png");
 	$("#graph-tab-tooltip").fadeIn(400);
 	$(".expand-black").fadeOut(400);
 	setTimeout(function () {
