@@ -169,6 +169,10 @@ function GetCID(cc2)
 // to test make this happen on load! wee!
 function parseStatList()
 {
+
+    g_ParsedStatList = [[1,0,0,0,0,0,0][12,0,1,2,3,5,8],[4,-1,-1,-1,-1,10,11],[6,-1,-1,-1,-1,9,7]];
+
+    /*
     var sortedStatList = g_StatList;
     sortedStatList.sort();                  // sort the stat list
     var parsedStatList;                     // 2d array
@@ -211,7 +215,7 @@ function parseStatList()
         {
             parsedArray[i][associatedStat] = g_statList.indexOf(sortedStatList[headIndex+2]);
         }
-    }   
+    }   */
 }
 
 
