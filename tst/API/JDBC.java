@@ -10,8 +10,8 @@ public class JDBC {
 	static final String DB_URL = "jdbc:mysql://usve74985.serverprofi24.com:3306/davvvi";
 	
 	//Database creds
-	static final String USER = "omitted";
-	static final String PASS = "omitted";
+	static final String USER = "hi";
+	static final String PASS = "hi";
 	
 	static Statement stmt;
 	
