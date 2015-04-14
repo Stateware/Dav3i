@@ -3,8 +3,8 @@
     Description:             Style sheet for the loading screen and main page
     Date Created:            2/19/2015
     Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts, Paul Jang, Nicholas Denaro
-    Date Last Modified:      4/12/2015
-    Last Modified By:        Nicholas Denaro
+    Date Last Modified:      4/14/2015
+    Last Modified By:        Emma Roudabush
     Dependencies:            none
     Additional Notes:        N/A
 */
@@ -25,9 +25,9 @@
     background-color: #efe;
 }
 
-.GraphChoice {
-	 font-family: 'Open Sans Condensed', sans-serif;
-	 font-size: 15pt; 
+.graph-choice {
+     font-family: 'Open Sans Condensed', sans-serif;
+     font-size: 13pt; 
 }
 
 /* sets control panel size and to foreground on main screen */
@@ -50,7 +50,7 @@
 /* sets open sans font styling and font for begin button */
 .open-sans, .begin {
     font-family: 'Open Sans Condensed', sans-serif;
-	padding-top: 10px;
+    padding-top: 10px;
 }
 
 /* sets begin button styling */
@@ -76,7 +76,7 @@
 
 /* sets styling for graph section */
 .graph {
-	display: inline-block;
+    display: inline-block;
     position: absolute;
     top: 20%;
     left: 0;
@@ -85,7 +85,7 @@
     width: 100%;
     background-color: #EAE7C2;
     text-align: center;
-	overflow-y: auto;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
@@ -133,17 +133,15 @@
     padding: 7px 16px 2px 4px;
     border-radius: 2px 2px 0 0;
     border: 1px solid #bbb89b;
-    /*box-shadow: 1px 1px 5px #888888;*/
     font-weight: normal;
     text-align: center;
     text-transform: uppercase;
     background-color: #EAE7C2;
     top: 0;
-    /*width: 30px;*/
     right: 0;
     position: absolute;
     z-index: 1;
-	font-family: 'Open Sans Condensed', sans-serif;
+    font-family: 'Open Sans Condensed', sans-serif;
     font-size: 16px;
     font-weight: normal;
     text-transform: uppercase;
@@ -158,7 +156,7 @@
     border-radius: 5px;
     color: #fff;
     content: attr(tooltip);
-    left: 100%;
+    right: 100%;
     padding: 5px 15px;
     position: absolute;
     z-index: 98;
@@ -342,3 +340,24 @@
         -webkit-transform: scale(1.0);
     }
 }
+
+/* Scroll Bar Style */
+::-webkit-scrollbar {
+      width: 15px;
+} /* this targets the default scrollbar (compulsory) */
+
+::-webkit-scrollbar-track {
+      background-color: #EAE7C2;
+} /* the new scrollbar will have a flat appearance with the set background color */
+ 
+::-webkit-scrollbar-thumb {
+      background-color: #d2cfae;
+} /* this will style the thumb, ignoring the track */
+ 
+::-webkit-scrollbar-button {
+      background-color: #EAE7C2;
+} /* optionally, you can style the top and the bottom buttons (left and right for horizontal bars) */
+ 
+::-webkit-scrollbar-corner {
+      background-color: #EAE7C2;
+} /* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */
