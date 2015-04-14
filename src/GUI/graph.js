@@ -1,4 +1,3 @@
-
 // File Name: graph.js
 // Description: This file generates graphs based on parsed data
 // Date Created: 3/17/2015

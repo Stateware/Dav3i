@@ -116,6 +116,10 @@
     pointer-events: all;
 }
 
+.selected-tab{
+    background-color: #FFF;
+}
+
 /* darkens the tabs as you hover over them*/
 .graph-tab:hover{
     background-color: #d2cfae;
