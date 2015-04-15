@@ -84,15 +84,13 @@ $(function(){
         onRegionSelected: function()
         {
             // Filling the textarea with list of regions selected
-            //document.getElementById('cc2-selected').value = JSON.stringify(map.getSelectedRegions());
             ModifyData(map.getSelectedRegions());
             var cc2_list = [];
             for(var i = 0;i<g_DataList.size;i++) {
                     if(g_DataList.item(i) != null)
                         cc2_list[cc2_list.length] = g_DataList.item(i).cc2;
             }
-            //document.getElementById('cc2-selected').value = JSON.stringify(cc2_list);
-            //GenerateSingle();
+            GenerateGraphs();
         },
         // runs when region is hovered over
         onRegionTipShow: function(e, label, key){

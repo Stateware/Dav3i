@@ -13,11 +13,11 @@ var g_FirstYear;        // first year for which data is available.
 var g_LastYear;         // last year for which data is available.
 var g_YearStart;        // first year for which user wants data.
 var g_YearEnd;          // last year for which user wants data.
-var g_DataList;         // first node of area selection data list; points to all other nodes. Is initially set on first area selection.
+var g_DataList;         // data list
 var g_StatID;           // stat ID corresponding to selected HMS.
 var g_HMSYear;          // year for which HMS data is wanted.
 var g_ParsedStatList;   // parsed stat reference list
-var g_GraphType; 		// variable representing the graph type, enumerated 0 to 2
+var g_GraphType; 	// variable representing the graph type, enumerated 0 to 2
 
 // prototype for ASDS node
 function t_AsdsNode(cid, cc2, name, data)

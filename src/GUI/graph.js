@@ -16,9 +16,9 @@
 function GenerateGraphs()
 {
 	var curr=g_DataList.start;
-	for(var i=1; i<g_DataList.size; i++)
+	for(var i=1; i<=g_DataList.size; i++)
 	{
-		GraphRegional("Region-graph-"+i, curr);
+		GraphRegional("region-graphs-"+i, curr);
 		curr=curr.next;
 	}
 }
@@ -66,16 +66,18 @@ function GenerateGraph()
 // PRE:
 // POST:
 function GraphRegional(divID, node) {
-	var data= GenerateSingleData(node.data);
-	var options = {
-      title: "Country's Record",
-      seriesType: "line",
-      vAxis: {title: 'cases'},
-      colors:['black'],
-      legend: 'bottom',
-	  hAxis: {title: 'Years'},
-	  backgroundColor: '#EAE7C2'
+    var data= GenerateSingleData(node.data);
+    var options = {
+        title: "Country's Record",
+        seriesType: "line",
+        vAxis: {title: 'cases'},
+        colors:['black'],
+        legend: 'bottom',
+        hAxis: {title: 'Years'},
+        backgroundColor: '#EAE7C2'
     };
+
+    console.log(data);
 	
     // instantiate and draw chart using prepared data
     var chart = new google.visualization.LineChart(document.getElementById(divID));
@@ -177,7 +179,7 @@ function GenerateSingleData(data)
         if(g_StatID == g_ParsedStatList[1][i])
         {
             lowerBoundID = g_ParsedStatList[2][i];
-            lowerBoundID = g_ParsedStatList[3][i];   
+            upperBoundID = g_ParsedStatList[3][i];   
         }
     }
 
@@ -196,7 +198,7 @@ function GenerateSingleData(data)
     }    
 
     // filling the data table
-    for(i=0;i<33;i++)
+    for(i=0;i<(g_FirstYear-g_LastYear)+1;i++)
     {   
         switch(type) 
         {

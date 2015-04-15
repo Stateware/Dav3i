@@ -23,12 +23,13 @@ function ParseDescriptor()
 
     $.when(GetDescriptor()).done(function(DescriptorJSON){
         SetInitalYears(DescriptorJSON);
-		SetGraphType(0);
+        SetGraphType(0);
         GenerateLookupTable(DescriptorJSON);
         $.when(GetHMS(g_StatID=1)).done(function(hmsData){
             SetHMS(hmsData[1]);     // Need to index in due to JSON format of by_stat.php
         });
         GenerateStatReferenceList(DescriptorJSON);
+        ParseStatList();
         console.log(g_LookupTable);
         console.log(g_StatList);
         BuildTabs();
@@ -168,7 +169,7 @@ function GetCID(cc2)
 
 // console.log(name of variable) -> this shows the data inside a variable
 // to test make this happen on load! wee!
-function parseStatList()
+function ParseStatList()
 {
 
     g_ParsedStatList = [[1,0,0,0,0,0,0][12,0,1,2,3,5,8],[4,-1,-1,-1,-1,10,11],[6,-1,-1,-1,-1,9,7]];
