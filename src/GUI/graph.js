@@ -15,12 +15,21 @@
 // POST: N/A
 function GenerateGraphs()
 {
-	var curr=g_DataList.start;
-	for(var i=1; i<=g_DataList.size; i++)
-	{
-		GraphRegional("region-graphs-"+i, curr);
-		curr=curr.next;
-	}
+    var curr=g_DataList.start;
+
+    switch(g_GraphType)
+    {
+        case 0:    
+            for(var i=1; i<=g_DataList.size; i++)
+            {
+                GraphRegional("region-graphs-"+i, curr);
+                curr=curr.next;
+            }
+            break;
+        case 1:
+            GraphCombined("region-graphs-"+1);
+            break;
+     }
 }
 
 
@@ -68,16 +77,18 @@ function GenerateGraph()
 function GraphRegional(divID, node) {
     var data= GenerateSingleData(node.data);
     var options = {
-        title: "Country's Record",
+        title: node.name,
         seriesType: "line",
-        vAxis: {title: 'cases'},
-        colors:['black'],
-        legend: 'bottom',
-        hAxis: {title: 'Years'},
+        legend: 'none',
+        vAxis: {
+            viewWindowMode:'explicit',
+            viewWindow: {
+            min:0
+        }
+    },
+        hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2'
     };
-
-    console.log(data);
 	
     // instantiate and draw chart using prepared data
     var chart = new google.visualization.LineChart(document.getElementById(divID));
@@ -92,30 +103,18 @@ function GraphRegional(divID, node) {
 // PRE:
 // POST:
 function GraphCombined(divID) {
-	var data = GenerateCombinedDataData(data);
+    var data = GenerateCombinedData(data);
     var options = {
-		vAxis: {
-			minValue: 0
-		},
-		hAxis: {
-			format: '####'
-		},
-		legend: {
-			position: 'bottom'
-		},
-		backgroundColor: '#EAE7C2'
-	};
+        seriesType: "line",
+        legend: {position: 'bottom'},
+        vAxis: {minValue: 0},
+        hAxis: {title: 'Year', format: '####'},
+        backgroundColor: '#EAE7C2'
+    };
     // instantiate and draw chart using prepared data
-    //for(var stat in g_StatList)
-    {
-        //var tab=document.getElementById("tabsDiv").children[stat];
-        var tab=document.getElementById("id-"+g_StatList[g_StatID]);
-        if(tab!=undefined)
-        {
-            var chart = new google.visualization.LineChart(document.getElementById(tab.id+"-graphs"));//Rather than using the active tab, we need to find out which graph the data is for?
-            chart.draw(data, options);
-        }
-    }
+    //var tab=document.getElementById("tabsDiv").children[stat];
+    var chart = new google.visualization.LineChart(document.getElementById(divID));
+    chart.draw(data, options);
 }
 
 // Author: Arun Kumar
@@ -163,16 +162,16 @@ function GenerateSingleData(data)
     // type = 2 => only upper bound exists
     // type = 3 => bounded
 
-    var data = new google.visualization.DataTable();
+    var dataTable = new google.visualization.DataTable();
     
-    data.addColumn('number','year');
+    dataTable.addColumn('number','year');
     
-    data.addColumn('number', 'statistic');
-    data.addColumn({type: 'boolean', role: 'certainty'});   // false for dotted line, true for solid line
+    dataTable.addColumn('number', 'value');
+    dataTable.addColumn({type: 'boolean', role: 'certainty', id: 'isStat'});   // false for dotted line, true for solid line
 
     // get the bound stats from parsed stat list
     var lowerBoundID = -1;
-    var upperBoundId = -1;
+    var upperBoundID = -1;
 
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
@@ -183,40 +182,47 @@ function GenerateSingleData(data)
         }
     }
 
-    if(lowerBoundID != -1 && g_GraphType == 1)
+    console.log(g_StatID);
+    console.log(lowerBoundID);
+    console.log(upperBoundID);
+
+    if(lowerBoundID != -1)
     {
-        data.addColumn('number','lower bound');
-        data.addColumn({type: 'boolean', role: 'certainty'});   // false for dotted line, true for solid line
+        dataTable.addColumn('number','lower bound');
+        dataTable.addColumn({type: 'boolean', role: 'certainty', id: 'isStat'});   // false for dotted line, true for solid line
         type = 1;
     }
 
-    if(upperBoundId != -1 && g_GraphType == 1)
+    if(upperBoundID != -1)
     {
-        data.addColumn('number', 'upper bound');
-        data.addColumn({type: 'boolean', role: 'certainty'});
+        dataTable.addColumn('number', 'upper bound');
+        dataTable.addColumn({type: 'boolean', role: 'certainty', id: 'isStat'});
         type = type + 2;
     }    
 
     // filling the data table
-    for(i=0;i<(g_FirstYear-g_LastYear)+1;i++)
+    for(i=0;i<(g_LastYear-g_FirstYear)+1;i++)
     {   
         switch(type) 
         {
             case 0:
-                data.addRow([1980+i,Number(data[g_StatID][i]),true]);
+                dataTable.addRow([1980+i,Number(data[g_StatID][i]),true]);
                 break;
             case 1:
-                data.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[lowerBoundId][i]),false]);
+                dataTable.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[lowerBoundID][i]),false]);
                 break;
             case 2:
-                data.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[upperBoundId][i]),false]);
+                dataTable.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[upperBoundID][i]),false]);
                 break;
             case 3:
-                data.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[lowerBoundId][i]),false,Number(data[upperBoundId][i]),false]);
+                dataTable.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[lowerBoundID][i]),false,Number(data[upperBoundID][i]),false]);
                 break;
         }
     }
-    return data;
+
+    console.log(dataTable);
+
+    return dataTable;
 }
 
 // Author: Joshua Crafts
@@ -225,15 +231,15 @@ function GenerateSingleData(data)
 // Description: Prepares data in terms of the data type needed by graphing api
 // PRE: N/A
 // POST: N/A
-function GenerateCombinedData(data)
+function GenerateCombinedData()
 {
     // create array with indices for all years plus a header row
-    var dataArray = new Array(34);
+    var dataArray = new Array((g_LastYear-g_FirstYear)+2);
     var dataTable;
     var currentNode;
     var i, j;
     // fill array
-    for (i = 0; i < 34; i++)
+    for (i = 0; i < (g_LastYear-g_FirstYear)+2; i++)
     {
         // create array in each index the length of the data list, plus a column for year
         dataArray[i] = new Array(g_DataList.size + 1);
@@ -263,6 +269,7 @@ function GenerateCombinedData(data)
     console.log(dataArray);
     // turns 2D array into data table for graph, second argument denotes that 0 indices are headers, see documentation for more info
     dataTable = google.visualization.arrayToDataTable(dataArray, false);
+    console.log(dataTable);
     return dataTable;
 }
 

@@ -17,26 +17,25 @@
 function BuildTabs()
 {
     var i;
-    for(i=0;i<g_StatList.length;i++)
+    for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatList[i].indexOf("Bound")==-1)
+        var temp=g_StatList[g_ParsedStatList[1][i]];
+        var div=document.createElement("DIV");
+        div.id="id-"+temp;
+        div.setAttribute("stat",""+g_ParsedStatList[1][i]);
+        div.className="graph-tab";
+        div.setAttribute("onclick","ChooseTab(this)");
+        div.innerHTML=temp;
+        if (temp.indexOf("VACC") > -1)
+            div.innerHTML="Vaccinations";
+        document.getElementById("tabsDiv").appendChild(div);
+
+        BuildDiv(temp);
+
+        if(g_ParsedStatList[1][i]==g_StatID)
         {
-            var temp=g_StatList[i];
-            var div=document.createElement("DIV");
-            div.id="id-"+temp;
-            div.setAttribute("stat",""+i);
-            div.className="graph-tab";
-            div.setAttribute("onclick","ChooseTab(this)");
-            div.innerHTML=temp;
-            document.getElementById("tabsDiv").appendChild(div);
-
-            BuildDiv(temp);
-
-            if(i==g_StatID)
-            {
-                document.getElementById("id-"+temp+"-graphs").style.display="block";
-                div.className="graph-tab selected-tab";
-            }
+            document.getElementById("id-"+temp+"-graphs").style.display="block";
+            div.className="graph-tab selected-tab";
         }
     }
 }
@@ -73,9 +72,10 @@ function ChooseTab(element)
     element.className="graph-tab selected-tab";
     document.getElementById("id-"+g_StatList[g_StatID]+"-graphs").style.display="none";
     document.getElementById(element.id+"-graphs").style.display="block";
-    g_StatID=element.getAttribute("stat");
+    g_StatID=Number(element.getAttribute("stat"));
     
     GenerateSubDivs();
+    GenerateGraphs();
 }
 
 // Author: Emma Roudabush

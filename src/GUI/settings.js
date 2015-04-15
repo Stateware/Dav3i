@@ -8,17 +8,6 @@
 // Additional Notes:        N/A
 
 // Author: Emma Roudabush
-// Date Created: 3/26/2015
-// Last Modified: 3/26/2015 by Emma Roudabush
-// Description: Set g_YearStart and g_YearEnd
-// PRE:
-// POST: 
-function SetTimespan()
-{
-    
-}
-
-// Author: Emma Roudabush
 // Date Created: 4/14/2015
 // Last Modified: 4/14/2015 by Emma Roudabush
 // Description: To set g_GraphType
@@ -26,5 +15,7 @@ function SetTimespan()
 // POST: g_GraphType is set to the appropriate graph type
 function SetGraphType(type)
 {
-	g_GraphType = type;
+    g_GraphType = type;
+    if (g_DataList != undefined)
+        GenerateGraphs();
 }

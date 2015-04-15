@@ -76,6 +76,7 @@ function ModifyData(selectedRegions) {
                     g_DataList.add(newNode);
                     // draw graph with new node
                     GenerateSubDivs();
+                    GenerateGraphs();
                 });
             }
         }
@@ -94,6 +95,7 @@ function ModifyData(selectedRegions) {
             }
             // redraw graphs
             GenerateSubDivs();
+            GenerateGraphs();
         }
     }
     else

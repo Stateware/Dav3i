@@ -90,7 +90,6 @@ $(function(){
                     if(g_DataList.item(i) != null)
                         cc2_list[cc2_list.length] = g_DataList.item(i).cc2;
             }
-            GenerateGraphs();
         },
         // runs when region is hovered over
         onRegionTipShow: function(e, label, key){

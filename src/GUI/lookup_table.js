@@ -159,7 +159,6 @@ function GetCID(cc2)
     return cid; 
 }
 
-/*
 // Author: Kyle Nicholson
 // Date Created: 4/2/2015
 // Last Modified: 4/2/2015 by Kyle Nicholson
@@ -171,9 +170,11 @@ function GetCID(cc2)
 // to test make this happen on load! wee!
 function ParseStatList()
 {
-    g_ParsedStatList = [[1,0,0,0,0,0,0][12,0,1,2,3,5,8],[4,-1,-1,-1,-1,10,11],[6,-1,-1,-1,-1,9,7]];
-}*/
+    g_ParsedStatList = [[1,0,0,0,0,0,0],[12,0,1,2,3,5,8],[4,-1,-1,-1,-1,10,11],[6,-1,-1,-1,-1,9,7]];
+}
 
+
+/*
 // Author: Kyle Nicholson
 // Date Created: 4/2/2015
 // Last Modified: 4/14/2015 by Kyle Nicholson
@@ -232,8 +233,8 @@ function ParseStatList()
 	if(parsedStatList[3][0] == null)			// vanajam - instead of -1 you can test these places for null
 		console.log("No Upper Bound");
 	
-	parsedStatList = g_ParsedStatList;
+	g_ParsedStatList = parsedStatList;
 }
-
+*/
 
 
