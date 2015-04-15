@@ -159,25 +159,16 @@ function GetCID(cc2)
     return cid; 
 }
 
-// Author: Kyle Nicholson
-// Date Created: 4/2/2015
-// Last Modified: 4/2/2015 by Kyle Nicholson
-// Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
-// PRE: stat list is 
-// POST: 
-
-// console.log(name of variable) -> this shows the data inside a variable
-// to test make this happen on load! wee!
+/*
+// I'm keeping this here just in case something breaks TODO: Delete these comments when approval is granted
 function ParseStatList()
 {
     g_ParsedStatList = [[1,0,0,0,0,0,0],[12,0,1,2,3,5,8],[4,-1,-1,-1,-1,10,11],[6,-1,-1,-1,-1,9,7]];
-}
+}*/
 
-
-/*
 // Author: Kyle Nicholson
 // Date Created: 4/2/2015
-// Last Modified: 4/14/2015 by Kyle Nicholson
+// Last Modified: 4/15/2015 by Kyle Nicholson
 // Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
 function ParseStatList()
 {
@@ -190,8 +181,17 @@ function ParseStatList()
 	parsedStatList[3] = [];
 	
 	var index = 0;
-	var headStat = 1;
+	
+	// 'global' variables for index locations
 	var statType = 0;
+	var headStat = 1;
+	var assocStat1 = 2;
+	var assocStat2 = 3;
+	
+	// index variables for the vaccination stats
+	var vaccL1 = -1;
+	var vaccL2 = -1;
+	var vaccSIAHead = -1;
 	
 	// this loop searches through the g_statList and places only single stats
 	// in the parsedStatList in the appropriate slot
@@ -200,19 +200,35 @@ function ParseStatList()
 		var currentStat = sortedStatList[i];
 		var isAssociatedStat = false;
 		var isVacc = false;
-	
 		
+		if(currentStat.indexOf('VACCL') >= 0)
+		{
+			// prevent any vaccination bounds from being put as a head stat and mark vaccl indexes
+			// also sets location of associated vaccination stats
+			isAssociatedStat = true;
+			if(vaccL1 == -1)
+			{
+				vaccL1 = g_StatList.indexOf(currentStat);
+			}
+			else if(vaccL2 == -1)
+			{
+				vaccL2 = g_StatList.indexOf(currentStat); 
+			}
+		}
+		
+		// sets the assocaited stat indexes
 		if(i > 0 && currentStat.indexOf(sortedStatList[i-1]) == 0)
 		{
 			isAssociatedStat = true;
-			parsedStatList[2][index-1] = g_StatList.indexOf(currentStat);
+			parsedStatList[assocStat1][index-1] = g_StatList.indexOf(currentStat);
 		}
 		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) == 0)
 		{
 			isAssociatedStat = true;
-			parsedStatList[3][index-1] = g_StatList.indexOf(currentStat);
+			parsedStatList[assocStat2][index-1] = g_StatList.indexOf(currentStat);
 		}
 		
+		// sets the head stats
 		if(!isAssociatedStat)
 		{
 			parsedStatList[headStat][index] = g_StatList.indexOf(currentStat);
@@ -223,18 +239,31 @@ function ParseStatList()
 			}
 			else
 			{
-				parsedStatList[statType][index] = 1; 
+				parsedStatList[statType][index] = 1;
+				isSIAInList = true; 
+				vaccSIAHead = index;
 			}
 			index++;
 		}
 	}
-	console.log(parsedStatList);
 	
-	if(parsedStatList[3][0] == null)			// vanajam - instead of -1 you can test these places for null
-		console.log("No Upper Bound");
+	// set the associated stats for the SIA vaccination stat
+	parsedStatList[assocStat1][vaccSIAHead] = vaccL1;
+	parsedStatList[assocStat2][vaccSIAHead] = vaccL2;
 	
+	
+	// hacky way of filling in nulls with -1 TODO: figure out how to do this better
+	for(var i=0;i<index;i++)
+	{
+		for(var j=0;j<4;j++)
+		{
+			if(parsedStatList[j][i] == null)
+			{
+				parsedStatList[j][i] = -1;
+			}
+		}
+	}
 	g_ParsedStatList = parsedStatList;
 }
-*/
 
 
