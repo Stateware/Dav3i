@@ -178,7 +178,7 @@ function ParseStatList()
 // Date Created: 4/2/2015
 // Last Modified: 4/14/2015 by Kyle Nicholson
 // Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
-function parseStatList()
+function ParseStatList()
 {
 	var sortedStatList = g_StatList.slice();
 	sortedStatList.sort();
@@ -232,7 +232,7 @@ function parseStatList()
 	if(parsedStatList[3][0] == null)			// vanajam - instead of -1 you can test these places for null
 		console.log("No Upper Bound");
 	
-	parsedStatList = g_parsedStatList;
+	parsedStatList = g_ParsedStatList;
 }
 
 
