@@ -222,7 +222,7 @@ function parseStatList()
 			}
 			else
 			{
-				parsedStatList[satType][index] = 1; 
+				parsedStatList[statType][index] = 1; 
 			}
 			index++;
 		}
