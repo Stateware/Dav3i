@@ -7,6 +7,23 @@
 // Dependencies: client_parser.js, ..., [Google Charts API]
 // Additional Notes: N/A
 
+// Author: Arun Kumar
+// Date Created: 4/14/2015
+// Last Modified:
+// Description: Creates switch case to determine which function to call
+// PRE: N/A
+// POST: N/A
+function GenerateGraphs()
+{
+	var curr=g_DataList.start;
+	for(var i=1; i<g_DataList.size; i++)
+	{
+		GraphRegional("Region-graph-"+i, curr);
+		curr=curr.next;
+	}
+}
+
+
 // Author: Joshua Crafts
 // Date Created: 3/27/2015
 // Last Modified: 4/2/2015 by Nicholas Denaro
@@ -15,7 +32,7 @@
 // POST: N/A
 function GenerateGraph()
 {
-    var data = PrepareData();
+    var data = GenerateCombinedData();
     var options = {
 		vAxis: {
 			minValue: 0
@@ -40,65 +57,16 @@ function GenerateGraph()
             chart.draw(data, options);
         }
     }
-	
-}
-
-// Author: Joshua Crafts
-// Date Created: 3/27/2015
-// Last Modified: 3/27/2015 by Joshua Crafts
-// Description: Prepares data in terms of the data type needed by graphing api
-// PRE: N/A
-// POST: N/A
-function PrepareData()
-{
-    // create array with indices for all years plus a header row
-    var dataArray = new Array(34);
-    var dataTable;
-    var currentNode;
-    var i, j;
-    // fill array
-    for (i = 0; i < 34; i++)
-    {
-        // create array in each index the length of the data list, plus a column for year
-        dataArray[i] = new Array(g_DataList.size + 1);
-        currentNode = g_DataList.start;
-        // fill header row with region names
-        if (i == 0)
-        {
-            dataArray[i][0] = 'Region';
-            for (j = 1; j < g_DataList.size + 1; j++)
-            {
-                dataArray[i][j] = currentNode.name;
-                currentNode = currentNode.next;
-            }
-        }
-        // fill first column with years and the rest with data
-        else
-        {
-            dataArray[i][0] = i + 1979;
-            for (j = 1; j < g_DataList.size + 1; j++)
-            {
-                // data is set using currently selected stat ID
-                dataArray[i][j] = Number(currentNode.data[g_StatID][i-1]);
-                currentNode = currentNode.next;
-            }
-        }
-    }
-    console.log(dataArray);
-    // turns 2D array into data table for graph, second argument denotes that 0 indices are headers, see documentation for more info
-    dataTable = google.visualization.arrayToDataTable(dataArray, false);
-    return dataTable;
 }
 
 // Author: Arun Kumar
 // Date Created:4/2/2015
 // Last Modified: 4/14/2015
-// Description: Takes stat data and divID to generate a graph
-// using the Google Charts API
+// Description: Takes stat data and divID to generate a graph for a single country and stat
 // PRE:
 // POST:
-function GraphSingle(divID) {
-	var data= PrepareData();
+function GraphRegional(divID, node) {
+	var data= GenerateSingleData(node.data);
 	var options = {
       title: "Country's Record",
       seriesType: "line",
@@ -110,21 +78,20 @@ function GraphSingle(divID) {
     };
 	
     // instantiate and draw chart using prepared data
-    var tab=document.getElementById("divID").children[g_HMSID];
-    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"GenSingle"));
+    var chart = new google.visualization.LineChart(document.getElementById(divID));
     chart.draw(data, options);
 }
 
-// Author: Arun Kumar
-// Date Created:
+// Authors: Josh Crafts, Arun Kumar
+// Date Created: 3/27/2015
 // Last Modified: 4/14/2015
 // Description: Takes stat data from multiple countries and generates a graph
-// using data from multiple countries
+// using data from multiple countries combined
 // PRE:
 // POST:
-function GraphMultipleCountries(divID) {
-	var data= PrepareData();
-	var options = {
+function GraphCombined(divID) {
+	var data = GenerateCombinedDataData(data);
+    var options = {
 		vAxis: {
 			minValue: 0
 		},
@@ -137,46 +104,27 @@ function GraphMultipleCountries(divID) {
 		backgroundColor: '#EAE7C2'
 	};
     // instantiate and draw chart using prepared data
-    var tab=document.getElementById("divID").children[g_HMSID];
-    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"GenMultipleCount"));
-    chart.draw(data, options);
-}
-
-// Author: Arun Kumar
-// Date Created:
-// Last Modified: 4/14/2015
-// Description: Takes stat data from multiple countries and generates multiple graphs
-// depending on the countries selected
-// PRE:
-// POST:
-function GenerateMultipleGraphs(divID) {
-	var data= PrepareData();
-	var options = {
-		vAxis: {
-			minValue: 0
-		},
-		hAxis: {
-			format: '####'
-		},
-		legend: {
-			position: 'bottom'
-		},
-		backgroundColor: '#EAE7C2'
-	};
-    // instantiate and draw chart using prepared data
-    var tab=document.getElementById("divID").children[g_HMSID];
-    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"GenMultipleGraph"));
-    chart.draw(data, options);
+    //for(var stat in g_StatList)
+    {
+        //var tab=document.getElementById("tabsDiv").children[stat];
+        var tab=document.getElementById("id-"+g_StatList[g_StatID]);
+        if(tab!=undefined)
+        {
+            var chart = new google.visualization.LineChart(document.getElementById(tab.id+"-graphs"));//Rather than using the active tab, we need to find out which graph the data is for?
+            chart.draw(data, options);
+        }
+    }
 }
 
 // Author: Arun Kumar
 // Date Created: 4/14/2015
 // Last Modified:
-// Description: Takes stat data from multiple countries and generates a graph
-// using data from multiple countries
+// Description: Takes stat data from multiple countries and generates a graph for vaccinations
+// creating bars with mass vaccinations and line graphs with periodic vaccinations
 // PRE:
 // POST:
 function GraphVaccine(divID) {
+	var data = GenerateVaccineData();
 	var options = {
 		vAxis: {
 			minValue: 0
@@ -190,7 +138,7 @@ function GraphVaccine(divID) {
 		}
 	};
 	
-	var tab=document.getElementById("divID").children[g_HMSID];
+	var tab=document.getElementById("divID").children[g_StatID];
     var chart = new google.visualization.LineChart(document.getElementById(tab.id+"GenVaccineGraph"));
     chart.draw(data, options);
 }
@@ -233,7 +181,6 @@ function GenerateSingleData(data)
         }
     }
 
-
     if(lowerBoundID != -1 && g_GraphType == 1)
     {
         data.addColumn('number','lower bound');
@@ -267,8 +214,53 @@ function GenerateSingleData(data)
                 break;
         }
     }
+}
 
-
+// Author: Joshua Crafts
+// Date Created: 3/27/2015
+// Last Modified: 3/27/2015 by Joshua Crafts
+// Description: Prepares data in terms of the data type needed by graphing api
+// PRE: N/A
+// POST: N/A
+function GenerateCombinedData(data)
+{
+    // create array with indices for all years plus a header row
+    var dataArray = new Array(34);
+    var dataTable;
+    var currentNode;
+    var i, j;
+    // fill array
+    for (i = 0; i < 34; i++)
+    {
+        // create array in each index the length of the data list, plus a column for year
+        dataArray[i] = new Array(g_DataList.size + 1);
+        currentNode = g_DataList.start;
+        // fill header row with region names
+        if (i == 0)
+        {
+            dataArray[i][0] = 'Region';
+            for (j = 1; j < g_DataList.size + 1; j++)
+            {
+                dataArray[i][j] = currentNode.name;
+                currentNode = currentNode.next;
+            }
+        }
+        // fill first column with years and the rest with data
+        else
+        {
+            dataArray[i][0] = i + 1979;
+            for (j = 1; j < g_DataList.size + 1; j++)
+            {
+                // data is set using currently selected stat ID
+                dataArray[i][j] = Number(currentNode.data[g_StatID][i-1]);
+                currentNode = currentNode.next;
+            }
+        }
+    }
+    console.log(dataArray);
+    // turns 2D array into data table for graph, second argument denotes that 0 indices are headers, see documentation for more info
+    dataTable = google.visualization.arrayToDataTable(dataArray, false);
+    return dataTable;
 }
 
 // Author: Vanajam Soni
