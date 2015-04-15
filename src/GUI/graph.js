@@ -17,6 +17,14 @@ function GenerateGraphs()
 {
     var curr=g_DataList.start;
 
+    if (g_StatList[g_StatID].indexOf("VACC") > -1)
+    {
+        for(var i=1; i<=g_DataList.size; i++)
+        {
+            GraphVaccine("region-graphs-"+i, curr);
+            curr=curr.next;
+        }
+    }
     switch(g_GraphType)
     {
         case 0:    
@@ -29,42 +37,10 @@ function GenerateGraphs()
         case 1:
             GraphCombined("region-graphs-"+1);
             break;
-     }
-}
-
-
-// Author: Joshua Crafts
-// Date Created: 3/27/2015
-// Last Modified: 4/2/2015 by Nicholas Denaro
-// Description: Gets stat data and generates a graph (Google Charts API)
-// PRE: N/A
-// POST: N/A
-function GenerateGraph()
-{
-    var data = GenerateCombinedData();
-    var options = {
-		vAxis: {
-			minValue: 0
-		},
-		hAxis: {
-			format: '####'
-		},
-		legend: {
-			position: 'bottom'
-		},
-		backgroundColor: '#EAE7C2'
-	};
-    // instantiate and draw chart using prepared data
-    //for(var stat in g_StatList)
-    {
-        
-        //var tab=document.getElementById("tabsDiv").children[stat];
-        var tab=document.getElementById("id-"+g_StatList[g_StatID]);
-        if(tab!=undefined)
-        {
-            var chart = new google.visualization.LineChart(document.getElementById(tab.id+"-graphs"));//Rather than using the active tab, we need to find out which graph the data is for?
-            chart.draw(data, options);
-        }
+        case 2:
+            var sumNode = GenerateSumNode();
+            GraphRegional("region-graphs-"+1, sumNode);
+            break;
     }
 }
 
@@ -83,9 +59,9 @@ function GraphRegional(divID, node) {
         vAxis: {
             viewWindowMode:'explicit',
             viewWindow: {
-            min:0
-        }
-    },
+                min:0
+            }
+        },
         hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2'
     };
@@ -107,12 +83,16 @@ function GraphCombined(divID) {
     var options = {
         seriesType: "line",
         legend: {position: 'bottom'},
-        vAxis: {minValue: 0},
+        vAxis: {
+            viewWindowMode:'explicit',
+            viewWindow: {
+                min:0
+            }
+        },
         hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2'
     };
     // instantiate and draw chart using prepared data
-    //var tab=document.getElementById("tabsDiv").children[stat];
     var chart = new google.visualization.LineChart(document.getElementById(divID));
     chart.draw(data, options);
 }
@@ -124,23 +104,24 @@ function GraphCombined(divID) {
 // creating bars with mass vaccinations and line graphs with periodic vaccinations
 // PRE:
 // POST:
-function GraphVaccine(divID) {
-	var data = GenerateVaccineData();
-	var options = {
-		vAxis: {
-			minValue: 0
-		},
-		hAxis: {
-			title: "Years", format: '####'
-		},
-		seriesTypes: "bars",
-		series: {
-			0: {type: "line"}
-		}
-	};
-	
-	var tab=document.getElementById("divID").children[g_StatID];
-    var chart = new google.visualization.LineChart(document.getElementById(tab.id+"GenVaccineGraph"));
+function GraphVaccine(divID, node) {
+    var data = GenerateVaccineData(node.data);
+    var options = {
+        vAxis: {
+            viewWindowMode:'explicit',
+            viewWindow: {
+                min:0
+            }
+        },
+        hAxis: {title: 'Year', format: '####'},
+        backgroundColor: '#EAE7C2',
+        seriesType: "bars",
+        series: {
+            0: {type: "line"}, 1: {type: "line"}
+        }
+    };
+
+    var chart = new google.visualization.ComboChart(document.getElementById(divID));
     chart.draw(data, options);
 }
 
@@ -181,10 +162,6 @@ function GenerateSingleData(data)
             upperBoundID = g_ParsedStatList[3][i];   
         }
     }
-
-    console.log(g_StatID);
-    console.log(lowerBoundID);
-    console.log(upperBoundID);
 
     if(lowerBoundID != -1)
     {
@@ -283,26 +260,58 @@ function GenerateCombinedData()
 // POST: N/A
 function GenerateSumNode(){
     
-    var data = new Array(10);   // data for the new node
+    var data = new Array(g_StatList.length);   // data for the new node
 
     var i,j;
-    var currentNode;    // list iterator
+    var currentNode = g_DataList.start;    // list iterator
     
-    for(i=0;i<10;i++)   // for each stat
-    {
-        data[i] = new Array(33);    //  create array to contain data for all years
-        for(j=0;j<33;j++)   // for each year
-        {   
-            currentNode = g_DataList.start;
-            for(k=0;k<g_DataList.size;k++)  // for each year, go through all nodes in data list
-            {
-                if(currentNode.data[i][j] != -1)    // checking for missing data
-                        data[i][j] += currentNode.data[i][j];
+    // get the associated stats from parsed stat list
+    var ass1ID = -1;
+    var ass2ID = -1;
 
-                currentNode = currentNode.next;
-            }
+    for(i=0;i<g_ParsedStatList[1].length;i++)
+    {
+        if(g_StatID == g_ParsedStatList[1][i])
+        {
+            ass1ID = g_ParsedStatList[2][i];
+            ass2ID = g_ParsedStatList[3][i];   
         }
     }
+
+    console.log(g_StatID);
+    console.log(ass1ID);
+    console.log(ass2ID);
+
+    data[g_StatID] = new Array((g_LastYear-g_FirstYear)+1);
+    if (ass1ID > -1)
+        data[ass1ID] = new Array((g_LastYear-g_FirstYear)+1);
+    if (ass2ID > -1)
+        data[ass2ID] = new Array((g_LastYear-g_FirstYear)+1);
+
+    for (j = 0; j < (g_LastYear-g_FirstYear)+1; j++)
+    {
+        data[g_StatID][j] = 0;
+        if (ass1ID > -1)
+            data[ass1ID][j] = 0;
+        if (ass2ID > -1)
+            data[ass2ID][j] = 0;
+    }
+
+    for (i = 0; i < g_DataList.size; i++)
+    {
+        for (j = 0; j < (g_LastYear-g_FirstYear)+1; j++)
+        {
+            if (currentNode.data[g_StatID][j] > 0)
+                data[g_StatID][j] += currentNode.data[g_StatID][j];
+            if (ass1ID > -1 && currentNode.data[ass1ID][j] > 0)
+                data[ass1ID][j] += currentNode.data[ass1ID][j];
+            if (ass2ID > -1 && currentNode.data[ass2ID][j] > 0)
+                data[ass2ID][j] += currentNode.data[ass2ID][j];
+        }
+        currentNode = currentNode.next;
+    }
+
+    console.log(data);
     
     var newNode = new t_AsdsNode(-1,"SUM","SUM",data);
 
@@ -319,25 +328,36 @@ function GenerateSumNode(){
 // POST: N/A
 function GenerateVaccineData(data)
 {
-    var data = new google.visualization.DataTable();
-    data.addColumn('number','year');
-    data.addColumn('number', 'MC1');
-    data.addColumn('number', 'MC2');
-    data.addColumn('number', 'SIA');
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn('number','year');
+    dataTable.addColumn('number', 'MCV1');
+    dataTable.addColumn('number', 'MCV2');
+    dataTable.addColumn('number', 'SIA');
     
     var mcv1ID, mcv2ID,siaID;
 
-    mcv1ID = g_StatID;
-    mcv2ID = g_ParsedStatList[2][0];
-    siaID = g_ParsedStatList[3][0];
-    // use parsed stat list to mcv2 and sia ids
+    siaID = g_StatID;
+
+    for(i=0;i<g_ParsedStatList[1].length;i++)
+    {
+        if(g_StatID == g_ParsedStatList[1][i])
+        {
+            mcv1ID = g_ParsedStatList[2][i];
+            mcv2ID = g_ParsedStatList[3][i];   
+        }
+    }
+    // use parsed stat list to find mcv1 and mcv2 ids
+
+    console.log(siaID);
+    console.log(mcv1ID);
+    console.log(mcv2ID);
 
     var i,j;
-    for(i=0;i<33;i++)
+    for(i=0;i<(g_LastYear-g_FirstYear)+1;i++)
     {
-        data.addRow([1980+i,parseFloat(data[mcv1ID][i])*100,parseFloat(data[mcv2ID][i])*100,parseFloat(data[siaID][i])*100]);
+        dataTable.addRow([1980+i,parseFloat(data[mcv1ID][i])*100,parseFloat(data[mcv2ID][i])*100,parseFloat(data[siaID][i])*100]);
     }
     
-    return data;   
+    return dataTable;   
 }
 
