@@ -216,6 +216,7 @@ function GenerateSingleData(data)
                 break;
         }
     }
+    return data;
 }
 
 // Author: Joshua Crafts
