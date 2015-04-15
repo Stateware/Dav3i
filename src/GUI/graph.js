@@ -201,7 +201,9 @@ function GenerateSingleData(data)
     }    
 
     // filling the data table
-    for(i=0;i<(g_LastYear-g_FirstYear)+1;i++)
+    if (type == 0)
+        dataTable.addRow([1980,Number(data[g_StatID][i]),true]);
+    for(i=1;i<(g_LastYear-g_FirstYear)+1;i++)
     {   
         switch(type) 
         {
