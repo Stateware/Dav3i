@@ -159,7 +159,7 @@ function GetCID(cc2)
     return cid; 
 }
 
-
+/*
 // Author: Kyle Nicholson
 // Date Created: 4/2/2015
 // Last Modified: 4/2/2015 by Kyle Nicholson
@@ -171,53 +171,69 @@ function GetCID(cc2)
 // to test make this happen on load! wee!
 function ParseStatList()
 {
-
     g_ParsedStatList = [[1,0,0,0,0,0,0][12,0,1,2,3,5,8],[4,-1,-1,-1,-1,10,11],[6,-1,-1,-1,-1,9,7]];
+}*/
 
-    /*
-    var sortedStatList = g_StatList;
-    sortedStatList.sort();                  // sort the stat list
-    var parsedStatList;                     // 2d array
-    var index = 0;
-    
-    // this loop searches through the g_statList and places only single stats
-    // in the parsedStatList in the appropriate slot
-    for(var i = 0; i<sortedStatList.length; i++)
-    {
-        var currentStat = sortedStatList[i];
-        var isAssociatedStat = false;
-        var headStat = 1;
-        
-        if(i > 0 && currentStat.indexOf(SortedStatList[i-1]) >= 0)
-        {
-            isAssociatedStat = true;
-        }
-        else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) >= 0)
-        {
-            isAssociatedStat = true;
-        }
-        
-        if(!isAssociatedStat)
-        {
-            parsedStatList[index++][headStat] = g_StatList.indexOf(currentStat);
-        }
-    }
-    
-    // goes through the head stats of the parsedStatList finds the associated stats and places their 
-    // real indexes (from the g_statList) into the parsedStatList in the appropriate locations
-    for(var i = 0; i<parsedStatList.length; i++)
-    {
-        var associatedStat = 2;
-        var headIndex = parsedStatList[i][3];   
-        if(sortedStatList[headIndex+1] != null && sortedStatList[headIndex+1].indexOf(sortedStatList[headIndex]) >= 0)
-        {
-            parsedArray[i][associatedStat++] = g_statList.indexOf(sortedStatList[headIndex+1]);
-        }
-        if(sortedStatList[headIndex+2] != null && sortedStatList[headIndex+2].indexOf(sortedStatList[headIndex]) >= 0)
-        {
-            parsedArray[i][associatedStat] = g_statList.indexOf(sortedStatList[headIndex+2]);
-        }
-    }   */
+// Author: Kyle Nicholson
+// Date Created: 4/2/2015
+// Last Modified: 4/14/2015 by Kyle Nicholson
+// Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
+function parseStatList()
+{
+	var sortedStatList = g_StatList.slice();
+	sortedStatList.sort();
+	var parsedStatList = [];						// 2d array
+	parsedStatList[0] = [];
+	parsedStatList[1] = [];
+	parsedStatList[2] = [];
+	parsedStatList[3] = [];
+	
+	var index = 0;
+	var headStat = 1;
+	var statType = 0;
+	
+	// this loop searches through the g_statList and places only single stats
+	// in the parsedStatList in the appropriate slot
+	for(var i = 0; i<sortedStatList.length; i++)
+	{
+		var currentStat = sortedStatList[i];
+		var isAssociatedStat = false;
+		var isVacc = false;
+	
+		
+		if(i > 0 && currentStat.indexOf(sortedStatList[i-1]) == 0)
+		{
+			isAssociatedStat = true;
+			parsedStatList[2][index-1] = g_StatList.indexOf(currentStat);
+		}
+		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) == 0)
+		{
+			isAssociatedStat = true;
+			parsedStatList[3][index-1] = g_StatList.indexOf(currentStat);
+		}
+		
+		if(!isAssociatedStat)
+		{
+			parsedStatList[headStat][index] = g_StatList.indexOf(currentStat);
+			// if the current stat doesn't contain vacc then set statType to 0
+			if(currentStat.indexOf('VACCB') < 0)
+			{
+				parsedStatList[statType][index] = 0;
+			}
+			else
+			{
+				parsedStatList[satType][index] = 1; 
+			}
+			index++;
+		}
+	}
+	console.log(parsedStatList);
+	
+	if(parsedStatList[3][0] == null)			// vanajam - instead of -1 you can test these places for null
+		console.log("No Upper Bound");
+	
+	parsedStatList = g_parsedStatList;
 }
+
 
 
