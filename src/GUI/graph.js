@@ -304,12 +304,12 @@ function GenerateSumNode(){
     {
         for (j = 0; j < (g_LastYear-g_FirstYear)+1; j++)
         {
-            if (currentNode.data[g_StatID][j] > 0)
-                data[g_StatID][j] += currentNode.data[g_StatID][j];
-            if (ass1ID > -1 && currentNode.data[ass1ID][j] > 0)
-                data[ass1ID][j] += currentNode.data[ass1ID][j];
-            if (ass2ID > -1 && currentNode.data[ass2ID][j] > 0)
-                data[ass2ID][j] += currentNode.data[ass2ID][j];
+            if (Number(currentNode.data[g_StatID][j]) > 0)
+                data[g_StatID][j] += Number(currentNode.data[g_StatID][j]);
+            if (ass1ID > -1 && Number(currentNode.data[ass1ID][j]) > 0)
+                data[ass1ID][j] += Number(currentNode.data[ass1ID][j]);
+            if (ass2ID > -1 && Number(currentNode.data[ass2ID][j]) > 0)
+                data[ass2ID][j] += Number(currentNode.data[ass2ID][j]);
         }
         currentNode = currentNode.next;
     }
