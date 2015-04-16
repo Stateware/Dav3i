@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.Arrays;
 
 
 public class TestingMain {
@@ -9,13 +10,54 @@ public class TestingMain {
 	public static void main(String []args)
 	{
 		//init
-		database = new JDBC();
+		database = new JDBC("testing","chocolatenut9");
 		php = new JUNIT();
+
+
+		try {
+			boolean b = doesParamBehave(new String[]{"?statID=a","?statID=BASDFA","?statID=3","?statID=11","?statID=12344444","?statID=193","?statID=lmao","?statID=gg","?statID=ez","?statID=ok"},
+										 new String[]{"D","D","W","W","D","D","D","D","D","D"},"byStat",false);
+			System.out.println(b);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static String[] doesParamBehave(String[] tests, String phpDocument, boolean param) throws IOException
+	{
+		String[] retArr = new String[tests.length];
+		
+		//if it works, put in a w, if it doesnt, put in a D
+		for(int i = 0; i<tests.length; i++)
+		{
+			if(php.paramWorks(tests[i],phpDocument,param)==true)
+				retArr[i] = "W";
+			else
+				retArr[i] = "D";
+		}
 		
 		
-		for(int i = 0; i < 193; i++)
-			if(compareByCountry(i) != true)
-				System.out.println("ABORT");
+		return retArr;
+	}
+	
+	public static boolean doesParamBehave(String[] tests, String[] results, String phpDocument, boolean param) throws IOException
+	{
+		String[] retArr = new String[tests.length];
+		
+		
+		for(int i = 0; i<tests.length; i++)
+		{
+			if(php.paramWorks(tests[i],phpDocument,param)==true)
+				retArr[i] = "W";
+			else
+				retArr[i] = "D";
+		}
+		
+		if(Arrays.equals((Object[])retArr,(Object[])results))
+			return true;
+		
+		return false;
 	}
 	
 	public static boolean compareByStat(int statID)

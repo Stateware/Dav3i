@@ -8,15 +8,11 @@ public class JDBC {
 	// JDBC Driver name and database URL
 	final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	final String DB_URL = "jdbc:mysql://usve74985.serverprofi24.com:3306/davvvi";
-	
-	//Database creds
-	final String USER = "testing";
-	final String PASS = "chocolatenut9";
-	
+		
 	Statement stmt;
 	Connection conn;
 	
-	public JDBC()
+	public JDBC(String user,String pass)
 	{		
 		try{
 			//init vars
@@ -28,8 +24,8 @@ public class JDBC {
 			
 			
 			//open a connection
-			System.out.println("connection plz: ");
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			conn = DriverManager.getConnection(DB_URL, user, pass);
+			System.out.println("Database connection achieved.");
 			
 			//init statement
 			stmt = conn.createStatement();

@@ -26,6 +26,8 @@ public class JUNIT {
 	final String descriptorURL = "http://usve74985.serverprofi24.com/API/descriptor.php";
 	final String byCountryURL = "http://usve74985.serverprofi24.com/API/by_country.php?countryIDs=";
 	final  String byStatURL = "http://usve74985.serverprofi24.com/API/by_stat.php?statID=";
+	final String byCountryURLNoParam = "http://usve74985.serverprofi24.com/API/by_country.php";
+	final  String byStatURLNoParam = "http://usve74985.serverprofi24.com/API/by_stat.php";
 
 	static int numStats,numCountries,DEATHS,CASES,BIRTHS,POPULATION,MCV1,MCV2,
 				ESTIMATED_MORTALITY,ESTIMATED_CASES_UB,ESTIMATED_CASES,
@@ -115,6 +117,47 @@ public class JUNIT {
 				+ "Printed Error: " + stats.getString("error"));
 	
 	}
+	
+	public boolean paramWorks(String ID, String phpDocument, boolean param) throws IOException
+	{
+		Document doc;
+		if(param)
+		{
+			switch(phpDocument){
+			case "byCountry":	doc = Jsoup.connect(byCountryURL + ID).get();
+								break;
+			case "byStat":		doc = Jsoup.connect(byStatURL + ID).get();
+								break;
+			default:			doc = null;
+								break;
+			}
+		}
+		else//no param
+		{
+			switch(phpDocument){
+			case "byCountry":	doc = Jsoup.connect(byCountryURLNoParam + ID).get();
+								break;
+			case "byStat":		doc = Jsoup.connect(byStatURLNoParam + ID).get();
+								break;
+			default:			doc = null;
+								break;
+			}
+		}
+		
+		String bodyText = doc.body().text();
+
+		//convert the entire text into JSON
+		JSONObject jsonText = new JSONObject(bodyText);
+		
+		if(jsonText.has("error"))
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}		
 	
 	public double[] getStatArrays(String statID) throws IOException,ThePHPPageGaveMeAnErrorException
 	{
