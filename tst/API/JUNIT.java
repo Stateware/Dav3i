@@ -23,58 +23,30 @@ import org.json.*;
 public class JUNIT {
 
 	
-	final static String descriptorURL = "http://usve74985.serverprofi24.com/API/descriptor.php";
-	final static String byCountryURL = "http://usve74985.serverprofi24.com/API/by_country.php?countryIDs=";
-	final static String byStatURL = "http://usve74985.serverprofi24.com/API/by_stat.php?statID=";
+	final String descriptorURL = "http://usve74985.serverprofi24.com/API/descriptor.php";
+	final String byCountryURL = "http://usve74985.serverprofi24.com/API/by_country.php?countryIDs=";
+	final  String byStatURL = "http://usve74985.serverprofi24.com/API/by_stat.php?statID=";
 
 	static int numStats,numCountries,DEATHS,CASES,BIRTHS,POPULATION,MCV1,MCV2,
 				ESTIMATED_MORTALITY,ESTIMATED_CASES_UB,ESTIMATED_CASES,
 				ESTIMATED_MORTALITY_UB, ESTIMATED_MORTALITY_LB, ESTIMATED_CASES_LB;
 								
 	
-	@SuppressWarnings("unused")
-	public static void main(String args[]) throws IOException
-	{
-		String baseURL = "http://usve74985.serverprofi24.com/API/";
-		String byStat = "by_stat.php?statID=";
-		String byCountry = "by_country.php?countryIDs=";
-		String descriptor = "descriptor.php";
-		
-		//set the number of countries and stats into their respective globals 
-		setGlobals();
-		
-		
-		//test the getCountryArrays method
-		try
-		{
-			int param1 = 3;
-			JSONArray[] countryStats = getCountryArrays("0");	
-			printArray(countryStats);
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
-		}
-		
-		//test the getStatsArray method
-		try
-		{
-			//double[] statStats = getStatArrays(9 + "");
-			
-			//for(double s : statStats)
-				//System.out.println(s);
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
-		}
 	
-		
+	public JUNIT()
+	{
+		//set the number of countries and stats into their respective globals 
+		try {
+			setGlobals();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-
+	
 	
 	//Sets numStats and numCountries into the globals from the descriptorURL
-	public static void setGlobals() throws IOException
+	public void setGlobals() throws IOException
 	{		
 		//connect to descriptor page and get the text
 		Document desc = Jsoup.connect(descriptorURL).get();
@@ -92,8 +64,8 @@ public class JUNIT {
 		for(int i = 0; i < statsArray.length(); i++)
 			statsAL.add((String)statsArray.get(i));
 		
-		
-		BIRTHS= statsAL.indexOf("Births");
+
+		BIRTHS= statsAL.indexOf("Births") ;
 		DEATHS= statsAL.indexOf("Deaths");
 		CASES= statsAL.indexOf("Cases");
 		POPULATION= statsAL.indexOf("Population");
@@ -117,7 +89,7 @@ public class JUNIT {
 		numCountries = countriesArray.length();		
 	}
 	
-	public static JSONArray[] getCountryArrays(String countryID) throws IOException, ThePHPPageGaveMeAnErrorException
+	public double[][] getCountryArrays(String countryID) throws IOException, ThePHPPageGaveMeAnErrorException
 	{
 		Document doc = Jsoup.connect(byCountryURL + countryID).get();
 		String bodyText = doc.body().text();
@@ -127,8 +99,6 @@ public class JUNIT {
 		
 		if(!stats.has("error"))
 		{
-
-			//System.out.println(stats);
 			//Step into the country keys value
 			//JSONObject countryJSON = stats.getJSONObject(countryID);
 			JSONArray countryJSONArray = stats.getJSONArray(countryID);
@@ -138,7 +108,7 @@ public class JUNIT {
 			for(int i = 0; i < jray.length;i++)
 				jray[i] = (JSONArray) countryJSONArray.get(i);
 			
-			return jray;	
+			return convertCountryArrays(jray);	
 		}
 		//elseif(country.has("error")
 		throw new ThePHPPageGaveMeAnErrorException("Error calling getCountryArrays(" + countryID + ")\n"
@@ -146,7 +116,7 @@ public class JUNIT {
 	
 	}
 	
-	public static double[] getStatArrays(String statID) throws IOException,ThePHPPageGaveMeAnErrorException
+	public double[] getStatArrays(String statID) throws IOException,ThePHPPageGaveMeAnErrorException
 	{
 		//Connect to the byStat page and grab its text
 		Document doc = Jsoup.connect(byStatURL + statID).get();
@@ -184,10 +154,21 @@ public class JUNIT {
 				+ "Printed Error: " + countries.getString("error"));
 	}
 	
-	public static void printArray(JSONArray[] ar)
+	public void printArray(JSONArray[] ar)
 	{
 		for(int i = 0; i < ar.length; i++)
 			System.out.println("Index " + i + ": " + ar[i]);
 	}
 	
+	//convert the JSONArray into a double[][] for comparative purposes
+	public double[][] convertCountryArrays(JSONArray[] j)
+	{
+		double[][] retArr = new double[j.length][j[1].length()];
+		
+		for(int i = 0; i < j.length; i++)
+			for(int k = 0; k < j[1].length(); k++)
+				retArr[i][k] = j[i].getDouble(k);
+		
+		return retArr;
+	}
 }

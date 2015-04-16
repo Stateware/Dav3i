@@ -6,21 +6,22 @@ import java.util.ArrayList;
 public class JDBC {
 
 	// JDBC Driver name and database URL
-	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://usve74985.serverprofi24.com:3306/davvvi";
+	final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+	final String DB_URL = "jdbc:mysql://usve74985.serverprofi24.com:3306/davvvi";
 	
 	//Database creds
-	static final String USER = "hi";
-	static final String PASS = "hi";
+	final String USER = "testing";
+	final String PASS = "chocolatenut9";
 	
-	static Statement stmt;
+	Statement stmt;
+	Connection conn;
 	
-	public static void main(String[] args)
-	{
-		Connection conn = null;
-		stmt = null;
-		
+	public JDBC()
+	{		
 		try{
+			//init vars
+			conn = null;
+			stmt = null;
 			
 			//register JDBC driver
 			Class.forName(JDBC_DRIVER);
@@ -30,32 +31,32 @@ public class JDBC {
 			System.out.println("connection plz: ");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			
-			
-			//Let's execute a query!!
+			//init statement
 			stmt = conn.createStatement();
-			String query="SELECT * FROM meta_stats";
 			
-			//ResultSet rs = stmt.executeQuery(query);
-			
-			//double[] d = getStat(""+10);
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	/*public static void main(String[] args)	
+	{
+		
+	
 
-			double[][] d = getCountry(""+1);
+			double[][] d = getCountryArrays(""+1);
 			for(double[] dd:d)
 			{
 				for (double ddd:dd) {
 					System.out.print(ddd + " ");
 				}
 				System.out.println();
-			}//*/
-			
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
+			}//
+		
+	}*/
 	
-	public static int getNumberOfStats() {
+	private int getNumberOfStats() {
 		int size = -1;
 		String query = "SELECT COUNT(table_id) FROM meta_stats";
 		ResultSet rs;
@@ -70,7 +71,7 @@ public class JDBC {
 		return size;
 	}
 	
-	public static int getNumberOfYears() {
+	private int getNumberOfYears() {
 		int size = 0;
 		String query = "DESCRIBE data_births";
 		ResultSet rs;
@@ -86,7 +87,22 @@ public class JDBC {
 		return size - 1;
 	}
 	
-	public static String getStatTableName(String statID)
+	private int getNumberOfCountries() {
+		int size = -1;
+		String query = "SELECT COUNT(country_id) FROM meta_countries";
+		ResultSet rs;
+		try {
+			rs = stmt.executeQuery(query);
+			rs.next();
+			size = rs.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return size;
+	}
+	
+	private String getStatTableName(String statID)
 	{
 		String query = "SELECT table_name FROM meta_stats WHERE table_id=" + statID;
 		String retStr = "";
@@ -99,7 +115,6 @@ public class JDBC {
 			retStr = rs.getString(1);
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -109,10 +124,10 @@ public class JDBC {
 		
 	}
 	
-	public static double[] getStat(String statID)
+	public double[] getStatArrays(String statID)
 	{
 		//Get size of query return array - e.g. numcountries
-		int size = getNumberOfStats();
+		int size = getNumberOfCountries();
 		String tableName = getStatTableName(statID);
 		String query;
 		
@@ -137,8 +152,7 @@ public class JDBC {
 		return retArr;
 	}
 	
-	
-	public static double[][] getCountry(String countryID) {
+	public double[][] getCountryArrays(String countryID) {
 		double[][] returnValue = new double[getNumberOfStats()][getNumberOfYears()];
 		
 		for (int i = 0; i < returnValue.length; i++) {
