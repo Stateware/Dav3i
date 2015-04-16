@@ -2,8 +2,8 @@
 // Description:             This module contains the code needed to dynamically create modules on the client
 // Date Created:            3/26/2015
 // Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
-// Date Last Modified:      4/14/2015
-// Last Modified By:        Emma Roudabush
+// Date Last Modified:      4/16/2015
+// Last Modified By:        Paul Jang
 // Dependencies:            index.html, lookup_table.js, data.js
 // Additional Notes:        N/A
 
@@ -67,7 +67,7 @@ function ChooseTab(element)
     var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
     document.getElementById(parentTabDivName).innerHTML = "";
     var prevTab=document.getElementById("id-"+g_StatList[g_StatID]);
-	// sets class names of tabs
+    // sets class names of tabs
     prevTab.className="graph-tab";
     element.className="graph-tab selected-tab";
     document.getElementById("id-"+g_StatList[g_StatID]+"-graphs").style.display="none";
@@ -113,20 +113,29 @@ function CloseSettings()
 
 // Author: Emma Roudabush
 // Date Created: 3/5/2015
-// Last Modified: 4/1/2015 by Nicholas Denaro
+// Last Modified: 4/16/2015 by Paul Jang
 // Description: Expands the control panel
 // PRE: N/A
 // POST: Control panel is expanded and black mask is in place behind
 function Expand()
 {
-	$(".control-panel").animate({width:"97.5%"}, 500);
-	$("#expand").attr("onclick","Shrink()");
-	$("#expand").attr("src","res/arrow_right.png");
-	$("#graph-tab-tooltip").fadeOut(400);
-	$(".expand-black").fadeIn(400);
-	setTimeout(function () {
-		GenerateSubDivs();
-	}, 500);
+    $(".control-panel").animate({width:"97.5%"}, 500);
+    $("#expand").attr("onclick","Shrink()");
+    $("#expand").attr("src","res/arrow_right.png");
+    $("#graph-tab-tooltip").fadeOut(400);
+    $(".expand-black").fadeIn(400);
+    setTimeout(function () 
+    {
+        GenerateSubDivs();
+        // if single graph, graph is expanded to whole section
+        if((g_GraphType == 1) || (g_GraphType == 2))
+        {
+            document.getElementById("region-graphs-1").style["width"] = "100%";
+            document.getElementById("region-graphs-1").style["height"] = "100%";
+        }
+        GenerateGraphs();
+        
+    }, 500);
 }
 
 // Author: Emma Roudabush
@@ -137,14 +146,16 @@ function Expand()
 // POST: Control panel shrinks back to original size and black mask is gone
 function Shrink()
 {
-	$(".control-panel").animate({width:"25%"}, 500);
-	$("#expand").attr("onclick","Expand()");
-	$("#expand").attr("src","res/arrow_left.png");
-	$("#graph-tab-tooltip").fadeIn(400);
-	$(".expand-black").fadeOut(400);
-	setTimeout(function () {
-		GenerateSubDivs();
-	}, 500);
+    $(".control-panel").animate({width:"25%"}, 500);
+    $("#expand").attr("onclick","Expand()");
+    $("#expand").attr("src","res/arrow_left.png");
+    $("#graph-tab-tooltip").fadeIn(400);
+    $(".expand-black").fadeOut(400);
+    setTimeout(function ()
+    {
+        GenerateSubDivs();
+        GenerateGraphs();
+    }, 500);
 }
 
 // Author: Paul Jang
@@ -156,26 +167,38 @@ function Shrink()
 //       Correct graphs are filled in the appropriate divs
 function GenerateSubDivs()
 {
-    var size = g_DataList.size;
-    var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
-    var currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
-    var children = document.getElementById(parentTabDivName).childNodes;
-    var newNumDivs = size - currentNumDivs;
-    // if we are adding divs
-    if(newNumDivs > 0)
+    // only if there are countries in the data list
+    if(g_DataList != undefined)
     {
-        for(var i = 1; i<=newNumDivs; i++)
-            CreateSubDiv("region-graphs-"+(currentNumDivs+i),parentTabDivName);
+        var size = g_DataList.size;
+        var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+        var currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
+        var children = document.getElementById(parentTabDivName).childNodes;
+        var newNumDivs = size - currentNumDivs
+        // if we only need one graph for either combined lines or summation of lines
+        if((g_GraphType == 1) || (g_GraphType == 2))
+        {
+            document.getElementById(parentTabDivName).innerHTML = "";
+            CreateSubDiv("region-graphs-1",parentTabDivName);
+        }
+        // if we are adding divs
+        else if(newNumDivs > 0)
+        {
+            for(var i = 1; i<=newNumDivs; i++)
+                CreateSubDiv("region-graphs-"+(currentNumDivs+i),parentTabDivName);
+        }
+        // if we are removing divs
+        else if(newNumDivs < 0)
+        {
+            // delete all the elements and remake all the divs
+            newNumDivs *= (-1);
+            document.getElementById(parentTabDivName).innerHTML = "";
+            for(var i=1; i<=(currentNumDivs - newNumDivs); i++)
+                CreateSubDiv("region-graphs-"+i,parentTabDivName);
+        }
+        else
+            return;
     }
-    // if we are removing divs
-    else if(newNumDivs < 0)
-    {
-        // delete all the elements and remake all the divs
-        newNumDivs *= (-1);
-        document.getElementById(parentTabDivName).innerHTML = "";
-        for(var i=1; i<=(currentNumDivs - newNumDivs); i++)
-            CreateSubDiv("region-graphs-"+i,parentTabDivName);
-    }   
 }
 
 // Author: Paul Jang

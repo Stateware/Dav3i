@@ -2,8 +2,8 @@
 // Description:             Module to modify and work with settings
 // Date Created:            3/26/2015
 // Contributors:            Emma Roudabush, Paul Jang
-// Date Last Modified:      4/14/2015
-// Last Modified By:        Emma Roudabush
+// Date Last Modified:      4/16/2015
+// Last Modified By:        Paul Jang
 // Dependencies:            data.js, index.html
 // Additional Notes:        N/A
 
@@ -17,5 +17,9 @@ function SetGraphType(type)
 {
     g_GraphType = type;
     if (g_DataList != undefined)
+    {
+        // redraw divs and graphs
+        GenerateSubDivs();
         GenerateGraphs();
+    }
 }
