@@ -18,7 +18,9 @@ public class TestingMain {
 		php = new JUNIT();
 
 		String[] s = parseFileIntoStringArray("testcases.txt");
-		
+		String[] ss = parseFileIntoStringArray("results.txt");
+		boolean r = doesParamBehave(s,ss, "byCountry", true);
+		System.out.println(r);
 		
 	}
 	
