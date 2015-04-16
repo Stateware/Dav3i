@@ -14,7 +14,7 @@ public class TestingMain {
 	public static void main(String []args) throws IOException
 	{
 		//init
-		database = new JDBC("testing","chocolatenut9");
+		database = new JDBC("OMITTED","OMITTED");
 		php = new JUNIT();
 
 		String[] s = parseFileIntoStringArray("testcases.txt");
@@ -42,13 +42,13 @@ public class TestingMain {
 	{
 		String[] retArr = new String[tests.length];
 		
-		//if it works, put in a w, if it doesnt, put in a D
+		//if it works, put in a p, if it doesnt, put in a f
 		for(int i = 0; i<tests.length; i++)
 		{
 			if(php.paramWorks(tests[i],phpDocument,param)==true)
-				retArr[i] = "W";
+				retArr[i] = "P";
 			else
-				retArr[i] = "D";
+				retArr[i] = "F";
 		}
 		
 		
@@ -63,9 +63,9 @@ public class TestingMain {
 		for(int i = 0; i<tests.length; i++)
 		{
 			if(php.paramWorks(tests[i],phpDocument,param)==true)
-				retArr[i] = "W";
+				retArr[i] = "P";
 			else
-				retArr[i] = "D";
+				retArr[i] = "F";
 		}
 		
 		if(Arrays.equals((Object[])retArr,(Object[])results))
@@ -80,7 +80,6 @@ public class TestingMain {
 		try {
 			 PHP = php.getStatArrays("" + statID);
 		} catch (IOException | ThePHPPageGaveMeAnErrorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//+1 because of the indexing of MySQL
@@ -100,7 +99,6 @@ public class TestingMain {
 		try {
 			 PHP = php.getCountryArrays("" + countryID);
 		} catch (IOException | ThePHPPageGaveMeAnErrorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		double[][] DB = database.getCountryArrays("" + (countryID+1));
