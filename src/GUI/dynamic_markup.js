@@ -129,7 +129,7 @@ function Expand()
     {
         GenerateSubDivs();
         // if single graph, graph is expanded to whole section
-        if(((g_GraphType == 1) || (g_GraphType == 2)) && g_StatList[g_StatID].indexOf("VACC") == -1)
+        if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
         {
             document.getElementById("region-graphs-1").style["width"] = "100%";
             document.getElementById("region-graphs-1").style["height"] = "100%";
@@ -179,7 +179,7 @@ function GenerateSubDivs()
         var children = document.getElementById(parentTabDivName).childNodes;
         var newNumDivs = size - currentNumDivs
         // if we only need one graph for either combined lines or summation of lines
-        if(((g_GraphType == 1) || (g_GraphType == 2)) && g_StatList[g_StatID].indexOf("VACC") == -1)
+        if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
         {
             document.getElementById(parentTabDivName).innerHTML = "";
             CreateSubDiv("region-graphs-1",parentTabDivName);

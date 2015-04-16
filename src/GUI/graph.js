@@ -19,10 +19,18 @@ function GenerateGraphs()
 
     if (g_StatList[g_StatID].indexOf("VACC") > -1)
     {
-        for(var i=1; i<=g_DataList.size; i++)
+        if (g_GraphType != 2)
         {
-            GraphVaccine("region-graphs-"+i, curr);
-            curr=curr.next;
+            for(var i=1; i<=g_DataList.size; i++)
+            {
+                GraphVaccine("region-graphs-"+i, curr);
+                curr=curr.next;
+            }
+        }
+        else
+        {
+            var sumNode = GenerateSumNode();
+            GraphVaccine("region-graphs-"+1,sumNode);
         }
     }
     else
@@ -276,7 +284,7 @@ function GenerateCombinedData()
 function GenerateSumNode(){
     
     var data = new Array(g_StatList.length);   // data for the new node
-
+    var names = "";
     var i,j;
     var currentNode = g_DataList.start;    // list iterator
     
@@ -323,10 +331,13 @@ function GenerateSumNode(){
             if (ass2ID > -1 && Number(currentNode.data[ass2ID][j]) > 0)
                 data[ass2ID][j] += Number(currentNode.data[ass2ID][j]);
         }
+        names += currentNode.name;
+        if (currentNode != g_DataList.end)
+            names += ", ";
         currentNode = currentNode.next;
     }
     
-    var newNode = new t_AsdsNode(-1,"SUM","SUM",data);
+    var newNode = new t_AsdsNode(-1, "SUM", names, data);
 
     return newNode;
 }
