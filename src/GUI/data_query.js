@@ -91,11 +91,11 @@ function ModifyData(selectedRegions) {
                 if(selectedRegions.indexOf(cc2ToRemove) == -1)
                 {
                     g_DataList.delete(cc2ToRemove);
+                    // redraw graphs
+                    GenerateSubDivs();
+                    GenerateGraphs();
                 }
             }
-            // redraw graphs
-            GenerateSubDivs();
-            GenerateGraphs();
         }
     }
     else

@@ -208,7 +208,7 @@ function GenerateSingleData(data)
                 dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false]);
                 break;
             case 2:
-                dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingDataNumber(data[upperBoundID][i]),false]);
+                dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[upperBoundID][i])),false]);
                 break;
             case 3:
                 dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false,
@@ -216,8 +216,6 @@ function GenerateSingleData(data)
                 break;
         }
     }
-
-    console.log(dataTable);
 
     return dataTable;
 }
@@ -263,7 +261,6 @@ function GenerateCombinedData()
             }
         }
     }
-    console.log(dataArray);
     // turns 2D array into data table for graph, second argument denotes that 0 indices are headers, see documentation for more info
     dataTable = google.visualization.arrayToDataTable(dataArray, false);
     console.log(dataTable);
@@ -328,8 +325,6 @@ function GenerateSumNode(){
         }
         currentNode = currentNode.next;
     }
-
-    console.log(data);
     
     var newNode = new t_AsdsNode(-1,"SUM","SUM",data);
 
