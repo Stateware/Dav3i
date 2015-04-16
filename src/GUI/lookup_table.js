@@ -146,7 +146,7 @@ function GetHMS(hmsID)
 function GetCID(cc2)
 {
     var length = g_LookupTable.length;
-    var cid;
+    var cid = -1;
     
     for (var i in g_LookupTable)
     {

@@ -68,16 +68,27 @@ function ModifyData(selectedRegions) {
             {
                 CC2Found = true;
                 var cid = GetCID(selectedRegions[i]);
-                var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
-                $.when(GetData(cid)).done(function(data){
-                    var parsedData = ParseData(data);
-                    newNode.data = parsedData;
-                    console.log(newNode);
-                    g_DataList.add(newNode);
-                    // draw graph with new node
-                    GenerateSubDivs();
-                    GenerateGraphs();
-                });
+                if(cid != -1)
+                {
+                    var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
+                    $.when(GetData(cid)).done(function(data){
+                        var parsedData = ParseData(data);
+                        newNode.data = parsedData;
+                        console.log(newNode);
+                        g_DataList.add(newNode);
+                        // draw graph with new node
+                        GenerateSubDivs();
+                        GenerateGraphs();
+                    });
+                }
+                else 
+                {   
+                    var index = selectedRegions.indexOf(selectedRegions[i]);
+                    if (index > -1) {
+                        selectedRegions.splice(index, 1);
+                        ModifyData(selectedRegions);
+                    }
+                }
             }
         }
     }
