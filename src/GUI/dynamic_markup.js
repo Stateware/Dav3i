@@ -128,7 +128,7 @@ function Expand()
     {
         GenerateSubDivs();
         // if single graph, graph is expanded to whole section
-        if((g_GraphType == 1) || (g_GraphType == 2))
+        if(((g_GraphType == 1) || (g_GraphType == 2)) && g_StatList[g_StatID].indexOf("VACC") == -1)
         {
             document.getElementById("region-graphs-1").style["width"] = "100%";
             document.getElementById("region-graphs-1").style["height"] = "100%";
