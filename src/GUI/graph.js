@@ -128,7 +128,19 @@ function GraphVaccine(divID, node) {
     chart.draw(data, options);
 }
 
-
+// Author: Vanajam Soni
+// Date Created: 4/16/2015
+// Last Modified: 4/16/2015 by Vanajam Soni
+// Description: Checks for missing data and returns null, if data is missing.
+// PRE: N/A
+// POST: N/A
+function FixMissingData(data)
+{
+    if(data != -1)
+        return data;
+    else
+        return null;
+}
 
 // Author: Vanajam Soni
 // Date Created: 4/7/2015
@@ -182,22 +194,24 @@ function GenerateSingleData(data)
 
     // filling the data table
     if (type == 0)
-        dataTable.addRow([1980,Number(data[g_StatID][i]),true]);
+        dataTable.addRow([1980,FixMissingData(Number(data[g_StatID][i])),true]);
+
     for(i=1;i<(g_LastYear-g_FirstYear)+1;i++)
     {   
         switch(type) 
         {
             case 0:
-                dataTable.addRow([1980+i,Number(data[g_StatID][i]),true]);
+                dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true]);
                 break;
             case 1:
-                dataTable.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[lowerBoundID][i]),false]);
+                dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false]);
                 break;
             case 2:
-                dataTable.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[upperBoundID][i]),false]);
+                dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingDataNumber(data[upperBoundID][i]),false]);
                 break;
             case 3:
-                dataTable.addRow([1980+i,Number(data[g_StatID][i]),true,Number(data[lowerBoundID][i]),false,Number(data[upperBoundID][i]),false]);
+                dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false,
+                    FixMissingData(Number(data[upperBoundID][i])),false]);
                 break;
         }
     }
