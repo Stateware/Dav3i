@@ -76,6 +76,7 @@ function ChooseTab(element)
     
     GenerateSubDivs();
     GenerateGraphs();
+    SetHMS(GetHMS(g_StatID));
 }
 
 // Author: Emma Roudabush
