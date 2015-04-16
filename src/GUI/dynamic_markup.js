@@ -176,7 +176,7 @@ function GenerateSubDivs()
         var children = document.getElementById(parentTabDivName).childNodes;
         var newNumDivs = size - currentNumDivs
         // if we only need one graph for either combined lines or summation of lines
-        if((g_GraphType == 1) || (g_GraphType == 2))
+        if(((g_GraphType == 1) || (g_GraphType == 2)) && g_StatList[g_StatID].indexOf("VACC") == -1)
         {
             document.getElementById(parentTabDivName).innerHTML = "";
             CreateSubDiv("region-graphs-1",parentTabDivName);
