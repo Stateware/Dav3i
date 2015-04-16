@@ -83,13 +83,8 @@ $(function(){
         // runs when a region is selected
         onRegionSelected: function()
         {
-            // Filling the textarea with list of regions selected
-            ModifyData(map.getSelectedRegions());
-            var cc2_list = [];
-            for(var i = 0;i<g_DataList.size;i++) {
-                    if(g_DataList.item(i) != null)
-                        cc2_list[cc2_list.length] = g_DataList.item(i).cc2;
-            }
+            if (g_Clear != true)
+                ModifyData(map.getSelectedRegions());
         },
         // runs when region is hovered over
         onRegionTipShow: function(e, label, key){
@@ -122,10 +117,17 @@ $(function(){
     // clearing selected regions when the "clear" button in clicked
     document.getElementById("clear").onclick = function()
     {
-		var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
-		// removes graphs subdivs
-		document.getElementById(parentTabDivName).innerHTML = "";
-		// removes map selections
-		map.clearSelectedRegions();
-	}
+        var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+        // removes graphs subdivs
+        document.getElementById(parentTabDivName).innerHTML = "";
+        // removes map selections
+
+        g_DataList.size = 0;
+        g_DataList.start = null;
+        g_DataList.end = null;
+
+        g_Clear = true;
+        map.clearSelectedRegions();
+        g_Clear = false;
+    }
 });

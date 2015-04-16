@@ -25,22 +25,25 @@ function GenerateGraphs()
             curr=curr.next;
         }
     }
-    switch(g_GraphType)
+    else
     {
-        case 0:    
-            for(var i=1; i<=g_DataList.size; i++)
-            {
-                GraphRegional("region-graphs-"+i, curr);
-                curr=curr.next;
-            }
-            break;
-        case 1:
-            GraphCombined("region-graphs-"+1);
-            break;
-        case 2:
-            var sumNode = GenerateSumNode();
-            GraphRegional("region-graphs-"+1, sumNode);
-            break;
+        switch(g_GraphType)
+        {
+            case 0:    
+                for(var i=1; i<=g_DataList.size; i++)
+                {
+                    GraphRegional("region-graphs-"+i, curr);
+                    curr=curr.next;
+                }
+                break;
+            case 1:
+                GraphCombined("region-graphs-"+1);
+                break;
+            case 2:
+                var sumNode = GenerateSumNode();
+                GraphRegional("region-graphs-"+1, sumNode);
+                break;
+        }
     }
 }
 
