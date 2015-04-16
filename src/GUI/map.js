@@ -113,6 +113,30 @@ $(function(){
         // have to manually set min because API function doesn't work correctly, may have to change if we have stats that can be negative
         map.series.regions[0].params.min = 0;
         map.series.regions[0].setValues(values);
+        
+        // the next 20 lines of code creates a list of countries with no data
+        var isFound = false;
+        g_CountriesNoData = new Array();
+        for (var key in map.regions) 
+        {
+        	isFound = false;
+            // iterate through lookup table by index
+            for (var i=0; i<g_LookupTable.length && !isFound; i++)
+            {
+                // set value by key if key is equal to cc2 in lookup table
+                if (key == g_LookupTable[i][0])
+                {
+                    isFound = true;
+                }
+            }
+            if(!isFound)
+            {
+	        	g_CountriesNoData.push(key);
+	        }
+	            
+        }
+        console.log(g_CountriesNoData);
+        
     }, 1000);
     // clearing selected regions when the "clear" button in clicked
     document.getElementById("clear").onclick = function()
