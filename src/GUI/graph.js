@@ -110,6 +110,7 @@ function GraphCombined(divID) {
 function GraphVaccine(divID, node) {
     var data = GenerateVaccineData(node.data);
     var options = {
+        title: node.name,
         vAxis: {
             viewWindowMode:'explicit',
             viewWindow: {
