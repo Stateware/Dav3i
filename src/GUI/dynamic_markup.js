@@ -115,7 +115,7 @@ function CloseSettings()
 // Author: Emma Roudabush
 // Date Created: 3/5/2015
 // Last Modified: 4/16/2015 by Paul Jang
-// Description: Expands the control panel
+// Description: Expands the c ontrol panel
 // PRE: N/A
 // POST: Control panel is expanded and black mask is in place behind
 function Expand()
@@ -134,14 +134,14 @@ function Expand()
             document.getElementById("region-graphs-1").style["width"] = "100%";
             document.getElementById("region-graphs-1").style["height"] = "100%";
         }
+        g_Expanded = true;
         GenerateGraphs();
-        
     }, 500);
 }
 
 // Author: Emma Roudabush
 // Date Created: 3/5/2015
-// Last Modified: 4/1/2015 by Nicholas Denaro
+// Last Modified: 4/16/2015 by Paul Jang
 // Description: Shrinks the control panel
 // PRE: Control panel is currently expanded
 // POST: Control panel shrinks back to original size and black mask is gone
@@ -154,14 +154,16 @@ function Shrink()
     $(".expand-black").fadeOut(400);
     setTimeout(function ()
     {
+        g_Expanded = false;
         GenerateSubDivs();
         GenerateGraphs();
-    }, 500);
+    }, 500);  
 }
+
 
 // Author: Paul Jang
 // Date Created: 4/2/2015
-// Last Modified: 4/14/2015 by Paul Jang
+// Last Modified: 4/16/2015 by Paul Jang
 // Description: Calls CreateDiv to dynamically generate subgraph divs and generate graphs
 // PRE: CreateDiv functions correctly, g_DataList is properly full
 // POST: Divs are created based on how many countries are selected,
@@ -181,6 +183,13 @@ function GenerateSubDivs()
         {
             document.getElementById(parentTabDivName).innerHTML = "";
             CreateSubDiv("region-graphs-1",parentTabDivName);
+            // if the graph section is expanded
+            if(g_Expanded)
+            {
+                // expand graph
+                document.getElementById("region-graphs-1").style["width"] = "100%";
+                document.getElementById("region-graphs-1").style["height"] = "100%";    
+            }
         }
         // if we are adding divs
         else if(newNumDivs > 0)
@@ -197,8 +206,6 @@ function GenerateSubDivs()
             for(var i=1; i<=(currentNumDivs - newNumDivs); i++)
                 CreateSubDiv("region-graphs-"+i,parentTabDivName);
         }
-        else
-            return;
     }
 }
 
