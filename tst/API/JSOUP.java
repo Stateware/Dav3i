@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 
 
+
+import org.jsoup.HttpStatusException;
 //import JSoup bus'
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,7 +22,7 @@ import org.json.*;
 
 
 
-public class JUNIT {
+public class JSOUP {
 
 	
 	final String descriptorURL = "http://usve74985.serverprofi24.com/API/descriptor.php";
@@ -35,7 +37,7 @@ public class JUNIT {
 								
 	
 	
-	public JUNIT()
+	public JSOUP()
 	{
 		//set the number of countries and stats into their respective globals 
 		try {
@@ -118,7 +120,7 @@ public class JUNIT {
 	
 	}
 	
-	public boolean paramWorks(String ID, String phpDocument, boolean param) throws IOException
+	public boolean paramWorks(String ID, String phpDocument, boolean param) throws IOException, HttpStatusException
 	{
 		Document doc;
 		if(param)

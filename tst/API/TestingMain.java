@@ -5,22 +5,28 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.jsoup.HttpStatusException;
+
 
 public class TestingMain {
 	
 	static JDBC database;
-	static JUNIT php;
+	static JSOUP php;
 	
 	public static void main(String []args) throws IOException
 	{
 		//init
 		database = new JDBC("OMITTED","OMITTED");
-		php = new JUNIT();
+		php = new JSOUP();
 
-		String[] s = parseFileIntoStringArray("testcases.txt");
-		String[] ss = parseFileIntoStringArray("results.txt");
-		boolean r = doesParamBehave(s,ss, "byCountry", true);
-		System.out.println(r);
+		String[] s = parseFileIntoStringArray("byCountryCases.txt");
+		//String[] ss = parseFileIntoStringArray("byStatsResults.txt");
+		String[] r = doesParamBehave(s, "byCountry", false);
+		for (int i = 0; i < r.length; i++)
+		{
+			System.out.print(r[i]);
+		}
+		//System.out.println(r);
 		
 	}
 	
@@ -47,10 +53,16 @@ public class TestingMain {
 		//if it works, put in a p, if it doesnt, put in a f
 		for(int i = 0; i<tests.length; i++)
 		{
-			if(php.paramWorks(tests[i],phpDocument,param)==true)
-				retArr[i] = "P";
-			else
+			try
+			{
+				if(php.paramWorks(tests[i],phpDocument,param)==true)
+					retArr[i] = "P";
+				else
+					retArr[i] = "F";
+			} catch (HttpStatusException e)
+			{
 				retArr[i] = "F";
+			}
 		}
 		
 		
@@ -64,10 +76,16 @@ public class TestingMain {
 		
 		for(int i = 0; i<tests.length; i++)
 		{
-			if(php.paramWorks(tests[i],phpDocument,param)==true)
-				retArr[i] = "P";
-			else
+			try
+			{
+				if(php.paramWorks(tests[i],phpDocument,param)==true)
+					retArr[i] = "P";
+				else
+					retArr[i] = "F";
+			} catch (HttpStatusException e)
+			{
 				retArr[i] = "F";
+			}
 		}
 		
 		if(Arrays.equals((Object[])retArr,(Object[])results))
