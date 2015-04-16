@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -7,21 +11,31 @@ public class TestingMain {
 	static JDBC database;
 	static JUNIT php;
 	
-	public static void main(String []args)
+	public static void main(String []args) throws IOException
 	{
 		//init
 		database = new JDBC("testing","chocolatenut9");
 		php = new JUNIT();
 
-
-		try {
-			boolean b = doesParamBehave(new String[]{"?statID=a","?statID=BASDFA","?statID=3","?statID=11","?statID=12344444","?statID=193","?statID=lmao","?statID=gg","?statID=ez","?statID=ok"},
-										 new String[]{"D","D","W","W","D","D","D","D","D","D"},"byStat",false);
-			System.out.println(b);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String[] s = parseFileIntoStringArray("testcases.txt");
+		
+		
+	}
+	
+	public static String[] parseFileIntoStringArray(String path) throws IOException
+	{
+		File f = new File(path);
+		BufferedReader br = new BufferedReader(new FileReader(f));
+		
+		String in = "";
+		String line = "";
+		
+		while((line=br.readLine())!=null)
+			in+=line;
+		
+		String[] retArr = in.split(",");
+		
+		return retArr;
 	}
 	
 	public static String[] doesParamBehave(String[] tests, String phpDocument, boolean param) throws IOException
