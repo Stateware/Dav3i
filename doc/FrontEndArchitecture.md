@@ -548,7 +548,7 @@ Additional Notes: N/A
 First Reported: April 2, 2015  
 Status: Fixed April 2, 2015  
 Description: When a country is selected, the API call to by_country.php does not return the data for the intended country. For example, Indonesia's data is received instead of India's, and India's data is received instead of Ireland's.
-Reason for bug: Array indices in PHP start from 1, whereas those in JavaScript start from 0. This has created a mismatch in the indices of the lookup table(used as CIDs), and CIDs stored in the database.  
+Reason for bug: MySQL databases start at 1, whereas arrays in JavaScript and PHP start from 0. This has created a mismatch in the indices of the lookup table(used as CIDs), and CIDs stored in the database.  
 Description of fix: Changed back end implentation of the API call to by_country.php so that it returns the data for (CID + 1) instead of CID.  
 Additional Notes: N/A
 
