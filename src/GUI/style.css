@@ -292,6 +292,23 @@
     overflow:hidden;
     background-color: #001f3f;
     color: #7FDBFF;
+    font-family: 'Open Sans Condensed', sans-serif;
+}
+
+.footer-text {
+    position: absolute;
+    width: 80%;
+    left: 10%;
+    top: 93%;
+    z-index: 3;
+}
+
+.bug-report {
+    position: absolute;
+    width: 10%;
+    left: 90%;
+    top: 93%;
+    z-index: 3;
 }
 
 /* sets link styling in footer */

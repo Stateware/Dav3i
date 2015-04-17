@@ -8,7 +8,7 @@
 // Additional Notes:        N/A
 
 var g_LookupTable;      // CID, CC2, name, and HMS lookup table.
-var g_CountriesNoData		// list of countries without data, ie. not selectable
+var g_CountriesNoData	// list of countries without data, ie. not selectable
 var g_StatList;         // stat reference list, indexed by stat ID.
 var g_FirstYear;        // first year for which data is available.
 var g_LastYear;         // last year for which data is available.
