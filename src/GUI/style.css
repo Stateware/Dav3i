@@ -3,8 +3,8 @@
     Description:             Style sheet for the loading screen and main page
     Date Created:            2/19/2015
     Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts, Paul Jang, Nicholas Denaro
-    Date Last Modified:      4/14/2015
-    Last Modified By:        Emma Roudabush
+    Date Last Modified:      4/16/2015
+    Last Modified By:        Nicholas Denaro
     Dependencies:            none
     Additional Notes:        N/A
 */
@@ -211,6 +211,25 @@
     background-color: #EAE7C2;
     display: none;
     text-align: center;
+}
+
+/*sets styling for timespan layout in settings*/
+.settings-timespans-table {
+    margin: 0px auto;
+}
+
+/* sets styling for timespan text in settings*/
+.settings-timespans-text {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    text-align: right;
+}
+
+/* sets styling for timespan input tags in settings*/
+.settings-timespans-boxes {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    text-align: left;
 }
 
 /* sets styling for black mask for settings overlay */

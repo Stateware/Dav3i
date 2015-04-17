@@ -40,6 +40,35 @@ function BuildTabs()
     }
 }
 
+// Author: Nicholas Denaro
+// Date Created: 4/16/2015
+// Last Modified: 4/16/2015 by Nicholas Denaro
+// Description: Assigns values to the year ranges
+// PRE: lookup_table is filled correctly, index.html exists
+// POST: appropriate input tags are modified
+function UpdateInputs()
+{
+    var startDiv=document.getElementById("year-range-start");
+    var endDiv=document.getElementById("year-range-end");
+    var heatmapYearDiv=document.getElementById("heatmap-year");
+
+    startDiv.max=g_LastYear;
+    startDiv.min=g_FirstYear;
+    startDiv.value=g_FirstYear;
+
+    endDiv.max=g_LastYear;
+    endDiv.min=g_FirstYear;
+    endDiv.value=g_LastYear;
+
+    heatmapYearDiv.max=g_LastYear;
+    heatmapYearDiv.min=g_FirstYear;
+    heatmapYearDiv.value=g_LastYear;
+
+    g_StartYear=startDiv.value;
+    g_EndYear=endDiv.value;
+    g_HMSYear=heatmapYearDiv.value;
+}
+
 // Author: Paul Jang, Nicholas Denaro
 // Date Created: 3/26/2015
 // Last Modified: 3/26/2015 by Paul Jang
@@ -103,13 +132,41 @@ function OpenSettings()
 
 // Author: Emma Roudabush
 // Date Created: 3/5/2015
-// Last Modified: 3/31/2015 by Emma Roudabush
-// Description: Closes the settings overlay
+// Last Modified: 4/16/2015 by Nicholas Denaro
+// Description: Closes the settings overlay and assigns global values
 // PRE: Settings overlay is currently showing on screen
 // POST: Settings overlay and mask is gone
 function CloseSettings()
 {
-     $(".settings-screen, .settings-black").fadeOut(400);
+    var canContinue=true;
+    var startDiv=document.getElementById("year-range-start");
+    var endDiv=document.getElementById("year-range-end");
+    var heatmapYearDiv=document.getElementById("heatmap-year");
+
+    if(startDiv.value==""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max)))
+    {
+        canContinue=false;
+    }
+    if(endDiv.value==""||(Number(endDiv.value)<Number(endDiv.min)||Number(endDiv.value)>Number(endDiv.max)))
+    {
+        canContinue=false;
+    }
+    if(heatmapYearDiv.value==""||(Number(heatmapYearDiv.value)<Number(heatmapYearDiv.min)||Number(heatmapYearDiv.value)>Number(heatmapYearDiv.max)))
+    {
+        canContinue=false;
+    }
+    if(endDiv.value<startDiv.value)
+    {
+        canContinue=false;
+    }
+
+    if(canContinue)
+    {
+        $(".settings-screen, .settings-black").fadeOut(400);
+        g_StartYear=startDiv.value;
+        g_EndYear=endDiv.value;
+        g_HMSYear=heatmapYearDiv.value;
+    }
 }
 
 // Author: Emma Roudabush

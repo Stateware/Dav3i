@@ -9,7 +9,7 @@
 
 // Author: Emma Roudabush, Joshua Crafts
 // Date Created: 3/5/2015
-// Last Modified: 4/7/2015 by Emma Roudabush
+// Last Modified: 4/16/2015 by Nicholas Denaro
 // Description: Fills g_DescriptorJSON with the contents of descriptor.php,
 //              fills g_LookupTable and g_StatList with their corresponding data
 //              and logs the resulting variables to the console.
@@ -33,6 +33,7 @@ function ParseDescriptor()
         console.log(g_LookupTable);
         console.log(g_StatList);
         BuildTabs();
+        UpdateInputs();
     });
 }
 

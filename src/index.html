@@ -2,8 +2,8 @@
      Description:             Web interface for data visualization
      Date Created:            2/19/2015
      Contributors:            Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts, Nicholas Denaro
-     Date Last Modified:      4/7/2015
-     Last Modified By:        Emma Roudabush
+     Date Last Modified:      4/16/2015
+     Last Modified By:        Nicholas Denaro
      Dependencies:            style.css, loading_script.js, lookup_table.js, map.js, data.js
      Additional Notes:        N/A
 -->
@@ -53,13 +53,19 @@
 	</div>
 	
 	<div class="settings-screen">
-		<h1 class="open-sans">Settings Menu<h1>
+		<h1 class="open-sans">Settings</h1>
 		<form action="">
-			<p class="graph-choice">
+			<div class="graph-choice">
 				<input type="radio" onclick="SetGraphType(0)" name="graphType" checked="checked" value="0">Regional&emsp;
 				<input type="radio" onclick="SetGraphType(1)" name="graphType" value="1">Combined&emsp;
-				<input type="radio" onclick="SetGraphType(2)" name="graphType" value="2">Whole Selection <br>
-			<p>
+				<input type="radio" onclick="SetGraphType(2)" name="graphType" value="2">Whole Selection
+                <br>
+                <table class="settings-timespans-table">
+                    <tr><td class="settings-timespans-text">Start Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-start" class="year-selector" maxlength="4" size="4" required></input></td></tr>
+                    <tr><td class="settings-timespans-text">End Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-end" class="year-selector" maxlength="4" size="4" required></input></td></tr>
+                    <tr><td class="settings-timespans-text">Heatmap Year:&emsp;</td><td class="settings-timespans-boxes"><input id="heatmap-year" class="year-selector" maxlength="4" size="4" required></input></td></tr>
+                </table>
+			</div>
 		</form>
 		<button id="settings" class="flat-button" onclick="CloseSettings()">Close</button>
 	</div>
