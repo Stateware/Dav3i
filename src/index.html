@@ -49,26 +49,29 @@
             <button onclick="SwitchToMain()" class="begin">Begin</button>
         </center>
     </div>
-	<div class="settings-black" onclick="CloseSettings()">
-	</div>
+    <div class="settings-black" onclick="CloseSettings()">
+    </div>
 	
-	<div class="settings-screen">
-		<h1 class="open-sans">Settings</h1>
-		<form action="">
-			<div class="graph-choice">
-				<input type="radio" onclick="SetGraphType(0)" name="graphType" checked="checked" value="0">Regional&emsp;
-				<input type="radio" onclick="SetGraphType(1)" name="graphType" value="1">Combined&emsp;
-				<input type="radio" onclick="SetGraphType(2)" name="graphType" value="2">Whole Selection
-                <br>
-                <table class="settings-timespans-table">
-                    <tr><td class="settings-timespans-text">Start Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-start" class="year-selector" maxlength="4" size="4" required></input></td></tr>
-                    <tr><td class="settings-timespans-text">End Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-end" class="year-selector" maxlength="4" size="4" required></input></td></tr>
-                    <tr><td class="settings-timespans-text">Heatmap Year:&emsp;</td><td class="settings-timespans-boxes"><input id="heatmap-year" class="year-selector" maxlength="4" size="4" required></input></td></tr>
-                </table>
-			</div>
-		</form>
-		<button id="settings" class="flat-button" onclick="CloseSettings()">Close</button>
-	</div>
+    <div class="settings-screen">
+        <h1 class="open-sans">Settings</h1>
+        <div class="graph-choice">
+            <h3 class="open-sans">Graph Type</h3>
+            <form action="">
+                <input type="radio" onclick="SetGraphType(0)" name="graphType" checked="checked" value="0">Regional</input><br>
+                <input type="radio" onclick="SetGraphType(1)" name="graphType" value="1">Combined</input><br>
+                <input type="radio" onclick="SetGraphType(2)" name="graphType" value="2">Whole Selection</input><br>
+            </form>
+        </div>
+        <div class="timespan">
+            <h3 class="open-sans">Timespan Selection</h3>
+            <table class="settings-timespans-table">
+                <tr><td class="settings-timespans-text">Start Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-start" class="year-selector" maxlength="4" size="4" required></input></td></tr>
+                <tr><td class="settings-timespans-text">End Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-end" class="year-selector" maxlength="4" size="4" required></input></td></tr>
+                <tr><td class="settings-timespans-text">Heatmap Year:&emsp;</td><td class="settings-timespans-boxes"><input id="heatmap-year" class="year-selector" maxlength="4" size="4" required></input></td></tr>
+            </table>
+        </div>
+        <button id="settings" class="flat-button" onclick="CloseSettings()">Close</button>
+    </div>
 	
     <div class="main-screen">
         <section class="spacer">

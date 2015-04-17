@@ -202,26 +202,28 @@ function GenerateSingleData(data)
     }    
 
     // filling the data table
-    if (type == 0)
-        dataTable.addRow([1980,FixMissingData(Number(data[g_StatID][i])),true]);
-
-    for(i=1;i<(g_LastYear-g_FirstYear)+1;i++)
+    for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_YearStart)+1;i++)
     {   
-        switch(type) 
+        if (type == 0 && i == 0)
+            dataTable.addRow([1980,FixMissingData(Number(data[g_StatID][i])),true]);
+        else
         {
-            case 0:
-                dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true]);
-                break;
-            case 1:
-                dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false]);
-                break;
-            case 2:
-                dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[upperBoundID][i])),false]);
-                break;
-            case 3:
-                dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false,
-                    FixMissingData(Number(data[upperBoundID][i])),false]);
-                break;
+            switch(type) 
+            {
+                case 0:
+                    dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true]);
+                    break;
+                case 1:
+                    dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false]);
+                    break;
+                case 2:
+                    dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[upperBoundID][i])),false]);
+                    break;
+                case 3:
+                    dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false,
+                        FixMissingData(Number(data[upperBoundID][i])),false]);
+                    break;
+            }
         }
     }
 
@@ -237,12 +239,12 @@ function GenerateSingleData(data)
 function GenerateCombinedData()
 {
     // create array with indices for all years plus a header row
-    var dataArray = new Array((g_LastYear-g_FirstYear)+2);
+    var dataArray = new Array((g_YearEnd-g_YearStart)+2);
     var dataTable;
     var currentNode;
     var i, j;
     // fill array
-    for (i = 0; i < (g_LastYear-g_FirstYear)+2; i++)
+    for (i = g_YearStart-g_FirstYear; i < (g_YearEnd-g_YearStart)+2; i++)
     {
         // create array in each index the length of the data list, plus a column for year
         dataArray[i] = new Array(g_DataList.size + 1);
@@ -305,13 +307,13 @@ function GenerateSumNode(){
     console.log(ass1ID);
     console.log(ass2ID);
 
-    data[g_StatID] = new Array((g_LastYear-g_FirstYear)+1);
+    data[g_StatID] = new Array((g_YearEnd-g_YearStart)+1);
     if (ass1ID > -1)
-        data[ass1ID] = new Array((g_LastYear-g_FirstYear)+1);
+        data[ass1ID] = new Array((g_YearEnd-g_YearStart)+1);
     if (ass2ID > -1)
-        data[ass2ID] = new Array((g_LastYear-g_FirstYear)+1);
+        data[ass2ID] = new Array((g_YearEnd-g_YearStart)+1);
 
-    for (j = 0; j < (g_LastYear-g_FirstYear)+1; j++)
+    for (j = 0; j < (g_YearEnd-g_YearStart)+1; j++)
     {
         data[g_StatID][j] = 0;
         if (ass1ID > -1)
@@ -322,7 +324,7 @@ function GenerateSumNode(){
 
     for (i = 0; i < g_DataList.size; i++)
     {
-        for (j = 0; j < (g_LastYear-g_FirstYear)+1; j++)
+        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_YearStart)+1; j++)
         {
             if (Number(currentNode.data[g_StatID][j]) > 0)
                 data[g_StatID][j] += Number(currentNode.data[g_StatID][j]);
@@ -377,7 +379,7 @@ function GenerateVaccineData(data)
     console.log(mcv2ID);
 
     var i,j;
-    for(i=0;i<(g_LastYear-g_FirstYear)+1;i++)
+    for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_YearStart)+1;i++)
     {
         dataTable.addRow([1980+i,parseFloat(data[mcv1ID][i])*100,parseFloat(data[mcv2ID][i])*100,parseFloat(data[siaID][i])*100]);
     }

@@ -213,6 +213,18 @@
     text-align: center;
 }
 
+.graph-choice {
+    float: left;
+    width:50%;
+    height:50%;
+}
+
+.timespan {
+    float: right;
+    width:50%;
+    height:50%;
+}
+
 /*sets styling for timespan layout in settings*/
 .settings-timespans-table {
     margin: 0px auto;
@@ -220,15 +232,12 @@
 
 /* sets styling for timespan text in settings*/
 .settings-timespans-text {
-    padding-top: 15px;
-    padding-bottom: 15px;
     text-align: right;
+    font-family: 'Open Sans Condensed', sans-serif;
 }
 
 /* sets styling for timespan input tags in settings*/
 .settings-timespans-boxes {
-    padding-top: 15px;
-    padding-bottom: 15px;
     text-align: left;
 }
 
