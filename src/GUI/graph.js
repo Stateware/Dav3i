@@ -223,28 +223,25 @@ function GenerateSingleData(data)
     }    
 
     // filling the data table
-    for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_YearStart)+1;i++)
+    if (type == 0 && g_FirstYear == g_YearStart)
+        dataTable.addRow([g_FirstYear,FixMissingData(Number(data[g_StatID][0])),true]);
+    for(i=(g_YearStart-g_FirstYear)+1;i<(g_YearEnd-g_YearStart)+1;i++)
     {   
-        if (type == 0 && i == 0)
-            dataTable.addRow([1980,FixMissingData(Number(data[g_StatID][i])),true]);
-        else
+        switch(type) 
         {
-            switch(type) 
-            {
-                case 0:
-                    dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true]);
-                    break;
-                case 1:
-                    dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false]);
-                    break;
-                case 2:
-                    dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[upperBoundID][i])),false]);
-                    break;
-                case 3:
-                    dataTable.addRow([1980+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false,
-                        FixMissingData(Number(data[upperBoundID][i])),false]);
-                    break;
-            }
+            case 0:
+                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i])),true]);
+                break;
+            case 1:
+                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false]);
+                break;
+            case 2:
+                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[upperBoundID][i])),false]);
+                break;
+            case 3:
+                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false,
+                    FixMissingData(Number(data[upperBoundID][i])),false]);
+                break;
         }
     }
 

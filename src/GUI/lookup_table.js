@@ -84,10 +84,10 @@ function GetDescriptor()
 // 		 g_LastYear and g_YearEnd have the correct ending year of statistics. 
 function SetInitalYears(DescriptorJSON)
 {
-	g_FirstYear = DescriptorJSON.yearRange[0];
-	g_YearStart = DescriptorJSON.yearRange[0];
-	g_LastYear = DescriptorJSON.yearRange[1];
-	g_YearEnd = DescriptorJSON.yearRange[1];
+	g_FirstYear = Number(DescriptorJSON.yearRange[0]);
+	g_YearStart = Number(DescriptorJSON.yearRange[0]);
+	g_LastYear = Number(DescriptorJSON.yearRange[1]);
+	g_YearEnd = Number(DescriptorJSON.yearRange[1]);
 }
 
 // Author: Emma Roudabush
