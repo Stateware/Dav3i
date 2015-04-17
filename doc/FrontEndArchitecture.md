@@ -528,12 +528,20 @@ The main screen layout was chosen because the original design left the map feeli
 
 ##4.1 : Bug History
 
+ * \#6: Clear Button Causes Excessive Slowdowns
+First Reported: April 15, 2015
+Status: Fixed
+Description: When more than ~5 countries are selected, clear causes massive slowdowns, sometimes prompting the browser to ask the user to stop the script.
+Reason for bug: Because map.clearSelectedRegions removes each region one by one, and therefore triggers onRegionSelected each time, the n^2 algorithm which is used to add or remove a node becomes n^3, and because of an implementation bug in the deletion, it was actually n^4!
+Description of fix: Fixed implementation bug in region removal, then set clear to simply clear data list and only call the modify list function in onRegionSelected if it was called from something other than clearSelectedRegions.
+Additional Notes: Had to add an additional global variable to handle this fix, g_Clear. A fix without an additional global would be nice, but jVectorMap is difficult to manage in this case without it.
+
  * \#5: HMS data is set in lookup table incorrectly  
 First Reported: April 5, 2015  
-Status: Active  
+Status: Fixed  
 Description: HMS is received correctly from the server, and is successfully passed into the set HMS function. However, after the HMS fields of the lookup table are set, the result is a table in which the HMS field of Angola (AO) is the entire HMS array, and the rest are undefined.  
-Reason for bug: It may have something to do with the indexing of the loop. We have previously tried explicitly declaring i as a var in the function (as excluding the var declaration makes the variable global) and using a for in loop, neither of which worked.  
-Suggestion for fix: none.  
+Reason for bug: Received output from the server is now an array which contains a single index, that of its stat ID, which then contains the needed data.  
+Description of fix: Indexed into received server output by stat ID.  
 Additional Notes: N/A  
 
  * \#4: API call to by_country.php returns wrong data  

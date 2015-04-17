@@ -356,7 +356,7 @@ function GenerateSumNode(){
         }
         names += currentNode.name;
         if (currentNode != g_DataList.end)
-            names += ", ";
+            names += "; ";
         currentNode = currentNode.next;
     }
     

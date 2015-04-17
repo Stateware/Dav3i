@@ -318,7 +318,10 @@ function CreateSubDiv(id,parent)
 // POST: Alert box pops up with info about project contributors
 function teamPopup()
 {
-    window.alert("Stateware Team\nSpring 2015:\nWilliam Bittner, Joshua Crafts, Nicholas Denaro, Dylan Fetch, Paul Jang, Arun Kumar, Drew Lopreiato, Kyle Nicholson, Emma Roudabush, Berty Ruan, Vanajam Soni");
+    window.alert("Stateware Team\nSpring 2015:\nWilliam Bittner,"
+        + " Joshua Crafts, Nicholas Denaro, Dylan Fetch, Paul Jang,"
+        + " Arun Kumar, Drew Lopreiato, Kyle Nicholson, Emma "
+        + "Roudabush, Berty Ruan, Vanajam Soni");
 }
 
 // Author: Joshua Crafts
@@ -326,8 +329,14 @@ function teamPopup()
 // Last Modified: 4/17/2015 by Joshua Crafts
 // Description: Pops up info on reporting a bug
 // PRE: none
-// POST: Alert box pops up with info about and instructions for reporting a bug
+// POST: Alert box pops up with info about and instructions for 
+//       reporting a bug
 function bugPopup()
 {
-    window.alert("If you would like to report a bug, please send an email to stateware@acm.psu.edu with the following details included in your message:\n1.Description of the bug\n2.Steps for reproducing the bug\n3.What browser and operating system you experienced the bug on");
+    window.alert("If you would like to report a bug, please send "
+        + "an email to stateware@acm.psu.edu with the following "
+        + "details included in your message:\n1. Description of the "
+        + "bug\n2. Steps for reproducing the bug\n3. What browser and"
+        + " operating system you experienced the bug on\n4. Any "
+        + "additional relevant information.");
 }
