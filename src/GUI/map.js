@@ -30,24 +30,43 @@ $(function(){
     //       HMS value. Should be used as argument to maps.series.regions[0].setValues()
     ColorByHMS = function(){
         var data = {},
-            key;
+            key,
+            isFound,
+            min,
+            max;
 
-        // iterate through regions by key
-        for (key in map.regions) {
-            // iterate through lookup table by index
-            for (var i in g_LookupTable)
-            {
-                // set value by key if key is equal to cc2 in lookup table
-                if (key === g_LookupTable[i][0] && g_LookupTable[i][2] != 0)
+        $.when(GetHMS(g_StatID,g_HMSYear)).done(function(hmsData){
+            isFound = false;
+            min = Number.MAX_VALUE;
+            max = Number.MIN_VALUE;
+            SetHMS(hmsData[g_StatID]);     // Need to index in due to JSON format of by_stat.php
+            // iterate through regions by key
+            for (key in map.regions) {
+                // iterate through lookup table by index
+                for (var i = 0; i < g_LookupTable.length && isFound == false; i++)
                 {
-                    data[key] = g_LookupTable[i][2];
+                    // set value by key if key is equal to cc2 in lookup table
+                    if (key === g_LookupTable[i][0] && g_LookupTable[i][2] != -1)
+                    {
+                        data[key] = g_LookupTable[i][2];
+                        if (data[key] < min)
+                            min = data[key];
+                        if (data[key] > max)
+                            max = data[key];
+                        isFound = true;
+                    }
+                    else
+                    {
+                        data[key] = -1;
+                    }
                 }
+                isFound = false;
             }
-        }
-
-        console.log(data);
-
-        return data;
+            
+            map.series.regions[0].params.min = min;
+            map.series.regions[0].params.max = max;
+            map.series.regions[0].setValues(data);
+        });
     }
 
     map = new jvm.Map(
@@ -90,7 +109,7 @@ $(function(){
         onRegionTipShow: function(e, label, key){
             var tipString = "";
             tipString += label.html()+' (';
-            if (map.series.regions[0].values[key] !== undefined)
+            if (map.series.regions[0].values[key] != -1)
             {
                 tipString += g_StatList[g_StatID]+' - '+map.series.regions[0].values[key];
             }
@@ -104,17 +123,6 @@ $(function(){
     });
     // after lookup table is loaded, color map
     setTimeout(function(){
-        var values = ColorByHMS();
-        // try HMS coloring until valid data is available
-        while (values === undefined)
-        {
-            setTimeout(function(){values = ColorByHMS()}, 1000);
-        }
-        // have to manually set min because API function doesn't work correctly, may have to change if we have stats that can be negative
-        map.series.regions[0].params.min = 0;
-        map.series.regions[0].setValues(values);
-        
-        // the next 20 lines of code creates a list of countries with no data
         var isFound = false;
         g_CountriesNoData = new Array();
         for (var key in map.regions) 

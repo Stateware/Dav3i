@@ -25,9 +25,9 @@ function ParseDescriptor()
         SetInitalYears(DescriptorJSON);
         SetGraphType(0);
         GenerateLookupTable(DescriptorJSON);
-        $.when(GetHMS(g_StatID=1)).done(function(hmsData){
-            SetHMS(hmsData[1]);     // Need to index in due to JSON format of by_stat.php
-        });
+        g_StatID = 1;
+        g_HMSYear = g_LastYear;
+        ColorByHMS();
         GenerateStatReferenceList(DescriptorJSON);
         ParseStatList();
         console.log(g_LookupTable);
@@ -117,7 +117,7 @@ function SetHMS(hmsData)
 {
     for (var i = 0; i < g_LookupTable.length; i++)
     {
-        g_LookupTable[i][2] = hmsData[i];
+        g_LookupTable[i][2] = Number(hmsData[i]);
     }
 }
 
@@ -127,10 +127,10 @@ function SetHMS(hmsData)
 // Description: Returns HMS data based on hmsID
 // PRE: hms contains valid heat map values and hms is of size g_LookupTable.length
 // POST: FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
-function GetHMS(hmsID)
+function GetHMS(hmsID, year)
 {
     return $.ajax({                                      
-        url: 'http://usve74985.serverprofi24.com/API/by_stat.php?statID='.concat(hmsID.toString()),                                                     
+        url: 'http://usve74985.serverprofi24.com/API/by_stat.php?statID='.concat(hmsID.toString()+"&year="+year.toString()),                                                     
         dataType: 'JSON',
         success: function(data){     
             console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));

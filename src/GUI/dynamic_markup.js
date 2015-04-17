@@ -102,10 +102,10 @@ function ChooseTab(element)
     document.getElementById("id-"+g_StatList[g_StatID]+"-graphs").style.display="none";
     document.getElementById(element.id+"-graphs").style.display="block";
     g_StatID=Number(element.getAttribute("stat"));
+    ColorByHMS();
     
     GenerateSubDivs();
     GenerateGraphs();
-    SetHMS(GetHMS(g_StatID));
 }
 
 // Author: Emma Roudabush
