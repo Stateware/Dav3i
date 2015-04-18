@@ -54,13 +54,27 @@ $(function(){
             key,
             isFound,
             min,
-            max;
+            max,
+            hmsID = g_StatID,
+            type = 0;
 
-        $.when(GetHMS(g_StatID,g_HMSYear)).done(function(hmsData){
+        for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)
+            {
+                if (g_ParsedStatList[1][i] == g_StatID && g_ParsedStatList[0][i] == 1)
+                {
+                    type = 1;
+                    if (g_VaccHMS == 1)
+                        hmsID = g_ParsedStatList[2][i];
+                    else if (g_VaccHMS == 2)
+                        hmsID = g_ParsedStatList[3][i];
+                }
+            }
+
+        $.when(GetHMS(hmsID,g_HMSYear)).done(function(hmsData){
             isFound = false;
             min = Number.MAX_VALUE;
             max = Number.MIN_VALUE;
-            SetHMS(hmsData[g_StatID]);     // Need to index in due to JSON format of by_stat.php
+            SetHMS(hmsData[hmsID]);     // Need to index in due to JSON format of by_stat.php
             // iterate through regions by key
             for (key in map.regions) {
                 // iterate through lookup table by index
@@ -128,17 +142,40 @@ $(function(){
         },
         // runs when region is hovered over
         onRegionTipShow: function(e, label, key){
-            var tipString = "";
-            tipString += label.html()+' (';
-            if (map.series.regions[0].values[key] != -1)
+            var tipString = "",
+                i, 
+                type = 0,
+                hmsID = g_StatID;
+
+            tipString += label.html()+" - ";
+            for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)
             {
-                tipString += g_StatList[g_StatID]+' - '+map.series.regions[0].values[key];
+                if (g_ParsedStatList[1][i] == g_StatID && g_ParsedStatList[0][i] == 1)
+                {
+                    type = 1;
+                    if (g_VaccHMS == 1)
+                        hmsID = g_ParsedStatList[2][i];
+                    else if (g_VaccHMS == 2)
+                        hmsID = g_ParsedStatList[3][i];
+                }
+            }
+            if (type == 1)
+            {
+                for (i = 0; i < (g_StatList[hmsID].indexOf("VACC")-1); i++)
+                    tipString += g_StatList[hmsID][i];
+                tipString += " Vaccinations";
             }
             else
+                tipString += g_StatList[hmsID];
+            tipString += " in " + g_HMSYear + ": ";
+            if (map.series.regions[0].values[key] == -1)            
+                tipString += "No Data Available";
+            else if (type == 1)
+                tipString += (map.series.regions[0].values[key] * 100).toFixed(0) + "%";
+            else
             {
-                tipString += 'No Data Available';
+                tipString += map.series.regions[0].values[key].toFixed(0);
             }
-            tipString += ')';
             label.html(tipString);
         }
     });

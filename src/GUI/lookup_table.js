@@ -46,11 +46,11 @@ function ParseDescriptor()
         SetInitalYears(DescriptorJSON);
         SetGraphType(0);
         GenerateLookupTable(DescriptorJSON);
+        GenerateStatReferenceList(DescriptorJSON);
+        ParseStatList();
         g_StatID = 1;
         g_HMSYear = g_LastYear;
         ColorByHMS();
-        GenerateStatReferenceList(DescriptorJSON);
-        ParseStatList();
         console.log(g_LookupTable);
         console.log(g_StatList);
         BuildTabs();
