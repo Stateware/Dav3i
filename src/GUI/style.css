@@ -137,6 +137,19 @@
     pointer-events: all;
 }
 
+/*The tab that is used to scroll the other tabs to the left*/
+#scroll-left{
+    float: left;
+}
+
+/*The tab that is used to scroll the other tabs to the right*/
+#scroll-right{
+    position: absolute;
+    right: 0;
+    top: 0
+}
+
+/*Changes the background color of the currentlyed selected tab*/
 .selected-tab{
     background-color: #FFF;
 }
