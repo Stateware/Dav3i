@@ -27,7 +27,7 @@
      Description:             Web interface for data visualization
      Date Created:            2/19/2015
      Contributors:            Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts, Nicholas Denaro
-     Date Last Modified:      4/16/2015
+     Date Last Modified:      4/18/2015
      Last Modified By:        Nicholas Denaro
      Dependencies:            style.css, loading_script.js, lookup_table.js, map.js, data.js
      Additional Notes:        N/A
@@ -103,23 +103,23 @@
             <section class="settings">
                 <img class="logo" src="res/logo.png" alt="Logo"/>
                 <h1 class="open-sans"><h1>
-                <button id="clear" class="flat-button" onclick>Clear</button>
                 <button id="settings" class="flat-button" onclick="OpenSettings()">Advanced Settings</button>
             </section>
 			
             <section class="graph" id="graph">
                 <div>
-                    <div id="scroll-left" class="graph-tab" onclick="RotateTabs(-1);">-</div>
+                    <img src="res/arrow_left.png" width="22" height="22" id="scroll-left" class="graph-tab" onclick="RotateTabs(-1);"></img>
                     <div id="tabsDiv" class="tabWrapper"></div>
-                    <div id="scroll-right" class="graph-tab" onclick="RotateTabs(1);">+</div>
+                    <img src="res/arrow_right.png" width="22" height="22" id="scroll-right" class="graph-tab" onclick="RotateTabs(1);"></img>
                 </div>
                 <div id="graphs">
                 </div>
             </section>
 			
             <section class="expand">
-                <img src="res/arrow_left.png" id="expand" width="30" height="30" onclick="Expand()" style="PADDING-RIGHT: 10px"/>
+                <img src="res/arrow_right.png" id="expand" width="30" height="30" onclick="Expand()" style="PADDING-RIGHT: 10px"/>
             </section>
+            <button id="clear" class="flat-button" onclick style="position: absolute; bottom: 0px; right: -55px">Clear</button>
         </div>
         
         <div class="expand-black">
@@ -127,6 +127,7 @@
 		
         <div id="map">
         </div>
+
     	
         <div class="footer">
             <p class="footer-text">Copyright <span onclick="teamPopup()" onmouseover="this.style.cursor='pointer'"><strong>Stateware Team</strong></span>. Licensed under the version 3 of the <strong><a href="http://www.gnu.org/licenses/">GNU General Public License</a></strong>. Built using <strong><a href="http://jvectormap.com/">jVectorMap</a></strong> and <strong><a href ="https://developers.google.com/chart/">Google Charts</a></strong>.</p>

@@ -225,7 +225,7 @@ function Expand()
 {
     $(".control-panel").animate({width:"97.5%"}, 500);
     $("#expand").attr("onclick","Shrink()");
-    $("#expand").attr("src","res/arrow_right.png");
+    $("#expand").attr("src","res/arrow_left.png");
     $("#scroll-left").fadeOut(400);
     $("#scroll-right").fadeOut(400);
     $(".expand-black").fadeIn(400);
@@ -253,7 +253,7 @@ function Shrink()
 {
     $(".control-panel").animate({width:"25%"}, 500);
     $("#expand").attr("onclick","Expand()");
-    $("#expand").attr("src","res/arrow_left.png");
+    $("#expand").attr("src","res/arrow_right.png");
     $("#scroll-left").fadeIn(400);
     $("#scroll-right").fadeIn(400);
     $(".expand-black").fadeOut(400);
