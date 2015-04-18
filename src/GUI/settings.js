@@ -114,8 +114,8 @@ function SetYearRange()
 
     if(canContinue)
     {
-    	g_StartYear=startDiv.value;
-        g_EndYear=endDiv.value;
+        g_YearStart=startDiv.value;
+        g_YearEnd=endDiv.value;
         g_HMSYear=heatmapYearDiv.value;
         return(true);
     }
