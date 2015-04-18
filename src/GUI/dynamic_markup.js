@@ -124,9 +124,34 @@ function ChooseTab(element)
     document.getElementById(element.id+"-graphs").style.display="block";
     g_StatID=Number(element.getAttribute("stat"));
     ColorByHMS();
-    
+
     GenerateSubDivs();
     GenerateGraphs();
+}
+
+// Author: Nicholas Denaro
+// Date Created: 4/18/2015
+// Last Modified: 4/18/2015 by Nicholas Denaro
+// Description: Rotates the tabs left or right depending on the direction
+// PRE: direction!=0
+// POST: The first/last tab is moved to the last/first position
+function RotateTabs(direction)
+{
+    var div;
+    var tabs=document.getElementById("tabsDiv");
+    var children=tabs.childNodes;
+    if(direction>0)
+    {
+        div=children[0];
+        tabs.removeChild(div);
+        tabs.appendChild(div);
+    }
+    else
+    {
+        div=children[children.length-1];
+        tabs.removeChild(div);
+        tabs.insertBefore(div,children[0]);
+    }
 }
 
 // Author: Emma Roudabush
@@ -201,7 +226,8 @@ function Expand()
     $(".control-panel").animate({width:"97.5%"}, 500);
     $("#expand").attr("onclick","Shrink()");
     $("#expand").attr("src","res/arrow_right.png");
-    $("#graph-tab-tooltip").fadeOut(400);
+    $("#scroll-left").fadeOut(400);
+    $("#scroll-right").fadeOut(400);
     $(".expand-black").fadeIn(400);
     setTimeout(function () 
     {
@@ -228,11 +254,16 @@ function Shrink()
     $(".control-panel").animate({width:"25%"}, 500);
     $("#expand").attr("onclick","Expand()");
     $("#expand").attr("src","res/arrow_left.png");
-    $("#graph-tab-tooltip").fadeIn(400);
+    $("#scroll-left").fadeIn(400);
+    $("#scroll-right").fadeIn(400);
     $(".expand-black").fadeOut(400);
-    setTimeout(function ()
+    setTimeout(function()
     {
         g_Expanded = false;
+        while(document.getElementById("tabsDiv").childNodes[0]!=document.getElementById("id-"+g_StatList[g_StatID]))
+        {
+            RotateTabs(-1);
+        }
         GenerateSubDivs();
         GenerateGraphs();
     }, 500);  

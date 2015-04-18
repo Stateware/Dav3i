@@ -108,11 +108,10 @@
             </section>
 			
             <section class="graph" id="graph">
-                <div id="graph-tab-tooltip" class="tab-tooltip" onclick="Expand()" tooltip="Expand the graphs section to see more stats."><b>...</b></div>
-                <div class="tabWrapper">
-                    <div id="tabsDiv" class="tabWrapper">
-
-                    </div>
+                <div>
+                    <div id="scroll-left" class="graph-tab" onclick="RotateTabs(-1);">-</div>
+                    <div id="tabsDiv" class="tabWrapper"></div>
+                    <div id="scroll-right" class="graph-tab" onclick="RotateTabs(1);">+</div>
                 </div>
                 <div id="graphs">
                 </div>
