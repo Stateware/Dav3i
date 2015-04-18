@@ -129,6 +129,7 @@
     text-transform: uppercase;
     background-color: #EAE7C2;
     top: 4px;
+    cursor: default;
     -webkit-transition: all 0.5s linear;
        -moz-transition: all 0.5s linear;
         -ms-transition: all 0.5s linear;

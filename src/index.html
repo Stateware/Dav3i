@@ -87,9 +87,9 @@
         <div class="timespan">
             <h3 class="open-sans">Timespan Selection</h3>
             <table class="settings-timespans-table">
-                <tr><td class="settings-timespans-text">Start Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-start" class="year-selector" maxlength="4" size="4" required></input></td></tr>
-                <tr><td class="settings-timespans-text">End Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-end" class="year-selector" maxlength="4" size="4" required></input></td></tr>
-                <tr><td class="settings-timespans-text">Heatmap Year:&emsp;</td><td class="settings-timespans-boxes"><input id="heatmap-year" class="year-selector" maxlength="4" size="4" required></input></td></tr>
+                <tr><td class="settings-timespans-text">Start Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-start" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-start-error" style="cursor: default;">&emsp;</td></tr>
+                <tr><td class="settings-timespans-text">End Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-end" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-end-error" style="cursor: default;">&emsp;</td></tr>
+                <tr><td class="settings-timespans-text">Heatmap Year:&emsp;</td><td class="settings-timespans-boxes"><input id="heatmap-year" class="year-selector" maxlength="4" size="4" required></input></td><td id="heatmap-year-error" style="cursor: default;">&emsp;</td></tr>
             </table>
         </div>
         <button id="settings" class="flat-button" onclick="CloseSettings()">Close</button>
@@ -108,9 +108,9 @@
 			
             <section class="graph" id="graph">
                 <div>
-                    <img src="res/arrow_left.png" width="22" height="22" id="scroll-left" class="graph-tab" onclick="RotateTabs(-1);"></img>
+                    <img src="res/arrow_left.png" width="22" height="22" id="scroll-left" class="graph-tab" onclick="RotateTabs(-1);" style="cursor: pointer;"></img>
                     <div id="tabsDiv" class="tabWrapper"></div>
-                    <img src="res/arrow_right.png" width="22" height="22" id="scroll-right" class="graph-tab" onclick="RotateTabs(1);"></img>
+                    <img src="res/arrow_right.png" width="22" height="22" id="scroll-right" class="graph-tab" onclick="RotateTabs(1);" style="cursor: pointer;"></img>
                 </div>
                 <div id="graphs">
                 </div>

@@ -184,34 +184,11 @@ function OpenSettings()
 // POST: Settings overlay and mask is gone
 function CloseSettings()
 {
-    var canContinue=true;
-    var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
-
-    if(startDiv.value==""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max)))
-    {
-        canContinue=false;
-    }
-    if(endDiv.value==""||(Number(endDiv.value)<Number(endDiv.min)||Number(endDiv.value)>Number(endDiv.max)))
-    {
-        canContinue=false;
-    }
-    if(heatmapYearDiv.value==""||(Number(heatmapYearDiv.value)<Number(heatmapYearDiv.min)||Number(heatmapYearDiv.value)>Number(heatmapYearDiv.max)))
-    {
-        canContinue=false;
-    }
-    if(endDiv.value<startDiv.value)
-    {
-        canContinue=false;
-    }
-
-    if(canContinue)
+    if(SetYearRange())
     {
         $(".settings-screen, .settings-black").fadeOut(400);
-        g_StartYear=startDiv.value;
-        g_EndYear=endDiv.value;
-        g_HMSYear=heatmapYearDiv.value;
+        ColorByHMS();
+        GenerateGraphs();
     }
 }
 
