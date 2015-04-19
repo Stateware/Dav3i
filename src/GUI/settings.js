@@ -45,6 +45,19 @@ function SetGraphType(type)
     }
 }
 
+// Author: Joshua Crafts
+// Date Created: 4/19/2015
+// Last Modified: 4/19/2015 by Joshua Crafts
+// Description: To set g_VaccHMS
+// PRE: new is a number between 0-2
+// POST: g_VaccHMS is set to the appropriate stat, and the map is recolored/revalued accordingly
+function SetVaccHMS(newVaccHMS)
+{
+    g_VaccHMS = newVaccHMS;
+    ColorByHMS();
+}
+
+
 // Author: Nicholas Denaro
 // Date Created: 4/18/2015
 // Last Modified: 4/18/2015 by Nicholas Denaro
