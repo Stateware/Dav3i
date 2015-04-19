@@ -113,9 +113,7 @@ $(function(){
         backgroundColor: 'transparent',
         regionStyle: {
             initial: {
-                fill: '#999999',
-                "stroke-width": 0.2,
-                stroke: '#112211'
+                fill: '#888888'
             },
             hover: {
                 "fill-opacity": 0.7
