@@ -76,9 +76,9 @@
     </div>
 	
     <div class="settings-screen">
-        <h1 class="open-sans">Settings</h1>
+        <h1>Settings</h1>
         <div class="graph-choice">
-            <h3 class="open-sans">Graph Type</h3>
+            <h3>Graph Type</h3>
             <form action="">
                 <input type="radio" onclick="SetGraphType(0)" name="graphType" checked="checked" value="0">Regional</input><br>
                 <input type="radio" onclick="SetGraphType(1)" name="graphType" value="1">Combined</input><br>
@@ -86,15 +86,23 @@
             </form>
         </div>
         <div class="timespan">
-            <h3 class="open-sans">Timespan Selection</h3>
+            <h3>Timespan Selection</h3>
             <table class="settings-timespans-table">
                 <tr><td class="settings-timespans-text">Start Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-start" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-start-error" style="cursor: default;">&emsp;</td></tr>
                 <tr><td class="settings-timespans-text">End Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-end" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-end-error" style="cursor: default;">&emsp;</td></tr>
                 <tr><td class="settings-timespans-text">Heatmap Year:&emsp;</td><td class="settings-timespans-boxes"><input id="heatmap-year" class="year-selector" maxlength="4" size="4" required></input></td><td id="heatmap-year-error" style="cursor: default;">&emsp;</td></tr>
             </table>
         </div>
-        <button class="flat-button" onclick="SetYearRange()">Apply</button>
-        <button id="settings" class="flat-button" onclick="CloseSettings()">Close</button>
+        <div class="vacc-choice">
+            <h3>Stat for Vaccinations Heat Map</h3>
+            <form action="">
+                <input type="radio" onclick="SetVaccHMS(0)" name="graphType" value="0">SIA</input>
+                <input type="radio" onclick="SetVaccHMS(1)" name="graphType" checked="checked" value="1">MCV1</input>
+                <input type="radio" onclick="SetVaccHMS(2)" name="graphType" value="2">MCV2</input>
+            </form>
+        </div>
+        <button class="flat-button" onclick="SetYearRange()" style="position: relative; top: 60%">Apply</button>
+        <button id="close-settings" class="flat-button" onclick="CloseSettings()">Close</button>
     </div>
 	
     <div class="main-screen">
@@ -132,7 +140,7 @@
 
     	
         <div class="footer">
-            <p class="footer-text">Copyright <span onclick="teamPopup()" onmouseover="this.style.cursor='pointer'"><strong>Stateware Team</strong></span>. Licensed under the version 3 of the <strong><a href="http://www.gnu.org/licenses/">GNU General Public License</a></strong>. Built using <strong><a href="http://jvectormap.com/">jVectorMap</a></strong> and <strong><a href ="https://developers.google.com/chart/">Google Charts</a></strong>.</p>
+            <p class="footer-text">Copyright <span onclick="teamPopup()" onmouseover="this.style.cursor='pointer'"><strong>Stateware Team</strong></span>. Licensed under version 3 of the <strong><a href="http://www.gnu.org/licenses/">GNU General Public License</a></strong>. Built using <strong><a href="http://jvectormap.com/">jVectorMap</a></strong> and <strong><a href ="https://developers.google.com/chart/">Google Charts</a></strong>.</p>
             <p onclick="bugPopup()" onmouseover="this.style.cursor='pointer'" class="bug-report"><strong>Report a bug</strong></p>
         </div>
     </div>

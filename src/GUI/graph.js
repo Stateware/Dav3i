@@ -114,7 +114,7 @@ function GraphCombined(divID) {
     var data = GenerateCombinedData(data);
     var options = {
         seriesType: "line",
-        legend: {position: 'bottom'},
+        legend: {position: 'top'},
         vAxis: {
             viewWindowMode:'explicit',
             viewWindow: {
@@ -257,41 +257,53 @@ function GenerateSingleData(data)
 function GenerateCombinedData()
 {
     // create array with indices for all years plus a header row
-    var dataArray = new Array((g_YearEnd-g_YearStart)+2);
-    var dataTable;
     var currentNode;
     var i, j;
-    // fill array
-    for (i = g_YearStart-g_FirstYear; i < (g_YearEnd-g_YearStart)+2; i++)
+    var dataTable = new google.visualization.DataTable();
+    var type = 0;
+    
+    dataTable.addColumn('number','Year');
+    
+    currentNode = g_DataList.start;
+    for (i = 0; i < g_DataList.size; i++)
     {
-        // create array in each index the length of the data list, plus a column for year
-        dataArray[i] = new Array(g_DataList.size + 1);
-        currentNode = g_DataList.start;
-        // fill header row with region names
-        if (i == 0)
-        {
-            dataArray[i][0] = 'Region';
-            for (j = 1; j < g_DataList.size + 1; j++)
-            {
-                dataArray[i][j] = currentNode.name;
-                currentNode = currentNode.next;
-            }
-        }
-        // fill first column with years and the rest with data
-        else
-        {
-            dataArray[i][0] = i + 1979;
-            for (j = 1; j < g_DataList.size + 1; j++)
-            {
-                // data is set using currently selected stat ID
-                dataArray[i][j] = Number(currentNode.data[g_StatID][i-1]);
-                currentNode = currentNode.next;
-            }
-        }
+        dataTable.addColumn('number', currentNode.name);
+        currentNode = currentNode.next;
     }
-    // turns 2D array into data table for graph, second argument denotes that 0 indices are headers, see documentation for more info
-    dataTable = google.visualization.arrayToDataTable(dataArray, false);
-    console.log(dataTable);
+
+    for(i=0;i<g_ParsedStatList[1].length;i++)
+    {
+        if(g_StatID == g_ParsedStatList[1][i] && (g_ParsedStatList[2][i] != -1 || g_ParsedStatList[2][i] != -1))
+        {
+            type = 1;  
+        }
+    } 
+
+    // filling the data table
+    if (type == 0 && g_FirstYear == g_YearStart)
+    {
+        var row = new Array(g_DataList.size + 1);
+        row[0] = g_FirstYear;
+        currentNode = g_DataList.start;
+        for (j = 0; j < g_DataList.size; j++)
+        {
+            row[j+1] = FixMissingData(Number(currentNode.data[g_StatID][0]));
+            currentNode = currentNode.next;
+        }
+        dataTable.addRow(row);
+    }
+    for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_YearStart)+1;i++)
+    {   
+        var row = new Array(g_DataList.size + 1);
+        row[0] = g_FirstYear+i;
+        currentNode = g_DataList.start;
+        for (j = 0; j < g_DataList.size; j++)
+        {
+            row[j+1] = FixMissingData(Number(currentNode.data[g_StatID][i]));
+            currentNode = currentNode.next;
+        }
+        dataTable.addRow(row);
+    }
     return dataTable;
 }
 
@@ -320,10 +332,6 @@ function GenerateSumNode(){
             ass2ID = g_ParsedStatList[3][i];   
         }
     }
-
-    console.log(g_StatID);
-    console.log(ass1ID);
-    console.log(ass2ID);
 
     data[g_StatID] = new Array((g_YearEnd-g_YearStart)+1);
     if (ass1ID > -1)
@@ -391,10 +399,6 @@ function GenerateVaccineData(data)
         }
     }
     // use parsed stat list to find mcv1 and mcv2 ids
-
-    console.log(siaID);
-    console.log(mcv1ID);
-    console.log(mcv2ID);
 
     var i,j;
     for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_YearStart)+1;i++)
