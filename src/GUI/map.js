@@ -92,7 +92,7 @@ $(function(){
                     }
                     else
                     {
-                        data[key] = -1;
+                        //data[key] = -1;
                     }
                 }
                 isFound = false;
@@ -100,6 +100,7 @@ $(function(){
             
             map.series.regions[0].params.min = min;
             map.series.regions[0].params.max = max;
+            map.reset();
             map.series.regions[0].setValues(data);
         });
     }
@@ -168,7 +169,7 @@ $(function(){
             else
                 tipString += g_StatList[hmsID];
             tipString += " in " + g_HMSYear + ": ";
-            if (map.series.regions[0].values[key] == -1)            
+            if (map.series.regions[0].values[key] === undefined)            
                 tipString += "No Data Available";
             else if (type == 1)
                 tipString += (map.series.regions[0].values[key] * 100).toFixed(0) + "%";
