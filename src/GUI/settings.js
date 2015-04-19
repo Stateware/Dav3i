@@ -70,9 +70,12 @@ function SetYearRange()
     document.getElementById(endDiv.id+"-error").innerHTML="&emsp;";
     document.getElementById(heatmapYearDiv.id+"-error").innerHTML="&emsp;";
 
-    document.getElementById(startDiv.id+"-error").removeAttribute("title");
-    document.getElementById(endDiv.id+"-error").removeAttribute("title");
-    document.getElementById(heatmapYearDiv.id+"-error").removeAttribute("title");
+    document.getElementById(startDiv.id+"-error").removeAttribute("tooltip");
+    document.getElementById(endDiv.id+"-error").removeAttribute("tooltip");
+    document.getElementById(heatmapYearDiv.id+"-error").removeAttribute("tooltip");
+    document.getElementById(startDiv.id+"-error").className="";
+    document.getElementById(endDiv.id+"-error").className="";
+    document.getElementById(heatmapYearDiv.id+"-error").className="";
 
 
 	if(startDiv.value==""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max)))
@@ -80,24 +83,27 @@ function SetYearRange()
         canContinue=false;
         startDiv.style["box-shadow"]="0px 0px 8px #F00";
         document.getElementById(startDiv.id+"-error").style["cursor"]="help";
-        document.getElementById(startDiv.id+"-error").innerHTML="!";
-        document.getElementById(startDiv.id+"-error").setAttribute("title","Out of range: "+startDiv.min+"-"+startDiv.max);
+        document.getElementById(startDiv.id+"-error").innerHTML="X";
+        document.getElementById(startDiv.id+"-error").setAttribute("tooltip","Out of range: "+startDiv.min+"-"+startDiv.max);
+        document.getElementById(startDiv.id+"-error").className="settings-error";
     }
     if(endDiv.value==""||(Number(endDiv.value)<Number(endDiv.min)||Number(endDiv.value)>Number(endDiv.max)))
     {
         canContinue=false;
         endDiv.style["box-shadow"]="0px 0px 8px #F00";
         document.getElementById(endDiv.id+"-error").style["cursor"]="help";
-        document.getElementById(endDiv.id+"-error").innerHTML="!";
-        document.getElementById(endDiv.id+"-error").setAttribute("title","Out of range: "+endDiv.min+"-"+endDiv.max);
+        document.getElementById(endDiv.id+"-error").innerHTML="X";
+        document.getElementById(endDiv.id+"-error").setAttribute("tooltip","Out of range: "+endDiv.min+"-"+endDiv.max);
+        document.getElementById(endDiv.id+"-error").className="settings-error";
     }
     if(heatmapYearDiv.value==""||(Number(heatmapYearDiv.value)<Number(heatmapYearDiv.min)||Number(heatmapYearDiv.value)>Number(heatmapYearDiv.max)))
     {
         canContinue=false;
         heatmapYearDiv.style["box-shadow"]="0px 0px 8px #F00";
 		document.getElementById(heatmapYearDiv.id+"-error").style["cursor"]="help";
-        document.getElementById(heatmapYearDiv.id+"-error").innerHTML="!";
-        document.getElementById(heatmapYearDiv.id+"-error").setAttribute("title","Out of range: "+heatmapYearDiv.min+"-"+heatmapYearDiv.max);
+        document.getElementById(heatmapYearDiv.id+"-error").innerHTML="X";
+        document.getElementById(heatmapYearDiv.id+"-error").setAttribute("tooltip","Out of range: "+heatmapYearDiv.min+"-"+heatmapYearDiv.max);
+        document.getElementById(heatmapYearDiv.id+"-error").className="settings-error";
     }
     if(endDiv.value<startDiv.value)
     {
@@ -106,10 +112,12 @@ function SetYearRange()
         endDiv.style["box-shadow"]="0px 0px 8px #F00";
         document.getElementById(startDiv.id+"-error").style["cursor"]="help";
         document.getElementById(endDiv.id+"-error").style["cursor"]="help";
-        document.getElementById(startDiv.id+"-error").innerHTML="!";
-        document.getElementById(endDiv.id+"-error").innerHTML="!";
-        document.getElementById(startDiv.id+"-error").setAttribute("title","Must be before End.");
-        document.getElementById(endDiv.id+"-error").setAttribute("title","Must be after Start.");
+        document.getElementById(startDiv.id+"-error").innerHTML="X";
+        document.getElementById(endDiv.id+"-error").innerHTML="X";
+        document.getElementById(startDiv.id+"-error").setAttribute("tooltip","Year must be before End.");
+        document.getElementById(endDiv.id+"-error").setAttribute("tooltip","Year must be after Start.");
+        document.getElementById(startDiv.id+"-error").className="settings-error";
+        document.getElementById(endDiv.id+"-error").className="settings-error";
     }
 
     if(canContinue)
@@ -117,6 +125,8 @@ function SetYearRange()
         g_YearStart=startDiv.value;
         g_YearEnd=endDiv.value;
         g_HMSYear=heatmapYearDiv.value;
+        ColorByHMS();
+        GenerateGraphs();
         return(true);
     }
     else

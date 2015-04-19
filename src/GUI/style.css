@@ -202,6 +202,20 @@
     width: 220px;
 }
 
+/* while hovering ver the ..., it shows the title*/
+.settings-error:hover:after{
+    background: #333;
+    font-family: 'Open Sans Condensed', sans-serif;
+    background: rgba(0,0,0,.8);
+    border-radius: 5px;
+    color: #fff;
+    content: attr(tooltip);
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    width: 220px;
+}
+
 /* sets styling for subgraph section */
 .subgraph {
     position: relative;
