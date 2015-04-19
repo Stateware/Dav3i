@@ -144,7 +144,8 @@ function GraphVaccine(divID, node) {
             viewWindowMode:'explicit',
             viewWindow: {
                 min:0
-            }
+            },
+            format: '###%'
         },
         hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2',
@@ -364,6 +365,15 @@ function GenerateSumNode(){
             names += "; ";
         currentNode = currentNode.next;
     }
+    if (g_StatList[g_StatID].indexOf("VACC") > -1)
+    {
+        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_YearStart)+1; j++)
+        {
+            data[g_StatID][j] = data[g_StatID][j] / g_DataList.size;
+            data[ass1ID][j] = data[ass1ID][j] / g_DataList.size;
+            data[ass2ID][j] = data[ass2ID][j] / g_DataList.size;
+        }
+    }
     
     var newNode = new t_AsdsNode(-1, "SUM", names, data);
 
@@ -403,7 +413,7 @@ function GenerateVaccineData(data)
     var i,j;
     for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_YearStart)+1;i++)
     {
-        dataTable.addRow([1980+i,parseFloat(data[mcv1ID][i])*100,parseFloat(data[mcv2ID][i])*100,parseFloat(data[siaID][i])*100]);
+        dataTable.addRow([1980+i,parseFloat(data[mcv1ID][i]),parseFloat(data[mcv2ID][i]),parseFloat(data[siaID][i])]);
     }
     
     return dataTable;   
