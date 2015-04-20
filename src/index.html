@@ -64,6 +64,8 @@
         <center>
             <img src="res/logo.png" alt="Logo"/>
             <br>
+            <h1 class="open-sans">Disease and Virus Vaccination Visualization Interface<h1>
+            <br>
             <div class="spinner">
                 <div class="bounce1"></div>
                 <div class="bounce2"></div>
@@ -112,8 +114,8 @@
         <div class="control-panel">
             <section class="settings">
                 <img class="logo" src="res/logo.png" alt="Logo"/>
-                <h1 class="open-sans"><h1>
-                <button id="settings" class="flat-button" onclick="OpenSettings()">Advanced Settings</button>
+                <h1 class="open-sans">Measles Data Visualization<h1>
+                <button id="settings" class="flat-button" onclick="OpenSettings()">Settings</button>
             </section>
 			
             <section class="graph" id="graph">
@@ -129,7 +131,6 @@
             <section class="expand">
                 <img src="res/arrow_right.png" id="expand" width="30" height="30" onclick="Expand()" style="PADDING-RIGHT: 10px"/>
             </section>
-            <button id="clear" class="flat-button" onclick style="position: absolute; bottom: 0px; right: -55px">Clear</button>
         </div>
         
         <div class="expand-black">
@@ -137,6 +138,7 @@
 		
         <div id="map">
         </div>
+        <button id="clear" class="flat-button" onclick>Clear Selection</button>
 
     	
         <div class="footer">

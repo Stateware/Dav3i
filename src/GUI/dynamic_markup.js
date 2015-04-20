@@ -23,7 +23,7 @@
 // Description:             This module contains the code needed to dynamically create modules on the client
 // Date Created:            3/26/2015
 // Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
-// Date Last Modified:      4/16/2015
+// Date Last Modified:      4/20/2015
 // Last Modified By:        Paul Jang
 // Dependencies:            index.html, lookup_table.js, data.js
 // Additional Notes:        N/A
@@ -101,6 +101,8 @@ function BuildDiv(stat)
     var div=document.createElement("DIV");
     div.id="id-"+stat+"-graphs";
     div.style.display="none";
+    div.style.top="8%";
+    div.style.height="87%";
     div.className="graph";
     document.getElementById("graphs").appendChild(div);
 }
@@ -211,6 +213,7 @@ function Expand()
             document.getElementById("region-graphs-1").style["height"] = "100%";
         }
         g_Expanded = true;
+        GenerateSubDivs();
         GenerateGraphs();
     }, 500);
 }
@@ -244,7 +247,7 @@ function Shrink()
 
 // Author: Paul Jang
 // Date Created: 4/2/2015
-// Last Modified: 4/16/2015 by Paul Jang
+// Last Modified: 4/20/2015 by Paul Jang
 // Description: Calls CreateDiv to dynamically generate subgraph divs and generate graphs
 // PRE: CreateDiv functions correctly, g_DataList is properly full
 // POST: Divs are created based on how many countries are selected,
@@ -272,19 +275,10 @@ function GenerateSubDivs()
                 document.getElementById("region-graphs-1").style["height"] = "100%";    
             }
         }
-        // if we are adding divs
-        else if(newNumDivs > 0)
+        else
         {
-            for(var i = 1; i<=newNumDivs; i++)
-                CreateSubDiv("region-graphs-"+(currentNumDivs+i),parentTabDivName);
-        }
-        // if we are removing divs
-        else if(newNumDivs < 0)
-        {
-            // delete all the elements and remake all the divs
-            newNumDivs *= (-1);
             document.getElementById(parentTabDivName).innerHTML = "";
-            for(var i=1; i<=(currentNumDivs - newNumDivs); i++)
+            for(var i = 1; i<=size; i++)
                 CreateSubDiv("region-graphs-"+i,parentTabDivName);
         }
     }
@@ -292,7 +286,7 @@ function GenerateSubDivs()
 
 // Author: Paul Jang
 // Date Created: 4/2/2015
-// Last Modified: 4/12/2015 by Nicholas Denaro
+// Last Modified: 4/20/2015 by Paul Jang
 // Description: Creates a single div with an inputted id and
 //              appends it to the specified parent div
 // PRE: Parent div exists
@@ -311,6 +305,31 @@ function CreateSubDiv(id,parent)
         }
     }
     document.getElementById(parent).appendChild(elem);
+    
+    if(!g_Expanded)
+        document.getElementById(elem.id).style["width"] = "100%";
+    else
+        document.getElementById(elem.id).style["width"] = "50%";
+
+    var originalHeight = document.getElementById(elem.id).style.height;
+
+    if((g_GraphType != 1) && (g_GraphType != 2))
+    {
+        $(elem).click(function() {
+            if(document.getElementById(id).style.width != "100%")
+            {
+            
+                document.getElementById(elem.id).style["width"] = "100%";
+                document.getElementById(elem.id).style["height"] = "100%";
+            }
+            else
+            {
+                document.getElementById(elem.id).style["width"] = "50%";
+                document.getElementById(elem.id).style["height"] = "50%";
+            }
+            GenerateGraphs();
+        });
+    }
 }
 
 // Author: Joshua Crafts

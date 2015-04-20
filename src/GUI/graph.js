@@ -144,7 +144,8 @@ function GraphVaccine(divID, node) {
             viewWindowMode:'explicit',
             viewWindow: {
                 min:0
-            }
+            },
+            format: '###%'
         },
         hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2',
@@ -222,10 +223,7 @@ function GenerateSingleData(data)
         type = type + 2;
     }    
 
-    // filling the data table
-    if (type == 0 && g_FirstYear == g_YearStart)
-        dataTable.addRow([g_FirstYear,FixMissingData(Number(data[g_StatID][0])),true]);
-    for(i=(g_YearStart-g_FirstYear)+1;i<(g_YearEnd-g_YearStart)+1;i++)
+    for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_FirstYear)+1;i++)
     {   
         switch(type) 
         {
@@ -292,7 +290,7 @@ function GenerateCombinedData()
         }
         dataTable.addRow(row);
     }
-    for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_YearStart)+1;i++)
+    for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_FirstYear)+1;i++)
     {   
         var row = new Array(g_DataList.size + 1);
         row[0] = g_FirstYear+i;
@@ -333,13 +331,13 @@ function GenerateSumNode(){
         }
     }
 
-    data[g_StatID] = new Array((g_YearEnd-g_YearStart)+1);
+    data[g_StatID] = new Array((g_YearEnd-g_FirstYear)+1);
     if (ass1ID > -1)
-        data[ass1ID] = new Array((g_YearEnd-g_YearStart)+1);
+        data[ass1ID] = new Array((g_YearEnd-g_FirstYear)+1);
     if (ass2ID > -1)
-        data[ass2ID] = new Array((g_YearEnd-g_YearStart)+1);
+        data[ass2ID] = new Array((g_YearEnd-g_FirstYear)+1);
 
-    for (j = 0; j < (g_YearEnd-g_YearStart)+1; j++)
+    for (j = 0; j < (g_YearEnd-g_FirstYear)+1; j++)
     {
         data[g_StatID][j] = 0;
         if (ass1ID > -1)
@@ -350,7 +348,7 @@ function GenerateSumNode(){
 
     for (i = 0; i < g_DataList.size; i++)
     {
-        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_YearStart)+1; j++)
+        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear)+1; j++)
         {
             if (Number(currentNode.data[g_StatID][j]) > 0)
                 data[g_StatID][j] += Number(currentNode.data[g_StatID][j]);
@@ -363,6 +361,15 @@ function GenerateSumNode(){
         if (currentNode != g_DataList.end)
             names += "; ";
         currentNode = currentNode.next;
+    }
+    if (g_StatList[g_StatID].indexOf("VACC") > -1)
+    {
+        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear)+1; j++)
+        {
+            data[g_StatID][j] = data[g_StatID][j] / g_DataList.size;
+            data[ass1ID][j] = data[ass1ID][j] / g_DataList.size;
+            data[ass2ID][j] = data[ass2ID][j] / g_DataList.size;
+        }
     }
     
     var newNode = new t_AsdsNode(-1, "SUM", names, data);
@@ -401,9 +408,9 @@ function GenerateVaccineData(data)
     // use parsed stat list to find mcv1 and mcv2 ids
 
     var i,j;
-    for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_YearStart)+1;i++)
+    for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
     {
-        dataTable.addRow([1980+i,parseFloat(data[mcv1ID][i])*100,parseFloat(data[mcv2ID][i])*100,parseFloat(data[siaID][i])*100]);
+        dataTable.addRow([1980+i,parseFloat(data[mcv1ID][i]),parseFloat(data[mcv2ID][i]),parseFloat(data[siaID][i])]);
     }
     
     return dataTable;   
