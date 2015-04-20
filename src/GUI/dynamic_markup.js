@@ -311,7 +311,7 @@ function CreateSubDiv(id,parent)
     else
         document.getElementById(elem.id).style["width"] = "50%";
 
-    var originalHeight = document.getElementById(elem.id).style.height;
+    document.getElementById(elem.id).style["height"] = "50%";
 
     if((((g_GraphType != 1) && (g_GraphType != 2)) && g_Expanded) || 
         ((g_StatList[g_StatID].indexOf("VACC") != -1 && g_GraphType != 2 && g_Expanded)))
