@@ -305,7 +305,7 @@
 
 /* sets automatic size and placement for logo image */
 .logo {
-    height: 90%;
+    height: 100%;
     float: left;
 }
 
