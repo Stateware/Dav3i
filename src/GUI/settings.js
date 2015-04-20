@@ -138,6 +138,7 @@ function SetYearRange()
         g_YearStart=startDiv.value;
         g_YearEnd=endDiv.value;
         g_HMSYear=heatmapYearDiv.value;
+        GenerateGraphs();
         ColorByHMS();
         return(true);
     }
