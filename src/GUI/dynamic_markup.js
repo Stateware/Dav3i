@@ -101,6 +101,8 @@ function BuildDiv(stat)
     var div=document.createElement("DIV");
     div.id="id-"+stat+"-graphs";
     div.style.display="none";
+    div.style.top="8%";
+    div.style.height="87%";
     div.className="graph";
     document.getElementById("graphs").appendChild(div);
 }
