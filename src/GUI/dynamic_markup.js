@@ -313,7 +313,7 @@ function CreateSubDiv(id,parent)
 
     var originalHeight = document.getElementById(elem.id).style.height;
 
-    if((g_GraphType != 1) && (g_GraphType != 2))
+    if((((g_GraphType != 1) && (g_GraphType != 2)) && g_Expanded) || (g_StatList[g_StatID].indexOf("VACC") != -1 && g_Expanded))
     {
         $(elem).click(function() {
             if(document.getElementById(id).style.width != "100%")
