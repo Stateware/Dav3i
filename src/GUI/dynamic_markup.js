@@ -279,19 +279,10 @@ function GenerateSubDivs()
                 document.getElementById("region-graphs-1").style["height"] = "100%";    
             }
         }
-        // if we are adding divs
-        else if(newNumDivs > 0)
+        else
         {
-            for(var i = 1; i<=newNumDivs; i++)
-                CreateSubDiv("region-graphs-"+(currentNumDivs+i),parentTabDivName);
-        }
-        // if we are removing divs
-        else if(newNumDivs < 0)
-        {
-            // delete all the elements and remake all the divs
-            newNumDivs *= (-1);
             document.getElementById(parentTabDivName).innerHTML = "";
-            for(var i=1; i<=(currentNumDivs - newNumDivs); i++)
+            for(var i = 1; i<=size; i++)
                 CreateSubDiv("region-graphs-"+i,parentTabDivName);
         }
     }
