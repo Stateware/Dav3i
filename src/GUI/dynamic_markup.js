@@ -247,7 +247,7 @@ function Shrink()
 
 // Author: Paul Jang
 // Date Created: 4/2/2015
-// Last Modified: 4/20/2015 by Paul Jang
+// Last Modified: 4/20/2015 by Kyle Nicholson
 // Description: Calls CreateDiv to dynamically generate subgraph divs and generate graphs
 // PRE: CreateDiv functions correctly, g_DataList is properly full
 // POST: Divs are created based on how many countries are selected,
@@ -261,12 +261,15 @@ function GenerateSubDivs()
         var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
         var currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
         var children = document.getElementById(parentTabDivName).childNodes;
-        var newNumDivs = size - currentNumDivs
+        var newNumDivs = size - currentNumDivs;
         // if we only need one graph for either combined lines or summation of lines
         if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
         {
             document.getElementById(parentTabDivName).innerHTML = "";
-            CreateSubDiv("region-graphs-1",parentTabDivName);
+            if(size != 0)
+            {
+            	CreateSubDiv("region-graphs-1",parentTabDivName);
+	        }
             // if the graph section is expanded
             if(g_Expanded)
             {
