@@ -190,6 +190,28 @@ function CloseSettings()
 }
 
 // Author: Emma Roudabush
+// Date Created: 3/30/2015
+// Last Modified: 3/31/2015 by Emma Roudabush
+// Description: Opens the settings overlay
+// PRE: N/A
+// POST: Settings overlay is showing with black backing mask
+function OpenHelp()
+{
+     $(".help-screen, .settings-black").fadeIn(400);
+}
+
+// Author: Emma Roudabush
+// Date Created: 3/5/2015
+// Last Modified: 4/16/2015 by Nicholas Denaro
+// Description: Closes the settings overlay and assigns global values
+// PRE: Settings overlay is currently showing on screen
+// POST: Settings overlay and mask is gone
+function CloseHelp()
+{
+    $(".help-screen, .settings-black").fadeOut(400);
+}
+
+// Author: Emma Roudabush
 // Date Created: 3/5/2015
 // Last Modified: 4/20/2015 by Kyle Nicholson
 // Description: Expands the c ontrol panel

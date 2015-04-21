@@ -74,7 +74,7 @@
             <button onclick="SwitchToMain()" class="begin">Begin</button>
         </center>
     </div>
-    <div class="settings-black" onclick="CloseSettings()">
+    <div class="settings-black" onclick="CloseSettings();CloseHelp();">
     </div>
 	
     <div class="settings-screen">
@@ -93,6 +93,7 @@
                 <tr><td class="settings-timespans-text">Start Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-start" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-start-error" style="cursor: default;">&emsp;</td></tr>
                 <tr><td class="settings-timespans-text">End Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-end" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-end-error" style="cursor: default;">&emsp;</td></tr>
                 <tr><td class="settings-timespans-text">Heatmap Year:&emsp;</td><td class="settings-timespans-boxes"><input id="heatmap-year" class="year-selector" maxlength="4" size="4" required></input></td><td id="heatmap-year-error" style="cursor: default;">&emsp;</td></tr>
+                <tr><td colspan="2"><button class="flat-button" onclick="SetYearRange()" style="position: relative; top: 60%">Apply</button></td></tr>
             </table>
         </div>
         <div class="vacc-choice">
@@ -103,8 +104,27 @@
                 <input type="radio" onclick="SetVaccHMS(2)" name="graphType" value="2">MCV2</input>
             </form>
         </div>
-        <button class="flat-button" onclick="SetYearRange()" style="position: relative; top: 60%">Apply</button>
+        
         <button id="close-settings" class="flat-button" onclick="CloseSettings()">Close</button>
+    </div>
+
+    <div class="help-screen">
+        <div class="scrollbar-hover" style="overflow-y: scroll; height: 85%;">
+            <h1>Help</h1>
+            <h3>Graphs</h3>
+            <p>Graph type may be switched by going to the settings.</p>
+            <p>Clicking on a graph expands/shrinks it.</p>
+            <h5>Regional</h5>
+            <p>This displays graphs seperately per country.</p>
+            <h5>Combined</h5>
+            <p>This displays all countries on one graph.</p>
+            <h5>Whole Selection</h5>
+            <p>This displays a single graph with aggregate data.</p>
+            <h3>Heatmap</h3>
+            <p>The heatmap values can be changed by changing the current tab.</p>
+            <p>The heatmap can be cleared of selection by clicking the button in the bottom left corner of the map.</p>
+        </div>
+        <button id="close-help" class="flat-button" style="position: relative; top: 0" onclick="CloseHelp()">Close</button>
     </div>
 	
     <div class="main-screen">
@@ -116,8 +136,8 @@
                 <img class="logo" src="res/logo.png" alt="Logo"/>
                 <h1 class="open-sans">Measles Data Visualization<h1>
                 <button id="settings" class="flat-button" onclick="OpenSettings()">Settings</button>
+                <button id="help" class="flat-button" onclick="OpenHelp()">Help</button>
             </section>
-			
             <section class="graph" id="graph">
                 <div>
                     <img src="res/arrow_left.png" width="22" height="22" id="scroll-left" class="graph-tab" onclick="RotateTabs(-1);" style="cursor: pointer;"></img>
@@ -136,9 +156,11 @@
         <div class="expand-black">
         </div>
 		
-        <div id="map">
+        <div id="map-container">
+            <div id="map">
+            </div>
+            <button id="clear" class="flat-button" onclick>Clear Selection</button>
         </div>
-        <button id="clear" class="flat-button" onclick>Clear Selection</button>
 
     	
         <div class="footer">

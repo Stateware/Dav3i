@@ -244,7 +244,8 @@
 }
 
 /* sets styling for overlay settings menu */
-.settings-screen{
+.settings-screen,
+.help-screen{
     position: relative;
     z-index: 5;
     margin-left: auto;
@@ -283,7 +284,8 @@
     height:35%;
 }
 
-#close-settings {
+#close-settings,
+#close-help {
     position: relative;
     top: 60%;
 }
@@ -333,6 +335,19 @@
 /* sets size for map */
 #map {
     position: relative;
+    /*top: 1%;
+    right: 1%;
+    height:90.5%;
+    width: 72%;
+    float: right;*/
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* sets size for map-container */
+#map-container {
+    position: relative;
     top: 1%;
     right: 1%;
     height:90.5%;
@@ -343,8 +358,10 @@
 
 #clear {
     position: absolute;
-    left: 28%;
-    top: 85%;
+    /*left: 28%;
+    top: 85%;*/
+    bottom: 1%;
+    left: 0;
     z-index: 2;
 }
 
@@ -395,7 +412,7 @@
   cursor: pointer;
   display: inline-block;
   font-family: 'Open Sans Condensed', sans-serif;
-  font-size: 12px;
+  font-size: 100%;
   line-height: 20px;
   margin-bottom: 0;
   margin-top: 10px;
