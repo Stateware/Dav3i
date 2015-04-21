@@ -60,9 +60,11 @@ function GenerateGraphs()
 	        switch(g_GraphType)
 	        {
 	            case 0:    
+                        var max = FindMax();
+                        console.log(max);
 	                for(var i=1; i<=g_DataList.size; i++)
 	                {
-	                    GraphRegional("region-graphs-"+i, curr);
+	                    GraphRegional("region-graphs-"+i, curr, max);
 	                    curr=curr.next;
 	                }
 	                break;
@@ -84,7 +86,7 @@ function GenerateGraphs()
 // Description: Takes stat data and divID to generate a graph for a single country and stat
 // PRE:
 // POST:
-function GraphRegional(divID, node) {
+function GraphRegional(divID, node, maxVal) {
     var data= GenerateSingleData(node.data);
     var options = {
         title: node.name,
@@ -93,7 +95,8 @@ function GraphRegional(divID, node) {
         vAxis: {
             viewWindowMode:'explicit',
             viewWindow: {
-                min:0
+                min: 0,
+                max: maxVal
             }
         },
         hAxis: {title: 'Year', format: '####'},
@@ -416,5 +419,45 @@ function GenerateVaccineData(data)
     }
     
     return dataTable;   
+}
+
+// Author: Joshua Crafts
+// Date Created: 4/7/2015
+// Last Modified: 4/13/2015 by Vanajam Soni
+// Description: Finds and returns maximum value of a stat for the entire list
+// PRE: g_DataList.size > 0
+// POST: FCTVAL == maximum value of the selected stat for the entire list
+function FindMax()
+{
+    var max = Number.MIN_VALUE;
+    var currentNode = g_DataList.start;
+    
+    var assID, ass2ID;
+
+    for(i=0;i<g_ParsedStatList[1].length;i++)
+    {
+        if(g_StatID == g_ParsedStatList[1][i])
+        {
+            ass1ID = g_ParsedStatList[2][i];
+            ass2ID = g_ParsedStatList[3][i];   
+        }
+    }
+
+
+    for (i = 0; i < g_DataList.size; i++)
+    {
+        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear) + 1;j++)
+        {
+            if (Number(currentNode.data[g_StatID][j]) > max)
+                max = Number(currentNode.data[g_StatID][j]);
+            if (ass1ID != -1 && Number(currentNode.data[ass1ID][j]) > max)
+                max = Number(currentNode.data[ass1ID][j]);
+            if (ass2ID != -1 && Number(currentNode.data[ass2ID][j]) > max)
+                max = Number(currentNode.data[ass2ID][j]);
+        }
+        currentNode = currentNode.next;
+    }
+    
+    return max;   
 }
 
