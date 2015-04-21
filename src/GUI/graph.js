@@ -36,10 +36,9 @@
 // POST: N/A
 function GenerateGraphs()
 {
-    var curr=g_DataList.start;
-
-    if(g_DataList.size != 0)
+	if(g_DataList != undefined && g_DataList.size != 0)
 	{
+    	var curr=g_DataList.start;    
 	    if (g_StatList[g_StatID].indexOf("VACC") > -1)
 	    {
 	        if (g_GraphType != 2)

@@ -205,7 +205,7 @@ function Expand()
     $(".expand-black").fadeIn(400);
     setTimeout(function () 
     {
-        if(g_DataList.size != 0)
+        if(g_DataList != undefined && g_DataList.size != 0)
         {
 	        GenerateSubDivs();
 	        // if single graph, graph is expanded to whole section
