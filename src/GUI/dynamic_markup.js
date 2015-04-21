@@ -205,16 +205,19 @@ function Expand()
     $(".expand-black").fadeIn(400);
     setTimeout(function () 
     {
-        GenerateSubDivs();
-        // if single graph, graph is expanded to whole section
-        if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
+        if(g_DataList.size != 0)
         {
-            document.getElementById("region-graphs-1").style["width"] = "100%";
-            document.getElementById("region-graphs-1").style["height"] = "100%";
-        }
-        g_Expanded = true;
-        GenerateSubDivs();
-        GenerateGraphs();
+	        GenerateSubDivs();
+	        // if single graph, graph is expanded to whole section
+	        if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
+	        {
+	            document.getElementById("region-graphs-1").style["width"] = "100%";
+	            document.getElementById("region-graphs-1").style["height"] = "100%";
+	        }
+	        g_Expanded = true;
+	        GenerateSubDivs();
+	        GenerateGraphs();
+	    }
     }, 500);
 }
 
