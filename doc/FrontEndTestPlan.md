@@ -25,8 +25,11 @@
  
 # 1.0 : Introduction  
  
-This document will cover the black box UI/UX testing of DAV3I, a data visualization website created by STATEWARE. These tests will be derived from our high level design documents and the variety of user interaction documents on our Github. Please keep in mind that, like with all testing frameworks, this is not an exhaustive list.  
+This document will cover the black box UI/UX testing of DAV3I, a data visualization website created by STATEWARE. These tests will be derived from our high level design documents and the variety of user interaction documents on our Github. Please keep in mind that, like with all testing frameworks, this is not an exhaustive list. For a complete test, a code review is also necessary.  
 
+This document is divided into four sections describing some main specifications of the front end--Selection of Countries, Graph Visualization, Settings Changes, and Customization of View. Each section will being with a series of Specification Tests, which ensures the functionality of the documented feature or group of features. The next group of tests are the Combination Specification Tests and Normal Operations Tests which describe use cases and modifications of the Specification tests. Lastly, there are Pathological Tests to be performed. These are a series of tests in which purposefully invalid and illogical inputs are used. These are simulating the worst-case scenarios and edge case user actions that would not fall in the typical range of normal operations.  
+
+It should be noted that the sequence of testing these features is not important. What is important, however, is the completion of the Specifications before all other types of testing. This ensures baseline functionality.  
 
 # 2.0 : Selection of Countries  
 
