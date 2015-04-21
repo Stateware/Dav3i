@@ -100,11 +100,15 @@ function GraphRegional(divID, node, maxVal) {
             }
         },
         hAxis: {title: 'Year', format: '####'},
+        series: {1: {type: "area", color: "transparent"}, 2: {color: "navy"}, 3: {type: "area", color: "navy"}},
+        isStacked: true,
         backgroundColor: '#EAE7C2'
     };
+
+    
 	
     // instantiate and draw chart using prepared data
-    var chart = new google.visualization.LineChart(document.getElementById(divID));
+    var chart = new google.visualization.ComboChart(document.getElementById(divID));
     chart.draw(data, options);
 }
 
@@ -148,7 +152,8 @@ function GraphVaccine(divID, node) {
         vAxis: {
             viewWindowMode:'explicit',
             viewWindow: {
-                min:0
+                min: 0,
+                max: 1
             },
             format: '###%'
         },
@@ -178,14 +183,8 @@ function FixMissingData(data)
         return null;
 }
 
-// Author: Vanajam Soni
-// Date Created: 4/7/2015
-// Last Modified: 4/13/2015 by Vanajam Soni
-// Description: Prepares Data given for a single country (taken as argument) into data table, for the global statID, 
-//              Also depends on graph type for bounded or unbounded data
-// PRE: N/A
-// POST: N/A
-function GenerateSingleData(data)
+// Deprecated regional data function - new version below
+/*function GenerateSingleData(data)
 {
     var type = 0;
 
@@ -249,6 +248,70 @@ function GenerateSingleData(data)
     }
 
     return dataTable;
+}*/
+
+// Author: Vanajam Soni, Joshua Crafts
+// Date Created: 4/7/2015
+// Last Modified: 4/13/2015 by Vanajam Soni
+// Description: Prepares Data given for a single country (taken as argument) into data table, for the global statID, 
+//              Also depends on graph type for bounded or unbounded data
+// PRE: N/A
+// POST: N/A
+function GenerateSingleData(data)
+{
+    var type = 0;
+
+    // type = 0 => unbounded or only has 1 bound
+    // type = 1 => both bounds exist
+
+    var dataTable = new google.visualization.DataTable(); // data table to be returned
+    
+    dataTable.addColumn('number','year');
+    
+    dataTable.addColumn('number', g_StatList[g_StatID]);
+
+    // get the bound stats from parsed stat list
+    var lowerBoundID = -1;
+    var upperBoundID = -1;
+
+    for(i=0;i<g_ParsedStatList[1].length;i++)
+    {
+        if(g_StatID == g_ParsedStatList[1][i])
+        {
+            lowerBoundID = g_ParsedStatList[2][i];
+            upperBoundID = g_ParsedStatList[3][i];   
+        }
+    }
+
+    // if both bounds exist, add columns for those
+    if(lowerBoundID != -1 && upperBoundID != -1)
+    {
+        dataTable.addColumn('number', 'lower bound space'); // area under lower bound
+        dataTable.addColumn('number', 'lower bound of confidence interval'); // additional line to outline confidence interval
+        dataTable.addColumn('number', 'size of confidence interval'); // area between upper bound and lower bound
+        dataTable.addColumn('number', 'upper bound of confidence interval'); // additional line to generate accurate upper bound tooltip, ow it would show size of confidence interval
+        type = 1;
+    }    
+
+    // add data to table from start year to end year
+    for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_FirstYear)+1;i++)
+    {   
+        switch(type) 
+        {
+            case 0: // unbounded
+                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i]))]);
+                break;
+            case 1: // bounded
+                if (Number(data[lowerBoundID][i]) == -1) // replace -1 with 0 when subtracting lower from upper for size of confidence interval
+                    var lower = 0;
+                else
+                    lower = Number(data[lowerBoundID][i]);
+                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i])),FixMissingData(Number(data[lowerBoundID][i])),FixMissingData(Number(data[lowerBoundID][i])),FixMissingData(Number(data[upperBoundID][i])-lower),FixMissingData(Number(data[upperBoundID][i]))]);
+                break;
+        }
+    }
+
+    return dataTable;
 }
 
 // Author: Joshua Crafts
@@ -282,19 +345,7 @@ function GenerateCombinedData()
         }
     } 
 
-    // filling the data table
-    if (type == 0 && g_FirstYear == g_YearStart)
-    {
-        var row = new Array(g_DataList.size + 1);
-        row[0] = g_FirstYear;
-        currentNode = g_DataList.start;
-        for (j = 0; j < g_DataList.size; j++)
-        {
-            row[j+1] = FixMissingData(Number(currentNode.data[g_StatID][0]));
-            currentNode = currentNode.next;
-        }
-        dataTable.addRow(row);
-    }
+    // filling the data table, iterate through each node, then through each year
     for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_FirstYear)+1;i++)
     {   
         var row = new Array(g_DataList.size + 1);
@@ -318,10 +369,10 @@ function GenerateCombinedData()
 // POST: N/A
 function GenerateSumNode(){
     
-    var data = new Array(g_StatList.length);   // data for the new node
-    var names = "";
+    var data = new Array(g_StatList.length);	// data for the new node
+    var names = "";				// list of names of regions included
     var i,j;
-    var currentNode = g_DataList.start;    // list iterator
+    var currentNode = g_DataList.start;		// list iterator
     
     // get the associated stats from parsed stat list
     var ass1ID = -1;
@@ -335,13 +386,14 @@ function GenerateSumNode(){
             ass2ID = g_ParsedStatList[3][i];   
         }
     }
-
+    // create arrays for necessary data 
     data[g_StatID] = new Array((g_YearEnd-g_FirstYear)+1);
     if (ass1ID > -1)
         data[ass1ID] = new Array((g_YearEnd-g_FirstYear)+1);
     if (ass2ID > -1)
         data[ass2ID] = new Array((g_YearEnd-g_FirstYear)+1);
 
+    // initialize arrays to 0
     for (j = 0; j < (g_YearEnd-g_FirstYear)+1; j++)
     {
         data[g_StatID][j] = 0;
@@ -351,6 +403,7 @@ function GenerateSumNode(){
             data[ass2ID][j] = 0;
     }
 
+    // add and store data for whole list
     for (i = 0; i < g_DataList.size; i++)
     {
         for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear)+1; j++)
@@ -362,11 +415,12 @@ function GenerateSumNode(){
             if (ass2ID > -1 && Number(currentNode.data[ass2ID][j]) > 0)
                 data[ass2ID][j] += Number(currentNode.data[ass2ID][j]);
         }
-        names += currentNode.name;
+        names += currentNode.name; // add name of current node to list of names
         if (currentNode != g_DataList.end)
             names += "; ";
         currentNode = currentNode.next;
     }
+    // divide by size of list to maintain percentages if vaccines
     if (g_StatList[g_StatID].indexOf("VACC") > -1)
     {
         for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear)+1; j++)
@@ -400,6 +454,7 @@ function GenerateVaccineData(data)
     
     var mcv1ID, mcv2ID,siaID;
 
+    // get associated stat ids
     siaID = g_StatID;
 
     for(i=0;i<g_ParsedStatList[1].length;i++)
@@ -410,8 +465,8 @@ function GenerateVaccineData(data)
             mcv2ID = g_ParsedStatList[3][i];   
         }
     }
-    // use parsed stat list to find mcv1 and mcv2 ids
 
+    // add data to table
     var i,j;
     for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
     {
@@ -434,6 +489,7 @@ function FindMax()
     
     var assID, ass2ID;
 
+    // get associated stat ids
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
         if(g_StatID == g_ParsedStatList[1][i])
@@ -443,7 +499,7 @@ function FindMax()
         }
     }
 
-
+    // find max value of needed data set
     for (i = 0; i < g_DataList.size; i++)
     {
         for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear) + 1;j++)
@@ -458,6 +514,9 @@ function FindMax()
         currentNode = currentNode.next;
     }
     
+    if (max < 0 || max == NaN || max === undefined || max == Number.MIN_VALUE)
+        max = 10;
+
     return max;   
 }
 
