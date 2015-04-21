@@ -49,6 +49,24 @@ It should be noted that the sequence of testing these features is not important.
 
 ## Specification Tests  
 
+When the Dav3i client is opened, there are 2 ways to select a country. These are:  
+
+&nbsp;1. Moving the mouse to the desired country and clicking on it.  
+&nbsp;2. Touching the desired country using a touchscreen.  
+
+After the first country is selected, the same process can be used to select as many countries as desired.  
+
+In absolute terms, as there are 205 regions on the map that can be selected, this yields 2 X 205 = 410 test cases which are needed to exhaustively test this functionality. However, exhaustive testing for the most part is not economical and does not uncover potential problems in the code. In order to create a reasonable number of tests, it is reasonable to select a smaller subset of countries, as without loss of generality, country selection is uniform across the map.  
+
+Once a number of countries are selected, in order to deselect a country, follow the same process as selecting a country, and the client will simply deselect the country in question.  
+
+There are 3 ways to deselect all of the countries that have been selected. These are:  
+
+&nbsp;1. Deselecting every country that is selected individually by touching them on a touchscreen.  
+&nbsp;2. Deselecting every country that is selected individually by clicking them with a mouse.  
+&nbsp;3. Pressing the "Clear Selection" button.  
+
+
 ## Combination Specification Tests  
 
 ## Normal Operations Tests  
