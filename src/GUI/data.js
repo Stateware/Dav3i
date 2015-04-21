@@ -42,7 +42,7 @@ var g_ParsedStatList;   // parsed stat reference list
 var g_GraphType;        // variable representing the graph type, enumerated 0 to 2
 var g_Clear = false;	// variable used by the clear selection function to avoid n^3 slowdown
 var g_Expanded = false; // variable used to determine whether or not the graph section is expanded
-var g_VaccHMS = 1;
+var g_VaccHMS = 1;	// variable used to determine which vaccination stat to use when heat mapping
 
 // prototype for ASDS node
 function t_AsdsNode(cid, cc2, name, data)

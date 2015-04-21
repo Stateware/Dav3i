@@ -70,6 +70,10 @@ Section 4 defines major design decisions, including previously specification of 
 
 **back end** refers to all code in /API/ or any program processes that take place on the server or database as opposed to on the user's machine.
 
+**compact view** refers to the default state of the UI, where the control panel takes up the left ~30% of the page.
+
+**expanded view** refers to the state of the UI when the control panel is expanded to take up the whole page.
+
 **front end** refers to index.html, all code in /GUI/, the program's user interface, and any background processes that take place on the user's machine, as opposed to on the server or database.
 
 **loading screen** refers to the entry point of the program, during which the loading script is run.
@@ -86,7 +90,7 @@ Section 4 defines major design decisions, including previously specification of 
 
 **bounds** refers to the upper and lower bounds of stats whose values are estimated.
 
-**control panel** refers to the section of the page which includes graphs, stat selection tabs, and the search bar.
+**control panel** refers to the section of the page which includes graphs, stat selection tabs, and the settings button.
 
 **graphs** refers to the graph or graphs drawn to represent the values of the selected stat for an area selection over the selected timespan.
 
@@ -100,13 +104,13 @@ Section 4 defines major design decisions, including previously specification of 
 
 **region** refers to 1 distinct and indivisible region for which a single set of stats exists in the database.
 
-**search bar** refers to the text input box where a user can search for a country to add to the ASDS.
-
 **selected stat** refers to the currently selected stat whose values are used to draw the graphs and color the map.
 
 **selected timespan** refers to the currently selected time interval for which graphs are wanted.
 
 **stat** refers to any of the measured statistics graphed by the program.
+
+**subdiv** refers to any of the divs generated in the control panel to accomodate graphs.
 
 **timespan** refers to the time interval for which data is available.
 
@@ -150,6 +154,8 @@ Section 4 defines major design decisions, including previously specification of 
 **associated data** refers to the stats in the stat reference list that are associated with some head stat. These are bundled with the head stat in the parsed stat list (defined in section 2.4.2).
 
 **lookup table** refers to the table containing CC2, name, and the value of a default selected stat for each region, indexed by CID.
+
+**no data list** refers to the list of regions that exist on the map, but do not exist in the lookup table. This is used to sanitize input to the area selection data, as otherwise our decision algorithm for adding or deleting a node may be interfered with.
 
 **parsed data** refers to region data parsed to fit the specification of the ASDS node.
 
@@ -216,6 +222,7 @@ style.css includes style for the main screen and loading screen.
 
 data.js is a JavaScript data module that contains all global variables needed across the program. It includes:  
  * `g_LookupTable` : variable containing lookup table
+ * `g_CountriesNoData` : variable containing no data list
  * `g_StatList` : variable containing stat reference list
  * `g_ParsedStatList` : variable containing parsed stat list
  * `g_FirstYear` : variable containing earliest year for which data exists
@@ -226,6 +233,9 @@ data.js is a JavaScript data module that contains all global variables needed ac
  * `g_statID` : stat ID representing selected stat
  * `g_HMSYear` : variable representing the year for which HMS data is stored
  * `g_GraphType` : variable representing the graph type, enumerated 0 to 2 (same as order defined in section 0.1.3)
+ * `g_Clear` : boolean variable that allows clear selection function to run in constant time by bypassing normal single node deletion.
+ * `g_Expanded` : boolean variable that is true in expanded view, false in compact view.
+ * `g_VaccHMS` : variable representing which stat is heat mapped when vaccinations is selected.
 
 It also includes the function prototype for the ASDS nodes and list, as well as insertion to and deletion from the list. (defined in section 2.4)
 
@@ -248,7 +258,6 @@ loading_script.js is a container front end script with a function that runs duri
  * Set stat reference list (using functions from lookup_table.js)
  * Set timespan (using functions from lookup_table.js)
  * Generate map colored by default HMS (using functions from lookup_table.js and map.js)
- * Hide loading screen when the user advances to the main page
 
 **settings.js**
 
@@ -256,20 +265,21 @@ settings.js is a front end script that takes user mouse clicks as input to a lis
  * Set g_YearStart and g_YearEnd
  * Set g_HMSYear
  * Set g_GraphType
+ * Set g_VaccHMS
 
 **map.js**
 
 map.js is a front end script that includes functions to:  
  * Generate map
  * Generate HMS value array indexed by CC2 (using g_LookupTable)
- * Reset HMS and map when selected stat changes (using data_query.js)
- * Reset map in the case of HMS change (getting HMS using lookup_table.js)
+ * Reset HMS and map when selected stat changes and recolor map (using lookup_table.js)
  * Make region selection and append new ASDS node to area selection data (using data_query.js)
+ * Build hover tip
 
 **data_query.js**
 
-data_query.js is a front end script that includes a function to:  
- * Take a CC2, translate it to CID and get name, make call to by_country.php using CID, parse returned data and create and return new ASDS node
+data_query.js is a front end script that includes functions to:  
+ * Take a CC2, call by_country.php and find necessary data to build and return new ASDS node
  * Check size of map selection list and size of ASDS list, and either add node for new selection or remove node from list
  * Take stat ID and call by_stat.php, return HMS
  * Take region data(JSON), and return parsed data
@@ -283,16 +293,16 @@ graph.js is a front end script that includes functions to graph a stat and its a
 Data Preparation:
 
 Used for stat type 0 when graph type = 0:  
- * Iterate through the ASDS list and compose a data table of all values for all nodes for one head stat, without its associated data. This table will yield a graph of containing each region's time series for a stat all together.
+ * Take a single ASDS node and compose a data table of all values for one head stat, with its associated data. This table will yield a graph of one region's time series for a stat, with bounds if they are available.
 
 Used for stat type 0 when graph type = 1:  
- * Take a single ASDS node and compose a data table of all values for one head stat, with its associated data. This table will yield a graph of one region's time series for a stat, with bounds if they are available.
+ * Iterate through the ASDS list and compose a data table of all values for all nodes for one head stat, without its associated data. This table will yield a graph containing each region's time series for a stat all together.
 
 Used for stat type 1 when graph type = 0 or graph type = 1:  
  * Take a single ASDS node and compose a data table of all values for one head stat, with its associated data. This table will yield a graph of one region's MCV1 and MCV2 time series, as well as bars of SIA data.
 
 Used to sum stat data when graph type = 2:  
- * Sum the values of a head stat and its associated data over the entire area selection and return a dummy ASDS node containing summed data. This node can be used by the single ASDS node data preparation functions to create a data table that represents data over the whole area selection.
+ * Sum the values of a head stat and its associated data over the entire area selection and return a dummy ASDS node containing summed data. This node can be used by the single ASDS node data preparation functions to create a data table that represents data over the whole area selection. In the case of vaccines, the summed values must be divided by the size of the list so that they still function as percentages.
 
 Graphing:
 
@@ -309,6 +319,13 @@ Used for stat type 1 for all graph types:
 
 dynamic_markup.js is a front end script that includes functions to:
  * generate html to display a tab for each member of g_StatReferenceList, used to choose selected stat and display graphs based on selected stat and graph type
+ * generate html for graphing divs, the number and size of which are decided based on graph type and view
+ * hide the loading screen
+ * set mins, maxes, and default values for the settings inputs
+ * open and close settings
+ * rotate tab list as user scrolls through it
+ * switch between expanded view and compact view
+ * create alert popups for team and bug report
 
 ##2.1 : Client/Server Interface
 
@@ -442,12 +459,21 @@ The UX is defined in UserExperience.png. The 'default' block points to default s
 ##3.4 : Input Handing
 
 The front end receives 2 types of input:  
- * Mouse input, in the form of country/region selection, settings changes, and various minor actions
- * Keyboard input in the search box
+ * Mouse input, in the form of region selection, stat selection, settings changes, and various minor actions
+ * Keyboard input in the year selections
 
-Mouse input is handled differently in each context. In country/region selection, each country/region is selected by clicking it once, toggling the country/region to selected. After a country/region is selected, one can deselect it either by clicking the individual country/region again, or by deselecting the whole area selection by clicking the "clear selection" button in the settings. Settings changes are primarily checkboxes, which function in the way conventionally seen on a website. They can be toggled on and off by a click of the mouse. In certain contexts, some boxes will be grayed out and uncheckable (e.g. including bounds when multiple countries' data is displayed). There are also radio buttons for selecting HMS, which function in such a way that only one of a set is selectable at a time. There is also a slider for selecting timespan, with either end draggable by the mouse, and a second slider with 1 draggable part that selects HMS year.
+Mouse input is handled differently in each context
+ * In region selection, each region is selected by clicking it once, toggling the region to selected. After a region is selected, one can deselect it either by clicking the individual region again, or by deselecting the whole area selection by clicking the "clear selection" button.
+ * Stat changes are done by selecting a tab that corresponds to a given stat. When the user selects a stat, the map recolors based on the values of that stat at year g_HMSYear. The graphs also refresh to reflect the selected stat if any regions are selected.
+ * Settings changes (mouse input specifically, so excluding year changes) consist of radio button selections, which modify enumerated selection variables (g_GraphType and g_VaccHMS).
+ * Minor actions include clicking the "settings" button (which brings up the settings menu, which can be closed by clicking the black background or the "close" button) and clicking the view expand button (which results in switching to expanded view if in compact view, and vice versa).
 
-Keyboard input requires a more secure approach. Input is parsed and sanitized before it is used, to avoid malicious or otherwise unpredictable behavior. *section to be expanded as test plan is developed*.
+Keyboard input requires a more secure approach. Because the text boxes we have currently in the application limit the size of user input (4 characters), we do not see the need to further security. However, in the future when we implement a search bar, this will be a much more important consideration.
+
+The year change inputs function as follows:
+ * the user types an input and sets it either by clicking the "apply" button or closing the settings menu.
+ * if it is valid, the action completes successfully and change is applied.
+ * if it is not valid, the location of the error is highlighted and the user can not continue until putting in valid input.
 
 #Section 4
 
@@ -455,7 +481,7 @@ Keyboard input requires a more secure approach. Input is parsed and sanitized be
 
 ###4.0.0 : Architecture  
  * Platform: We chose a web platform both due to the client's vision of the product, and its inherent accessibility across many platforms. In future releases, we plan to extend functionality to mobile platforms.
- * Languages: HTML5/CSS/JavaScript were obvious choices, as they are the de facto technologies of the world wide web. HTML5 was chosen in particular for its ability to generate complex functionality quickly, though it potentially will limit functionality in older browser versions. We saw this as a manageable risk, particularly due to the well equipped nature of our target market.
+ * Languages: HTML/CSS/JavaScript were chosen because they are the de facto technologies of the world wide web. We opted not to use development frameworks like Angular or Node because most of us came into the project without previous JavaScript experience, and were much more easily ramped up by first working with the basics.
  * Third Party Resources: Google Charts API and jVectorMap were chosen for their performance and feature sets, as well as their ease of use under the terms of the GPL.
 
 ###4.0.1 : Data Structures  
@@ -509,7 +535,7 @@ The Parsed Stat List Structure was chosen because it allowed an easy way for us 
 
 ####4.0.2.0 : Control Panel
 
-The design of the control panel was chosen so that a lot of functionality could fit into the small area allotted to it, while allowing the user to expand it out. The tab selection was chosen so that heat mapping and graph selection could be done easily and transparently. We also wanted to include a logo, so we put that on top with the search bar and the settings menu link.
+The design of the control panel was chosen so that a lot of functionality could fit into the small area allotted to it, while allowing the user to expand it out. The tab selection was chosen so that heat mapping and graph selection could be done easily and transparently. We also chose to give the user the option to scroll through the available stats so that any stat could be selected to heat map in the compact view. We also wanted to include a logo, so we put that on top with the settings menu link.
 
 ####4.0.2.1 : Map
 
@@ -518,6 +544,12 @@ The map was chosen from the available vectors because it included more of the co
 ####4.0.2.2 : Main Screen Layout
 
 The main screen layout was chosen because the original design left the map feeling claustrophobic and closed off due to the border sections surrounding it. Instead, the map now fills most of the screen. It is on the right side so that user attention is directed mostly toward the control panel when viewing data, as users generally look left when using web applications according to eye tracking studies.
+
+####4.0.2.3 : Settings
+
+The settings menu layout was chosen for 2 reasons:
+ * The simplicity of selection from enumerated lists is most easily expressed in a UI by radio buttons.
+ * Our ideal year selection element, a slider, introduced a lot of difficulty into our work, and text inputs were chosen instead. We may reinvestigate a slider in the future.
 
 *discarded UX design*  
  * Checkboxes, radio buttons, and a slider were chosen for the settings menu, as they are a simple interface to toggling, selection of one from a set, and selecting a timespan, which are the fundamental requirements of the menu.  
