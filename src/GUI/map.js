@@ -145,6 +145,11 @@ $(function(){
                 i, 
                 type = 0,
                 hmsID = g_StatID;
+				
+			var Format = wNumb({
+				decimals: 2,
+				thousand: ','
+			});
 
             tipString += label.html()+" - ";
             for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)
@@ -173,7 +178,7 @@ $(function(){
                 tipString += (map.series.regions[0].values[key] * 100).toFixed(0) + "%";
             else
             {
-                tipString += map.series.regions[0].values[key].toFixed(0);
+                tipString += Format.to(Number(map.series.regions[0].values[key]));
             }
             label.html(tipString);
         }
