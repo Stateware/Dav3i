@@ -33,6 +33,8 @@ It should be noted that the sequence of testing these features is not important.
 
 # 2.0 : Selection of Countries  
 
+"Selection of Countries" represents the features of selection and de-selection of countries/regions on the generated map of the World.
+
 ## Specification Tests  
 
 ## Combination Specification Tests  
@@ -42,6 +44,8 @@ It should be noted that the sequence of testing these features is not important.
 ## Pathological Tests  
 
 # 3.0 : Graph Visualization  
+
+"Graph Visualization" encompasses the features which allow the generation of the graphs of the proper type, the validation of the correct data with the graphs, and the number/correct type of graphs.  
 
 ## Specification Tests  
 
@@ -53,6 +57,8 @@ It should be noted that the sequence of testing these features is not important.
 
 # 4.0 : Settings Changes  
 
+"Settings Changes" encompasses the features which allow the user to change the heat map statistic, the vaccination statistic types, and the time span of generated graphs and the resulting changes to the map and the graphs due to these changes.  
+
 ## Specification Tests  
 
 ## Combination Specification Tests  
@@ -62,6 +68,7 @@ It should be noted that the sequence of testing these features is not important.
 ## Pathological Tests  
 
 # 5.0 : Customization of View 
+
 
 ## Specification Tests  
 

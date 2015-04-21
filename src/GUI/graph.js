@@ -104,8 +104,10 @@ function GraphRegional(divID, node, maxVal) {
         isStacked: true,
         backgroundColor: '#EAE7C2'
     };
-
-    
+	
+	var formatter = new google.visualization.NumberFormat(
+		{negativeColor: 'red', negativeParens: true, groupingSymbol:','});
+	formatter.format(data, 1);
 	
     // instantiate and draw chart using prepared data
     var chart = new google.visualization.ComboChart(document.getElementById(divID));
@@ -133,6 +135,11 @@ function GraphCombined(divID) {
         hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2'
     };
+	
+	var formatter = new google.visualization.NumberFormat(
+		{negativeColor: 'red', negativeParens: true, groupingSymbol:','});
+	formatter.format(data, 1);
+	
     // instantiate and draw chart using prepared data
     var chart = new google.visualization.LineChart(document.getElementById(divID));
     chart.draw(data, options);
@@ -164,7 +171,11 @@ function GraphVaccine(divID, node) {
             0: {type: "line"}, 1: {type: "line"}
         }
     };
-
+	
+	var formatter = new google.visualization.NumberFormat(
+		{negativeColor: 'red', negativeParens: true, groupingSymbol:','});
+	formatter.format(data, 1);
+	
     var chart = new google.visualization.ComboChart(document.getElementById(divID));
     chart.draw(data, options);
 }
