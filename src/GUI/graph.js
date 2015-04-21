@@ -30,7 +30,7 @@
 
 // Author: Arun Kumar
 // Date Created: 4/14/2015
-// Last Modified:
+// Last Modified: 4/20/2015 by Kyle Nicholson
 // Description: Creates switch case to determine which function to call
 // PRE: N/A
 // POST: N/A
@@ -38,42 +38,45 @@ function GenerateGraphs()
 {
     var curr=g_DataList.start;
 
-    if (g_StatList[g_StatID].indexOf("VACC") > -1)
-    {
-        if (g_GraphType != 2)
-        {
-            for(var i=1; i<=g_DataList.size; i++)
-            {
-                GraphVaccine("region-graphs-"+i, curr);
-                curr=curr.next;
-            }
-        }
-        else
-        {
-            var sumNode = GenerateSumNode();
-            GraphVaccine("region-graphs-"+1,sumNode);
-        }
-    }
-    else
-    {
-        switch(g_GraphType)
-        {
-            case 0:    
-                for(var i=1; i<=g_DataList.size; i++)
-                {
-                    GraphRegional("region-graphs-"+i, curr);
-                    curr=curr.next;
-                }
-                break;
-            case 1:
-                GraphCombined("region-graphs-"+1);
-                break;
-            case 2:
-                var sumNode = GenerateSumNode();
-                GraphRegional("region-graphs-"+1, sumNode);
-                break;
-        }
-    }
+    if(g_DataList.size != 0)
+	{
+	    if (g_StatList[g_StatID].indexOf("VACC") > -1)
+	    {
+	        if (g_GraphType != 2)
+	        {
+	            for(var i=1; i<=g_DataList.size; i++)
+	            {
+	                GraphVaccine("region-graphs-"+i, curr);
+	                curr=curr.next;
+	            }
+	        }
+	        else
+	        {
+	            var sumNode = GenerateSumNode();
+	            GraphVaccine("region-graphs-"+1,sumNode);
+	        }
+	    }
+	    else
+	    {
+	        switch(g_GraphType)
+	        {
+	            case 0:    
+	                for(var i=1; i<=g_DataList.size; i++)
+	                {
+	                    GraphRegional("region-graphs-"+i, curr);
+	                    curr=curr.next;
+	                }
+	                break;
+	            case 1:
+	                GraphCombined("region-graphs-"+1);
+	                break;
+	            case 2:
+	                var sumNode = GenerateSumNode();
+	                GraphRegional("region-graphs-"+1, sumNode);
+	                break;
+	        }
+	    }
+	}
 }
 
 // Author: Arun Kumar
