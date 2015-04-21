@@ -191,7 +191,7 @@ function CloseSettings()
 
 // Author: Emma Roudabush
 // Date Created: 3/5/2015
-// Last Modified: 4/16/2015 by Paul Jang
+// Last Modified: 4/20/2015 by Kyle Nicholson
 // Description: Expands the c ontrol panel
 // PRE: N/A
 // POST: Control panel is expanded and black mask is in place behind
