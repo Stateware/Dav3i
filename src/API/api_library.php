@@ -93,10 +93,20 @@ function ByStat($statID, $year)
     $tableName = GetFirstRowFromColumn($databaseConnection, "meta_stats", "table_name", "table_id = $databaseIndexedStatID");
     $heatMapQuery = "SELECT `" . $year . "` FROM " . $tableName . " ORDER BY country_id ASC";
     $heatMapResults = $databaseConnection->query($heatMapQuery);
+    if ($heatMapResults === FALSE)
+    {
+        ThrowFatalError("Database missing data.");
+    }
     while($heatMapRow = $heatMapResults->fetch_assoc())
     {
            array_push($heatMapArray, $heatMapRow[$year]);
     }
+
+    if (count($heatMapArray) != count($descriptor['cc2']))
+    {
+        ThrowFatalError("Database missing country data.");
+    }
+
     // if we don't return an array with more than one element in it, it'll come out not as an object, but as an array
     // this line of code forces the json_decode to output the data as an object.
     $containingArray = array($statID => $heatMapArray, 'force' => "object");
@@ -128,6 +138,25 @@ function ByCountry($countryIDs)
     $countryIDList = explode(",", $countryIDs);
     $databaseIndexedCountryIDList = array();
 
+    // THIS ACTUALLY IS INCORRECT BEHAVIOR. IT LETS THE USER THINK THAT THE DATA IS INTENTIONALLY
+    // NONEXISTeNT, WHEN IN REALITY, IT IS MISSING
+    // TODO: Communicate with front end on better error handling methods, and then throw an inconvenient error.
+    $numberOfCountries = count($countryIDList);
+    $numberOfStats = count($descriptor['stats']);
+    $numberOfYears = $descriptor['yearRange'][1] - $descriptor['yearRange'][0] + 1;
+    for ($i = 0; $i < $numberOfCountries; $i++)
+    {
+        $byCountryArray[$countryIDList[$i]] = array();
+        for ($j = 0; $j < $numberOfStats; $j++)
+        {
+            $byCountryArray[$countryIDList[$i]][$j] = array();
+            for ($k = 0; $k < $numberOfYears; $k++)
+            {
+                array_push($byCountryArray[$countryIDList[$i]][$j], "-1");
+            }
+        }
+    }
+
     // validate each countryID
     foreach ($countryIDList as $countryID)
     {
@@ -158,13 +187,20 @@ function ByCountry($countryIDs)
     foreach($countryDataQueries as $statID => $query)
     {
         $countryDataResults = $databaseConnection->query($query);
-        while ($countryDataRow = $countryDataResults->fetch_array(MYSQLI_NUM))
+        if ($countryDataResults === FALSE)
         {
-            $countryID = $countryDataRow[0];
-            $byCountryArray[$countryID - 1][$statID - 1] = array_slice($countryDataRow, 1);
-        }    
+            // do nothing
+        }
+        else
+        {
+            while ($countryDataRow = $countryDataResults->fetch_array(MYSQLI_NUM))
+            {
+                $countryID = $countryDataRow[0];
+                $byCountryArray[$countryID - 1][$statID - 1] = array_slice($countryDataRow, 1);
+            }
+        }
     }
-    
+
     // if we don't return an array with more than one element in it, it'll come out not as an object, but as an array
     // this line of code forces the json_decode to output the data as an object.
     $byCountryArray['force'] = "object";
@@ -189,8 +225,9 @@ function Descriptor()
     $cc2 = array();
     $cc3 = array();
     $countryName = array();
-    //Hardcoded table because idk
-    $yearRange = GetYearRange($databaseConnection, "data_births");
+    
+    $tableNames = GetTableNames($databaseConnection);
+    $yearRange = GetYearRange($databaseConnection, $tableNames[0]);
     $stats = GetStatNames($databaseConnection);
     
     $countriesQuery = "SELECT * FROM meta_countries ORDER BY country_id";
@@ -290,7 +327,7 @@ function IsValidCountryID($countryID, $numCountries)
 // Description:   This function returns an array containing every statistic that is in the database
 function GetStatNames($database)
 // PRE:  $database is a mysqli database connection
-// POST: FCTVAL == array of the names of all statistics in the database
+// POST: FCTVAL == array of the human readable names of all statistics in the database
 {
     //returning array
     $statArray = array();
@@ -309,6 +346,31 @@ function GetStatNames($database)
     while($statRow = $statResult->fetch_assoc())
     {
         array_push($statArray, $statRow['stat_name']);
+    }
+    
+    return $statArray;
+}
+
+
+function GetTableNames($database)
+{
+    //returning array
+    $statArray = array();
+    
+    $statQuery = "SELECT table_name FROM meta_stats";
+    $statResult = $database->query($statQuery);
+    
+    //If the table is empty, statResults will have a value of false. If this happens something has deleted
+    //the meta_stats table - refer to the mySQL architecture
+    if($statResult === false)
+    {
+        ThrowFatalError("MySQL Architecture error");
+    }
+    
+    //Put each row's column of "stat_name" into an array
+    while($statRow = $statResult->fetch_assoc())
+    {
+        array_push($statArray, $statRow['table_name']);
     }
     
     return $statArray;
