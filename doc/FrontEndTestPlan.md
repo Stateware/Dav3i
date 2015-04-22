@@ -87,6 +87,7 @@ There are 3 ways to deselect all of the countries that have been selected. These
 
 # 5.0 : Customization of View 
 
+"Customization of View" encompasses the features which allow the user to modify their view (i.e. changing the size of the control panel, changing the size of the graphs, resizing of the window, and zooming in/out of the World Map).  
 
 ## Specification Tests  
 
