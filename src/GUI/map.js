@@ -103,7 +103,7 @@ $(function(){
             map.reset();
             map.series.regions[0].setValues(data);
         });
-    }
+    };
 
     map = new jvm.Map(
     {
@@ -223,5 +223,5 @@ $(function(){
         g_Clear = true;
         map.clearSelectedRegions();
         g_Clear = false;
-    }
+    };
 });
