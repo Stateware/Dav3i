@@ -79,7 +79,8 @@ function GetDescriptor()
 // Date Created: 4/7/2015
 // Last Modified: 4/7/2015 by Emma Roudabush
 // Description: Sets the time span to the correct span given by descriptor.php				
-// PRE: descriptor.php has been successfully retrieved 
+// PRE: DescriptorJSON exists with the correct data from descriptor.php,
+//		g_FirstYear, g_YearStart, g_LastYear and g_YearEnd exist
 // POST: g_FirstYear and g_YearStart have the correct beginning year of statistics.
 // 		 g_LastYear and g_YearEnd have the correct ending year of statistics. 
 function SetInitalYears(DescriptorJSON)
@@ -116,7 +117,7 @@ function GenerateLookupTable(DescriptorJSON)
 // Last Modified: 3/19/2015 by Emma Roudabush
 // Description: Fills the contents of g_StatList with the stats
 //              data from DescriptorJSON            
-// PRE: g_DescriptorJSON exists with the correct data from descriptor.php,
+// PRE: DescriptorJSON exists with the correct data from descriptor.php,
 //      g_StatList exists
 // POST: g_StatList has the correct stat values
 function GenerateStatReferenceList(DescriptorJSON)
@@ -132,8 +133,8 @@ function GenerateStatReferenceList(DescriptorJSON)
 // Date Created: 3/17/2015
 // Last Modified: 3/23/2015 by Joshua Crafts
 // Description:Replace HMS values in lookup table with new HMS data (will happen just after lookup table generation for default HMS)
-// PRE: hms contains valid heat map values and hms is of size g_LookupTable.length
-// POST: g_LookupTable has heat map values of hms
+// PRE: hmsData contains valid heat map values and hmsData is of size g_LookupTable.length
+// POST: g_LookupTable has heat map values of hmsData
 function SetHMS(hmsData)
 {
     for (var i = 0; i < g_LookupTable.length; i++)
@@ -146,7 +147,7 @@ function SetHMS(hmsData)
 // Date Created: 3/19/2015
 // Last Modified: 3/23/2015 by Joshua Crafts
 // Description: Returns HMS data based on hmsID
-// PRE: hms contains valid heat map values and hms is of size g_LookupTable.length
+// PRE: hmsID is an integer and a valid heat map stat id, year is an integer and within the valid range
 // POST: FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
 function GetHMS(hmsID, year)
 {
@@ -163,8 +164,9 @@ function GetHMS(hmsID, year)
 // Date Created: 3/17/2015
 // Last Modified: 3/22/2015 by Joshua Crafts
 // Description: Translate CC2 to CID using g_LookupTable
-// PRE: cc2 is a string that is a valid CC2 code corresponding to a country/region in the lookup table
-// POST: FCTVAL = cid (CID corresponding to the input CC2 in the lookup table)
+// PRE: cc2 is a string that is a valid CC2 code corresponding to a country/region in the lookup table,
+//		g_LookupTable exists and has the correct data
+// POST: FCTVAL = cid (CID corresponding to the input CC2 in the lookup table), -1 if cc2 not found
 function GetCID(cc2)
 {
     var length = g_LookupTable.length;
@@ -192,6 +194,10 @@ function ParseStatList()
 // Date Created: 4/2/2015
 // Last Modified: 4/15/2015 by Kyle Nicholson
 // Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
+// PRE: g_StatList, g_ParsedStatList exist
+// POST: g_ParsedStat is set up as a 2D array A[x][y], in which each x value represents a selectable 
+// 		 stat, and each y value either represents stat type (0), indicates head stat (1), or indicates 
+//		 associated data (2-3).
 function ParseStatList()
 {
 	var sortedStatList = g_StatList.slice();

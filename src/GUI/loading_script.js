@@ -33,7 +33,7 @@
 // Last Modified: 3/23/2015 by Joshua Crafts
 // Description: Generates lookup table and heat map while 
 //              displaying loading screen
-// PRE: N/A
+// PRE: divs with class "spinner" and "begin" exist, and the function ParseDescriptor is defined
 // POST: lookup table is generated, generate map colored by default HMS
 $(".loading-screen").ready(function () {
 // Generate lookup table and heat map

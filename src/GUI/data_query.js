@@ -34,12 +34,9 @@
 // Date Created:    2/12/15
 // Last Modified:   3/19/15 by Nicholas Denaro
 // Description:     Parses the object that is passed in and returns data array.
-//                  Input: json - Assumed to be in the proper format
-//                                if the JSON is invalid
-//                  Output: data - A 2D array in the form [stat][year]
+// PRE: json is valid JSON with data for only one country, assumed to be in the proper format
+// POST: FCTVAL == a 2d array containing stat, year in the form [stat][year]
 function ParseData(json)
-// PRE: json is valid JSON with data for only one country
-// POST: FCTVAL == a 2d array containing stat, year
 {
     var data = new Array(); // Creates the array for the data to be returned
     data = json[Object.keys(json)[0]];// Since there will only be one country in each json,
@@ -54,8 +51,8 @@ function ParseData(json)
 // Date Created:    3/5/15
 // Last Modified:   3/26/15 by Vanajam Soni
 // Description:     Makes Ajax call to get country data from server
-//                  Input: CID
-//                  Output: data from the server for the specific country
+// PRE: cid is a valid country-id
+// POST: FCTVAL == Ajax object that makes the API call with the given cid
 function GetData(cid)
 {
     return $.ajax({                                      
@@ -72,13 +69,14 @@ function GetData(cid)
 // Author: Vanajam Soni, Kyle Nicholson
 // Date Created: 3/24/15
 // Last Modified: 3/26/15 Vanajam Soni
-// Description: adds or removes a node to the list
-// Input: Selected regions string array
-// Output: adds or removes a node to the list
-function ModifyData(selectedRegions) {
-    if(g_DataList == null){
+// Description: adds or removes a node to the g_DataList to reflect the chosen regions on the map
+// PRE: selectedRegions is a string array of regions selected on the map
+// POST: modifies g_DataList if there is a mismatch between regions selected, and regions stored in the g_DataList
+function ModifyData(selectedRegions) 
+{
+    if(g_DataList == null)
         g_DataList = new c_List();
-    }
+
     if(selectedRegions.length > g_DataList.size)
     {
         // look for cc2 to add
@@ -115,11 +113,15 @@ function ModifyData(selectedRegions) {
     }
     else if(selectedRegions.length < g_DataList.size)
     {
+
+        var currentNode = g_DataList.start;
+
         // look for cc2 to remove
         for(var i = 0; i<g_DataList.size;i++)
         {
-            if(g_DataList != null) {
-                cc2ToRemove = g_DataList.item(i).cc2;
+            if(g_DataList != null) 
+            {
+                cc2ToRemove = currentNode.cc2;
                 if(selectedRegions.indexOf(cc2ToRemove) == -1)
                 {
                     g_DataList.delete(cc2ToRemove);
@@ -128,6 +130,7 @@ function ModifyData(selectedRegions) {
                     GenerateGraphs();
                 }
             }
+            currentNode = currentNode.next;
         }
     }
     else
