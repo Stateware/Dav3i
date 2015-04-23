@@ -24,8 +24,8 @@
  * Description:         This file holds all of the functions which the api calls will return as well as helper functions to those calls
  * Date Created:        2/19/2015
  * Contributors:        William Bittner, Drew Lopreiato, Kyle Nicholson, Arun Kumar, Dylan Fetch
- * Date Last Modified:  4/7/2015
- * Last Modified By:    William Bittner
+ * Date Last Modified:  4/23/2015
+ * Last Modified By:    Drew Lopreiato
  * Dependencies:        connect.php, toolbox.php
  * Input:               none                     
  * Output:              none
@@ -112,7 +112,7 @@ function ByStat($statID, $year)
     $containingArray = array($statID => $heatMapArray, 'force' => "object");
 
     return ($containingArray);    
-}
+} //END ByStat
 
 
 
@@ -196,7 +196,14 @@ function ByCountry($countryIDs)
             while ($countryDataRow = $countryDataResults->fetch_array(MYSQLI_NUM))
             {
                 $countryID = $countryDataRow[0];
-                $byCountryArray[$countryID - 1][$statID - 1] = array_slice($countryDataRow, 1);
+                // THIS IS INCORRECT BEHAVIOR. IN THE CASE OF A MISSING STATISTIC, WE SHOULD BE THROWING AN ERROR.
+                // This makes it so that if we're missing a column of data, we're going to replace that entire
+                // tables worth of data with a -1.
+                $dataSlice = array_slice($countryDataRow, 1);
+                if (count ($dataSlice) == $numberOfYears)
+                {
+                    $byCountryArray[$countryID - 1][$statID - 1] = $dataSlice;
+                }
             }
         }
     }
@@ -206,7 +213,7 @@ function ByCountry($countryIDs)
     $byCountryArray['force'] = "object";
 
     return $byCountryArray;
-}
+} //END ByCountry
 
 // Author:        Kyle Nicholson, Berty Ruan
 // Date Created:  2/7/2015
@@ -226,12 +233,32 @@ function Descriptor()
     $cc3 = array();
     $countryName = array();
     
+    // This will iterate through the tables looking for the first one that exists,
+    // and then pick the year range from that
     $tableNames = GetTableNames($databaseConnection);
-    $yearRange = GetYearRange($databaseConnection, $tableNames[0]);
+    $i = 0;
+    $yearRange = GetYearRange($databaseConnection, $tableNames[$i]);
+    while ($yearRange === false)
+    {
+        $i++;
+        if (isset($tableNames[$i]))
+        {
+            $yearRange = GetYearRange($databaseConnection, $tableNames[$i]);
+        }
+        else
+        {
+            ThrowFatalError("No tables with years exist");
+        }
+    }
     $stats = GetStatNames($databaseConnection);
     
-    $countriesQuery = "SELECT * FROM meta_countries ORDER BY country_id";
+    $countriesQuery = "SELECT cc2, cc3, common_name FROM meta_countries ORDER BY country_id";
     $countriesResult = $databaseConnection->query($countriesQuery);
+
+    if ($countriesResult === false)
+    {
+        ThrowFatalError("The meta_country data is corrupt");
+    }
     
     //fill cc2, cc3, and countryName arrays in order by ID
     while($countriesRow = $countriesResult->fetch_assoc())
@@ -243,7 +270,7 @@ function Descriptor()
     
     //return the nested arrays
     return(array("yearRange" => $yearRange, "cc2" => $cc2, "cc3"=> $cc3, "common_name" => $countryName, "stats" => $stats));
-}
+} //END Descriptor
 
 // ======================= Helper Functions =======================
 
@@ -268,7 +295,7 @@ function IsSanitaryStatID($statID)
 // POST: true if the statID is 1 or more digits in a row
 {
     return preg_match("/^\d+$/", $statID) === 1;
-}
+} //END IsSanitaryStatID
 
 // Author:        William Bittner, Andrew Lopreiato
 // Date Created:  2/22/2015
@@ -280,7 +307,7 @@ function IsSanitaryCountryList($countryList)
 // POST: true if the countryList is 1 or more groups of comma delimited digits.
 {
     return preg_match("/^\d+(,\d+)*$/", $countryList) === 1;
-}
+} //END IsSanitaryCountryList
 
 // Author:        William Bittner, Andrew Lopreiato
 // Date Created:  2/22/2015
@@ -292,7 +319,7 @@ function IsValidYear($year, $yearRange)
 // POST: true if the year falls within the given year range
 {
     return ($year >= $yearRange[0] && $year <= $yearRange[1]);
-}
+} //END IsValidYear
 
 // Author:        William Bittner, Andrew Lopreiato
 // Date Created:  2/22/2015
@@ -303,7 +330,7 @@ function IsValidStatID($statID, $numStats)
 // POST: true if statID falls between 0 and numStats
 {
     return($statID < $numStats && $statID >= 0);
-}
+} //END IsValidStatID
 
 
 // Author:        William Bittner, Andrew Lopreiato
@@ -318,9 +345,8 @@ function IsValidCountryID($countryID, $numCountries)
     //Check > 0 and <= the number of countries as a country id can't be less than 1, or more than the number of
     //countries
     return($countryID < $numCountries && $countryID >= 0);
-}
- 
- 
+} //END IsValidCountryID
+
 // Author:        William Bittner, Drew Lopreiato, Berty Ruan, Dylan Fetch
 // Date Created:  2/22/2015 
 // Last Modified: 2/22/2015 by William Bittner, Drew Lopreiato, Berty Ruan, Dylan Fetch  
@@ -349,10 +375,15 @@ function GetStatNames($database)
     }
     
     return $statArray;
-}
+} //END GetStatNames
 
-
+// Author:        William Bittner, Drew Lopreiato  
+// Date Created:  4/21/2015 
+// Last Modified: 4/23/2015 by William Bittner, Drew Lopreiato  
+// Description:   This function returns an array containing every statistic's table name that in the database
 function GetTableNames($database)
+// PRE:  $database is a mysqli database connection
+// POST: FCTVAL == array of the table names of all statistics in the database
 {
     //returning array
     $statArray = array();
@@ -374,11 +405,8 @@ function GetTableNames($database)
     }
     
     return $statArray;
-}
-  
- 
- 
- 
+} //END GetTableNames
+
 // Author:        William Bittner, Drew Lopreiato  
 // Date Created:  2/19/2015 
 // Last Modified: 2/19/2015 by William Bittner, Drew Lopreiato  
@@ -397,7 +425,8 @@ function GetYearRange($database, $table)
     
     if($descriptionResult === false)
     {
-        ThrowFatalError("Invalid table name for year range.");
+        //ThrowFatalError("Invalid table name for year range.");
+        return false;
     }
     
     //Throw each column's 'field' value into an array 
@@ -413,7 +442,6 @@ function GetYearRange($database, $table)
     
     return $yearRange;
 } //END GetYearRange
-
 
 // Author:        William Bittner, Drew Lopreiato  
 // Date Created:  2/19/2015 

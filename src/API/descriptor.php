@@ -26,9 +26,9 @@
  * 
  * Date Created:        2/7/2015
  * Contributors:        Kyle Nicholson, Berty Ruan
- * Date Last Modified:  4/2/2015
+ * Date Last Modified:  4/23/2015
  * Last Modified By:    Andrew Lopreiato
- * Dependencies:        connect.php
+ * Dependencies:        api_library.php
  * Input:               NONE
  * Output:              Formatted JSON String containing the countryName,
  *                      yearRange, cc2, and stats arrays
