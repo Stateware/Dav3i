@@ -183,6 +183,7 @@ function GraphVaccine(divID, node) {
         hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2',
         seriesType: "bars",
+        tooltip: {isHtml: true},
         series: {
             0: {type: "line"}, 1: {type: "line"}
         }
@@ -495,8 +496,11 @@ function GenerateVaccineData(data)
     var dataTable = new google.visualization.DataTable();
     dataTable.addColumn('number','year');
     dataTable.addColumn('number', 'MCV1');
+    dataTable.addColumn({'type':'string', 'role':'tooltip', 'p':{'html':true}});
     dataTable.addColumn('number', 'MCV2');
+    dataTable.addColumn({'type':'string', 'role':'tooltip', 'p':{'html':true}});
     dataTable.addColumn('number', 'SIA');
+    dataTable.addColumn({'type':'string', 'role':'tooltip', 'p':{'html':true}});
     
     var mcv1ID, mcv2ID,siaID;
 
@@ -514,9 +518,20 @@ function GenerateVaccineData(data)
 
     // add data to table
     var i,j;
+    var firstNum, secondNum, thirdNum;
+    var firstTP, secondTP, thirdTP; //tp = tooltip (text displayed when user hovers over a datapoint)
     for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
     {
-        dataTable.addRow([1980+i,parseFloat(data[mcv1ID][i]),parseFloat(data[mcv2ID][i]),parseFloat(data[siaID][i])]);
+        firstNum  = parseFloat((data[mcv1ID][i]  * 1).toFixed(2));
+        secondNum = parseFloat((data[mcv2ID][i] * 1).toFixed(2));
+        thirdNum  = parseFloat((data[siaID][i]  * 1).toFixed(2));
+
+        firstTP   = '<p><b>' + Number(1980+i) + '</b></br>MCV1ID: <b>' + ((data[mcv1ID][i] * 100).toFixed(2)).toString() + '%</b></p>';
+        secondTP  = '<p><b>' + Number(1980+i) + '</b></br>MCV2ID: <b>' + ((data[mcv2ID][i] * 100).toFixed(2)).toString() + '%</b></p>';
+        thirdTP   = '<p><b>' + Number(1980+i) + '</b></br>SIAID: <b>'  + ((data[siaID][i] * 100).toFixed(2)).toString() + '%</b></p>';
+
+        dataTable.addRow([1980+i, firstNum, firstTP, secondNum, secondTP, thirdNum, thirdTP]);
+        //dataTable.addRow([1980+i,parseFloat(data[mcv1ID][i]),parseFloat(data[mcv2ID][i]),parseFloat(data[siaID][i])]);
     }
     
     return dataTable;   
