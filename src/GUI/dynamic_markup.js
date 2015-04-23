@@ -187,9 +187,20 @@ function OpenSettings()
 function CloseSettings()
 {
     if (SetYearRange())
-    {
+    {	
         $(".settings-screen, .settings-black").fadeOut(400);
-    	document.getElementById('apply-button').style["background-color"] = '#001f3f';    
+        
+        var startDiv=document.getElementById("year-range-start");
+    	var endDiv=document.getElementById("year-range-end");
+    	var heatmapYearDiv=document.getElementById("heatmap-year");
+        
+        startDiv.style["box-shadow"]="";
+        endDiv.style["box-shadow"]="";
+        heatmapYearDiv.style["box-shadow"]="";
+        
+        document.getElementById(startDiv.id+"-error").innerHTML="";
+    	document.getElementById(endDiv.id+"-error").innerHTML="";
+    	document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
     }
 }
 
