@@ -93,6 +93,7 @@ function SetYearRange()
 
     if(startDiv.value==""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max))||isNaN(startDiv.value))
     {
+    	document.getElementById('apply-button').style["background-color"] = '#FF0000';
         canContinue=false;
         startDiv.style["box-shadow"]="0px 0px 8px #F00";
         document.getElementById(startDiv.id+"-error").style["cursor"]="help";
@@ -102,6 +103,7 @@ function SetYearRange()
     }
     if(endDiv.value==""||(Number(endDiv.value)<Number(endDiv.min)||Number(endDiv.value)>Number(endDiv.max))||isNaN(endDiv.value))
     {
+    	document.getElementById('apply-button').style["background-color"] = '#FF0000';
         canContinue=false;
         endDiv.style["box-shadow"]="0px 0px 8px #F00";
         document.getElementById(endDiv.id+"-error").style["cursor"]="help";
@@ -111,6 +113,7 @@ function SetYearRange()
     }
     if(heatmapYearDiv.value==""||(Number(heatmapYearDiv.value)<Number(heatmapYearDiv.min)||Number(heatmapYearDiv.value)>Number(heatmapYearDiv.max))||isNaN(heatmapYearDiv.value))
     {
+    	document.getElementById('apply-button').style["background-color"] = '#FF0000';
         canContinue=false;
         heatmapYearDiv.style["box-shadow"]="0px 0px 8px #F00";
 		document.getElementById(heatmapYearDiv.id+"-error").style["cursor"]="help";
@@ -120,6 +123,7 @@ function SetYearRange()
     }
     if(endDiv.value<startDiv.value)
     {
+    	document.getElementById('apply-button').style["background-color"] = '#FF0000';
         canContinue=false;
         startDiv.style["box-shadow"]="0px 0px 8px #F00";
         endDiv.style["box-shadow"]="0px 0px 8px #F00";
@@ -135,6 +139,7 @@ function SetYearRange()
 
     if(canContinue)
     {
+    	document.getElementById('apply-button').style["background-color"] = '#008000';
         g_YearStart=startDiv.value;
         g_YearEnd=endDiv.value;
         g_HMSYear=heatmapYearDiv.value;
