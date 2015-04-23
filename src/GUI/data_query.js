@@ -77,6 +77,14 @@ function ModifyData(selectedRegions)
     if(g_DataList == null)
         g_DataList = new c_List();
 
+    for(i=0;i<selectedRegions.length;i++)
+    {
+            if(GetCID(selectedRegions[i]) == -1) 
+            {
+                selectedRegions.splice(i, 1);
+            }
+    }
+
     if(selectedRegions.length > g_DataList.size)
     {
         // look for cc2 to add
@@ -87,8 +95,6 @@ function ModifyData(selectedRegions)
             {
                 CC2Found = true;
                 var cid = GetCID(selectedRegions[i]);
-                if(cid != -1)
-                {
                     var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
                     $.when(GetData(cid)).done(function(data){
                         var parsedData = ParseData(data);
@@ -99,15 +105,7 @@ function ModifyData(selectedRegions)
                         GenerateSubDivs();
                         GenerateGraphs();
                     });
-                }
-                else 
-                {   
-                   var index = selectedRegions.indexOf(selectedRegions[i]);
-                   if (index > -1) {
-                       selectedRegions.splice(index, 1);
-                       ModifyData(selectedRegions);
-                   }
-                }
+                
             }
         }
     }
@@ -136,15 +134,5 @@ function ModifyData(selectedRegions)
         }
     }
     else
-    {   
-        var i;
-        for(i=0;i<selectedRegions.length;i++)
-        {
-            if(GetCID(selectedRegions[i]) == -1) 
-            {
-                selectedRegions.splice(i, 1);
-                ModifyData(selectedRegions);
-            }
-        }
-    }
+        return;
 }
