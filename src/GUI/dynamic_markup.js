@@ -198,7 +198,7 @@ function CloseSettings()
 // POST: Settings overlay is showing with black backing mask
 function OpenHelp()
 {
-     $(".help-screen, .settings-black").fadeIn(400);
+     $(".help-screen, .help-black").fadeIn(400);
 }
 
 // Author: Emma Roudabush
@@ -209,7 +209,7 @@ function OpenHelp()
 // POST: Settings overlay and mask is gone
 function CloseHelp()
 {
-    $(".help-screen, .settings-black").fadeOut(400);
+    $(".help-screen, .help-black").fadeOut(400);
 }
 
 // Author: Emma Roudabush

@@ -311,7 +311,7 @@
 }
 
 /* sets styling for black mask for settings overlay */
-.settings-black {
+.settings-black, .help-black {
     position: absolute;
     top: 0;
     left: 0;
