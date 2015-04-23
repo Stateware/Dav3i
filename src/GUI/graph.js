@@ -23,14 +23,14 @@
 // Description: This file generates graphs based on parsed data
 // Date Created: 3/17/2015
 // Contributors: Nicholas Dyszel, Berty Ruan, Arun Kumar, Paul Jang, Vanajam Soni
-// Date Last Modified: 4/1/2015
-// Last Modified By: Nicholas Denaro
+// Date Last Modified: 4/23/2015
+// Last Modified By: Vanajam Soni
 // Dependencies: client_parser.js, ..., [Google Charts API]
 // Additional Notes: N/A
 
 // Author: Arun Kumar
 // Date Created: 4/14/2015
-// Last Modified: 4/20/2015 by Kyle Nicholson
+// Last Modified: 4/23/2015 by Vanajam Soni
 // Description: Creates switch case to determine which function to call
 // PRE: The divs for the graphs exist, and correct data is stored in g_DataList,
 //      g_GraphType and g_StatList 
@@ -66,7 +66,11 @@ function GenerateGraphs()
                         console.log(max);
 	                for(var i=1; i<=g_DataList.size; i++)
 	                {
-	                    GraphRegional("region-graphs-"+i, curr, max);
+	                    if(GraphRegional("region-graphs-"+i, curr, max) == -1)
+                        {
+                            var element = document.getElementById("region-graphs-"+i);
+                            element.parentNode.removeChild(element);
+                        }
 	                    curr=curr.next;
 	                }
 	                break;
@@ -84,7 +88,7 @@ function GenerateGraphs()
 
 // Author: Arun Kumar
 // Date Created:4/2/2015
-// Last Modified: 4/14/2015
+// Last Modified: 4/23/2015 By Vanajam Soni
 // Description: Takes stat data and divID to generate a graph for a single country and stat
 // PRE: divID is a div in the graphing section, node is a valid t_AsdsNode containing data for a country or 
 //      a sum of countries, and maxVal is the max is maximum value of the selected stat for the entire list
@@ -110,11 +114,18 @@ function GraphRegional(divID, node, maxVal) {
 	
 	var formatter = new google.visualization.NumberFormat(
 		{negativeColor: 'red', negativeParens: true, groupingSymbol:','});
-	formatter.format(data, 1);
+	if(data != null)
+        formatter.format(data, 1);
 	
-    // instantiate and draw chart using prepared data
-    var chart = new google.visualization.ComboChart(document.getElementById(divID));
-    chart.draw(data, options);
+    if(data != null)
+    {
+        // instantiate and draw chart using prepared data
+        var chart = new google.visualization.ComboChart(document.getElementById(divID));
+        chart.draw(data, options);
+        return 0;
+    }
+    else
+        return -1;
 }
 
 // Authors: Josh Crafts, Arun Kumar
@@ -281,6 +292,8 @@ function GenerateSingleData(data)
 
     // type = 0 => unbounded or only has 1 bound
     // type = 1 => both bounds exist
+    
+    var dataAvailable = 0;
 
     var dataTable = new google.visualization.DataTable(); // data table to be returned
     
@@ -317,9 +330,13 @@ function GenerateSingleData(data)
         switch(type) 
         {
             case 0: // unbounded
+                if(dataAvailable == 0 && FixMissingData(Number(data[g_StatID][i])) != null)
+                    dataAvailable = 1;
                 dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i]))]);
                 break;
             case 1: // bounded
+                if(dataAvailable == 0 && FixMissingData(Number(data[g_StatID][i])) != null)
+                    dataAvailable = 1;
                 if (Number(data[lowerBoundID][i]) == -1) // replace -1 with 0 when subtracting lower from upper for size of confidence interval
                     var lower = 0;
                 else
@@ -329,8 +346,12 @@ function GenerateSingleData(data)
         }
     }
 
-    return dataTable;
+    if(dataAvailable == 1)
+        return dataTable;
+    else 
+        return null;
 }
+
 
 // Author: Joshua Crafts
 // Date Created: 3/27/2015
