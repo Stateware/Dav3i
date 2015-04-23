@@ -152,7 +152,7 @@ function GraphCombined(divID) {
 	
 	var formatter = new google.visualization.NumberFormat(
 		{negativeColor: 'red', negativeParens: true, groupingSymbol:','});
-	formatter.format(data, 1);
+	formatter.format(data);
 	
     // instantiate and draw chart using prepared data
     var chart = new google.visualization.LineChart(document.getElementById(divID));
