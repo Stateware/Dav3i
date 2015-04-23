@@ -102,11 +102,11 @@ function ModifyData(selectedRegions)
                 }
                 else 
                 {   
-                    var index = selectedRegions.indexOf(selectedRegions[i]);
-                    if (index > -1) {
-                        selectedRegions.splice(index, 1);
-                        ModifyData(selectedRegions);
-                    }
+                   var index = selectedRegions.indexOf(selectedRegions[i]);
+                   if (index > -1) {
+                       selectedRegions.splice(index, 1);
+                       ModifyData(selectedRegions);
+                   }
                 }
             }
         }
@@ -122,17 +122,29 @@ function ModifyData(selectedRegions)
             if(g_DataList != null) 
             {
                 cc2ToRemove = currentNode.cc2;
-                if(selectedRegions.indexOf(cc2ToRemove) == -1)
+                cid = GetCID(cc2ToRemove);
+                if(selectedRegions.indexOf(cc2ToRemove) == -1 && cid != -1)
                 {
                     g_DataList.delete(cc2ToRemove);
                     // redraw graphs
                     GenerateSubDivs();
                     GenerateGraphs();
                 }
+
             }
             currentNode = currentNode.next;
         }
     }
     else
-        return;
+    {   
+        var i;
+        for(i=0;i<selectedRegions.length;i++)
+        {
+            if(GetCID(selectedRegions[i]) == -1) 
+            {
+                selectedRegions.splice(i, 1);
+                ModifyData(selectedRegions);
+            }
+        }
+    }
 }
