@@ -150,9 +150,17 @@ function GraphCombined(divID) {
         backgroundColor: '#EAE7C2'
     };
 	
+	var num = [];
+	
+	console.log(num);
 	var formatter = new google.visualization.NumberFormat(
 		{negativeColor: 'red', negativeParens: true, groupingSymbol:','});
-	formatter.format(data, 1);
+	
+	for(var x=0; x<g_DataList.size; x++)
+	{
+		formatter.format(data, x+1);
+	}
+	
 	
     // instantiate and draw chart using prepared data
     var chart = new google.visualization.LineChart(document.getElementById(divID));
