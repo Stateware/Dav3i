@@ -186,7 +186,8 @@ function OpenSettings()
 // POST: Settings overlay and mask is gone
 function CloseSettings()
 {
-    $(".settings-screen, .settings-black").fadeOut(400);
+    if (SetYearRange())
+        $(".settings-screen, .settings-black").fadeOut(400);
 }
 
 // Author: Emma Roudabush

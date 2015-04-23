@@ -66,8 +66,8 @@ function SetVaccHMS(newVaccHMS)
 // POST: Assigns the global variables if ranges are valid, otherwise display error.
 function SetYearRange()
 {
-	var canContinue=true;
-	var startDiv=document.getElementById("year-range-start");
+    var canContinue=true;
+    var startDiv=document.getElementById("year-range-start");
     var endDiv=document.getElementById("year-range-end");
     var heatmapYearDiv=document.getElementById("heatmap-year");
 
@@ -75,9 +75,9 @@ function SetYearRange()
     endDiv.style["box-shadow"]="";
     heatmapYearDiv.style["box-shadow"]="";
 
-     document.getElementById(startDiv.id+"-error").style["cursor"]="default";
-     document.getElementById(endDiv.id+"-error").style["cursor"]="default";
-     document.getElementById(heatmapYearDiv.id+"-error").style["cursor"]="default";
+    document.getElementById(startDiv.id+"-error").style["cursor"]="default";
+    document.getElementById(endDiv.id+"-error").style["cursor"]="default";
+    document.getElementById(heatmapYearDiv.id+"-error").style["cursor"]="default";
 
     document.getElementById(startDiv.id+"-error").innerHTML="&emsp;";
     document.getElementById(endDiv.id+"-error").innerHTML="&emsp;";
@@ -91,7 +91,7 @@ function SetYearRange()
     document.getElementById(heatmapYearDiv.id+"-error").className="";
 
 
-	if(startDiv.value==""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max)))
+    if(startDiv.value==""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max)))
     {
         canContinue=false;
         startDiv.style["box-shadow"]="0px 0px 8px #F00";
