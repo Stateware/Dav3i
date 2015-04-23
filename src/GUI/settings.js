@@ -23,8 +23,8 @@
 // Description:             Module to modify and work with settings
 // Date Created:            3/26/2015
 // Contributors:            Emma Roudabush, Paul Jang
-// Date Last Modified:      4/16/2015
-// Last Modified By:        Paul Jang
+// Date Last Modified:      4/23/2015
+// Last Modified By:       	Kyle Nicholson
 // Dependencies:            data.js, index.html
 // Additional Notes:        N/A
 
@@ -60,7 +60,7 @@ function SetVaccHMS(newVaccHMS)
 
 // Author: Nicholas Denaro
 // Date Created: 4/18/2015
-// Last Modified: 4/18/2015 by Nicholas Denaro
+// Last Modified: 4/23/2015 by Kyle Nicholson
 // Description: To set settings for the year ranges
 // PRE: N/A
 // POST: Assigns the global variables if ranges are valid, otherwise display error.
@@ -91,7 +91,7 @@ function SetYearRange()
     document.getElementById(heatmapYearDiv.id+"-error").className="";
 
 
-    if(startDiv.value==""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max)))
+    if(startDiv.value==""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max))||isNaN(startDiv.value))
     {
         canContinue=false;
         startDiv.style["box-shadow"]="0px 0px 8px #F00";
@@ -100,7 +100,7 @@ function SetYearRange()
         document.getElementById(startDiv.id+"-error").setAttribute("tooltip","Out of range: "+startDiv.min+"-"+startDiv.max);
         document.getElementById(startDiv.id+"-error").className="settings-error";
     }
-    if(endDiv.value==""||(Number(endDiv.value)<Number(endDiv.min)||Number(endDiv.value)>Number(endDiv.max)))
+    if(endDiv.value==""||(Number(endDiv.value)<Number(endDiv.min)||Number(endDiv.value)>Number(endDiv.max))||isNaN(endDiv.value))
     {
         canContinue=false;
         endDiv.style["box-shadow"]="0px 0px 8px #F00";
@@ -109,7 +109,7 @@ function SetYearRange()
         document.getElementById(endDiv.id+"-error").setAttribute("tooltip","Out of range: "+endDiv.min+"-"+endDiv.max);
         document.getElementById(endDiv.id+"-error").className="settings-error";
     }
-    if(heatmapYearDiv.value==""||(Number(heatmapYearDiv.value)<Number(heatmapYearDiv.min)||Number(heatmapYearDiv.value)>Number(heatmapYearDiv.max)))
+    if(heatmapYearDiv.value==""||(Number(heatmapYearDiv.value)<Number(heatmapYearDiv.min)||Number(heatmapYearDiv.value)>Number(heatmapYearDiv.max))||isNaN(heatmapYearDiv.value))
     {
         canContinue=false;
         heatmapYearDiv.style["box-shadow"]="0px 0px 8px #F00";
