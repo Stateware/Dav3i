@@ -27,8 +27,8 @@
      Description:             Web interface for data visualization
      Date Created:            2/19/2015
      Contributors:            Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts, Nicholas Denaro, Arun Kumar
-     Date Last Modified:      4/21/2015
-     Last Modified By:        Nicholas Denaro
+     Date Last Modified:      4/23/2015
+     Last Modified By:        Kyle Nicholson
      Dependencies:            style.css, loading_script.js, lookup_table.js, map.js, data.js
      Additional Notes:        N/A
 -->
@@ -96,7 +96,7 @@
                 <tr><td class="settings-timespans-text">Start Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-start" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-start-error" style="cursor: default;">&emsp;</td></tr>
                 <tr><td class="settings-timespans-text">End Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-end" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-end-error" style="cursor: default;">&emsp;</td></tr>
                 <tr><td class="settings-timespans-text">Heatmap Year:&emsp;</td><td class="settings-timespans-boxes"><input id="heatmap-year" class="year-selector" maxlength="4" size="4" required></input></td><td id="heatmap-year-error" style="cursor: default;">&emsp;</td></tr>
-                <tr><td colspan="2"><button class="flat-button" onclick="SetYearRange()" style="position: relative; top: 60%">Apply</button></td></tr>
+                <tr><td colspan="2"><button id="apply-button" class="flat-button" onclick="SetYearRange()" style="position: relative; top: 60%">Apply</button></td></tr>
             </table>
         </div>
         <div class="vacc-choice">

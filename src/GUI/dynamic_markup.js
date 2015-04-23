@@ -180,14 +180,17 @@ function OpenSettings()
 
 // Author: Emma Roudabush
 // Date Created: 3/5/2015
-// Last Modified: 4/16/2015 by Nicholas Denaro
+// Last Modified: 4/23/2015 by Kyle Nicholson
 // Description: Closes the settings overlay and assigns global values
 // PRE: Settings overlay is currently showing on screen
 // POST: Settings overlay and mask is gone
 function CloseSettings()
 {
     if (SetYearRange())
+    {
         $(".settings-screen, .settings-black").fadeOut(400);
+    	document.getElementById('apply-button').style["background-color"] = '#001f3f';    
+    }
 }
 
 // Author: Emma Roudabush
