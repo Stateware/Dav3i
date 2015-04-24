@@ -108,7 +108,11 @@ function GraphRegional(divID, node, maxVal) {
         hAxis: {title: 'Year', format: '####'},
         series: {1: {type: "area", color: "transparent"}, 2: {color: "navy"}, 3: {type: "area", color: "navy"}},
         isStacked: true,
-        backgroundColor: '#EAE7C2'
+        backgroundColor: '#EAE7C2',
+		animation: {
+			duration: 1000,
+			"startup": true
+		}
     };
 	
 	var formatter = new google.visualization.NumberFormat(
@@ -146,7 +150,11 @@ function GraphCombined(divID) {
             }
         },
         hAxis: {title: 'Year', format: '####'},
-        backgroundColor: '#EAE7C2'
+        backgroundColor: '#EAE7C2',
+		animation: {
+			duration: 1000,
+			"startup": true
+		}
     };
 	
 	var num = [];
@@ -193,7 +201,11 @@ function GraphVaccine(divID, node) {
         tooltip: {isHtml: true},
         series: {
             0: {type: "line"}, 1: {type: "line"}
-        }
+        },
+		animation: {
+			duration: 1000,
+			"startup": true
+		}
     };
 	
 	var formatter = new google.visualization.NumberFormat(
