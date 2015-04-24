@@ -448,11 +448,11 @@ function GenerateSumNode(){
     // initialize arrays to 0
     for (j = 0; j < (g_YearEnd-g_FirstYear)+1; j++)
     {
-        data[g_StatID][j] = 0;
+        data[g_StatID][j] = -1;
         if (ass1ID > -1)
-            data[ass1ID][j] = 0;
+            data[ass1ID][j] = -1;
         if (ass2ID > -1)
-            data[ass2ID][j] = 0;
+            data[ass2ID][j] = -1;
     }
 
     // add and store data for whole list
@@ -461,11 +461,26 @@ function GenerateSumNode(){
         for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear)+1; j++)
         {
             if (Number(currentNode.data[g_StatID][j]) > 0)
-                data[g_StatID][j] += Number(currentNode.data[g_StatID][j]);
+            {
+                if (data[g_StatID][j] == -1 && Number(currentNode.data[g_StatID][j]) != -1)
+                    data[g_StatID][j] = Number(currentNode.data[g_StatID][j]);
+                else if (Number(currentNode.data[g_StatID][j]) != -1)
+                    data[g_StatID][j] += Number(currentNode.data[g_StatID][j]);
+            }
             if (ass1ID > -1 && Number(currentNode.data[ass1ID][j]) > 0)
-                data[ass1ID][j] += Number(currentNode.data[ass1ID][j]);
+            {
+                if (data[ass1ID][j] == -1 && Number(currentNode.data[ass1ID][j]) != -1)
+                    data[ass1ID][j] = Number(currentNode.data[ass1ID][j]);
+                else if (Number(currentNode.data[ass1ID][j]) != -1)
+                    data[ass1ID][j] += Number(currentNode.data[ass1ID][j]);
+            }
             if (ass2ID > -1 && Number(currentNode.data[ass2ID][j]) > 0)
-                data[ass2ID][j] += Number(currentNode.data[ass2ID][j]);
+            {
+                if (data[ass2ID][j] == -1 && Number(currentNode.data[ass2ID][j]) != -1)
+                    data[ass2ID][j] = Number(currentNode.data[ass2ID][j]);
+                else if (Number(currentNode.data[ass2ID][j]) != -1)
+                    data[ass2ID][j] += Number(currentNode.data[ass2ID][j]);
+            }
         }
         names += currentNode.name; // add name of current node to list of names
         if (currentNode != g_DataList.end)
