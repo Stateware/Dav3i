@@ -63,7 +63,6 @@ function GenerateGraphs()
 	        {
 	            case 0:    
                         var max = FindMax();
-                        console.log(max);
 	                for(var i=1; i<=g_DataList.size; i++)
 	                {
 	                    if(GraphRegional("region-graphs-"+i, curr, max) == -1)

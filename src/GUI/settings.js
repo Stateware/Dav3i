@@ -253,15 +253,9 @@ function ApplySettings()
         g_YearEnd=endDiv.value;
         g_HMSYear=heatmapYearDiv.value;
         
+        GenerateSubDivs();
         GenerateGraphs();
-        ColorByHMS();
-        
-        if (g_DataList != undefined)
-    	{
-	        // redraw divs and graphs
-	        GenerateSubDivs();
-	        GenerateGraphs();
-    	}	
+        ColorByHMS();	
         
         // saves all radio buttions and dates in g_TempSettings array
         SaveCurrentStatValues();
