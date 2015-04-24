@@ -103,6 +103,9 @@
     text-align: center;
     overflow-y: auto;
     overflow-x: hidden;
+	border-bottom-style: solid;
+	border-bottom-color: #d2cfae;
+	border-bottom-width: 5px;
 }
 
 /* sets styling for tab graphs */
