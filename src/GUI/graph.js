@@ -167,9 +167,9 @@ function GraphCombined(divID) {
     chart.draw(data, options);
 }
 
-// Author: Arun Kumar
+// Author: Arun Kumar, Berty Ruan
 // Date Created: 4/14/2015
-// Last Modified:
+// Last Modified: 4/23/2015 by Berty Ruan
 // Description: Takes stat data from multiple countries and generates a graph for vaccinations
 // creating bars with mass vaccinations and line graphs with periodic vaccinations
 // PRE: divID is a div in the graphing section, node is a valid t_AsdsNode containing data for a country or 
@@ -490,9 +490,9 @@ function GenerateSumNode(){
 }
 
 
-// Author: Vanajam Soni
+// Author: Vanajam Soni, Berty Ruan
 // Date Created: 4/7/2015
-// Last Modified: 4/13/2015 by Vanajam Soni
+// Last Modified: 4/23/2015 by Berty Ruan
 // Description: Prepares data for vaccination stats, for a given country
 //              Takes data of the country as input.
 // PRE: data is a 2d array, containing all data for one country, or a sum of countries,
@@ -528,18 +528,21 @@ function GenerateVaccineData(data)
     var i,j;
     var firstNum, secondNum, thirdNum;
     var firstTP, secondTP, thirdTP; //tp = tooltip (text displayed when user hovers over a datapoint)
+    var stringFormatFront, stringFormatBack;
     for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
     {
         firstNum  = parseFloat((data[mcv1ID][i]  * 1).toFixed(2));
         secondNum = parseFloat((data[mcv2ID][i] * 1).toFixed(2));
         thirdNum  = parseFloat((data[siaID][i]  * 1).toFixed(2));
 
-        firstTP   = '<p><b>' + Number(1980+i) + '</b></br>MCV1ID: <b>' + ((data[mcv1ID][i] * 100).toFixed(2)).toString() + '%</b></p>';
-        secondTP  = '<p><b>' + Number(1980+i) + '</b></br>MCV2ID: <b>' + ((data[mcv2ID][i] * 100).toFixed(2)).toString() + '%</b></p>';
-        thirdTP   = '<p><b>' + Number(1980+i) + '</b></br>SIAID: <b>'  + ((data[siaID][i] * 100).toFixed(2)).toString() + '%</b></p>';
+        stringFormatFront = "<div class='move-left'><b><span class='default-format'>" + Number(1980+i) + 
+                            "</b></span></br><span class='default-format'>";
+        stringFormatBack  = '%</b></span></div>';
+        firstTP   =  stringFormatFront + "MCV1ID: <b>" + ((data[mcv1ID][i] * 100).toFixed(2)).toString() + stringFormatBack;
+        secondTP  =  stringFormatFront + "MCV2ID: <b>" + ((data[mcv2ID][i] * 100).toFixed(2)).toString() + stringFormatBack;
+        thirdTP   =  stringFormatFront + "SIAID: <b>"  + ((data[siaID][i] * 100).toFixed(2)).toString()  + stringFormatBack;
 
         dataTable.addRow([1980+i, firstNum, firstTP, secondNum, secondTP, thirdNum, thirdTP]);
-        //dataTable.addRow([1980+i,parseFloat(data[mcv1ID][i]),parseFloat(data[mcv2ID][i]),parseFloat(data[siaID][i])]);
     }
     
     return dataTable;   
