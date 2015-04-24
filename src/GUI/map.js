@@ -205,7 +205,7 @@ $(function(){
 	        }
 	            
         }
-        console.log(g_CountriesNoData);
+        //console.log(g_CountriesNoData);
         
     }, 1000);
     // clearing selected regions when the "clear" button in clicked

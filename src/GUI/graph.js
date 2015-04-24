@@ -151,7 +151,7 @@ function GraphCombined(divID) {
 	
 	var num = [];
 	
-	console.log(num);
+	//console.log(num);
 	var formatter = new google.visualization.NumberFormat(
 		{negativeColor: 'red', negativeParens: true, groupingSymbol:','});
 	

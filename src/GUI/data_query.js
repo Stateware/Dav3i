@@ -58,9 +58,9 @@ function GetData(cid)
     return $.ajax({                                      
         url: 'http://usve74985.serverprofi24.com/API/by_country.php?countryIDs='.concat(cid.toString()),                                                    
         dataType: 'JSON',
-        success: function(data){     
-            console.log("Successfully received by_country.php?countryIDs=".concat(cid.toString()));
-        } 
+        //success: function(data){     
+        //    console.log("Successfully received by_country.php?countryIDs=".concat(cid.toString()));
+        //} 
     });
 
 }
@@ -99,7 +99,7 @@ function ModifyData(selectedRegions)
                     $.when(GetData(cid)).done(function(data){
                         var parsedData = ParseData(data);
                         newNode.data = parsedData;
-                        console.log(newNode);
+                        //console.log(newNode);
                         g_DataList.add(newNode);
                         // draw graph with new node
                         GenerateSubDivs();

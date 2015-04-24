@@ -51,8 +51,8 @@ function ParseDescriptor()
         g_StatID = 1;
         g_HMSYear = g_LastYear;
         ColorByHMS();
-        console.log(g_LookupTable);
-        console.log(g_StatList);
+        //console.log(g_LookupTable);
+        //console.log(g_StatList);
         BuildTabs();
         UpdateInputs();
     });
@@ -70,7 +70,7 @@ function GetDescriptor()
         url: 'http://usve74985.serverprofi24.com/API/descriptor.php',                                                     
         dataType: 'JSON',                 
         success: function(data){     
-            console.log("Successfully received descriptor.php");
+            //console.log("Successfully received descriptor.php");
         } 
     });
 }
@@ -155,7 +155,7 @@ function GetHMS(hmsID, year)
         url: 'http://usve74985.serverprofi24.com/API/by_stat.php?statID='.concat(hmsID.toString()+"&year="+year.toString()),                                                     
         dataType: 'JSON',
         success: function(data){     
-            console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));
+            //console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));
         } 
     });
 }
