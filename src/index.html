@@ -81,13 +81,13 @@
     </div>
 	
     <div class="settings-screen">
-        <h1>Settings</h1>
+        <h1 style="position: relative; top: 5%;">Settings</h1>
         <div class="graph-choice">
             <h3>Graph Type</h3>
             <form action="">
-                <input type="radio" onclick="SetGraphType(0)" name="graphType" checked="checked" value="0">Regional</input><br>
-                <input type="radio" onclick="SetGraphType(1)" name="graphType" value="1">Combined</input><br>
-                <input type="radio" onclick="SetGraphType(2)" name="graphType" value="2">Whole Selection</input><br>
+                <input id="graph-regional" type="radio" onclick="SetGraphType(0)" name="graphType" value="0">Regional</input><br>
+                <input id="graph-combined" type="radio" onclick="SetGraphType(1)" name="graphType" value="1">Combined</input><br>
+                <input id="graph-whole" type="radio" onclick="SetGraphType(2)" name="graphType" value="2">Whole Selection</input><br>
             </form>
         </div>
         <div class="timespan">
@@ -96,19 +96,22 @@
                 <tr><td class="settings-timespans-text">Start Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-start" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-start-error" style="cursor: default;">&emsp;</td></tr>
                 <tr><td class="settings-timespans-text">End Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-end" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-end-error" style="cursor: default;">&emsp;</td></tr>
                 <tr><td class="settings-timespans-text">Heatmap Year:&emsp;</td><td class="settings-timespans-boxes"><input id="heatmap-year" class="year-selector" maxlength="4" size="4" required></input></td><td id="heatmap-year-error" style="cursor: default;">&emsp;</td></tr>
-                <tr><td colspan="2"><button id="apply-button" class="flat-button" onclick="SetYearRange()" style="position: relative; top: 60%">Apply</button></td></tr>
             </table>
         </div>
         <div class="vacc-choice">
             <h3>Stat for Vaccinations Heat Map</h3>
             <form action="">
-                <input type="radio" onclick="SetVaccHMS(0)" name="graphType" value="0">SIA</input>
-                <input type="radio" onclick="SetVaccHMS(1)" name="graphType" checked="checked" value="1">MCV1</input>
-                <input type="radio" onclick="SetVaccHMS(2)" name="graphType" value="2">MCV2</input>
+                <input id="vacc-sia" type="radio" onclick="SetVaccHMS(0)" name="graphType" value="0">SIA</input>
+                <input id="vacc-mcv1" type="radio" onclick="SetVaccHMS(1)" name="graphType" value="1">MCV1</input>
+                <input id="vacc-mcv2" type="radio" onclick="SetVaccHMS(2)" name="graphType" value="2">MCV2</input>    
             </form>
         </div>
-        
-        <button id="close-settings" class="flat-button" onclick="CloseSettings()">OK</button>
+        <div class="buttons">
+	            <button id="apply-button" class="flat-button" onclick="ApplySettings()">Apply</button>
+		        <button id="ok-button" class="flat-button" onclick="ApplyAndClose()">OK</button>
+		        <button id="close-button" class="flat-button" onclick="CancelSettings()">Cancel</button>
+	    </div>
+      
     </div>
 
     <div class="help-screen">

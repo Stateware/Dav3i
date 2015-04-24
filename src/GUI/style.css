@@ -23,9 +23,9 @@
     File Name:               style.css
     Description:             Style sheet for the loading screen and main page
     Date Created:            2/19/2015
-    Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts, Paul Jang, Nicholas Denaro
-    Date Last Modified:      4/16/2015
-    Last Modified By:        Nicholas Denaro
+    Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts, Paul Jang, Nicholas Denaro, Kyle Nicholson
+    Date Last Modified:      4/23/2015
+    Last Modified By:        Kyle Nicholson
     Dependencies:            none
     Additional Notes:        N/A
 */
@@ -269,16 +269,16 @@
 
 .graph-choice {
     position: absolute;
-    top: 10%;
+    top: 15%;
     left: 0;
     width:50%;
-    height:45%;
+    height:30%;
     font-size: 13pt; 
 }
 
 .vacc-choice {
     position: absolute;
-    top: 55%;
+    top: 45%;
     left: 0;
     width:100%;
     height:30%;
@@ -286,11 +286,20 @@
 
 .timespan {
     position: absolute;
-    top: 10%;
+    top: 15%;
     left: 50%;
     width:50%;
-    height:45%;
+    height:30%;
 }
+
+.buttons {
+	position: relative;
+    top: 60%;
+    
+}
+
+
+.buttons
 
 #close-settings,
 #close-help {

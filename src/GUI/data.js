@@ -23,26 +23,27 @@
 // Description:             This module holds all global data for the other modules of the project
 // Date Created:            3/19/2015
 // Contributors:            Joshua Crafts, Vanajam Soni, Paul Jang
-// Date Last Modified:      4/7/2015
-// Last Modified By:        Emma Roudabush
+// Date Last Modified:      4/23/2015
+// Last Modified By:        Kyle Nicholson
 // Dependencies:            index.html
 // Additional Notes:        N/A
 
-var g_LookupTable;      // CID, CC2, name, and HMS lookup table.
-var g_CountriesNoData;	// list of countries without data, ie. not selectable
-var g_StatList;         // stat reference list, indexed by stat ID.
-var g_FirstYear;        // first year for which data is available.
-var g_LastYear;         // last year for which data is available.
-var g_YearStart;        // first year for which user wants data.
-var g_YearEnd;          // last year for which user wants data.
-var g_DataList;         // data list
-var g_StatID;           // stat ID corresponding to selected HMS.
-var g_HMSYear;          // year for which HMS data is wanted.
-var g_ParsedStatList;   // parsed stat reference list
-var g_GraphType;        // variable representing the graph type, enumerated 0 to 2
-var g_Clear = false;	// variable used by the clear selection function to avoid n^3 slowdown
-var g_Expanded = false; // variable used to determine whether or not the graph section is expanded
-var g_VaccHMS = 1;	// variable used to determine which vaccination stat to use when heat mapping
+var g_LookupTable;      			// CID, CC2, name, and HMS lookup table.
+var g_CountriesNoData;				// list of countries without data, ie. not selectable
+var g_StatList;         			// stat reference list, indexed by stat ID.
+var g_FirstYear;        			// first year for which data is available.
+var g_LastYear;         			// last year for which data is available.
+var g_YearStart;        			// first year for which user wants data.
+var g_YearEnd;          			// last year for which user wants data.
+var g_DataList;         			// data list
+var g_StatID;           			// stat ID corresponding to selected HMS.
+var g_HMSYear;          			// year for which HMS data is wanted.
+var g_ParsedStatList;   			// parsed stat reference list
+var g_GraphType;        			// variable representing the graph type, enumerated 0 to 2
+var g_Clear = false;				// variable used by the clear selection function to avoid n^3 slowdown
+var g_Expanded = false; 			// variable used to determine whether or not the graph section is expanded
+var g_VaccHMS = 1;					// variable used to determine which vaccination stat to use when heat mapping
+var g_TempSettings = new Array(5);  // indicies are "first year, last year, Heat map year, graph type, vacc heat map"
 
 // prototype for ASDS node
 function t_AsdsNode(cid, cc2, name, data)
@@ -125,6 +126,5 @@ function c_List()
         }
         return false;
 
-    }
-
+    };
 }

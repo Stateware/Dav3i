@@ -63,31 +63,32 @@ function BuildTabs()
 
 // Author: Nicholas Denaro
 // Date Created: 4/16/2015
-// Last Modified: 4/16/2015 by Nicholas Denaro
+// Last Modified: 4/23/2015 by Kyle Nicholson
 // Description: Assigns values to the year ranges
 // PRE: lookup_table is filled correctly, index.html exists
-// POST: appropriate input tags are modified
+// POST: appropriate input tags are modified and g_TempSettings array is initialized
 function UpdateInputs()
 {
     var startDiv=document.getElementById("year-range-start");
     var endDiv=document.getElementById("year-range-end");
     var heatmapYearDiv=document.getElementById("heatmap-year");
-
+	
+	// set min and max for the settings input boxes
     startDiv.max=g_LastYear;
-    startDiv.min=g_FirstYear;
-    startDiv.value=g_FirstYear;
-
+    startDiv.min=g_FirstYear;	
+	
     endDiv.max=g_LastYear;
     endDiv.min=g_FirstYear;
-    endDiv.value=g_LastYear;
 
     heatmapYearDiv.max=g_LastYear;
     heatmapYearDiv.min=g_FirstYear;
-    heatmapYearDiv.value=g_LastYear;
-
-    g_StartYear=startDiv.value;
-    g_EndYear=endDiv.value;
-    g_HMSYear=heatmapYearDiv.value;
+    
+    // initialize TempSettings array
+    g_TempSettings[0]=g_FirstYear;
+    g_TempSettings[1]=g_LastYear;   
+	g_TempSettings[2]=g_LastYear;
+	g_TempSettings[3]=0;
+	g_TempSettings[4]=1;
 }
 
 // Author: Paul Jang, Nicholas Denaro
@@ -169,13 +170,16 @@ function SwitchToMain ()
 
 // Author: Emma Roudabush
 // Date Created: 3/30/2015
-// Last Modified: 3/31/2015 by Emma Roudabush
+// Last Modified: 4/23/2015 by Kyle Nicholson
 // Description: Opens the settings overlay
 // PRE: N/A
-// POST: Settings overlay is showing with black backing mask
+// POST: Settings overlay is showing with black backing mask and all stat values are reset
 function OpenSettings()
 {
+	 ResetAllStatValues();
+	 
      $(".settings-screen, .settings-black").fadeIn(400);
+     
 }
 
 // Author: Emma Roudabush
@@ -186,22 +190,19 @@ function OpenSettings()
 // POST: Settings overlay and mask is gone
 function CloseSettings()
 {
-    if (SetYearRange())
-    {	
-        $(".settings-screen, .settings-black").fadeOut(400);
+    $(".settings-screen, .settings-black").fadeOut(400);
         
-        var startDiv=document.getElementById("year-range-start");
-    	var endDiv=document.getElementById("year-range-end");
-    	var heatmapYearDiv=document.getElementById("heatmap-year");
-        
-        startDiv.style["box-shadow"]="";
-        endDiv.style["box-shadow"]="";
-        heatmapYearDiv.style["box-shadow"]="";
-        
-        document.getElementById(startDiv.id+"-error").innerHTML="";
-    	document.getElementById(endDiv.id+"-error").innerHTML="";
-    	document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
-    }
+    var startDiv=document.getElementById("year-range-start");
+    var endDiv=document.getElementById("year-range-end");
+    var heatmapYearDiv=document.getElementById("heatmap-year");
+     
+    startDiv.style["box-shadow"]="";
+    endDiv.style["box-shadow"]="";
+    heatmapYearDiv.style["box-shadow"]="";
+       
+    document.getElementById(startDiv.id+"-error").innerHTML="";
+    document.getElementById(endDiv.id+"-error").innerHTML="";
+   	document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
 }
 
 // Author: Emma Roudabush

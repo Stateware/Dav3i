@@ -22,7 +22,7 @@
 // File Name:               settings.js
 // Description:             Module to modify and work with settings
 // Date Created:            3/26/2015
-// Contributors:            Emma Roudabush, Paul Jang
+// Contributors:            Emma Roudabush, Paul Jang, Kyle Nicholson
 // Date Last Modified:      4/23/2015
 // Last Modified By:       	Kyle Nicholson
 // Dependencies:            data.js, index.html
@@ -30,33 +30,138 @@
 
 // Author: Emma Roudabush
 // Date Created: 4/14/2015
-// Last Modified: 4/14/2015 by Emma Roudabush
+// Last Modified: 4/23/2015 by Kyle Nicholson
 // Description: To set g_GraphType
 // PRE: type is a number between 0-2
 // POST: g_GraphType is set to the appropriate graph type
 function SetGraphType(type)
 {
     g_GraphType = type;
-    if (g_DataList != undefined)
-    {
-        // redraw divs and graphs
-        GenerateSubDivs();
-        GenerateGraphs();
-    }
 }
 
 // Author: Joshua Crafts
 // Date Created: 4/19/2015
-// Last Modified: 4/19/2015 by Joshua Crafts
+// Last Modified: 4/23/2015 by Kyle Nicholson
 // Description: To set g_VaccHMS
 // PRE: new is a number between 0-2
 // POST: g_VaccHMS is set to the appropriate stat, and the map is recolored/revalued accordingly
 function SetVaccHMS(newVaccHMS)
 {
     g_VaccHMS = newVaccHMS;
-    ColorByHMS();
 }
 
+// Author: Kyle Nicholson
+// Date Created: 4/23/2015
+// Last Modified: 4/23/2015 by Kyle Nicholson
+// Description: To set settings for the year ranges
+// PRE: See ApplySettings() and CloseSettings()
+// POST: if apply settings fails nothing happens, else apply settings and close the menu
+function ApplyAndClose()
+{
+	if(ApplySettings())
+	{
+		CloseSettings();
+	}
+}
+
+// Author: Kyle Nicholson
+// Date Created: 4/23/2015
+// Last Modified: 4/23/2015 by Kyle Nicholson
+// Description: To set settings for the year ranges
+// PRE: N/A
+// POST: 
+function CancelSettings()
+{
+	// remove box shadow and check marks or x marks	
+	var startDiv=document.getElementById("year-range-start");
+    var endDiv=document.getElementById("year-range-end");
+    var heatmapYearDiv=document.getElementById("heatmap-year");
+	
+	startDiv.style["box-shadow"]="none";
+    endDiv.style["box-shadow"]="none";
+    heatmapYearDiv.style["box-shadow"]="none";
+        
+    document.getElementById(startDiv.id+"-error").innerHTML="";
+    document.getElementById(endDiv.id+"-error").innerHTML="";
+    document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
+    
+    // visually and globally set all values in the settings menu to the tempSettings array
+ 	ResetAllStatValues();
+  	
+    CloseSettings();
+}
+
+// Author: Kyle Nicholson
+// Date Created: 4/23/2015
+// Last Modified: 4/23/2015 by Kyle Nicholson
+// Description: sets all of the settings based on the g_TempSettings array
+// PRE: g_TempSettingsArray is initialized
+// POST: all settings in the settings menu are visually set and their global variables are set
+//       based on the g_TempSettings array
+function ResetAllStatValues()
+{
+	var startDiv=document.getElementById("year-range-start");
+    var endDiv=document.getElementById("year-range-end");
+    var heatmapYearDiv=document.getElementById("heatmap-year");
+
+	// set start end and heatmap div values
+	startDiv.value = g_TempSettings[0];
+    endDiv.value = g_TempSettings[1];
+    heatmapYearDiv.value = g_TempSettings[2];
+	
+	// set radio buttons
+    switch (g_TempSettings[3])
+    {
+    	case 0:
+    		document.getElementById("graph-regional").checked = true;
+    		break;
+    	case 1:
+    		document.getElementById("graph-combined").checked = true;
+    		break;
+    	case 2:
+    		document.getElementById("graph-whole").checked = true;
+    		break;
+    }
+    
+    switch (g_TempSettings[4])
+    {
+    	case 0:
+    		document.getElementById("vacc-sia").checked = true;
+    		break;
+    	case 1:
+    		document.getElementById("vacc-mcv1").checked = true;
+    		break;
+    	case 2:
+    		document.getElementById("vacc-mcv2").checked = true;
+    		break;
+    }
+    
+    // set the global settings stats
+    g_YearStart = g_TempSettings[0];
+    g_YearEnd = g_TempSettings[1];
+    g_HMSYear = g_TempSettings[2];
+    g_GraphType = g_TempSettings[3]; 
+    g_VaccHMS = g_TempSettings[4];	
+}
+
+// Author: Kyle Nicholson
+// Date Created: 4/23/2015
+// Last Modified: 4/23/2015 by Kyle Nicholson
+// Description: saves all current radio buttons and dates 
+// PRE: there are values in each radio button and date div
+// POST: saves all current radio buttons and dates and stores them in g_TempSettings array
+function SaveCurrentStatValues()
+{
+	var startDiv=document.getElementById("year-range-start");
+    var endDiv=document.getElementById("year-range-end");
+    var heatmapYearDiv=document.getElementById("heatmap-year");
+    
+	g_TempSettings[0] = startDiv.value;
+    g_TempSettings[1] = endDiv.value;
+    g_TempSettings[2] = heatmapYearDiv.value;
+    g_TempSettings[3] = g_GraphType;
+    g_TempSettings[4] = g_VaccHMS;	
+}
 
 // Author: Nicholas Denaro
 // Date Created: 4/18/2015
@@ -64,7 +169,7 @@ function SetVaccHMS(newVaccHMS)
 // Description: To set settings for the year ranges
 // PRE: N/A
 // POST: Assigns the global variables if ranges are valid, otherwise display error.
-function SetYearRange()
+function ApplySettings()
 {
     var canContinue=true;
     var startDiv=document.getElementById("year-range-start");
@@ -143,11 +248,24 @@ function SetYearRange()
     	document.getElementById(endDiv.id+"-error").innerHTML="&#10003";
     	document.getElementById(heatmapYearDiv.id+"-error").innerHTML="&#10003";
     	
+    	// set settings
         g_YearStart=startDiv.value;
         g_YearEnd=endDiv.value;
         g_HMSYear=heatmapYearDiv.value;
+        
         GenerateGraphs();
         ColorByHMS();
+        
+        if (g_DataList != undefined)
+    	{
+	        // redraw divs and graphs
+	        GenerateSubDivs();
+	        GenerateGraphs();
+    	}	
+        
+        // saves all radio buttions and dates in g_TempSettings array
+        SaveCurrentStatValues();
+        
         return(true);
     }
     else
