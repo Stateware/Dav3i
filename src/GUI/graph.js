@@ -85,25 +85,23 @@ function GenerateGraphs()
 	}
 }
 
-// Author: Arun Kumar
+// Author: Arun Kumar, Berty Ruan, Vanajam Soni
 // Date Created:4/2/2015
-// Last Modified: 4/23/2015 By Vanajam Soni
+// Last Modified: 4/25/2015 By Berty Ruan
 // Description: Takes stat data and divID to generate a graph for a single country and stat
 // PRE: divID is a div in the graphing section, node is a valid t_AsdsNode containing data for a country or 
 //      a sum of countries, and maxVal is the max is maximum value of the selected stat for the entire list
 // POST: generates a single Google ComboChart for the given node on the divID
 function GraphRegional(divID, node, maxVal) {
-    var data= GenerateSingleData(node.data);
+    var data = GenerateSingleData(node.data);
     var options = {
         title: node.name,
         seriesType: "line",
         legend: 'none',
         vAxis: {
             viewWindowMode:'explicit',
-            viewWindow: {
-                min: 0,
-                max: maxVal
-            }
+            viewWindow: {min: 0},
+            format: 'short'
         },
         hAxis: {title: 'Year', format: '####'},
         series: {1: {type: "area", color: "transparent"}, 2: {color: "navy"}, 3: {type: "area", color: "navy"}},
@@ -114,14 +112,16 @@ function GraphRegional(divID, node, maxVal) {
 			"startup": true
 		}
     };
-	
-	var formatter = new google.visualization.NumberFormat(
-		{negativeColor: 'red', negativeParens: true, groupingSymbol:','});
-	if(data != null)
-        formatter.format(data, 1);
-	
+    	
     if(data != null)
     {
+        var formatter = new google.visualization.NumberFormat({pattern: '#,###.##'} );
+        for(var i=1; i < data.getNumberOfColumns(); i++)
+        {
+            if(data != null)
+                formatter.format(data, i);
+        }
+
         // instantiate and draw chart using prepared data
         var chart = new google.visualization.ComboChart(document.getElementById(divID));
         chart.draw(data, options);
@@ -131,9 +131,9 @@ function GraphRegional(divID, node, maxVal) {
         return -1;
 }
 
-// Authors: Josh Crafts, Arun Kumar
+// Authors: Josh Crafts, Arun Kumar, Berty Ruan
 // Date Created: 3/27/2015
-// Last Modified: 4/14/2015
+// Last Modified: 4/25/2015 by Berty Ruan
 // Description: Takes stat data from multiple countries and generates a graph
 // using data from multiple countries combined
 // PRE: divID is a div in the graphing section, GenerateCombinedData function is defined
@@ -145,9 +145,8 @@ function GraphCombined(divID) {
         legend: {position: 'top'},
         vAxis: {
             viewWindowMode:'explicit',
-            viewWindow: {
-                min:0
-            }
+            viewWindow: {min:0},
+            format: 'short'
         },
         hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2',
@@ -160,12 +159,10 @@ function GraphCombined(divID) {
 	var num = [];
 	
 	//console.log(num);
-	var formatter = new google.visualization.NumberFormat(
-		{negativeColor: 'red', negativeParens: true, groupingSymbol:','});
-	
-	for(var x=0; x<g_DataList.size; x++)
+	var formatter = new google.visualization.NumberFormat({pattern: '#,###.##'});
+	for(var i=1; i<data.getNumberOfColumns(); i++)
 	{
-		formatter.format(data, x+1);
+		formatter.format(data, i);
 	}
 	
 	
@@ -176,7 +173,7 @@ function GraphCombined(divID) {
 
 // Author: Arun Kumar, Berty Ruan
 // Date Created: 4/14/2015
-// Last Modified: 4/23/2015 by Berty Ruan
+// Last Modified: 4/25/2015 by Berty Ruan
 // Description: Takes stat data from multiple countries and generates a graph for vaccinations
 // creating bars with mass vaccinations and line graphs with periodic vaccinations
 // PRE: divID is a div in the graphing section, node is a valid t_AsdsNode containing data for a country or 
@@ -198,7 +195,6 @@ function GraphVaccine(divID, node) {
         hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2',
         seriesType: "bars",
-        tooltip: {isHtml: true},
         series: {
             0: {type: "line"}, 1: {type: "line"}
         },
@@ -208,98 +204,33 @@ function GraphVaccine(divID, node) {
 		}
     };
 	
-	var formatter = new google.visualization.NumberFormat(
-		{negativeColor: 'red', negativeParens: true, groupingSymbol:','});
-	formatter.format(data, 1);
+	var formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
+    for(var i=1; i<data.getNumberOfColumns(); i++)
+    {
+        formatter.format(data,i);
+    }
 	
     var chart = new google.visualization.ComboChart(document.getElementById(divID));
     chart.draw(data, options);
 }
 
-// Author: Vanajam Soni
+// Author: Vanajam Soni, Berty Ruan
 // Date Created: 4/16/2015
-// Last Modified: 4/16/2015 by Vanajam Soni
+// Last Modified: 4/25/2015 by Berty Ruan
 // Description: Checks for missing data and returns null, if data is missing.
 // PRE: data is an integer or float, missing data is represented as -1
 // POST: FCTVAL == data if data is not -1, null otherwise
 function FixMissingData(data)
 {
-    if(data != -1)
+    if(data >= 0)
         return data;
     else
         return null;
 }
 
-// Deprecated regional data function - new version below
-/*function GenerateSingleData(data)
-{
-    var type = 0;
-
-    // type = 0 => unbounded
-    // type = 1 => only lower bound exists
-    // type = 2 => only upper bound exists
-    // type = 3 => bounded
-
-    var dataTable = new google.visualization.DataTable();
-    
-    dataTable.addColumn('number','year');
-    
-    dataTable.addColumn('number', 'value');
-    dataTable.addColumn({type: 'boolean', role: 'certainty', id: 'isStat'});   // false for dotted line, true for solid line
-
-    // get the bound stats from parsed stat list
-    var lowerBoundID = -1;
-    var upperBoundID = -1;
-
-    for(i=0;i<g_ParsedStatList[1].length;i++)
-    {
-        if(g_StatID == g_ParsedStatList[1][i])
-        {
-            lowerBoundID = g_ParsedStatList[2][i];
-            upperBoundID = g_ParsedStatList[3][i];   
-        }
-    }
-
-    if(lowerBoundID != -1)
-    {
-        dataTable.addColumn('number','lower bound');
-        dataTable.addColumn({type: 'boolean', role: 'certainty', id: 'isStat'});   // false for dotted line, true for solid line
-        type = 1;
-    }
-
-    if(upperBoundID != -1)
-    {
-        dataTable.addColumn('number', 'upper bound');
-        dataTable.addColumn({type: 'boolean', role: 'certainty', id: 'isStat'});
-        type = type + 2;
-    }    
-
-    for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_FirstYear)+1;i++)
-    {   
-        switch(type) 
-        {
-            case 0:
-                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i])),true]);
-                break;
-            case 1:
-                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false]);
-                break;
-            case 2:
-                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[upperBoundID][i])),false]);
-                break;
-            case 3:
-                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i])),true,FixMissingData(Number(data[lowerBoundID][i])),false,
-                    FixMissingData(Number(data[upperBoundID][i])),false]);
-                break;
-        }
-    }
-
-    return dataTable;
-}*/
-
-// Author: Vanajam Soni, Joshua Crafts
+// Author: Vanajam Soni, Joshua Crafts, Berty Ruan
 // Date Created: 4/7/2015
-// Last Modified: 4/13/2015 by Vanajam Soni
+// Last Modified: 4/25/2015 by Berty Ruan 
 // Description: Prepares Data given for a single country (taken as argument) into data table, for the global statID, 
 //              Also depends on graph type for bounded or unbounded data
 // PRE: data is a 2d array, containing all data for one country, or a sum of countries,
@@ -308,17 +239,13 @@ function FixMissingData(data)
 //       so that we can graph
 function GenerateSingleData(data)
 {
-    var type = 0;
-
     // type = 0 => unbounded or only has 1 bound
     // type = 1 => both bounds exist
-    
+    var type = 0;
     var dataAvailable = 0;
-
     var dataTable = new google.visualization.DataTable(); // data table to be returned
     
     dataTable.addColumn('number','year');
-    
     dataTable.addColumn('number', g_StatList[g_StatID]);
 
     // get the bound stats from parsed stat list
@@ -347,21 +274,39 @@ function GenerateSingleData(data)
     // add data to table from start year to end year
     for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_FirstYear)+1;i++)
     {   
+
+        //format numbers 
+        var statIDNum = FixMissingData(Number(data[g_StatID][i])); // FixMissingData(parseFloat((data[g_StatID][i]).toString));//FixMissingData(parseFloat(Math.ceil())); //null or int
+
+        console.log(statIDNum);
         switch(type) 
         {
             case 0: // unbounded
-                if(dataAvailable == 0 && FixMissingData(Number(data[g_StatID][i])) != null)
+                if(dataAvailable == 0 && statIDNum != null)
+                {
                     dataAvailable = 1;
-                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i]))]);
+                }
+                dataTable.addRow([g_FirstYear+i, statIDNum]);
                 break;
+
             case 1: // bounded
-                if(dataAvailable == 0 && FixMissingData(Number(data[g_StatID][i])) != null)
+                var lowerBoundNum = FixMissingData(Number(data[lowerBoundID][i]));
+                
+                if(dataAvailable == 0 && statIDNum != null)
+                {
                     dataAvailable = 1;
-                if (Number(data[lowerBoundID][i]) == -1) // replace -1 with 0 when subtracting lower from upper for size of confidence interval
+                }
+                if (lowerBoundNum == null) // replace -1 with 0 when subtracting lower from upper for size of confidence interval
+                {
                     var lower = 0;
+                }
                 else
-                    lower = Number(data[lowerBoundID][i]);
-                dataTable.addRow([g_FirstYear+i,FixMissingData(Number(data[g_StatID][i])),FixMissingData(Number(data[lowerBoundID][i])),FixMissingData(Number(data[lowerBoundID][i])),FixMissingData(Number(data[upperBoundID][i])-lower),FixMissingData(Number(data[upperBoundID][i]))]);
+                {
+                    lower = lowerBoundNum;
+                }
+
+                dataTable.addRow([g_FirstYear+i,statIDNum,lowerBoundNum,lowerBoundNum,
+                    FixMissingData(Number(data[upperBoundID][i])-lower),FixMissingData(Number(data[upperBoundID][i]))]);
                 break;
         }
     }
@@ -518,7 +463,7 @@ function GenerateSumNode(){
 
 // Author: Vanajam Soni, Berty Ruan
 // Date Created: 4/7/2015
-// Last Modified: 4/23/2015 by Berty Ruan
+// Last Modified: 4/25/2015 by Berty Ruan
 // Description: Prepares data for vaccination stats, for a given country
 //              Takes data of the country as input.
 // PRE: data is a 2d array, containing all data for one country, or a sum of countries,
@@ -530,11 +475,8 @@ function GenerateVaccineData(data)
     var dataTable = new google.visualization.DataTable();
     dataTable.addColumn('number','year');
     dataTable.addColumn('number', 'MCV1');
-    dataTable.addColumn({'type':'string', 'role':'tooltip', 'p':{'html':true}});
     dataTable.addColumn('number', 'MCV2');
-    dataTable.addColumn({'type':'string', 'role':'tooltip', 'p':{'html':true}});
     dataTable.addColumn('number', 'SIA');
-    dataTable.addColumn({'type':'string', 'role':'tooltip', 'p':{'html':true}});
     
     var mcv1ID, mcv2ID,siaID;
 
@@ -551,24 +493,15 @@ function GenerateVaccineData(data)
     }
 
     // add data to table
-    var i,j;
+    var i;
     var firstNum, secondNum, thirdNum;
-    var firstTP, secondTP, thirdTP; //tp = tooltip (text displayed when user hovers over a datapoint)
-    var stringFormatFront, stringFormatBack;
     for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
     {
-        firstNum  = parseFloat((data[mcv1ID][i]  * 1).toFixed(2));
-        secondNum = parseFloat((data[mcv2ID][i] * 1).toFixed(2));
-        thirdNum  = parseFloat((data[siaID][i]  * 1).toFixed(2));
+        firstNum  = parseFloat((data[mcv1ID][i]  * 1).toFixed(4));
+        secondNum = parseFloat((data[mcv2ID][i] * 1).toFixed(4));
+        thirdNum  = parseFloat((data[siaID][i]  * 1).toFixed(4));
 
-        stringFormatFront = "<div class='move-left'><b><span class='default-format'>" + Number(1980+i) + 
-                            "</b></span></br><span class='default-format'>";
-        stringFormatBack  = '%</b></span></div>';
-        firstTP   =  stringFormatFront + "MCV1ID: <b>" + ((data[mcv1ID][i] * 100).toFixed(2)).toString() + stringFormatBack;
-        secondTP  =  stringFormatFront + "MCV2ID: <b>" + ((data[mcv2ID][i] * 100).toFixed(2)).toString() + stringFormatBack;
-        thirdTP   =  stringFormatFront + "SIAID: <b>"  + ((data[siaID][i] * 100).toFixed(2)).toString()  + stringFormatBack;
-
-        dataTable.addRow([1980+i, firstNum, firstTP, secondNum, secondTP, thirdNum, thirdTP]);
+        dataTable.addRow([1980+i, firstNum, secondNum, thirdNum]);
     }
     
     return dataTable;   

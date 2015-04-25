@@ -349,20 +349,6 @@
     float: left;
 }
 
-/* graphs.js tooltip css */
-.default-format {
-    font-family: Arial;
-    font-size: 10px;
-    padding: 0 4px 0 4px;
-}
-
-.move-left {
-    text-align: left;
-    margin: 3px 0 3px 0;
-    line-height: 100%;
-}
-
-
 /* sets size for map */
 #map {
     position: relative;
