@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2015 Stateware Team: William Bittner, Joshua Crafts, 
  * Nicholas Denaro, Dylan Fetch, Paul Jang, Arun Kumar, Drew Lopreiato,
@@ -110,7 +111,8 @@ function GraphRegional(divID, node, maxVal) {
 		animation: {
 			duration: 1000,
 			"startup": true
-		}
+		},
+        tooltip: {trigger: 'both'}
     };
     	
     if(data != null)
@@ -153,7 +155,8 @@ function GraphCombined(divID) {
 		animation: {
 			duration: 1000,
 			"startup": true
-		}
+		},
+        tooltip: {trigger: 'both'}
     };
 	
 	var num = [];
@@ -201,7 +204,8 @@ function GraphVaccine(divID, node) {
 		animation: {
 			duration: 1000,
 			"startup": true
-		}
+		},
+        tooltip: {trigger: 'both'}
     };
 	
 	var formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
