@@ -147,7 +147,6 @@ $(function(){
                 hmsID = g_StatID;
 				
 			var Format = wNumb({
-				decimals: 2,
 				thousand: ','
 			});
 
