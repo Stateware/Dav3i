@@ -101,17 +101,12 @@ function GraphRegional(divID, node, maxVal) {
         legend: 'none',
         vAxis: {
             viewWindowMode:'explicit',
-            viewWindow: {min: 0},
-            format: 'short'
+            viewWindow: {min: 0, max: maxVal}
         },
         hAxis: {title: 'Year', format: '####'},
         series: {1: {type: "area", color: "transparent"}, 2: {color: "navy"}, 3: {type: "area", color: "navy"}},
         isStacked: true,
         backgroundColor: '#EAE7C2',
-		animation: {
-			duration: 1000,
-			"startup": true
-		},
         tooltip: {trigger: 'both'}
     };
     	
@@ -147,15 +142,10 @@ function GraphCombined(divID) {
         legend: {position: 'top'},
         vAxis: {
             viewWindowMode:'explicit',
-            viewWindow: {min:0},
-            format: 'short'
+            viewWindow: {min:0}
         },
         hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2',
-		animation: {
-			duration: 1000,
-			"startup": true
-		},
         tooltip: {trigger: 'both'}
     };
 	
@@ -201,10 +191,6 @@ function GraphVaccine(divID, node) {
         series: {
             0: {type: "line"}, 1: {type: "line"}
         },
-		animation: {
-			duration: 1000,
-			"startup": true
-		},
         tooltip: {trigger: 'both'}
     };
 	
