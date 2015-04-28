@@ -81,5 +81,5 @@ define("TESTING", FALSE);
 /*  EFFECTS OF EXTERNAL_ACCESS == TRUE:
  * 1. all API calls are allowed to be accessed by non-server users
  */
-define("EXTERNAL_ACCESS", TRUE);
+define("EXTERNAL_ACCESS", FALSE);
 ?>
