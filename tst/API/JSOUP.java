@@ -31,7 +31,6 @@
  */
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 
@@ -186,7 +185,6 @@ public class JSOUP {
 								break;
 			default:			doc = null;
 								throw new Error("Invalid php document.");
-								break;
 			}
 		}
 		else//This is the same as above but with no parameter. here ID can function as more than an ID, it is the 
@@ -199,7 +197,6 @@ public class JSOUP {
 								break;
 			default:			doc = null;
 								throw new Error("Invalid php document.");
-								break;
 			}
 		}
 		
