@@ -59,10 +59,10 @@ public class TestingMain {
 		php = new JSOUP();
 	
 		//Here goes whatever you wish to test.
-		String[] s = parseFileIntoStringArray("byCountryCases.txt", ",");
-		String[] rs = parseFileIntoStringArray("byCountryResults.txt",",");
+		String[] s = parseFileIntoStringArray("byStatsCases.txt", ",");
+		String[] rs = parseFileIntoStringArray("byStatsResults.txt",",");
 		//String[] ss = parseFileIntoStringArray("byStatsResults.txt");
-		boolean r = doesParamBehave(s,rs, "byCountry", true);
+		boolean r = doesParamBehave(s,rs, "byStat", true);
 		/*for (int i = 0; i < r.length; i++)
 		{
 			System.out.print(r[i]);
