@@ -218,6 +218,29 @@ public class JSOUP {
 	// Author:        William Bittner
 	// Date Created:  4/12/2015  
 	// Last Modified: 4/28/2015 by William Bittner  
+	// Description: This function works exactly like the above function it overloads, except it is a byStat call 
+	//  				with a year parameter supplied.
+	public boolean paramWorks(String statID, String phpDocument, boolean statIDParam, String year,
+			boolean yearParam) throws IOException, HttpStatusException
+	//PRE: Global variables byCountryURL, byStatURL, byCountryURLNoParam, and byStatURLNoParam are initialized properly
+	//POST: FCTVAL = true if the query did not result in an error from the PHP document, 
+	//					or false if the query did result in an error from the PHP document
+	{
+		
+		String newParam;
+		if(yearParam)
+			newParam= statID+"&year="+year;
+		else//yearParam==false=>we don't prepend the parameter assignment
+			newParam=statID+year;
+		
+		return paramWorks(newParam,phpDocument,statIDParam);
+		
+	}
+	
+	
+	// Author:        William Bittner
+	// Date Created:  4/12/2015  
+	// Last Modified: 4/28/2015 by William Bittner  
 	// Description:	 This function takes a string stat ID and performs the api call byStat on that ID 
 	public double[] getStatArrays(String statID) throws IOException,ThePHPPageGaveMeAnErrorException
 	//PRE: Global variable byStatURL is the correct URL for the API call byStat

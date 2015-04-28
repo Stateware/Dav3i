@@ -69,6 +69,9 @@ public class TestingMain {
 		}*/
 		System.out.println(r);
 		
+		System.out.println("Year test works:" + php.paramWorks("3", "byStat", true, "1990", true));
+		
+		
 	}
 	
 	// Author:        William Bittner
