@@ -60,13 +60,14 @@ public class TestingMain {
 	
 		//Here goes whatever you wish to test.
 		String[] s = parseFileIntoStringArray("byCountryCases.txt", ",");
+		String[] rs = parseFileIntoStringArray("byCountryResults.txt",",");
 		//String[] ss = parseFileIntoStringArray("byStatsResults.txt");
-		String[] r = doesParamBehave(s, "byCountry", false);
-		for (int i = 0; i < r.length; i++)
+		boolean r = doesParamBehave(s,rs, "byCountry", true);
+		/*for (int i = 0; i < r.length; i++)
 		{
 			System.out.print(r[i]);
-		}
-		//System.out.println(r);
+		}*/
+		System.out.println(r);
 		
 	}
 	
