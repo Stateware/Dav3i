@@ -25,17 +25,18 @@
  *                             used functions and any globals we may need.
  * Date Created:        2/12/2015
  * Contributors:        Drew Lopreiato, William Bittner, Kyle Nicholson, Berty Ruan, Arun Kumar
- * Date Last Modified:  4/2/2015
- * Last Modified By:    Drew Lopreiato
+ * Date Last Modified:  5/1/2015
+ * Last Modified By:    William Bittner
  * Dependencies:        none
  * Input:               none
  * Output:              none
  */ 
      
 // ===================== Function Definitions =====================     
-//OUTPUT: This function will cause the program to close itself after echoing an error message.
-//INPUT: string message - optional further description of error
+
 function ThrowFatalError($message = "An error has occured - the program has been terminated.") 
+//PRE: string message - optional further description of error
+//POST: This function will cause the program to close itself after echoing an error message.
 {
     echo "{\"error\" : \"" . $message . "\"}";
     if(!TESTING)
@@ -45,18 +46,21 @@ function ThrowFatalError($message = "An error has occured - the program has been
 } // END ThrowFatalError
 
 function ThrowInconvenientError($message = "An inconvenient error has occured - program flow will continue.") 
+//PRE: string message - optional further description of error
+//POST: This function will cause simply echo an error message, but unlike the above will not terminate the program.
 {
     echo "Error: " . $message;
 } // END ThrowInconvenientError
 
 
-//OUTPUT: The first row from the "columnName" column of the "tableName" table of the "database" database
-//            with optional "filter" filter
-//INPUTS:     database: the database to query
-//            tableName: the table in the database to get the data from
+
+
+function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = false)
+//PRE:     database: the database to query tableName: the table in the database to get the data from
 //            columnName: the column of the table from which to return the first row
 //            filter: when supplied, will add a filter to the query
-function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = false)
+//POST: FCTVAL == The first row from the "columnName" column of the "tableName" table of the "database" database
+//            with optional "filter" filter
 {
     $query = "SELECT " . $columnName . " FROM " . $tableName;
     if ($filter !== false)
@@ -75,11 +79,11 @@ function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = fal
 define("DEFAULT_NUMBER", -1);
 define("DEFAULT_STRING", "");
 /*      EFFECTS OF TESTING == TRUE:
- * 1. the ThrowFatalError doesn't kill the page
+ * The ThrowFatalError doesn't kill the page
  */
 define("TESTING", FALSE);
 /*  EFFECTS OF EXTERNAL_ACCESS == TRUE:
- * 1. all API calls are allowed to be accessed by non-server users
+ * All API calls are allowed to be accessed by non-server users
  */
 define("EXTERNAL_ACCESS", FALSE);
 ?>

@@ -25,12 +25,12 @@
  *                      year range, two character country code (cc2), and the stats
  * 
  * Date Created:        2/7/2015
- * Contributors:        Kyle Nicholson, Berty Ruan
- * Date Last Modified:  4/23/2015
- * Last Modified By:    Andrew Lopreiato
+ * Contributors:        Kyle Nicholson, Berty Ruan, Drew Lorpeiato, William Bittner
+ * Date Last Modified:  5/1/2015
+ * Last Modified By:    William Bittner
  * Dependencies:        api_library.php
- * Input:               NONE
- * Output:              Formatted JSON String containing the countryName,
+ * PRE:               NONE
+ * POST:              FCTVAL == Formatted JSON String containing the countryName,
  *                      yearRange, cc2, and stats arrays
  * Additional Notes:    Before completion of this file we need a populated
  *                      database on the correct server
@@ -47,9 +47,9 @@ if (EXTERNAL_ACCESS)
 $descriptorArray = Descriptor();
 
 //encode results of Descriptor() into json
-$descriptor = json_encode($descriptorArray);
+$descriptorJSON = json_encode($descriptorArray);
 
 // return descriptor json string
-echo $descriptor;
+echo $descriptorJSON;
 
 ?>

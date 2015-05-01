@@ -24,8 +24,8 @@
  * Description:         This file holds all of the functions which the api calls will return as well as helper functions to those calls
  * Date Created:        2/19/2015
  * Contributors:        William Bittner, Drew Lopreiato, Kyle Nicholson, Arun Kumar, Dylan Fetch
- * Date Last Modified:  4/23/2015
- * Last Modified By:    Drew Lopreiato
+ * Date Last Modified:  5/1/2015
+ * Last Modified By:    William Bittner
  * Dependencies:        connect.php, toolbox.php
  * Input:               none                     
  * Output:              none
@@ -39,22 +39,23 @@ require_once("connect.php");
 
 // Author:        William Bittner, Drew Lopreiato
 // Date Created:  2/22/2015  
-// Last Modified: 4/7/2015 by William Bittner  
+// Last Modified: 5/1/2015 by William Bittner  
 // Description:   This function queries the database for one specific stat for one specific year for every country
 function ByStat($statID, $year)
 // PRE: statID is a valid ID of a stat in the database, and year is a valid year in the database
-// POST: returns an array of key value pairs whose index are:
-//			0: key: statID, value: an array containing each countries data for that stat in the index that corresponds to the countries ID
-//			1: key: "force", value: "object" - this is so that the json returned the the caller of this function returns an object, not an array
-//						of one element.
+// POST: FCTVAL == array of key value pairs whose index are:
+//			0: key: statID, value: an array containing each countries data for that stat in the index that corresponds
+// 					to the countries ID
+//			1: key: "force", value: "object" - this is so that the json returned to the caller of this function 
+//					returns an object, not an array of one element.
 {
-    $heatMapArray = array();
-    $descriptor = Descriptor();
-    $yearRange = $descriptor['yearRange'];
-    $numStats = count($descriptor['stats']);
-    $databaseConnection = GetDatabaseConnection();
+    $heatMapArray = array();						//initialize the array we will return as the heatmap
+    $descriptor = Descriptor(); 					//call our desciptor function and assign it to a variable
+    $yearRange = $descriptor['yearRange'];			//get the year range out of the descriptor 
+    $numStats = count($descriptor['stats']);		//get the number of stats out of the descriptor
+    $databaseConnection = GetDatabaseConnection();	//store connection to the database
     
-    //if year is set to default, there was no year enter and thus we give it the most recent year
+    //if year is set to default, there was no year entered and thus we give it the most recent year
     //this also means we don't need to check to see if the year is valid or sanitary 
     if($year == DEFAULT_STRING)
     {
@@ -62,7 +63,7 @@ function ByStat($statID, $year)
     }
     else
     {
-        //check inputs are sanitary
+        //check year is sanitary
         if (!IsSanitaryYear($year))
         {
             ThrowFatalError("Input is unsanitary: year");
@@ -74,7 +75,7 @@ function ByStat($statID, $year)
             ThrowFatalError("Input is invalid: year");
         }
     }
-    //check inputs are sanitary
+    //check statID is sanitary
     if (!IsSanitaryStatID($statID))
     {
            ThrowFatalError("Input is unsanitary: statID");
@@ -97,6 +98,8 @@ function ByStat($statID, $year)
     {
         ThrowFatalError("Database missing data.");
     }
+    //fetch assoc grabs each row individually from the result of the query, so we take each row and turn the stat for 
+    //the year we are searching for and throw it into the returning array
     while($heatMapRow = $heatMapResults->fetch_assoc())
     {
            array_push($heatMapArray, $heatMapRow[$year]);
@@ -118,17 +121,17 @@ function ByStat($statID, $year)
 
 // Author:        William Bittner, Drew Lopreiato
 // Date Created:  2/22/2015  
-// Last Modified: 4/7/2015 by William Bittner  
+// Last Modified: 5/1/2015 by William Bittner    
 // Description:   This function queries the database for every stat for every year for any number of countries
 function ByCountry($countryIDs)
 // PRE: countryIDs a string of valid countryIDs separated by a comma, or just one valid countryID
 // POST: an array containing all of the stats for each country ID input, with each stat in the index corresponding to its stat ID
 {
-    $databaseConnection = GetDatabaseConnection();
-    $byCountryArray = array();
-    $descriptor = Descriptor();
-    $numCountries = count($descriptor['common_name']);
-    $statTables = array();
+    $databaseConnection = GetDatabaseConnection();		//store connection to database
+    $byCountryArray = array();							//initialize returning array
+    $descriptor = Descriptor();							//grab descriptor
+    $numCountries = count($descriptor['common_name']);	//use descriptor to get the number of countries
+    $statTables = array();								//initialize statTables array
     
     if (!IsSanitaryCountryList($countryIDs))
     {
@@ -183,13 +186,13 @@ function ByCountry($countryIDs)
     // get the queries for each country and stat
     $countryDataQueries = GetCountryQueries($statTables, $databaseIndexedCountryIDList);
     
-    // query the query for each country n stuff.
+    // query the database for each country then grab the returning database rows and put them into an array
     foreach($countryDataQueries as $statID => $query)
     {
         $countryDataResults = $databaseConnection->query($query);
         if ($countryDataResults === FALSE)
         {
-            // do nothing
+            // do nothing - should probably throw an error when front end can catch them
         }
         else
         {
@@ -215,9 +218,9 @@ function ByCountry($countryIDs)
     return $byCountryArray;
 } //END ByCountry
 
-// Author:        Kyle Nicholson, Berty Ruan
+// Author:        Kyle Nicholson, Berty Ruan, William Bittner
 // Date Created:  2/7/2015
-// Last Modified: 4/7/2015 William Bittner
+// Last Modified: 5/1/2015 by William Bittner  
 // Description: Returns an array of the indecies that get turned into 
 // 				the Descriptor Table - See BackEndArchitecture.md for contents of Descriptor Table
 function Descriptor()
@@ -228,10 +231,10 @@ function Descriptor()
 //		3: common_name: the name for each country, in american english
 //		4: stats: an array of all the stats, where the index of the stat is its stat ID
 {
-    $databaseConnection = GetDatabaseConnection();
-    $cc2 = array();
-    $cc3 = array();
-    $countryName = array();
+    $databaseConnection = GetDatabaseConnection();	//get the connection to the database
+    $cc2 = array();									//initialize array for cc2
+    $cc3 = array();									//initialize array for cc3
+    $countryName = array();							//initialize array for countryName
     
     // This will iterate through the tables looking for the first one that exists,
     // and then pick the year range from that
@@ -445,7 +448,7 @@ function GetYearRange($database, $table)
 
 // Author:        William Bittner, Drew Lopreiato  
 // Date Created:  2/19/2015 
-// Last Modified: 4/7/2015 by William Bittner  
+// Last Modified: 5/1/2015 by William Bittner  
 // Description:   Returns an array of queries given a set of tables to be queried, and the countries to be queried
 function GetCountryQueries($tableNames, $countries)
 // PRE: $tableNames must be in format: tableID => tableName, $countries must be an array of integers
@@ -457,10 +460,10 @@ function GetCountryQueries($tableNames, $countries)
     {
         $getDataQuery = "SELECT * FROM " . $tableName . " WHERE";
         $firstOne=true;
-        // iterate through each country identifier
+        // iterate through each country identifier and append it to the query
         foreach ($countries as $countryID) 
         {
-            if(!$firstOne)
+            if(!$firstOne)// append OR before each country after the first one
             {
                 $getDataQuery.= " OR";
             }
