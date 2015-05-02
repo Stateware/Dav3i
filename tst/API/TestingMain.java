@@ -53,12 +53,12 @@ public class TestingMain {
 	{
 		//Initialize the database and php objects. Be absolutely sure to not commit unless you have replaced 
 		// login and password with "OMITED"
-		String login = "OMITTED";
-		String password = "OMITTED";
+		String login = "testing";
+		String password = "Do11aDo11aBi11Ya11$$$";
 		database = new JDBC(login,password);
 		php = new JSOUP();
 	
-		//Here goes whatever you wish to test.
+		//This is how you would test a set of cases to see if they worked as input into the PHP pages
 		String[] s = parseFileIntoStringArray("byStatsCases.txt", ",");
 		String[] rs = parseFileIntoStringArray("byStatsResults.txt",",");
 		//String[] ss = parseFileIntoStringArray("byStatsResults.txt");
@@ -69,7 +69,16 @@ public class TestingMain {
 		}*/
 		System.out.println(r);
 		
+		//This is how you would test to see if a specific parameter/set of parameters worked for the PHP pages
 		System.out.println("Year test works:" + php.paramWorks("3", "byStat", true, "1990", true));
+		
+		//This tests the entirety of byStats - each stat for each year
+		for(int i = 0; i <13; i++)
+			for(int j = 1980; j<2013;j++)
+				if(!compareByStat(i,j))
+					System.out.println("Failed");
+				else
+					System.out.println("Passed");
 		
 		
 	}
@@ -171,12 +180,37 @@ public class TestingMain {
 	{
 		double[] PHP = null;
 		try {
-			 PHP = php.getStatArrays("" + statID);
+			 PHP = php.getStatArrays("" + statID,null);
 		} catch (IOException | ThePHPPageGaveMeAnErrorException e) {
 			e.printStackTrace();
 		}
 		//This is incremented by 1 because of the indexing of MySQL
-		double[] DB = database.getStatArrays("" + (statID+1));
+		double[] DB = database.getStatArrays("" + (statID+1),null);
+		
+		//If any indecies aren't the same, immediately return false
+		for(int i = 0; i < DB.length; i++)
+			if(PHP[i]!=DB[i])
+				return false;
+		
+		return true;
+	}
+	
+	// Author:        William Bittner
+	// Date Created:  5/2/2015  
+	// Last Modified: 5/2/2015 by William Bittner  
+	// Description:	  This function works exactly like above, except it takes a year parameter as well
+	public static boolean compareByStat(int statID, int year)
+	//PRE: both php and database are initialized, and for meaningful results, statID is a valid stat ID
+	//FCTVAL: True if they return the same data, false otherwise
+	{
+		double[] PHP = null;
+		try {
+			 PHP = php.getStatArrays("" + statID, ""+year);
+		} catch (IOException | ThePHPPageGaveMeAnErrorException e) {
+			e.printStackTrace();
+		}
+		//This is incremented by 1 because of the indexing of MySQL
+		double[] DB = database.getStatArrays("" + (statID+1), ""+year);
 		
 		//If any indecies aren't the same, immediately return false
 		for(int i = 0; i < DB.length; i++)
