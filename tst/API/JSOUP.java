@@ -240,19 +240,15 @@ public class JSOUP {
 	
 	// Author:        William Bittner
 	// Date Created:  4/12/2015  
-	// Last Modified: 5/2/2015 by William Bittner  
-	// Description:	 This function takes a string stat ID and year and performs the api call byStat on them
-	// Additional Notes: To not specify a year, pass in null for the year parameter
-	public double[] getStatArrays(String statID, String year) throws IOException,ThePHPPageGaveMeAnErrorException
+	// Last Modified: 4/28/2015 by William Bittner  
+	// Description:	 This function takes a string stat ID and performs the api call byStat on that ID 
+	public double[] getStatArrays(String statID) throws IOException,ThePHPPageGaveMeAnErrorException
 	//PRE: Global variable byStatURL is the correct URL for the API call byStat
 	//FCTVAL = an array of doubles, with each index corresponding to the country whose ID is that index, and
 	// 			the data being that country's data for the stat ID for whatever year the PHP page defaults to
 	{
 		//Connect to the byStat page and grab its text
-		String url = byStatURL + statID;
-		if(year!=null)
-			url+="&year="+year;
-		Document doc = Jsoup.connect(url).get();
+		Document doc = Jsoup.connect(byStatURL + statID).get();
 		String bodyText = doc.body().text();
 
 		JSONObject countries = new JSONObject(bodyText);
@@ -281,7 +277,6 @@ public class JSOUP {
 			
 			return dray;
 		}
-		System.out.println(url);
 		//elseif(bodyText.has("error")) - throw the error that the php page gave us
 		throw new ThePHPPageGaveMeAnErrorException("Error calling getStatArrays(" + statID + ")\n"
 				+ "Printed Error: " + countries.getString("error"));

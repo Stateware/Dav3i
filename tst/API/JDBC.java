@@ -171,10 +171,9 @@ public class JDBC {
 	
 	// Author:        William Bittner, Drew Lopreiato
 	// Date Created:  4/12/2015  
-	// Last Modified: 5/2/2015 by William Bittner  
+	// Last Modified: 4/23/2015 by William Bittner  
 	// Description:   This function mimics the return of the php document byStat
-	// Additional Notes: To not specify a year, pass in null for the year parameter
-	public double[] getStatArrays(String statID,String year)
+	public double[] getStatArrays(String statID)
 	// PRE: There was a successful connection to the database and statID is a valid statID
 	// POST: FCTVAL = an array of doubles representing each countries value for that stat in the index of its country ID
 	{
@@ -186,10 +185,8 @@ public class JDBC {
 		double[] retArr = new double[size];
 		
 		try {
-			if(year ==null)
-				query = "SELECT `2012` FROM " + tableName;
-			else
-				query = "SELECT `" + year + "` FROM " + tableName;
+			
+			query = "SELECT `2012` FROM " + tableName;
 			//Query the database
 			ResultSet rs = stmt.executeQuery(query);
 			int count = 0;
