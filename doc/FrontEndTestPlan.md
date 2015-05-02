@@ -56,6 +56,7 @@ There are 3 ways to deselect all of the countries that have been selected. These
 
 In absolute terms, as there are 205 countries/regions on the map that can be selected, the same number of countries can be deselected. Therefore, this yields (2 x 205) + 1 test cases to exhaustively test the functionality of deselecting every country on the map. Much like selecting countries, this exhaustive test will not necessarily be the best testing plan to take, so it is reasonable to have a smaller subset of countries selected, and use that set of selected countries to test the functionality of deselecting.  
 
+
 ## Combination Specification Tests  
 
 The Specification Tests previously mentioned should be run alongside other related Specification Tests. These "Combination" Specification Tests are different from the more general Specification Tests because they involve operations that are not considered normal operations, and are also not pathological in their nature. They are similar to the Specification Tests in that they make assumptions about the program and have steps in common with each other, but these tests do not follow a normal pattern of user experience. This being said, they do not involve "bad" or "faulty" input like Pathological Tests, they simply have abnormal sequences of the program operation, but with viable input.  
@@ -81,40 +82,62 @@ Despite these tests being non exhaustive, they will provide insight to how the p
 
 Some pathological tests can be derived from asking the following questions:  
 
-&nbsp;1. Can all 205 countries/regions be selected at once without problem?  
-&nbsp;2. Will right clicking the map bring up a menu? What happens if someone clicks an option on the menu?  
+&nbsp;1. Can all 205 countries/regions be selected at once without problem? How long will it take to deselect them all with the "Clear Selection" button?   
+
+&nbsp;2. Will right clicking the map bring up a menu? What happens if someone clicks an option on the menu?    
+
+&nbsp;3. What happens when you try to touch multiple countries at once?  
 
 **_These tests will not uncover all potential problems... only a full code review can ensure complete quality control._**  
 
 # 3.0 : Graph Visualization  
 
-"Graph Visualization" encompasses the features which allow the generation of the graphs of the proper type, the validation of the correct data with the graphs, and the number/correct type of graphs.  
+"Graph Visualization" encompasses the features which allow the generation of the graphs of the proper type, the validation of the correct data with the graphs, and the number/correct type of graphs. These tests are performed under the assumption that the tests in the "Selection of Countries" section have all passed, as this feature depends on the ability to choose a country or countries. Certain aspects of this test also depend on the "Setting Changes" section tests to have all passed, namely the ability to change graph type. 
 
 ## Specification Tests  
 
-When the Dav3i client is opened, there are 2 ways to select a country. These are:  
+Graphs can be of 3 types in Dav3i: Regional, Combined, and Whole Selection. For descriptions of these 3 graph types and their purposes, refer to the Front End Architecture Document on Github. 
 
-&nbsp;1. Moving the mouse to the desired country and clicking on it.  
-&nbsp;2. Touching the desired country using a touchscreen.  
+_Overall Specification Tests_
 
-After the first country is selected, the same process can be used to select as many countries as desired.  
+1. As soon as a country is selected, a graph is generated. What is the default type for these graphs?
 
-In absolute terms, as there are 205 regions on the map that can be selected, this yields 2 X 205 = 410 test cases which are needed to exhaustively test this functionality. However, exhaustive testing for the most part is not economical and does not uncover potential problems in the code. In order to create a reasonable number of tests, it is reasonable to select a smaller subset of countries, as without loss of generality, country selection is uniform across the map.  
+_Regional Graph Type Specification Tests_  
 
-Once a number of countries are selected, in order to deselect a country, follow the same process as selecting a country, and the client will simply deselect the country in question.  
+1. After a country is selected, a graph generates on the control panel to the left. If there are more graphs than available to be seen on the control panel, they will still generate below the current graphs and be accessible by scroll bar. Every selection of country will result in the other graphs being redrawn to scale with every other country. Also, every graph will have that country's respective name as its title.  
 
-There are 3 ways to deselect all of the countries that have been selected. These are:  
+2. (As of 5/2/15) There are 7 tabs, and therefore statistics, to choose from. Clicking a new tab will regenerate the already generated graphs in order to fit the new statistics.   
 
-&nbsp;1. Deselecting every country that is selected individually by touching them on a touchscreen.  
-&nbsp;2. Deselecting every country that is selected individually by clicking them with a mouse.  
-&nbsp;3. Pressing the "Clear Selection" button.  
+3. Deselecting a country will result in its respective graph being removed and the other remaining graphs being redrawn to scale with every remaining countries selected. The remaining graphs will also move to accomodate the empty space, if there is any.   
 
+_Combined Graph Type Specification Tests_  
+
+1. After a first country is selected, a graph will generate on the control panel to the left. Any additional country selected will result in the one generated graph being regenerated with the additional line representing the new country's statistics.   
+2. (As of 5/2/15) There are 7 tabs, and therefore statistics, to choose from. Clicking a new tab will regenerate the already generated graph and data lines in order to fit the new statistics.   
+
+3. Deselecting a country will result in its respective data line being removed and the other remaining graphs being redrawn to scale with every remaining countries selected. If there are no more countries selected after the deselection of the above country, there will be no graph displayed on the control panel.  
+
+_Whole Selection Graph Type Specification Tests_   
+
+1. After a first country is selected, a graph will generate on the control panel to the left. Any additional country selected will result in the one generated graph being regenerated with the data line incrementing due to the new country's statistics.   
+
+2. (As of 5/2/15) There are 7 tabs, and therefore statistics, to choose from. Clicking a new tab will regenerate the already generated graph in order to fit the new statistics.   
+
+3. Deselecting a country will result in the current data line being decremented. If there are no more countries selected after the deselection of the above country, there will be no graph displayed on the control panel.   
 
 ## Combination Specification Tests  
 
+This section is inherently tied with the above "Selection of Countries" section as the selection or deselection of a country will generate, modify, or remove a graph.  
+
 ## Normal Operations Tests  
 
+1. What happens when multiple countries are selected and deselected? Are the graphs generated reflecting these actions?  
+
 ## Pathological Tests  
+
+1. What happens if you select a large amount of countries which therefore results in a large amount of graphs being generated? How many graphs can we generate?  
+
+2. With a large amount of graphs generated? How long will the redrawing take if we switch to a new tab?   
 
 # 4.0 : Settings Changes  
 
