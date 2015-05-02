@@ -153,7 +153,6 @@ This section is inherently tied with the above "Selection of Countries" section 
 2. What are the default selected and inputted settings?   
 
 3. After changing a statistic, there are 3 ways to apply changes (which will be discussed below). Theses are:  
-
 &nbsp;1. Click or touch the "Apply" button  
 &nbsp;2. Click or touch the "OK" button (this will simultaneously close the settings menu)  
 &nbsp;3. Click or touch the view outsides of the settings menu (this will simultaneously close the settings menu)  
@@ -161,7 +160,6 @@ This section is inherently tied with the above "Selection of Countries" section 
 _Note: if you have invalid data, you will not be able to apply the changes_  
 
 4. There are 3 ways to exit the Settings menu (if you have not exited by applying settings). These are:   
-
 &nbsp;1. Click or touch the "OK" button  
 &nbsp;2. Click or touch the "Cancel" button (Note: any unapplied changes will be lost)  
 &nbsp;3. Click or touch the view outside of the menu  
@@ -177,7 +175,7 @@ _Note: if you have invalid data, you will not be able to apply the changes_
 
 **Timespan Selection Specification Tests**  
 
-1. There are 3 text boxes and 3 corresponding settings to modify. These are:  
+4. There are 3 text boxes and 3 corresponding settings to modify. These are:    
 &nbsp;1. Start Year  
 &nbsp;2. End Year  
 &nbsp;3. Heatmap Year    	
@@ -185,7 +183,7 @@ _Note: if you have invalid data, you will not be able to apply the changes_
 **Statistic for Vaccinations Heat Map Specifications Tests**  
 
 1. There are 3 radio buttons, and thusly, 3 statistics for the heatmap. These are:  
-&nbsp;1. SIA
+&nbsp;1. SIA  
 &nbsp;2. MCV1  
 &nbsp;3. MCV2  
 
@@ -195,7 +193,15 @@ _Note: if you have invalid data, you will not be able to apply the changes_
 
 1. What happens when you do multiple settings changes at one time?  
 
+2. What happens when you select countries after changing the settings?  
+
 ## 4.3 : Normal Operations Tests  
+
+1. What happens if a user changes settings multiple times in one session?  
+
+2. What happens when a user changes their settings from the default and then refreshes Dav3i? Do those changes stay or are they resetted to the default?  
+
+3. What happens if a valid timespan is changed to a valid year, applied, and then changed to an invalid year and applied?  
 
 ## 4.4 : Pathological Tests  
 
@@ -207,9 +213,19 @@ _Note: if you have invalid data, you will not be able to apply the changes_
 
 # 5.0 : Customization of View 
 
-"Customization of View" encompasses the features which allow the user to modify their view (i.e. changing the size of the control panel, changing the size of the graphs, resizing of the window, and zooming in/out of the World Map).  
+"Customization of View" encompasses the features which allow the user to modify their view (i.e. changing the size of the control panel, changing the size of the graphs, resizing of the window, and zooming in/out of the World Map). These tests are written under the assumption that "Selection of Countries" and "Graph Visualization" tests have passed.  
 
 ## 5.1 : Specification Tests  
+
+1. There are 2 ways to view the graphs. These are:  
+&nbsp;1. Regular View 
+&nbsp;2. Expanded View (which can be accessed by the arrow icon in the bottom righthand corner of the control panel)  
+When you open Dav3i, what is the default view?  
+
+2. There are 3 ways to modify the view of the world map. These are:  
+&nbsp;1. Use a scroll wheel or scroll motion on a trackpad
+&nbsp;2. Use two fingers to zoom out or zoom in with a touchscreen  
+&nbsp;3. Click the provided plus and minus buttons to zoom in and out  
 
 ## 5.2 : Combination Specification Tests  
 
