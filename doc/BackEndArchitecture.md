@@ -42,16 +42,18 @@ The server must
 
 **by_stat.php:** API call to get data for all countries for a stat and a year, takes a statID and a year as arguments, if no year argument is given it defaults to the current year
 
-**connect.php** establishes a connection to the MySQL database, takes no arguments
+**connect.php:** establishes a connection to the MySQL database, takes no arguments
 
-**toolbox.php** library of functions and global variables that are useful in multiple places within the back end, when the global variable TESTING is set to TRUE ThrowFatalError doesn't kill the page and API calls can be made from foreign hosts
+**toolbox.php:** library of functions and global variables that are useful in multiple places within the back end, when the global variable TESTING is set to TRUE ThrowFatalError doesn't kill the page and API calls can be made from foreign hosts
 
-**test_lib.php** library of unit tests for the helper functions within the back end
-
-**api_library.php** library of functions that do the calculations for all of the API calls, includes:
+**api_library.php:** library of functions that do the calculations for all of the API calls, includes:
 * **ByStat** takes a statIDr and a year as arguments and returns the data of the input stat for all countries in the input year, if no input year is given it defaults to the current year
 * **ByCountry** takes a countryID or comma delimited list of countryIDs and returns all data for the input countries
 * **Descriptor** takes no arguments and returns the year range, list of stats, list of cc2, cc3, and country names in the database currently
+
+**data_parser.php:** takes data from a .csv file and put it into a form that can be input into the database, currently unsuitable for use by the client
+
+**data_uploader.php** html page to upload data output from the parser into the database, currently unsuitable for use by the client 
 
 
 ###Syntax for API Calls
@@ -64,18 +66,42 @@ x must be a single valid statID, y must be a single valid year, if no year is gi
 z must be a single valid countryID or a comma delimited list of countryID's; the front end only sends single countryIDs
 
 ###Error Handling
-All error checking will use the ThrowFatalError and ThrowInconvenientError functions from toolbox.php to handle errors.
+The two error handling functions are ThrowFatalError and ThrowInconvenientError from toolbox.php
 * **ThrowFatalError** will kill the page, and print a concise error message stating the nature and location of the error.
 *  **ThrowInconvenientError** will be used in cases where it isn't necessary for the page to be killed, it will print a concise error message stating the nature and location of the error.  For each function the error message is an argument to the function.
 
-All functions within api_library.php will validate and sanitize their input data.  In the case of unsanitary or invalid data, the standard error handling procedure is followed.
+All functions within api_library.php will validate and sanitize their input data.  In the case of unsanitary or invalid data, ThrowFatalError is called.
+
+In the case where data is corrupted or lost, this is how each functions in api_library handles it. This is not how most of these errors should be handled. All should throw errors that the front end reads and relays the information to the user, but the front end has not implemented error handling yet, so some of these replace the missing data with a no data signifier. The problem is that that isn't necessarily true, there is data, it is just corrupted/lost and the user should know that.
+
+| Lost Data | Descripto | ByStat | ByCountry |
+|:---------|:--------------:|:-----------:|:--------------:|
+| *Stat Table* | Works Normally | Throws Fatal Error if that stat is called| Fills missing data with -1 |
+| *Stat Table Column* | Works Normally | Throws Fatal Error if that year is called | Fills missing data with -1 |
+| *Stat Table Row* | Works Normally | Throws Fatal Error if that stat is called| Fills missing data with -1 |
+| *Meta Stat Table* | Throws Fatal Error | Throws Fatal Error | Throws Fatal Error |
+| *Meta Country Table* | Throws Fatal Error | Throws Fatal Error | Throws Fatal Error |
+
+**Lost Data Key**
+* **stat table** - all data for a specific stat is missing 
+* **stat table column** - all data for a specific year in a stat table is missing
+* **stat table row** - all data for a specific country in a stat table is missing
+* **meta stat table** - the table used to reference which stats are which tables is missing
+* **meta country table** - the table used to reference which countries are which rows is missing
+
+For all functions, a Fatal Error is thrown when either meta table is missing because there is no way to decipher the database.
+
+Descriptor still works if any stat information is missing because it only reads from the meta tables to make the descriptor table, and to get the year range it will cycle through each table until it finds a valid table to get year range from.
+
+ByStat Throws a fatal error if a stat table is missing only when that stat is called because it only relies on one stat table at a time. It will still work if a stat table is missing and it is not called on that stat table. If a stat table column is missing, ByStat will only throw a fatal error if that column is called because it only relies on one column at a time. It will work on all other columns. If a stat table row is missing, ByStat will throw a Fatal Error if that stat is called because the row will affect all columns in the table. It will still work on all other stat tables that do not have missing rows.
+
+ByCountry fills in missing data with -1 when there are missing stat tables, stat table columns, or stat table rows. This is misleading because there are some countried that do not have data and there should be differentiation between these countries and countries that are missing data because of a server problem. Once the front end implements error handling they will be able to tell the user that there is a server problem rather than displaying the countries as no data.
+
 
 ###Security
-Functions that receive input from the front end will sanitize and validate their data. This insures that no unforeseen data can be used to attack the system.
+Functions that receive input from the front end will sanitize and validate their data using regular expressions. This insures that no unforeseen data can be used to attack the system.
 
 The program pixy(https://github.com/oliverklee/pixy) was used to scan for cross site scripting(XSS) and SQL injection vulnerabilities. Pixy found several XSS vulnerabilities in the form of echoing a variable without first sanitizing the variable highlighted in the document NoteablePixyResults. These vulnerabilities were determined to be unimportant because no user input could make it to these vulnerabilities without being sanitized and validated beforehand.
-
-We plan to use PHP-IDS(https://github.com/PHPIDS/PHPIDS) to deal with server attacks.
 
 New data and updates to data will be submitted via a secure login(not added yet).
 
@@ -183,5 +209,9 @@ The LAMP stack is made up of four components, each communicating with only one o
 
 **Using 1 as the First Index for data:** SQL is indexed starting at one, so all requests from the front end must have one added
 
-**Docker** Docker was first introduced to us as a framework to make making multiplatform applications easier, but upon further investigation, it was actually a framework to make multiplatform development easier. It converts your application to a format that is stored on Docker's cloud that can run on a Docker virtual environment which makes it easier for large companies to all work on a project in different development environments. We determined that we did not need to use it. 
+**Docker:** Docker was first introduced to us as a framework to make making multiplatform applications easier, but upon further investigation, it was actually a framework to make multiplatform development easier. It converts your application to a format that is stored on Docker's cloud that can run on a Docker virtual environment which makes it easier for large companies to all work on a project in different development environments. We determined that we did not need to use it.
+
+**Pixy:** Pixy is a Java program that scans PHP code for SQL injection and cross site scripting vulnerabilities. Its build and use instructions were clear and it was easy to use. It also actually found some vulnerabilities so it was a good choice.
+
+**PHP-IDS:** PHP-IDS is a php program that is included in each of your php files and detects, reacts to, and logs server attacks. We determined that it was difficult to learn and not worth the time because it was mainly a tool to log attacks to learn how to better defensively code. It's main reaction to attacks was to log it, or email you about it. Since we already coded defensively, we felt it's only benefit was to possibly prevent DDOS attacks, but we're going to rely on our server provider to prevent that.
 
