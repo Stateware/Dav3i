@@ -217,18 +217,40 @@ _Note: if you have invalid data, you will not be able to apply the changes_
 
 ## 5.1 : Specification Tests  
 
+**Graph View Specification Tests**  
+
 1. There are 2 ways to view the graphs. These are:  
 &nbsp;1. Regular View 
 &nbsp;2. Expanded View (which can be accessed by the arrow icon in the bottom righthand corner of the control panel)  
-When you open Dav3i, what is the default view?  
+When you open Dav3i, what is the default view?   
 
-2. There are 3 ways to modify the view of the world map. These are:  
+2. When in Expanded View, a user can double-click any graph to have it enlarged.  
+
+3. There is only 1 way to exit the Expanded view. This is by once again clicking the arrow icon in the bottom righthand corner of the control panel.   
+
+**World Map View Specification Tests**    
+
+1. There are 3 ways to modify the view of the world map. These are:  
 &nbsp;1. Use a scroll wheel or scroll motion on a trackpad
 &nbsp;2. Use two fingers to zoom out or zoom in with a touchscreen  
 &nbsp;3. Click the provided plus and minus buttons to zoom in and out  
 
 ## 5.2 : Combination Specification Tests  
 
+1. Select a country using touchscreen and also zoom in/zoom out using touchscreen.  
+
 ## 5.3 : Normal Operations Tests  
 
+1. What happens when (with Graph Type set to Regional) there a user goes into Extended View with 4+ graphs displayed?   
+
+2. What happens when a user goes to Extended View with the other two Graph Types (Combined and Whole Selection)?  
+
 ## 5.4 : Pathological Tests  
+
+1. What happens when a user rapidly zooms in and zooms out?  
+
+2. What happens when a user, in Expanded View, enlarges every graph (when Graph Type is set to regional)? How many graphs can the expanded control panel hold?  
+
+3. Select many countries (20+) when Graph Type is set to regional and enlarge every graph in Extended View. How long does it take to resize every graph if a user then goes back to Regular View.  
+
+4. What happens to the screen if a user resizes their browser? What happens if a user tries to go to Extended View or enlarge graphs while resizing their browser window?  
