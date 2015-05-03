@@ -237,13 +237,17 @@ When you open Dav3i, what is the default view?
 
 ## 5.2 : Combination Specification Tests  
 
-1. Select a country using touchscreen and also zoom in/zoom out using touchscreen.  
+1. Select a country using touchscreen and also zoom in/zoom out using touchscreen.   
+
+2. Within Extended View, click the multiple tabs to see the graphs change.  
 
 ## 5.3 : Normal Operations Tests  
 
 1. What happens when (with Graph Type set to Regional) there a user goes into Extended View with 4+ graphs displayed?   
 
 2. What happens when a user goes to Extended View with the other two Graph Types (Combined and Whole Selection)?  
+
+3. What happens if a user tries to select a country when in Extended View?  
 
 ## 5.4 : Pathological Tests  
 
@@ -254,3 +258,5 @@ When you open Dav3i, what is the default view?
 3. Select many countries (20+) when Graph Type is set to regional and enlarge every graph in Extended View. How long does it take to resize every graph if a user then goes back to Regular View.  
 
 4. What happens to the screen if a user resizes their browser? What happens if a user tries to go to Extended View or enlarge graphs while resizing their browser window?  
+
+5. What happens when a user selects 10 or more countries in Regular View and goes to Extended View? How long does it take?   
