@@ -220,8 +220,8 @@ _Note: if you have invalid data, you will not be able to apply the changes_
 **Graph View Specification Tests**  
 
 1. There are 2 ways to view the graphs. These are:  
-&nbsp;1. Regular View 
-&nbsp;2. Expanded View (which can be accessed by the arrow icon in the bottom righthand corner of the control panel)  
+&nbsp;1. Regular View   
+&nbsp;2. Expanded View (which can be accessed by the arrow icon in the bottom righthand corner of the control panel) 
 When you open Dav3i, what is the default view?   
 
 2. When in Expanded View, a user can double-click any graph to have it enlarged.  
@@ -231,7 +231,7 @@ When you open Dav3i, what is the default view?
 **World Map View Specification Tests**    
 
 1. There are 3 ways to modify the view of the world map. These are:  
-&nbsp;1. Use a scroll wheel or scroll motion on a trackpad
+&nbsp;1. Use a scroll wheel or scroll motion on a trackpad  
 &nbsp;2. Use two fingers to zoom out or zoom in with a touchscreen  
 &nbsp;3. Click the provided plus and minus buttons to zoom in and out  
 
