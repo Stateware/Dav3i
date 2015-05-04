@@ -40,14 +40,14 @@ The username, password, and database name can be found in the security document 
 When making adjustments to the Apache configuration files, the changes made will not be reflected in the server's behavior until Apache is restarted. This can be done with the following command into the server's terminal.
 
 ```
-TODO: Code
+/etc/init.d/apache2 restart
 ```
 
 Please note that during this restart time (usually on the order of seconds), all connections to the server will be refused.
 
 ### Changing A User Password
 
-If you ever need to change the password for a user, you can use the following command.
+If you ever need to change the password for a user, you can use the following command in the server's terminal.
 
 ````
 passwd
@@ -57,7 +57,7 @@ It will ask you to enter your new password twice before making the changes.
 
 ### Changing A MySQL Password
 
-If you ever need to change the password for a MySQL user, you can use the following set of commands.
+If you ever need to change the password for a MySQL user, you can use the following set of commands in the server's terminal.
 
 ````
 mysql
@@ -67,4 +67,4 @@ SET PASSWORD FOR 'user'@'host' = PASSWORD('password');
 FLUSH PRIVILEGES;
 ````
 
-The first line should be executed in the shell. This will open the MySQL process. The second line tells MySQL to start editting the database that describes itself. The third line will give you a table of all the users and their hosts that exist in the database. The fourth line will set the password for the given user from a given host. The last line will commit all of those changes to the database.
+The first line should be executed in the shell. This will open the MySQL process. The second line tells MySQL to start editing the database that describes itself. The third line will give you a table of all the users and their hosts that exist in the database. The fourth line will set the password for the given user from a given host. The last line will commit all of those changes to the database.
