@@ -47,7 +47,7 @@ The server must
 **toolbox.php:** library of functions and global variables that are useful in multiple places within the back end, when the global variable TESTING is set to TRUE ThrowFatalError doesn't kill the page and API calls can be made from foreign hosts
 
 **api_library.php:** library of functions that do the calculations for all of the API calls, includes:
-* **ByStat** takes a statIDr and a year as arguments and returns the data of the input stat for all countries in the input year, if no input year is given it defaults to the current year
+* **ByStat** takes a statID and a year as arguments and returns the data of the input stat for all countries in the input year, if no input year is given it defaults to the current year
 * **ByCountry** takes a countryID or comma delimited list of countryIDs and returns all data for the input countries
 * **Descriptor** takes no arguments and returns the year range, list of stats, list of cc2, cc3, and country names in the database currently
 
@@ -215,3 +215,4 @@ The LAMP stack is made up of four components, each communicating with only one o
 
 **PHP-IDS:** PHP-IDS is a php program that is included in each of your php files and detects, reacts to, and logs server attacks. We determined that it was difficult to learn and not worth the time because it was mainly a tool to log attacks to learn how to better defensively code. It's main reaction to attacks was to log it, or email you about it. Since we already coded defensively, we felt it's only benefit was to possibly prevent DDOS attacks, but we're going to rely on our server provider to prevent that.
 
+**Testing Framework** Many frameworks and programs were researched for testing such as: Selenium, dBug, SimpleTest, PHPUnit, JMeter, JUnit, and DBUnit. It was ultimately decided to use none of these and write our own framework using JSoup and JDBC. There is more information about these programs in BackEndTestPlan.md
