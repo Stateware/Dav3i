@@ -450,7 +450,7 @@
 /* sets styling for loading animation container */
 .spinner {
     margin: 100px 0 auto;
-    width: 70px;
+    width: 100px;
     text-align: center;
 }
 

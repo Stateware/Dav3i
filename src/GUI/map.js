@@ -33,10 +33,9 @@
 // Author: Vanajam Soni, Joshua Crafts
 // Date Created: 2/24/2015
 // Last Modified: 4/14/2015 by Paul Jang
-// Description: This function initializes the map, fills up the textarea 'cc2_
-//      selected' with the list of selected regions and clears the selection
-//      on the click of button "clear"
-// PRE: index.html and div with id "map" exist 
+// Description: This function initializes our map, and also includes overrides for custom functionality
+//              (on hover, on select, etc.) and some newly defined helper functions specified below.
+// PRE: index.html, jvectormap/jquery-jvectormap-world-mill-en.js, and div with id "map" exist 
 // POST: The map is initialized in the div "map"
 $(function(){
     // Author: Joshua Crafts
@@ -45,21 +44,24 @@ $(function(){
     // Description: This function matches each country/region object in the vector map
     //              to its corresponding value in the HMS section of g_LookupTable and
     //              returns the array, indexed by CC2
-    // PRE: the HMS section of g_LookupTable is initialized
-    // POST: FCTVAL == object containing the as many elements as the total number of 
-    //       initialized elements of g_LookupTable, composed of cc2 and the related
-    //       HMS value. Should be used as argument to maps.series.regions[0].setValues()
     ColorByHMS = function(){
-        var data = {},
-            key,
-            isFound,
-            min,
-            max,
-            hmsID = g_StatID,
-            type = 0;
+    // PRE:  g_LookupTable is initialized
+    // POST: map is recolored in terms of the currently selected stat (based on g_VaccHMS if
+    //       stat is vaccinations), where tint of a country is based on the magnitude of its
+    //       selected stat value 
+        var data = {},				// object indexed by CC2 to attach data to
+						//  vector objects
+            key,				// holds CC2 when iterating through vector
+						//  objects
+            index,				// index in g_LookupTable of a given CC2's data
+            min,				// minimum data value from HMS data
+            max,				// maximum data value from HMS data
+            hmsID = g_StatID,			// ID of stat to pull for HMS data
+            type = 0,				// type of stat (regular or vaccine)
+            i;					// indexing variable
 
-        for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)
-            {
+        for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)	// find which stat to pull
+            {								//  if type 1
                 if (g_ParsedStatList[1][i] == g_StatID && g_ParsedStatList[0][i] == 1)
                 {
                     type = 1;
@@ -70,56 +72,49 @@ $(function(){
                 }
             }
 
-        $.when(GetHMS(hmsID,g_HMSYear)).done(function(hmsData){
-            isFound = false;
-            min = Number.MAX_VALUE;
-            max = Number.MIN_VALUE;
-            SetHMS(hmsData[hmsID]);     // Need to index in due to JSON format of by_stat.php
-            // iterate through regions by key
-            for (key in map.regions) {
-                // iterate through lookup table by index
-                for (var i = 0; i < g_LookupTable.length && isFound == false; i++)
-                {
-                    // set value by key if key is equal to cc2 in lookup table
-                    if (key === g_LookupTable[i][0] && g_LookupTable[i][2] != -1)
-                    {
-                        data[key] = g_LookupTable[i][2];
-                        if (data[key] < min)
-                            min = data[key];
-                        if (data[key] > max)
-                            max = data[key];
-                        isFound = true;
-                    }
-                    else
-                    {
-                        //data[key] = -1;
-                    }
+        $.when(GetHMS(hmsID,g_HMSYear)).done(function(hmsData){		// pull HMS data from server
+            min = Number.MAX_VALUE;					// init min to max value
+            max = Number.MIN_VALUE;					// init max to min value
+            SetHMS(hmsData[hmsID]);			 		// Need to index in due to JSON
+									//  format of by_stat.php
+            for (key in map.regions) {					// match HMS to keys
+                index = Hash(key);					// index into g_LookupTable by CC2
+                if (g_LookupTable[index] !== undefined 			// if data exists for country, add
+                    && g_LookupTable[index][4] != -1)			//  to vector object and update
+                {							//  min/max
+                    data[key] = g_LookupTable[index][4];
+                    if (data[key] < min)
+                        min = data[key];
+                    if (data[key] > max)
+                        max = data[key];
                 }
-                isFound = false;
             }
             
+            // set data series
             map.series.regions[0].params.min = min;
             map.series.regions[0].params.max = max;
             map.reset();
             map.series.regions[0].setValues(data);
+            if (!g_HMSReady)						// if first time, set flag to true
+                g_HMSReady = true;
         });
     };
 
     map = new jvm.Map(
     {
-        map: 'world_mill_en',
-        container: $('#map'),
-        regionsSelectable: true, // allows us to select regions
+        map: 'world_mill_en',					// load map file
+        container: $('#map'),					// specify id of container div
+        regionsSelectable: true, 				// allows us to select regions
         backgroundColor: 'transparent',
         regionStyle: {
-            initial: {
+            initial: {						// grey out regions without data
                 fill: '#888888'
             },
             hover: {
-                "fill-opacity": 0.7
+                "fill-opacity": 0.7				// animate hover
             },
             selected: {
-                "stroke-width": 0.4,
+                "stroke-width": 0.4,				// outline and color when selected
                 stroke: '#000000',
                 fill: '#7FDBFF'
             }
@@ -129,29 +124,37 @@ $(function(){
                 attribute: 'fill',
                 // needs some random init values, otherwise dynamic region coloring won't work
                 values: { ID: 148576, PG: 13120.4, MX: 40264.8, EE: 78.6, DZ: 30744.6, MA: 24344.4, MR: 14117.6, SN: 39722.6, GM: 7832.6, GW: 9902.2 },
-                scale: ['#22FF70', '#1D7950'],
+                scale: ['#22FF70', '#1D7950'],			// specify upper and lower color bounds
                 normalizeFunction: 'polynomial'
             }]
         },
         // runs when a region is selected
         onRegionSelected: function()
         {
-            if (g_Clear != true)
-                ModifyData(map.getSelectedRegions());
+            if (g_Clear != true)				// when clear is selected, each region is deselected one at a time,
+            {							//  so we use this variable to avoid rebuilding the list, generating
+                BuildList(map.getSelectedRegions());		//  subdivs, and generating graphs on each deselect, which would run
+                GenerateSubDivs();				//  into n^2 time
+                GenerateGraphs();
+            }
         },
         // runs when region is hovered over
         onRegionTipShow: function(e, label, key){
-            var tipString = "",
-                i, 
-                type = 0,
-                hmsID = g_StatID;
-				
-			var Format = wNumb({
-				thousand: ','
-			});
+            var tipString = "",					// string to display when hovering over a country
+                i, 						// indexing variable
+                type = 0,					// type of stat
+                hmsID = g_StatID,				// stat id
+		Format = wNumb({				// format for numbers	
+			thousand: ','
+		}),
+                index;						// index in g_LookupTable hashed from key
 
-            tipString += label.html()+" - ";
-            for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)
+            index = Hash(key);					// get index into g_LookupTable
+            if (g_LookupTable[index] !== undefined)		// if entry exists for region, user server-defined
+                tipString += g_LookupTable[index][2];		//  name in hover tip
+            else						// else use name defined in map	file
+                tipString += label.html()+" - ";
+            for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)		// get stat type and name
             {
                 if (g_ParsedStatList[1][i] == g_StatID && g_ParsedStatList[0][i] == 1)
                 {
@@ -171,42 +174,19 @@ $(function(){
             else
                 tipString += g_StatList[hmsID];
             tipString += " in " + g_HMSYear + ": ";
-            if (map.series.regions[0].values[key] === undefined)            
+            if (map.series.regions[0].values[key] === undefined)		// notify if no data available
                 tipString += "No Data Available";
-            else if (type == 1)
+            else if (type == 1)							// else if it is vaccinations,
+            {									// print percentage
                 tipString += (map.series.regions[0].values[key] * 100).toFixed(0) + "%";
-            else
+            }
+            else								// else print data normally
             {
                 tipString += Format.to(Number(map.series.regions[0].values[key]));
             }
-            label.html(tipString);
+            label.html(tipString);						// output string
         }
     });
-    // after lookup table is loaded, color map
-    setTimeout(function(){
-        var isFound = false;
-        g_CountriesNoData = new Array();
-        for (var key in map.regions) 
-        {
-        	isFound = false;
-            // iterate through lookup table by index
-            for (var i=0; i<g_LookupTable.length && !isFound; i++)
-            {
-                // set value by key if key is equal to cc2 in lookup table
-                if (key == g_LookupTable[i][0])
-                {
-                    isFound = true;
-                }
-            }
-            if(!isFound)
-            {
-	        	g_CountriesNoData.push(key);
-	        }
-	            
-        }
-        //console.log(g_CountriesNoData);
-        
-    }, 1000);
     // clearing selected regions when the "clear" button in clicked
     document.getElementById("clear").onclick = function()
     {
@@ -214,13 +194,9 @@ $(function(){
         // removes graphs subdivs
         document.getElementById(parentTabDivName).innerHTML = "";
         // removes map selections
-
-        g_DataList.size = 0;
-        g_DataList.start = null;
-        g_DataList.end = null;
-
         g_Clear = true;
         map.clearSelectedRegions();
+        BuildList([]);
         g_Clear = false;
     };
 });

@@ -86,9 +86,9 @@ function UpdateInputs()
     // initialize TempSettings array
     g_TempSettings[0]=g_FirstYear;
     g_TempSettings[1]=g_LastYear;   
-	g_TempSettings[2]=g_LastYear;
-	g_TempSettings[3]=0;
-	g_TempSettings[4]=1;
+    g_TempSettings[2]=g_LastYear;
+    g_TempSettings[3]=0;
+    g_TempSettings[4]=1;
 }
 
 // Author: Paul Jang, Nicholas Denaro
@@ -202,7 +202,7 @@ function CloseSettings()
        
     document.getElementById(startDiv.id+"-error").innerHTML="";
     document.getElementById(endDiv.id+"-error").innerHTML="";
-   	document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
+    document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
 }
 
 // Author: Emma Roudabush
@@ -303,6 +303,7 @@ function GenerateSubDivs()
         var currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
         var children = document.getElementById(parentTabDivName).childNodes;
         var newNumDivs = size - currentNumDivs;
+        var div;
         // if we only need one graph for either combined lines or summation of lines
         if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
         {
@@ -324,6 +325,16 @@ function GenerateSubDivs()
             document.getElementById(parentTabDivName).innerHTML = "";
             for(var i = 1; i<=size; i++)
                 CreateSubDiv("region-graphs-"+i,parentTabDivName);
+            while (g_DataList.size < currentNumDivs)
+            {
+                $("#region-graphs-"+currentNumDivs).remove();
+                currentNumDivs--;
+            }
+            while (g_DataList.size > currentNumDivs)
+            {
+                CreateSubDiv("region-graphs-"+(currentNumDivs+1), parentTabDivName);
+                currentNumDivs++;
+            }
         }
     }
 }

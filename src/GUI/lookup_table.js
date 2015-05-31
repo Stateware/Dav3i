@@ -39,23 +39,36 @@
 // POST: DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
 function ParseDescriptor()
 {
-    var DescriptorJSON;
-    var hmsData;
+    var DescriptorJSON;			// text returned from descriptor.php call
 
     $.when(GetDescriptor()).done(function(DescriptorJSON){
-        SetInitalYears(DescriptorJSON);
-        SetGraphType(0);
-        GenerateLookupTable(DescriptorJSON);
-        GenerateStatReferenceList(DescriptorJSON);
-        ParseStatList();
-        g_StatID = 1;
-        g_HMSYear = g_LastYear;
-        ColorByHMS();
-        //console.log(g_LookupTable);
-        //console.log(g_StatList);
-        BuildTabs();
-        UpdateInputs();
+        SetInitalYears(DescriptorJSON);			// set year range
+        GenerateLookupTable(DescriptorJSON);		// initialize lookup table
+        SetTableData();					// get region data from server
+        GenerateStatReferenceList(DescriptorJSON);	// set stat list
+        ParseStatList();				// create parsed stat list
+        g_StatID = 1;					// set init stat id
+        g_HMSYear = g_LastYear;				// set init HMS year to end of data
+        ColorByHMS();					// color map
+        // console.log(g_LookupTable);
+        // console.log(g_StatList);
+        BuildTabs();					// build tab menu
+        UpdateInputs();					// set init values for settings inputs
     });
+}
+
+// Author: Joshua Crafts
+// Date Created: 5/20/2015
+// Last Modified: 5/20/2015 by Joshua Crafts
+// Description: This function takes in a 2 character CC2 code and returns the key of g_LookupTable
+//              to which the CC2 belongs
+// PRE:  cc2 is a 2 alpha character code
+// POST: FCTVAL == the key of the correct bucket to which cc2 belongs
+function Hash(cc2)
+{
+    var key = (26 * (cc2.charCodeAt(0) - "A".charCodeAt(0))) + (cc2.charCodeAt(1) - "A".charCodeAt(0));
+
+    return key;
 }
 
 // Author: Emma Roudabush
@@ -67,11 +80,14 @@ function ParseDescriptor()
 function GetDescriptor()
 {
     return $.ajax({                                      
-        url: 'http://usve74985.serverprofi24.com/dav3i/API/descriptor.php',                                                     
-        dataType: 'JSON',                 
-        success: function(data){     
-            //console.log("Successfully received descriptor.php");
-        } 
+        url: "API/descriptor.php",
+        dataType: "JSON",
+        error: function() {
+            console.log("Error receiving descriptor.php");
+        },        
+        success: function(){
+            console.log("Successfully received descriptor.php");
+        }
     });
 }
 
@@ -99,16 +115,27 @@ function SetInitalYears(DescriptorJSON)
 //              names, and the HMS values are set to 0.
 // PRE: DescriptorJSON exists with the correct data from descriptor.php,
 //      g_LookupTable exists
-// POST: g_LookupTable has the correct CC2, name, and HMS values
+// POST: g_LookupTable has 676 buckets, of which 193 are initialized to 5 element vectors, of which
+//       their keys are the hashed values of all 193 CC2s from descriptor.php. The vectors contain
+//       (in order) the CID of a country, the CC2, the name, a field containing the data set for the
+//       country (initialized to null), and the heat map value for that country (init to 0)
 function GenerateLookupTable(DescriptorJSON)
 {
-    g_LookupTable = new Array(DescriptorJSON.cc2.length);
+    var CID = 0;
+    var index;
+    g_LookupTable = new Array(g_BUCKETS); // create bucket for all possible CC2s
+    g_NumCountries = DescriptorJSON.cc2.length;
     for (i = 0; i < DescriptorJSON.cc2.length; i++)
     {
-        g_LookupTable[i] = new Array(3);
-        g_LookupTable[i][0] = DescriptorJSON.cc2[i];
-        g_LookupTable[i][1] = DescriptorJSON.common_name[i];
-        g_LookupTable[i][2] = 0;
+        index = Hash(DescriptorJSON.cc2[CID]);				// get hash key for current CC2
+        g_LookupTable[index] = new Array(5);				// create fields
+        g_LookupTable[index][0] = CID;					// set CID field to index of current
+									//  cc2 in descriptor.php
+        g_LookupTable[index][1] = DescriptorJSON.cc2[CID];		// set cc2 to current cc2
+        g_LookupTable[index][2] = DescriptorJSON.common_name[CID];	// set name to current name
+        g_LookupTable[index][3] = null;					// init null data field
+        g_LookupTable[index][4] = 0;					// init 0 heat map stat
+        CID++;								// increment index
     }
 }
 
@@ -129,6 +156,41 @@ function GenerateStatReferenceList(DescriptorJSON)
     }
 }
 
+// Author: Joshua Crafts
+// Date Created: 5/20/2015
+// Last Modified: 5/27/2015 by Joshua Crafts
+// Desription: Gets all region data from server and fills table
+// PRE:  g_LookupTable is initialized
+// POST: All table entries for which data exists on the server now have data stored locally in
+//       g_LookupTable
+function SetTableData()
+{
+    for (i = 0; i < g_LookupTable.length; i++)			// each must be set separately so that
+        SetData(i);						//  i is hidden between calls, otherwise
+								//  loop will continue before data is set
+								//  data is lost or becomes redundant
+}
+
+// Author: Joshua Crafts
+// Date Created: 5/27/2015
+// Last Modified: 5/27/2015 by Joshua Crafts
+// Description: Gets data for a single table entry if it exists and sets data field in g_LookupTable
+// PRE:  g_LookupTable is initialized and 0 <= index < g_LookupTable.length
+// POST: if g_LookupTable[index] exists, g_LookupTable[index][data] contains its stat data
+function SetData(index)
+{
+    if (g_LookupTable[index] !== undefined)
+    {
+        $.when(GetData(g_LookupTable[index][0])).done(function(data){
+            var parsedData = ParseData(data);				// parse data and set data field
+            g_LookupTable[index][3] = parsedData;
+            g_DataLoaded++;
+            if (g_DataLoaded == g_NumCountries)				// if last region accounted for,
+                g_DataReady = true;					//  set ready flag to true
+        });
+    }
+}
+
 // Author: Emma Roudabush, Joshua Crafts
 // Date Created: 3/17/2015
 // Last Modified: 3/23/2015 by Joshua Crafts
@@ -139,7 +201,8 @@ function SetHMS(hmsData)
 {
     for (var i = 0; i < g_LookupTable.length; i++)
     {
-        g_LookupTable[i][2] = Number(hmsData[i]);
+        if (g_LookupTable[i] !== undefined)
+            g_LookupTable[i][4] = Number(hmsData[g_LookupTable[i][0]]);
     }
 }
 
@@ -152,10 +215,10 @@ function SetHMS(hmsData)
 function GetHMS(hmsID, year)
 {
     return $.ajax({                                      
-        url: 'http://usve74985.serverprofi24.com/dav3i/API/by_stat.php?statID='.concat(hmsID.toString()+"&year="+year.toString()),                                                     
-        dataType: 'JSON',
+        url: "API/by_stat.php?statID=".concat(hmsID.toString()+"&year="+year.toString()),                                                     
+        dataType: "JSON",
         success: function(data){     
-            //console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));
+            console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));
         } 
     });
 }
@@ -169,16 +232,8 @@ function GetHMS(hmsID, year)
 // POST: FCTVAL = cid (CID corresponding to the input CC2 in the lookup table), -1 if cc2 not found
 function GetCID(cc2)
 {
-    var length = g_LookupTable.length;
-    var cid = -1;
-    
-    for (var i in g_LookupTable)
-    {
-        if (g_LookupTable[i][0] === cc2)
-        {
-            cid = i;
-        }
-    }
+    var key = Hash(cc2);
+    var cid = g_LookupTable[key][0];
 
     return cid; 
 }

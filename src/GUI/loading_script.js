@@ -39,10 +39,10 @@ $(".loading-screen").ready(function () {
 // Generate lookup table and heat map
     ParseDescriptor();
 // Do below process when heat map is generated
-    $(".spinner").fadeOut(1250);
+    $(".spinner").fadeOut(3000);
     setTimeout(function () {
         $(".begin").fadeIn(1500);
-    }, 1250);
+    }, 3000);
 });
 
 

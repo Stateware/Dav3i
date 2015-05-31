@@ -56,83 +56,42 @@ function ParseData(json)
 function GetData(cid)
 {
     return $.ajax({                                      
-        url: 'http://usve74985.serverprofi24.com/dav3i/API/by_country.php?countryIDs='.concat(cid.toString()),                                                    
-        dataType: 'JSON',
-        //success: function(data){     
-        //    console.log("Successfully received by_country.php?countryIDs=".concat(cid.toString()));
-        //} 
+        url: "API/by_country.php?countryIDs=".concat(cid.toString()),                                                    
+        dataType: "JSON",
+        success: function(data){     
+            console.log("Successfully received by_country.php?countryIDs=".concat(cid.toString()));
+        } 
     });
 
 }
-
 
 // Author: Vanajam Soni, Kyle Nicholson
 // Date Created: 3/24/15
 // Last Modified: 3/26/15 Vanajam Soni
 // Description: adds or removes a node to the g_DataList to reflect the chosen regions on the map
-// PRE: selectedRegions is a string array of regions selected on the map
-// POST: modifies g_DataList if there is a mismatch between regions selected, and regions stored in the g_DataList
-function ModifyData(selectedRegions) 
+// PRE:  selectedRegions is a 1D array of CC2 codes output from map.getSelectedRegions in map.js
+// POST: the current data list is replaced with a list containing the relevant data for all countries
+//       whose CC2s are in selectedRegions which have data available
+function BuildList(selectedRegions) 
 {
-    if(g_DataList == null)
-        g_DataList = new c_List();
+    var index;			// index in g_LookupTable for a given entry, hashed based on CC2
+    var node;			// new node to be added to list
 
-    for(i=0;i<selectedRegions.length;i++)
-    {
-            if(GetCID(selectedRegions[i]) == -1) 
-            {
-                selectedRegions.splice(i, 1);
-            }
-    }
+    if (g_DataList == null)					// create list if it does not exist
+         g_DataList = new c_List();
 
-    if(selectedRegions.length > g_DataList.size)
+    g_DataList.clear();						// clear list
+
+    for(i = 0; i < selectedRegions.length; i++)			// iterate through list of selected countries
     {
-        // look for cc2 to add
-        var CC2Found = false;
-        for(var i=0; i <= selectedRegions.length && !CC2Found; i++)
-        {
-            if(selectedRegions[i]!= null && !g_DataList.contains(selectedRegions[i]))
-            {
-                CC2Found = true;
-                var cid = GetCID(selectedRegions[i]);
-                    var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
-                    $.when(GetData(cid)).done(function(data){
-                        var parsedData = ParseData(data);
-                        newNode.data = parsedData;
-                        //console.log(newNode);
-                        g_DataList.add(newNode);
-                        // draw graph with new node
-                        GenerateSubDivs();
-                        GenerateGraphs();
-                    });
-                
-            }
+        index = Hash(selectedRegions[i]);			// index into hash table using CC2
+        if (g_LookupTable[index] !== undefined)			// if data exists for country, create node
+        {							//  and prepend it to list
+            node = new t_AsdsNode(g_LookupTable[index][0],
+                                  g_LookupTable[index][1],
+                                  g_LookupTable[index][2],
+                                  g_LookupTable[index][3]);
+            g_DataList.add(node);
         }
     }
-    else if(selectedRegions.length < g_DataList.size)
-    {
-
-        var currentNode = g_DataList.start;
-
-        // look for cc2 to remove
-        for(var i = 0; i<g_DataList.size;i++)
-        {
-            if(g_DataList != null) 
-            {
-                cc2ToRemove = currentNode.cc2;
-                cid = GetCID(cc2ToRemove);
-                if(selectedRegions.indexOf(cc2ToRemove) == -1 && cid != -1)
-                {
-                    g_DataList.delete(cc2ToRemove);
-                    // redraw graphs
-                    GenerateSubDivs();
-                    GenerateGraphs();
-                }
-
-            }
-            currentNode = currentNode.next;
-        }
-    }
-    else
-        return;
 }
