@@ -43,16 +43,32 @@ except:
 	print "Error opening file. Ending script. (exited with code 1)"
 	sys.exit(1)
 
+# extract page-specific css sources from index.html and place paths into relevant section of package.json
+try:
+	sources = buildLib.GetSources(text[text.find('<!-- page-specific css -->'):text.find('<!-- end internal page-specific css -->')], 'css')
+except:
+	print "Error extracting sources from document. Ending script. (exited with code 3)"
+	sys.exit(3)
+try:
+	packageText = buildLib.ReplaceSources("css", args.filename, packageText, sources)
+except:
+	print "Error modifying package.json. Ending script. (exited with code 3)"
+	sys.exit(3)
+
 print "package.json successfully opened and read.\n"
 print "File text:\n" + packageText + "\n"
 
 # extract page-specific script sources from index.html and place paths into relevant section of package.json
-sources = buildLib.GetSources(text[text.find('<!-- page-specific scripts -->'):text.find('<!-- end page-specific scripts -->')], 'javascript')
-packageText = buildLib.ReplaceSources("scripts", args.filename, packageText, sources)
-
-# extract page-specific css sources from index.html and place paths into relevant section of package.json
-sources = buildLib.GetSources(text[text.find('<!-- page-specific css -->'):text.find('<!-- end page-specific css -->')], 'css')
-packageText = buildLib.ReplaceSources("css", args.filename, packageText, sources)
+try:
+	sources = buildLib.GetSources(text[text.find('<!-- page-specific scripts -->'):text.find('<!-- end page-specific scripts -->')], 'javascript')
+except:
+	print "Error extracting sources from document. Ending script. (exited with code 3)"
+	sys.exit(3)
+try:
+	packageText = buildLib.ReplaceSources("scripts", args.filename, packageText, sources)
+except:
+	print "Error modifying package.json. Ending script. (exited with code 3)"
+	sys.exit(3)
 
 # verify that resulting text is JSON
 try:

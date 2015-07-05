@@ -34,7 +34,7 @@
   },
   "scripts": {
     "internalLib": ["GUI/data_query.js", "GUI/data.js", "GUI/lookup_table.js", "GUI/settings.js", "GUI/graph.js", "GUI/dynamic_markup.js"],
-    "index": []
+    "index": ["GUI/loading_script.js", "GUI/map.js"]
   },
   "css": {
     "appWide": ["GUI/reset.css", "GUI/style.css"],
