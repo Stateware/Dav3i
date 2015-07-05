@@ -21,16 +21,16 @@ except:
 	sys.exit(4)
 
 # open file and read into memory
-print "Opening src/" +  args.filename + ".html to extract source paths..."
+print "Opening " +  args.filename + ".html to extract source paths..."
 try:
-	file = open('src/' + args.filename + '.html', 'r')
+	file = open(args.filename + '.html', 'r')
 	text = file.read()
 	file.close()
 except:
 	print "Error opening file. Ending script. (exited with code 1)"
 	sys.exit(1)
 
-print "src/" + args.filename + ".html successfully opened and read.\n"
+print args.filename + ".html successfully opened and read.\n"
 print "File text:\n" + text + "\n"
 
 # open package.json and read into memory

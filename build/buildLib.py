@@ -9,8 +9,9 @@ def GetSource(inputArray, type):
 	if (type == 'css'):
 		endIndex += 1;
 	output = inputArray[startIndex+1:endIndex]
-	# verify that source contains javascript or css extension
-	if (output.find('.js') == -1 and output.find('.css') == -1):
+	# verify that local source contains javascript or css extension
+	if (output.find('http://') == -1 and output.find('https://') == -1 and output.find('.js') == -1 and output.find('.css') == -1):
+		print output
 		raise ValueError('Extracted source not valid.')
 	return output
 
@@ -31,13 +32,15 @@ def GetSources(inputArray, type):
 		sources.append(GetSource(inputArray, type))
 		index = inputArray.find(qString)
 
-	# verify that all sources exist
+	# verify that all local sources exist
 	for i in sources:
-		try:
-			file = open(i, 'r')
-			file.close()
-		except:
-			raise ValueError('File ' + i + ' does not exist.')
+		if (i.find('http://') == -1 and i.find('https://') == -1):
+			try:
+				file = open(i, 'r')
+				file.close()
+			except:
+				print i
+				raise ValueError('File ' + i + ' does not exist.')
 
 	return sources
 
@@ -66,6 +69,7 @@ def ReplaceSources(section, header, inputArray, sources):
 	try:
 		json.loads(output)
 	except:
+		print output
 		raise ValueError('Modified text not valid JSON.')
 
 	return output

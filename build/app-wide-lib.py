@@ -8,7 +8,7 @@ import json
 # open index.html and read into memory
 print "Opening index.html to extract source paths..."
 try:
-	file = open('src/index.html', 'r')
+	file = open('index.html', 'r')
 	text = file.read()
 	file.close()
 except:
@@ -31,18 +31,6 @@ except:
 print "package.json successfully opened and read.\n"
 print "File text:\n" + packageText + "\n"
 
-# extract external libraries sources from index.html and place paths into relevant section of package.json
-try:
-	sources = buildLib.GetSources(text[text.find('<!-- external libraries -->'):text.find('<!-- end external libraries -->')], 'javascript')
-except:
-	print "Error extracting sources from document. Ending script. (exited with code 3)"
-	sys.exit(3)
-try:
-	packageText = buildLib.ReplaceSources("scripts", "externalLib", packageText, sources)
-except:
-	print "Error modifying package.json. Ending script. (exited with code 3)"
-	sys.exit(3)
-
 # extract internal libraries sources from index.html and place paths into relevant section of package.json
 try:
 	sources = buildLib.GetSources(text[text.find('<!-- internal libraries -->'):text.find('<!-- end internal libraries -->')], 'javascript')
@@ -51,18 +39,6 @@ except:
 	sys.exit(3)
 try:
 	packageText = buildLib.ReplaceSources("scripts", "internalLib", packageText, sources)
-except:
-	print "Error modifying package.json. Ending script. (exited with code 3)"
-	sys.exit(3)
-
-# extract external css sources from index.html and place paths into relevant section of package.json
-try:
-	sources = buildLib.GetSources(text[text.find('<!-- external css -->'):text.find('<!-- end external css -->')], 'javascript')
-except:
-	print "Error extracting sources from document. Ending script. (exited with code 3)"
-	sys.exit(3)
-try:
-	packageText = buildLib.ReplaceSources("css", "external", packageText, sources)
 except:
 	print "Error modifying package.json. Ending script. (exited with code 3)"
 	sys.exit(3)
