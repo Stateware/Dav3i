@@ -1,0 +1,35 @@
+{
+  "important": 2,				// prevents artificially increasing specificity of a rule
+  "adjoining-classes": 2,			// prevents use of adjoining class selectors for rules (i.e.  .foo.bar {})
+  "known-properties": false,			// prevents use of unknown css properties (ignores vendor defined properties prefixed with -) 
+						//  -- Disabled to accomodate SVG properties, which are not considered known properties
+  "box-sizing": false,				// prevents use of 'box-sizing' property
+  "box-model": 2,				// prevents use of box-model properties other than 'box-sizing'
+  "overqualified-elements": 2,			// prevents use of over-specificity in selectors
+  "display-property-grouping": 2,		// prevents use of display properties that do not apply to a specific element
+  "bulletproof-font-face": false,		// enforces that font face heirarchies end their first font with '#iefix' to address <=IE8 compatibility issues
+  "compatible-vendor-prefixes": 2,		// prevents use of vendor prefixed properties without cross-browser support
+  "regex-selectors": false,			// prevents use of regular expressions in selectors
+  "duplicate-background-images": 2,		// prevents importing a background image in a given style more than once; a background image 
+						//  used for more than one element can be imported using only one selector
+  "duplicate-properties": 2,			// prevents use of the same property for the same element twice
+  "empty-rules": 2,				// prevents use of empty rules
+  "gradients": 2,				// prevents use of gradients without cross-browser support
+  "fallback-colors": false,			// prevents use of colors without backups for cross-browser support
+  "font-sizes": 2,				// prevents use of more than 10 font size declarations; abstract into a few font classes to apply to elements individually
+  "font-faces": 2,				// prevents use of more than 5 font faces for performance optimization
+  "floats": 2,					// prevents use of more than 10 float declarations; layouts with many floats would benefit from a structured grid layout
+  "star-property-hack": 2,			// prevents use of the 'star property hack' to apply styles in only <=IE7
+  "outline-none": 2,				// prevents disabling outline property to allow focus visibility for keyboard only users
+  "import": 2,					// prevents use of @import() function to import css styles, our build will take care of building a production stylesheet
+  "ids": 2,					// prevents use of IDs for css selectors; if IDs are used, it should only be for scripting purposes, not style
+  "underscore-property-hack": 2,		// prevents use of the 'underscore property hack' to apply styles in only <=IE6
+  "qualified-headings": 2,			// prevents use of qualifiers to rules for headings
+  "shorthand": 2,				// prevents use of multiple properties that can be specified using only one
+  "text-indent": false,				// prevents use of negative text-indent property to hide text offscreen
+  "unique-headings": 2,				// prevents defining rules for headings more than once
+  "universal-selector": 2,			// prevents use of universal selector
+  "unqualified-attributes": 2,			// prevents use of unqualified attribute selectors as key for a selector
+  "vendor-prefix": 2,				// prevents use of vendor prefixed properties without also including standard version of property
+  "zero-units": 2				// prevents use of units for 0 values
+}

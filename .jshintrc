@@ -1,0 +1,39 @@
+{
+	"predef" : [			// adds any predefined globals (d3, etc.)
+			"d3",
+			"hardware",
+			"switches",
+			"ups",
+			"connections",
+			"vms",
+			"QUnit"
+		],
+	"browser" : true,		// allows basic browser globals (window, document)
+	"curly" : true,			// enforces that all conditionals and loops are wrapped with curly braces
+	"eqeqeq" : true,		// prohibits use of != or ==, in favor of !== and ===
+	"es3" : false,			// allows code that does not fit ECMAScript 3 specification
+	"forin" : true,			// enforces that forin loops check if a property is owned or inherited by an object
+					/* forin loops should be written as:
+					 *
+					 *	for (key in obj) {
+					 *		if (obj.hasOwnProperty(key)) {
+					 *			// code pertaining to obj[key]
+					 *		}
+					 *	}
+					 *
+					 */
+	"freeze" : true,		// prohibits overwriting special object prototypes (Array, Date, etc.)
+	"funcscope" : false,		// prohibits using variables declared in lower scope
+	"latedef" : true,		// prohibits using variables before they are defined
+	"maxcomplexity" : 7,		// limits cyclomatic complexity
+	"maxparams" : 5,		// limits number of formal parameters to a function; larger parameter lists should be condensed by using objects
+	"maxstatements" : 20,		// limits length of functions
+	"nocomma" : true,		// prohibits use of comma operator
+	"nonbsp" : true,		// prohibits non-breaking whitespace that can break non utf-8 pages
+	"singleGroups" : true,		// prohibits the use of parentheses when it does not change the meaning of code (primarily unary operators)
+	"undef" : true,			// prohibits the use of variables not explicitly declared
+	"unused" : true,		// prohibits having variables that are unused
+	"eqnull" : true,		// allows comparisons with null
+	"node" : true,			// notifies jshint of node.js global variables
+	"jquery" : true			// notifies jshint of jquery global variables
+}

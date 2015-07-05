@@ -4,7 +4,7 @@ node_js:
 
 # command executed before installing dependencies
 before_install:
-  - git checkout master # explicitly check out master branch so we can push new build
+  - npm install -g gh
 
 # command to install dependencies
 install:
@@ -15,7 +15,8 @@ before_script:
 
 # command to run tests
 script:
-  - echo "test"
+  - mkdir log
+  - echo "test" >> log/test.txt
 #  - grunt clean:log
 #  - grunt jshint >> log/lint-log.txt			# lint javascript
 #  - grunt csslint >> log/lint-log.txt			# lint css
@@ -23,11 +24,7 @@ script:
 
 # command executed after tests regardless of build status
 after_script:
-  - git config user.email "jcrafts318@gmail.com" 	# push new build to github
-  - git config user.name "jcrafts318"
-  - git add --all
-  - git commit -m "automatic build update [ci skip]"
-  - git push
+  - gh pr -s jcrafts318 -t "automatic build update [ci skip]
 
 # command executed after successful build
 after_success:
