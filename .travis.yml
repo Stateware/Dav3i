@@ -23,7 +23,7 @@ script:
 
 # command executed after tests regardless of build status
 after_script:
-sh build/pull-request.sh
+  - sh build/pull-request.sh
 
 # command executed after successful build
 after_success:
