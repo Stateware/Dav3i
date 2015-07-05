@@ -23,7 +23,7 @@ script:
 
 # command executed after tests regardless of build status
 after_script:
-  - sh build/pull-request.sh
+  - yes n | gh pr -s jcrafts318 -t "automatic build update [ci skip]"
 
 # command executed after successful build
 after_success:
