@@ -4,7 +4,6 @@ node_js:
 
 # command executed before installing dependencies
 before_install:
-  - apt-get install -g gh
 
 # command to install dependencies
 install:
