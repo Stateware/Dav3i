@@ -25,6 +25,7 @@ script:
 # command executed after tests regardless of build status
 after_script:
   - gh pr -s jcrafts318 -t "automatic build update [ci skip]"
+  - N
 
 # command executed after successful build
 after_success:
