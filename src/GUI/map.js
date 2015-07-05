@@ -151,7 +151,7 @@ $(function(){
 
             index = Hash(key);					// get index into g_LookupTable
             if (g_LookupTable[index] !== undefined)		// if entry exists for region, user server-defined
-                tipString += g_LookupTable[index][2];		//  name in hover tip
+                tipString += g_LookupTable[index][2] + " - ";		//  name in hover tip
             else						// else use name defined in map	file
                 tipString += label.html()+" - ";
             for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)		// get stat type and name

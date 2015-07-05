@@ -1,0 +1,41 @@
+language: node_js
+node_js:
+  - "0.12"
+
+# command executed before installing dependencies
+before_install:
+  - git checkout master # explicitly check out master branch so we can push new build
+
+# command to install dependencies
+install:
+
+# command executed before running test script
+before_script: 
+  - export NODE_PATH="/home/travis/build/jcrafts318/CyberVAN" # explicitly specify environment variable for node; npm should do this automatically but doesn't
+
+# command to run tests
+script:
+#  - grunt clean:log
+#  - grunt jshint >> log/lint-log.txt			# lint javascript
+#  - grunt csslint >> log/lint-log.txt			# lint css
+#  - grunt qunit >> log/test-log.txt			# test scripts
+
+# command executed after tests regardless of build status
+after_script:
+  - git config user.email "jcrafts318@gmail.com" 	# push new build to github
+  - git config user.name "jcrafts318"
+  - git add --all
+  - git commit -m "automatic build update [ci skip]"
+  - git push
+
+# command executed after successful build
+after_success:
+#  - grunt clean:prod					# clean production directory (except external libs)
+#  - python build/app-wide-lib.py			# populate list of internal libs and app-wide css
+#  - python build/page-specific.py -f index		# populate list of page specific libs and css, then export production page for index.html
+#  - grunt concat					# create production javascript modules
+#  - grunt uglify					# create production minified javascript
+
+# command executed after failed build
+after_failure:
+  - echo "Build failed. New production build not pushed to repository."

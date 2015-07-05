@@ -1,0 +1,14 @@
+hash table indexed by cc2 -> extra buckets but random access
+unused buckets are null
+keep list of graphed nodes (really pointers to buckets in the hash table)
+check against new map list on new selection
+if graph list is shorter, add
+on add, create new graph list by constant time accessing buckets and calling server for missing data, then graph out of list
+else delete
+on delete, create new graph list
+
+lookup table has 676 (26^2) buckets
+lookup table is indexed by CC2
+lookup table includes CC2, CID, Name, HMS, Data
+
+when pulling descriptor.php, fill
