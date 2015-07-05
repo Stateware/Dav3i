@@ -15,7 +15,7 @@ before_script:
 
 # command to run tests
 script:
-echo "test"
+  - echo "test"
 #  - grunt clean:log
 #  - grunt jshint >> log/lint-log.txt			# lint javascript
 #  - grunt csslint >> log/lint-log.txt			# lint css
