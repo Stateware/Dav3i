@@ -4,7 +4,7 @@ node_js:
 
 # command executed before installing dependencies
 before_install:
-  - npm install -g gh
+  - apt-get install -g gh
 
 # command to install dependencies
 install:
@@ -24,7 +24,7 @@ script:
 
 # command executed after tests regardless of build status
 after_script:
-  - gh pr -s jcrafts318 -t "automatic build update [ci skip]" --force
+  - gh pr -s jcrafts318 -t "automatic build update [ci skip]"
 
 # command executed after successful build
 after_success:
