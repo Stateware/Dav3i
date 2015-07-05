@@ -37,27 +37,37 @@
 <head>
     <title>DAV3I</title>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name='viewport' />
+    <!-- app-wide css -->
     <link rel="stylesheet" type="text/css" href="GUI/style.css">
+    <!-- end app-wide css -->
+    <!-- external css -->
     <link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="GUI/jvectormap/jquery-jvectormap-2.0.1.css" type="text/css" media="screen"/>
+    <!-- end external css -->
+    <!-- external libraries -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	<script type="text/javascript" src="GUI/wnumb-1.0.0/wNumb.js"></script>
+    <script src="GUI/jvectormap/jquery.js"></script>
+    <script src="GUI/jvectormap/jquery-jvectormap-2.0.1.min.js"></script>
+    <script src="GUI/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load('visualization', '1.0', {'packages':['corechart']});
+    </script>
+    <script type="text/javascript" src="GUI/wnumb-1.0.0/wNumb.js"></script>
+    <!-- end external libraries -->
+    <!-- internal libraries -->
     <script type="text/javascript" src="GUI/data_query.js"></script>
-    <script type="text/javascript" src="GUI/loading_script.js"></script>
-    <script type="text/javascript" src="GUI/map.js"></script>
     <script type="text/javascript" src="GUI/data.js"></script>
     <script type="text/javascript" src="GUI/lookup_table.js"></script>
     <script type="text/javascript" src="GUI/settings.js"></script>
     <script type="text/javascript" src="GUI/graph.js"></script>
     <script type="text/javascript" src="GUI/dynamic_markup.js"></script>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript">
-        google.load('visualization', '1.0', {'packages':['corechart']});
-    </script>
-    <script src="GUI/jvectormap/jquery.js"></script>
-    <script src="GUI/jvectormap/jquery-jvectormap-2.0.1.min.js"></script>
-    <script src="GUI/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    <!-- end internal libraries -->
+    <!-- page-specific scripts -->
+    <script type="text/javascript" src="GUI/loading_script.js"></script>
+    <script type="text/javascript" src="GUI/map.js"></script>
+    <!-- end page-specific scripts -->
 </head>
 
 <body>
@@ -176,7 +186,7 @@
 
     	
         <div class="footer">
-            <p class="footer-text">Copyright <span onclick="teamPopup()" onmouseover="this.style.cursor='pointer'"><strong>Stateware Team</strong></span>. Licensed under version 3 of the <strong><a href="http://www.gnu.org/licenses/">GNU General Public License</a></strong>. Built using <strong><a href="http://jvectormap.com/">jVectorMap</a></strong> and <strong><a href ="https://developers.google.com/chart/">Google Charts</a></strong>. <strong><a href ="http://stateware.wikia.com/">Learn more about Stateware</a></strong></p>
+            <p class="footer-text">Copyright <span onclick="teamPopup()" onmouseover="this.style.cursor='pointer'"><strong>Stateware Team</strong></span>. Licensed under version 3 of the <strong><a href="http://www.gnu.org/licenses/">GNU General Public License</a></strong>. Built using <strong><a href="http://jvectormap.com/">jVectorMap</a></strong> and <strong><a href ="https://developers.google.com/chart/">Google Charts</a></strong>. <strong><a href ="http://www.stateware.org/">Learn more about Stateware</a></strong></p>
             <p onclick="bugPopup()" onmouseover="this.style.cursor='pointer'" class="bug-report"><strong>Report an issue</strong></p>
         </div>
     </div>
