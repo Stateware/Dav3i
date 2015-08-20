@@ -83,12 +83,12 @@ def ReplaceLink(input, section, link, type):
 	startIndex = input.find('<!-- ' + section + ' -->')
 	startIndex = startIndex + input[startIndex:len(input)].find('>') + 1
 	endIndex = input.find('<!-- end ' + section + ' -->')
-	output = input[0:startIndex] + '\n\t\t'
+	output = input[0:startIndex] + '\n    '
 	if (type == "javascript"):
 		output += "<script type='text/javascript' src='" + link + "'></script>"
 	elif (type == "css"):
 		output += "<link rel='stylesheet' type='text/css' href='" + link + "'>"
 	else:
 		output += "<script type='text/javascript' src='" + link + "'></script>"
-	output += '\n\t\t' + input[endIndex:len(input)]
+	output += '\n    ' + input[endIndex:len(input)]
 	return output

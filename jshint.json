@@ -1,0 +1,20 @@
+{
+	"gruntfile" : {
+		"options" : {
+			"jshintrc" : ".jshintrc"
+		},
+		"src" : "Gruntfile.js"
+	},
+	"src" : {
+		"options" : {
+			"jshintrc" : ".jshintrc"
+		},
+		"src" : []
+	},
+	"test" : {
+		"options" : {
+			"jshintrc" : ".jshintrc"
+		},
+		"src" : ["test/*.js"]
+	}
+},

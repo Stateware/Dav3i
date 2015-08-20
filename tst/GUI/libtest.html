@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>QUnit Test Suite</title>
+		<!-- QUnit CSS -->
+		<link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.18.0.css" type="text/css" media="screen">
+		<!-- QUnit Script -->
+		<script src="https://code.jquery.com/qunit/qunit-1.18.0.js"></script>
+		<!-- external libraries -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="GUI/jvectormap/jquery.js"></script>
+		<script src="GUI/jvectormap/jquery-jvectormap-2.0.1.min.js"></script>
+		<script src="GUI/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script type="text/javascript">
+			google.load('visualization', '1.0', {'packages':['corechart']});
+		</script>
+		<script type="text/javascript" src="GUI/wnumb-1.0.0/wNumb.js"></script>
+		<!-- end external libraries -->
+		<!-- internal libraries -->
+		<script type="text/javascript" src="GUI/data_query.js"></script>
+		<script type="text/javascript" src="GUI/data.js"></script>
+		<script type="text/javascript" src="GUI/lookup_table.js"></script>
+		<script type="text/javascript" src="GUI/settings.js"></script>
+		<script type="text/javascript" src="GUI/graph.js"></script>
+		<script type="text/javascript" src="GUI/dynamic_markup.js"></script>
+		<!-- end internal libraries -->
+	</head>
+	<body>
+		<div id="qunit"></div>
+		<div id="qunit-fixture"></div>
+		<!-- page-specific scripts -->
+		<!-- end page-specific scripts -->
+		<!-- page specific tests -->
+		<script type="text/javascript" src="libtest.js"></script>
+		<!-- end page specific tests -->
+	</body>
+</html>
