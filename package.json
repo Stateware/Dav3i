@@ -37,7 +37,7 @@
     "index": ["GUI/loading_script.js", "GUI/map.js"]
   },
   "css": {
-    "appWide": ["GUI/reset.css", "GUI/style.css"],
+    "appWide": ["GUI/style.css"],
     "index": []
   }
 }
