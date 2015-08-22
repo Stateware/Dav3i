@@ -53,7 +53,7 @@ module.exports = function(grunt) {
 			options: {
 				banner: '<%= banner %>'
 			},
-			internal: {
+			appWide: {
 				src: '<%= concat.internal.dest %>',
 				dest: 'prod/app_lib.min.js'
 			},
