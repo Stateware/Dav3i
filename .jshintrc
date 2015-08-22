@@ -12,14 +12,14 @@
 			"g_StatID",
 			"g_HMSYear",
 			"g_ParsedStatList",
-			"g_GraphType = 0",
-			"g_Clear = false",
-			"g_Expanded = false"
-			"g_VaccHMS = 1",
-			"g_TempSettings = new Array(5)",
-			"g_DataReady = false",
-			"g_HMSReady = false",
-			"g_DataLoaded = 0",
+			"g_GraphType",
+			"g_Clear",
+			"g_Expanded"
+			"g_VaccHMS",
+			"g_TempSettings",
+			"g_DataReady",
+			"g_HMSReady",
+			"g_DataLoaded",
 			"t_AsdsNode",
 			"c_List",		
 			"QUnit"

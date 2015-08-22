@@ -195,7 +195,6 @@ function ApplySettings()
     document.getElementById(endDiv.id+"-error").className="";
     document.getElementById(heatmapYearDiv.id+"-error").className="";
 
-
     if(startDiv.value===""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max))||isNaN(startDiv.value))
     {
         canContinue=false;
