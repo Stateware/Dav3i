@@ -1,28 +1,28 @@
 {
-	"predef" : [			// adds any predefined globals (d3, etc.)
-			"g_BUCKETS",
-			"g_LookupTable",
-			"g_NumCountries",
-			"g_StatList",
-			"g_FirstYear",
-			"g_LastYear",
-			"g_YearStart",
-			"g_YearEnd",
-			"g_DataList",
-			"g_StatID",
-			"g_HMSYear",
-			"g_ParsedStatList",
-			"g_GraphType",
-			"g_Clear",
-			"g_Expanded",
-			"g_VaccHMS",
-			"g_TempSettings",
-			"g_DataReady",
-			"g_HMSReady",
-			"g_DataLoaded",
-			"t_AsdsNode",
-			"c_List",		
-			"QUnit"
+	"globals" : [			// adds any predefined globals (d3, etc.)
+			"g_BUCKETS": "false",
+			"g_LookupTable": "true",
+			"g_NumCountries": "true",
+			"g_StatList": "true",
+			"g_FirstYear": "true",
+			"g_LastYear": "true",
+			"g_YearStart": "true",
+			"g_YearEnd": "true",
+			"g_DataList": "true",
+			"g_StatID": "true",
+			"g_HMSYear": "true",
+			"g_ParsedStatList": "true",
+			"g_GraphType": "true",
+			"g_Clear": "true",
+			"g_Expanded": "true",
+			"g_VaccHMS": "true",
+			"g_TempSettings": "true",
+			"g_DataReady": "true",
+			"g_HMSReady": "true",
+			"g_DataLoaded": "true",
+			"t_AsdsNode": "true",
+			"c_List": "true",		
+			"QUnit": "true"
 		],
 	"browser" : true,		// allows basic browser globals (window, document)
 	"curly" : true,			// enforces that all conditionals and loops are wrapped with curly braces
@@ -47,8 +47,6 @@
 	"nocomma" : true,		// prohibits use of comma operator
 	"nonbsp" : true,		// prohibits non-breaking whitespace that can break non utf-8 pages
 	"singleGroups" : true,		// prohibits the use of parentheses when it does not change the meaning of code (primarily unary operators)
-	"undef" : true,			// prohibits the use of variables not explicitly declared
-	"unused" : true,		// prohibits having variables that are unused
 	"eqnull" : true,		// allows comparisons with null
 	"node" : true,			// notifies jshint of node.js global variables
 	"jquery" : true			// notifies jshint of jquery global variables
