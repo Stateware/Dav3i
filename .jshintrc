@@ -14,7 +14,7 @@
 			"g_ParsedStatList",
 			"g_GraphType",
 			"g_Clear",
-			"g_Expanded"
+			"g_Expanded",
 			"g_VaccHMS",
 			"g_TempSettings",
 			"g_DataReady",
