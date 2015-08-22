@@ -38,12 +38,12 @@
 // POST: FCTVAL == a 2d array containing stat, year in the form [stat][year]
 function ParseData(json)
 {
-    var data = new Array(); // Creates the array for the data to be returned
+    var data = []; // Creates the array for the data to be returned
     data = json[Object.keys(json)[0]];// Since there will only be one country in each json,
                                       // we can simply get the first key, and use that to
                                       // get the value for the data.
 
-    return (data);
+    return data;
 }
 
 
@@ -78,11 +78,13 @@ function BuildList(selectedRegions)
     var node;			// new node to be added to list
 
     if (g_DataList == null)					// create list if it does not exist
-         g_DataList = new c_List();
+    {
+	g_DataList = new c_List();
+    }
 
     g_DataList.clear();						// clear list
 
-    for(i = 0; i < selectedRegions.length; i++)			// iterate through list of selected countries
+    for(var i = 0; i < selectedRegions.length; i++)			// iterate through list of selected countries
     {
         index = Hash(selectedRegions[i]);			// index into hash table using CC2
         if (g_LookupTable[index] !== undefined)			// if data exists for country, create node

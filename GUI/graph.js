@@ -38,14 +38,20 @@
 //       whether the g_StatID selected is vaccination or not 
 function GenerateGraphs()
 {
-	if(g_DataList != undefined && g_DataList.size != 0)
+	var sumNode,
+            max,
+            element,
+            cur,
+            i;
+
+	if(g_DataList !== undefined && g_DataList.size !== 0)
 	{
-    	var curr=g_DataList.start;    
+    	    curr=g_DataList.start;    
 	    if (g_StatList[g_StatID].indexOf("VACC") > -1)
 	    {
 	        if (g_GraphType != 2)
 	        {
-	            for(var i=1; i<=g_DataList.size; i++)
+	            for(i=1; i<=g_DataList.size; i++)
 	            {
 	                GraphVaccine("region-graphs-"+i, curr);
 	                curr=curr.next;
@@ -53,7 +59,7 @@ function GenerateGraphs()
 	        }
 	        else
 	        {
-	            var sumNode = GenerateSumNode();
+	            sumNode = GenerateSumNode();
 	            GraphVaccine("region-graphs-"+1,sumNode);
 	        }
 	    }
@@ -62,14 +68,14 @@ function GenerateGraphs()
 	        switch(g_GraphType)
 	        {
 	            case 0:    
-                        var max = FindMax();
-	                for(var i=1; i<=g_DataList.size; i++)
+                        max = FindMax();
+	                for(i=1; i<=g_DataList.size; i++)
 	                {
-	                    if(GraphRegional("region-graphs-"+i, curr, max) == -1)
-                        {
-                            var element = document.getElementById("region-graphs-"+i);
-                            element.parentNode.removeChild(element);
-                        }
+	                    if(GraphRegional("region-graphs-"+i, curr, max) === -1)
+                            {
+                                element = document.getElementById("region-graphs-"+i);
+                                element.parentNode.removeChild(element);
+                            }
 	                    curr=curr.next;
 	                }
 	                break;
@@ -77,7 +83,7 @@ function GenerateGraphs()
 	                GraphCombined("region-graphs-"+1);
 	                break;
 	            case 2:
-	                var sumNode = GenerateSumNode();
+	                sumNode = GenerateSumNode();
 	                GraphRegional("region-graphs-"+1, sumNode);
 	                break;
 	        }
@@ -93,38 +99,45 @@ function GenerateGraphs()
 //      a sum of countries, and maxVal is the max is maximum value of the selected stat for the entire list
 // POST: generates a single Google ComboChart for the given node on the divID
 function GraphRegional(divID, node, maxVal) {
-    var data = GenerateSingleData(node.data);
-    var options = {
-        title: node.name,
-        seriesType: "line",
-        legend: 'none',
-        vAxis: {
-            viewWindowMode:'explicit',
-            viewWindow: {min: 0, max: maxVal}
+    var data = GenerateSingleData(node.data),
+        options = {
+            title: node.name,
+            seriesType: "line",
+            legend: 'none',
+            vAxis: {
+                viewWindowMode:'explicit',
+                viewWindow: {min: 0, max: maxVal}
+            },
+            hAxis: {title: 'Year', format: '####'},
+            series: {1: {type: "area", color: "transparent"}, 2: {color: "navy"}, 3: {type: "area", color: "navy"}},
+            isStacked: true,
+            backgroundColor: '#EAE7C2',
+            tooltip: {trigger: 'both'}
         },
-        hAxis: {title: 'Year', format: '####'},
-        series: {1: {type: "area", color: "transparent"}, 2: {color: "navy"}, 3: {type: "area", color: "navy"}},
-        isStacked: true,
-        backgroundColor: '#EAE7C2',
-        tooltip: {trigger: 'both'}
-    };
+    formatter,
+    chart,
+    i;
     	
-    if(data != null)
+    if(data !== null)
     {
-        var formatter = new google.visualization.NumberFormat({pattern: '#,###.##'} );
-        for(var i=1; i < data.getNumberOfColumns(); i++)
+        formatter = new google.visualization.NumberFormat({pattern: '#,###.##'} );
+        for(i=1; i < data.getNumberOfColumns(); i++)
         {
-            if(data != null)
+            if(data !== null)
+            {
                 formatter.format(data, i);
+            }
         }
 
         // instantiate and draw chart using prepared data
-        var chart = new google.visualization.ComboChart(document.getElementById(divID));
+        chart = new google.visualization.ComboChart(document.getElementById(divID));
         chart.draw(data, options);
         return 0;
     }
     else
+    {
         return -1;
+    }
 }
 
 // Authors: Josh Crafts, Arun Kumar, Berty Ruan
@@ -135,8 +148,8 @@ function GraphRegional(divID, node, maxVal) {
 // PRE: divID is a div in the graphing section, GenerateCombinedData function is defined
 // POST: generates a single Google LineChart on divID for all regions on g_DataList
 function GraphCombined(divID) {
-    var data = GenerateCombinedData();
-    var options = {
+    var data = GenerateCombinedData(),
+        options = {
         seriesType: "line",
         legend: {position: 'top'},
         vAxis: {
@@ -146,20 +159,24 @@ function GraphCombined(divID) {
         hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2',
         tooltip: {trigger: 'both'}
-    };
+    },
+    num,
+    formatter,
+    chart,
+    i;
 	
-	var num = [];
+	num = [];
 	
 	//console.log(num);
-	var formatter = new google.visualization.NumberFormat({pattern: '#,###.##'});
-	for(var i=1; i<data.getNumberOfColumns(); i++)
+	formatter = new google.visualization.NumberFormat({pattern: '#,###.##'});
+	for(i=1; i<data.getNumberOfColumns(); i++)
 	{
 		formatter.format(data, i);
 	}
 	
 	
     // instantiate and draw chart using prepared data
-    var chart = new google.visualization.LineChart(document.getElementById(divID));
+    chart = new google.visualization.LineChart(document.getElementById(divID));
     chart.draw(data, options);
 }
 
@@ -173,8 +190,8 @@ function GraphCombined(divID) {
 // POST: generates a single Google ComboChart for the given node's vaccination data on the divID 
 //       SIA data is shown in bars, whereas MCV1 and MCV2 data is shown in lines.
 function GraphVaccine(divID, node) {
-    var data = GenerateVaccineData(node.data);
-    var options = {
+    var data = GenerateVaccineData(node.data),
+        options = {
         title: node.name,
         vAxis: {
             viewWindowMode:'explicit',
@@ -191,15 +208,18 @@ function GraphVaccine(divID, node) {
             0: {type: "line"}, 1: {type: "line"}
         },
         tooltip: {trigger: 'both'}
-    };
+    },
+    formatter,
+    chart,
+    i;
 	
-	var formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
-    for(var i=1; i<data.getNumberOfColumns(); i++)
+    formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
+    for(i=1; i<data.getNumberOfColumns(); i++)
     {
         formatter.format(data,i);
     }
 	
-    var chart = new google.visualization.ComboChart(document.getElementById(divID));
+    chart = new google.visualization.ComboChart(document.getElementById(divID));
     chart.draw(data, options);
 }
 
@@ -212,9 +232,13 @@ function GraphVaccine(divID, node) {
 function FixMissingData(data)
 {
     if(data >= 0)
+    {
         return data;
+    }
     else
+    {
         return null;
+    }
 }
 
 // Author: Vanajam Soni, Joshua Crafts, Berty Ruan
@@ -230,20 +254,26 @@ function GenerateSingleData(data)
 {
     // type = 0 => unbounded or only has 1 bound
     // type = 1 => both bounds exist
-    var type = 0;
-    var dataAvailable = 0;
-    var dataTable = new google.visualization.DataTable(); // data table to be returned
+    var type = 0,
+        dataAvailable = 0,
+        dataTable = new google.visualization.DataTable(),
+        lowerBoundID,
+        upperBoundID,
+        i,
+        statIDNum,
+        lowerBoundNum,
+        lower; // data table to be returned
     
     dataTable.addColumn('number','year');
     dataTable.addColumn('number', g_StatList[g_StatID]);
 
     // get the bound stats from parsed stat list
-    var lowerBoundID = -1;
-    var upperBoundID = -1;
+    lowerBoundID = -1;
+    upperBoundID = -1;
 
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatID == g_ParsedStatList[1][i])
+        if(g_StatID === g_ParsedStatList[1][i])
         {
             lowerBoundID = g_ParsedStatList[2][i];
             upperBoundID = g_ParsedStatList[3][i];   
@@ -251,7 +281,7 @@ function GenerateSingleData(data)
     }
 
     // if both bounds exist, add columns for those
-    if(lowerBoundID != -1 && upperBoundID != -1)
+    if(lowerBoundID !== -1 && upperBoundID !== -1)
     {
         dataTable.addColumn('number', 'lower bound space'); // area under lower bound
         dataTable.addColumn('number', 'lower bound of confidence interval'); // additional line to outline confidence interval
@@ -265,12 +295,12 @@ function GenerateSingleData(data)
     {   
 
         //format numbers 
-        var statIDNum = FixMissingData(Number(data[g_StatID][i])); // FixMissingData(parseFloat((data[g_StatID][i]).toString));//FixMissingData(parseFloat(Math.ceil())); //null or int
+        statIDNum = FixMissingData(Number(data[g_StatID][i])); // FixMissingData(parseFloat((data[g_StatID][i]).toString));//FixMissingData(parseFloat(Math.ceil())); //null or int
 
         switch(type) 
         {
             case 0: // unbounded
-                if(dataAvailable == 0 && statIDNum != null)
+                if(dataAvailable === 0 && statIDNum !== null)
                 {
                     dataAvailable = 1;
                 }
@@ -278,15 +308,15 @@ function GenerateSingleData(data)
                 break;
 
             case 1: // bounded
-                var lowerBoundNum = FixMissingData(Number(data[lowerBoundID][i]));
+                lowerBoundNum = FixMissingData(Number(data[lowerBoundID][i]));
                 
-                if(dataAvailable == 0 && statIDNum != null)
+                if(dataAvailable === 0 && statIDNum !== null)
                 {
                     dataAvailable = 1;
                 }
-                if (lowerBoundNum == null) // replace -1 with 0 when subtracting lower from upper for size of confidence interval
+                if (lowerBoundNum === null) // replace -1 with 0 when subtracting lower from upper for size of confidence interval
                 {
-                    var lower = 0;
+                    lower = 0;
                 }
                 else
                 {
@@ -300,9 +330,13 @@ function GenerateSingleData(data)
     }
 
     if(dataAvailable == 1)
+    {
         return dataTable;
-    else 
+    }
+    else
+    {
         return null;
+    }
 }
 
 
@@ -317,10 +351,11 @@ function GenerateSingleData(data)
 function GenerateCombinedData()
 {
     // create array with indices for all years plus a header row
-    var currentNode;
-    var i, j;
-    var dataTable = new google.visualization.DataTable();
-    var type = 0;
+    var currentNode,
+        i, j,
+        dataTable = new google.visualization.DataTable(),
+        type = 0.
+        row;
     
     dataTable.addColumn('number','Year');
     
@@ -333,7 +368,7 @@ function GenerateCombinedData()
 
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatID == g_ParsedStatList[1][i] && (g_ParsedStatList[2][i] != -1 || g_ParsedStatList[2][i] != -1))
+        if(g_StatID === g_ParsedStatList[1][i] && (g_ParsedStatList[2][i] !== -1 || g_ParsedStatList[2][i] != -1))
         {
             type = 1;  
         }
@@ -342,7 +377,7 @@ function GenerateCombinedData()
     // filling the data table, iterate through each node, then through each year
     for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_FirstYear)+1;i++)
     {   
-        var row = new Array(g_DataList.size + 1);
+        row = new Array(g_DataList.size + 1);
         row[0] = g_FirstYear+i;
         currentNode = g_DataList.start;
         for (j = 0; j < g_DataList.size; j++)
@@ -366,18 +401,18 @@ function GenerateCombinedData()
 //       data = sum of all data of the countries in g_DataList
 function GenerateSumNode(){
     
-    var data = new Array(g_StatList.length);	// data for the new node
-    var names = "";				// list of names of regions included
-    var i,j;
-    var currentNode = g_DataList.start;		// list iterator
-    
-    // get the associated stats from parsed stat list
-    var ass1ID = -1;
-    var ass2ID = -1;
+    var data = new Array(g_StatList.length);,
+        names = "",
+        i,j,
+        currentNode = g_DataList.start,
+        ass1ID = -1;
+        ass2ID = -1,
+        newNode;
 
+    // get the associated stats from parsed stat list
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatID == g_ParsedStatList[1][i])
+        if(g_StatID === g_ParsedStatList[1][i])
         {
             ass1ID = g_ParsedStatList[2][i];
             ass2ID = g_ParsedStatList[3][i];   
@@ -388,16 +423,22 @@ function GenerateSumNode(){
     if (ass1ID > -1)
         data[ass1ID] = new Array((g_YearEnd-g_FirstYear)+1);
     if (ass2ID > -1)
+    {
         data[ass2ID] = new Array((g_YearEnd-g_FirstYear)+1);
+    }
 
     // initialize arrays to 0
     for (j = 0; j < (g_YearEnd-g_FirstYear)+1; j++)
     {
         data[g_StatID][j] = -1;
         if (ass1ID > -1)
+        {
             data[ass1ID][j] = -1;
+        }
         if (ass2ID > -1)
+        {
             data[ass2ID][j] = -1;
+        }
     }
 
     // add and store data for whole list
@@ -407,29 +448,43 @@ function GenerateSumNode(){
         {
             if (Number(currentNode.data[g_StatID][j]) > 0)
             {
-                if (data[g_StatID][j] == -1 && Number(currentNode.data[g_StatID][j]) != -1)
+                if (data[g_StatID][j] === -1 && Number(currentNode.data[g_StatID][j]) !== -1)
+                {
                     data[g_StatID][j] = Number(currentNode.data[g_StatID][j]);
-                else if (Number(currentNode.data[g_StatID][j]) != -1)
+                }
+                else if (Number(currentNode.data[g_StatID][j]) !== -1)
+                {
                     data[g_StatID][j] += Number(currentNode.data[g_StatID][j]);
+                }
             }
             if (ass1ID > -1 && Number(currentNode.data[ass1ID][j]) > 0)
             {
-                if (data[ass1ID][j] == -1 && Number(currentNode.data[ass1ID][j]) != -1)
+                if (data[ass1ID][j] === -1 && Number(currentNode.data[ass1ID][j]) !== -1)
+                {
                     data[ass1ID][j] = Number(currentNode.data[ass1ID][j]);
-                else if (Number(currentNode.data[ass1ID][j]) != -1)
+                }
+                else if (Number(currentNode.data[ass1ID][j]) !== -1)
+                {
                     data[ass1ID][j] += Number(currentNode.data[ass1ID][j]);
+                }
             }
             if (ass2ID > -1 && Number(currentNode.data[ass2ID][j]) > 0)
             {
-                if (data[ass2ID][j] == -1 && Number(currentNode.data[ass2ID][j]) != -1)
+                if (data[ass2ID][j] === -1 && Number(currentNode.data[ass2ID][j]) !== -1)
+                {
                     data[ass2ID][j] = Number(currentNode.data[ass2ID][j]);
-                else if (Number(currentNode.data[ass2ID][j]) != -1)
+                }
+                else if (Number(currentNode.data[ass2ID][j]) !== -1)
+                {
                     data[ass2ID][j] += Number(currentNode.data[ass2ID][j]);
+                }
             }
         }
         names += currentNode.name; // add name of current node to list of names
-        if (currentNode != g_DataList.end)
+        if (currentNode !== g_DataList.end)
+        {
             names += "; ";
+        }
         currentNode = currentNode.next;
     }
     // divide by size of list to maintain percentages if vaccines
@@ -443,7 +498,7 @@ function GenerateSumNode(){
         }
     }
     
-    var newNode = new t_AsdsNode(-1, "SUM", names, data);
+    newNode = new t_AsdsNode(-1, "SUM", names, data);
 
     return newNode;
 }
@@ -460,20 +515,25 @@ function GenerateSumNode(){
 //       so that we can graph it. 
 function GenerateVaccineData(data)
 {
-    var dataTable = new google.visualization.DataTable();
+    var dataTable = new google.visualization.DataTable(),
+        mcv1ID,
+        mcv2ID,
+        siaID,
+        i,
+        firstNum,
+        secondNum,
+        thirdNum;
     dataTable.addColumn('number','year');
     dataTable.addColumn('number', 'MCV1');
     dataTable.addColumn('number', 'MCV2');
     dataTable.addColumn('number', 'SIA');
-    
-    var mcv1ID, mcv2ID,siaID;
 
     // get associated stat ids
     siaID = g_StatID;
 
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatID == g_ParsedStatList[1][i])
+        if(g_StatID === g_ParsedStatList[1][i])
         {
             mcv1ID = g_ParsedStatList[2][i];
             mcv2ID = g_ParsedStatList[3][i];   
@@ -481,8 +541,6 @@ function GenerateVaccineData(data)
     }
 
     // add data to table
-    var i;
-    var firstNum, secondNum, thirdNum;
     for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
     {
         firstNum  = parseFloat((data[mcv1ID][i]  * 1).toFixed(4));
@@ -504,15 +562,16 @@ function GenerateVaccineData(data)
 // POST: FCTVAL == maximum value of the selected stat for the entire list
 function FindMax()
 {
-    var max = Number.MIN_VALUE;
-    var currentNode = g_DataList.start;
-    
-    var assID, ass2ID;
+    var max = Number.MIN_VALUE,
+        currentNode = g_DataList.start,
+        assID,
+        ass2ID,
+        i, j;
 
     // get associated stat ids
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatID == g_ParsedStatList[1][i])
+        if(g_StatID === g_ParsedStatList[1][i])
         {
             ass1ID = g_ParsedStatList[2][i];
             ass2ID = g_ParsedStatList[3][i];   
@@ -525,17 +584,25 @@ function FindMax()
         for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear) + 1;j++)
         {
             if (Number(currentNode.data[g_StatID][j]) > max)
+            {
                 max = Number(currentNode.data[g_StatID][j]);
+            }
             if (ass1ID != -1 && Number(currentNode.data[ass1ID][j]) > max)
+            {
                 max = Number(currentNode.data[ass1ID][j]);
+            }
             if (ass2ID != -1 && Number(currentNode.data[ass2ID][j]) > max)
+            {
                 max = Number(currentNode.data[ass2ID][j]);
+            }
         }
         currentNode = currentNode.next;
     }
     
-    if (max < 0 || max == NaN || max === undefined || max == Number.MIN_VALUE)
-        max = 10;
+    if (max < 0 || max === NaN || max === undefined || max === Number.MIN_VALUE)
+    {
+        return -1;
+    }
 
     return max;   
 }

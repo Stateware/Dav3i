@@ -66,7 +66,7 @@ function ParseDescriptor()
 // POST: FCTVAL == the key of the correct bucket to which cc2 belongs
 function Hash(cc2)
 {
-    var key = (26 * (cc2.charCodeAt(0) - "A".charCodeAt(0))) + (cc2.charCodeAt(1) - "A".charCodeAt(0));
+    var key = 26 * (cc2.charCodeAt(0) - "A".charCodeAt(0)) + (cc2.charCodeAt(1) - "A".charCodeAt(0));
 
     return key;
 }
@@ -121,8 +121,9 @@ function SetInitalYears(DescriptorJSON)
 //       country (initialized to null), and the heat map value for that country (init to 0)
 function GenerateLookupTable(DescriptorJSON)
 {
-    var CID = 0;
-    var index;
+    var CID = 0,
+        index;
+
     g_LookupTable = new Array(g_BUCKETS); // create bucket for all possible CC2s
     g_NumCountries = DescriptorJSON.cc2.length;
     for (i = 0; i < DescriptorJSON.cc2.length; i++)
@@ -165,9 +166,10 @@ function GenerateStatReferenceList(DescriptorJSON)
 //       g_LookupTable
 function SetTableData()
 {
-    for (i = 0; i < g_LookupTable.length; i++)			// each must be set separately so that
+    for (i = 0; i < g_LookupTable.length; i++)
+    {								// each must be set separately so that
         SetData(i);						//  i is hidden between calls, otherwise
-								//  loop will continue before data is set
+    }								//  loop will continue before data is set
 								//  data is lost or becomes redundant
 }
 
@@ -179,14 +181,18 @@ function SetTableData()
 // POST: if g_LookupTable[index] exists, g_LookupTable[index][data] contains its stat data
 function SetData(index)
 {
+    var parsedData;
+
     if (g_LookupTable[index] !== undefined)
     {
         $.when(GetData(g_LookupTable[index][0])).done(function(data){
-            var parsedData = ParseData(data);				// parse data and set data field
+            parsedData = ParseData(data);				// parse data and set data field
             g_LookupTable[index][3] = parsedData;
             g_DataLoaded++;
             if (g_DataLoaded == g_NumCountries)				// if last region accounted for,
-                g_DataReady = true;					//  set ready flag to true
+            {								//  set ready flag to true
+                g_DataReady = true;
+            }
         });
     }
 }
@@ -199,10 +205,14 @@ function SetData(index)
 // POST: g_LookupTable has heat map values of hmsData
 function SetHMS(hmsData)
 {
-    for (var i = 0; i < g_LookupTable.length; i++)
+    var i;
+
+    for (i = 0; i < g_LookupTable.length; i++)
     {
         if (g_LookupTable[i] !== undefined)
+        {
             g_LookupTable[i][4] = Number(hmsData[g_LookupTable[i][0]]);
+        }
     }
 }
 
@@ -232,8 +242,8 @@ function GetHMS(hmsID, year)
 // POST: FCTVAL = cid (CID corresponding to the input CC2 in the lookup table), -1 if cc2 not found
 function GetCID(cc2)
 {
-    var key = Hash(cc2);
-    var cid = g_LookupTable[key][0];
+    var key = Hash(cc2),
+        cid = g_LookupTable[key][0];
 
     return cid; 
 }
@@ -256,34 +266,35 @@ function ParseStatList()
 function ParseStatList()
 {
 	var sortedStatList = g_StatList.slice();
-	sortedStatList.sort();
-	var parsedStatList = [];						// 2d array
-	parsedStatList[0] = [];
-	parsedStatList[1] = [];
-	parsedStatList[2] = [];
-	parsedStatList[3] = [];
-	
-	var index = 0;
-	
-	// 'global' variables for index locations
-	var statType = 0;
-	var headStat = 1;
-	var assocStat1 = 2;
-	var assocStat2 = 3;
-	
-	// index variables for the vaccination stats
-	var vaccL1 = -1;
-	var vaccL2 = -1;
-	var vaccSIAHead = -1;
+	    sortedStatList.sort(),
+            parsedStatList = [],						// 2d array
+	    parsedStatList[0] = [],
+	    parsedStatList[1] = [],
+	    parsedStatList[2] = [],
+	    parsedStatList[3] = [],
+            index = 0,
+            // 'global' variables for index locations
+	    statType = 0,
+	    headStat = 1,
+	    assocStat1 = 2,
+	    assocStat2 = 3,
+	    // index variables for the vaccination stats
+	    vaccL1 = -1,
+	    vaccL2 = -1,
+	    vaccSIAHead = -1,
+            i,
+            currentStat,
+            isAssociatedStat,
+            isVacc;
 	
 	// this loop searches through the g_statList and places only single stats
 	// in the parsedStatList in the appropriate slot
-	for(var i = 0; i<sortedStatList.length; i++)
+	for(i = 0; i<sortedStatList.length; i++)
 	{
-		var currentStat = sortedStatList[i];
-		var isAssociatedStat = false;
-		var isVacc = false;
-		
+                currentStat = sortedStatList[i];
+                isAssociatedStat = false;
+                isVacc = false;
+
 		if(currentStat.indexOf('VACCL') >= 0)
 		{
 			// prevent any vaccination bounds from being put as a head stat and mark vaccl indexes

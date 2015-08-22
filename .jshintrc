@@ -1,11 +1,27 @@
 {
 	"predef" : [			// adds any predefined globals (d3, etc.)
-			"d3",
-			"hardware",
-			"switches",
-			"ups",
-			"connections",
-			"vms",
+			"g_BUCKETS",
+			"g_LookupTable",
+			"g_NumCountries",
+			"g_StatList",
+			"g_FirstYear",
+			"g_LastYear",
+			"g_YearStart",
+			"g_YearEnd",
+			"g_DataList",
+			"g_StatID",
+			"g_HMSYear",
+			"g_ParsedStatList",
+			"g_GraphType = 0",
+			"g_Clear = false",
+			"g_Expanded = false"
+			"g_VaccHMS = 1",
+			"g_TempSettings = new Array(5)",
+			"g_DataReady = false",
+			"g_HMSReady = false",
+			"g_DataLoaded = 0",
+			"t_AsdsNode",
+			"c_List",		
 			"QUnit"
 		],
 	"browser" : true,		// allows basic browser globals (window, document)

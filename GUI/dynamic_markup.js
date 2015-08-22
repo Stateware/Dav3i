@@ -48,12 +48,14 @@ function BuildTabs()
         div.setAttribute("onclick","ChooseTab(this)");
         div.innerHTML=temp;
         if (temp.indexOf("VACC") > -1)
+	{
             div.innerHTML="Vaccinations";
+	}
         document.getElementById("tabsDiv").appendChild(div);
 
         BuildDiv(temp);
 
-        if(g_ParsedStatList[1][i]==g_StatID)
+        if(g_ParsedStatList[1][i]===g_StatID)
         {
             document.getElementById("id-"+temp+"-graphs").style.display="block";
             div.className="graph-tab selected-tab";
@@ -243,14 +245,14 @@ function Expand()
     $(".expand-black").fadeIn(400);
     setTimeout(function () 
     {
-        if(g_DataList != undefined && g_DataList.size != 0)
+        if(g_DataList !== undefined && g_DataList.size != 0)
         {
 	        GenerateSubDivs();
 	        // if single graph, graph is expanded to whole section
-	        if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
+	        if((g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1) || (g_GraphType == 2))
 	        {
-	            document.getElementById("region-graphs-1").style["width"] = "100%";
-	            document.getElementById("region-graphs-1").style["height"] = "100%";
+	            document.getElementById("region-graphs-1").style.width = "100%";
+	            document.getElementById("region-graphs-1").style.height = "100%";
 	        }
 	        g_Expanded = true;
 	        GenerateSubDivs();
@@ -276,7 +278,7 @@ function Shrink()
     setTimeout(function()
     {
         g_Expanded = false;
-        while(document.getElementById("tabsDiv").childNodes[0]!=document.getElementById("id-"+g_StatList[g_StatID]))
+        while(document.getElementById("tabsDiv").childNodes[0]!==document.getElementById("id-"+g_StatList[g_StatID]))
         {
             RotateTabs(-1);
         }
@@ -296,7 +298,7 @@ function Shrink()
 function GenerateSubDivs()
 {
     // only if there are countries in the data list
-    if(g_DataList != undefined)
+    if(g_DataList !== undefined)
     {
         var size = g_DataList.size;
         var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
@@ -305,10 +307,10 @@ function GenerateSubDivs()
         var newNumDivs = size - currentNumDivs;
         var div;
         // if we only need one graph for either combined lines or summation of lines
-        if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
+        if((g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1) || g_GraphType == 2)
         {
             document.getElementById(parentTabDivName).innerHTML = "";
-            if(size != 0)
+            if(size !== 0)
             {
             	CreateSubDiv("region-graphs-1",parentTabDivName);
 	        }
@@ -316,8 +318,8 @@ function GenerateSubDivs()
             if(g_Expanded)
             {
                 // expand graph
-                document.getElementById("region-graphs-1").style["width"] = "100%";
-                document.getElementById("region-graphs-1").style["height"] = "100%";    
+                document.getElementById("region-graphs-1").style.width = "100%";
+                document.getElementById("region-graphs-1").style.height = "100%";    
             }
         }
         else
@@ -354,7 +356,7 @@ function CreateSubDiv(id,parent)
     var divs=document.getElementsByTagName("div");
     for(var i in divs)
     {
-        if(divs[i].className=="control-panel")
+        if(divs[i].className==="control-panel")
         {
             elem.style="max-width: "+divs[i].clientWidth+"px;";
         }
@@ -368,20 +370,20 @@ function CreateSubDiv(id,parent)
 
     document.getElementById(elem.id).style["height"] = "50%";
 
-    if((((g_GraphType != 1) && (g_GraphType != 2)) && g_Expanded) || 
-        ((g_StatList[g_StatID].indexOf("VACC") != -1 && g_GraphType != 2 && g_Expanded)))
+    if(((g_GraphType !== 1 && g_GraphType !== 2) && g_Expanded) || 
+        ((g_StatList[g_StatID].indexOf("VACC") !== -1 && g_GraphType !== 2 && g_Expanded)))
     {
         $(elem).click(function() {
             if(document.getElementById(id).style.width != "100%")
             {
             
-                document.getElementById(elem.id).style["width"] = "100%";
-                document.getElementById(elem.id).style["height"] = "100%";
+                document.getElementById(elem.id).style.width = "100%";
+                document.getElementById(elem.id).style.height = "100%";
             }
             else
             {
-                document.getElementById(elem.id).style["width"] = "50%";
-                document.getElementById(elem.id).style["height"] = "50%";
+                document.getElementById(elem.id).style.width = "50%";
+                document.getElementById(elem.id).style.height = "50%";
             }
             GenerateGraphs();
         });

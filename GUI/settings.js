@@ -72,12 +72,12 @@ function ApplyAndClose()
 // POST: 
 function CancelSettings()
 {
-	// remove box shadow and check marks or x marks	
-	var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    // remove box shadow and check marks or x marks	
+    var startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
 	
-	startDiv.style["box-shadow"]="none";
+    startDiv.style["box-shadow"]="none";
     endDiv.style["box-shadow"]="none";
     heatmapYearDiv.style["box-shadow"]="none";
         
@@ -86,7 +86,7 @@ function CancelSettings()
     document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
     
     // visually and globally set all values in the settings menu to the tempSettings array
- 	ResetAllStatValues();
+    ResetAllStatValues();
   	
     CloseSettings();
 }
@@ -100,12 +100,12 @@ function CancelSettings()
 //       based on the g_TempSettings array
 function ResetAllStatValues()
 {
-	var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    var startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
 
 	// set start end and heatmap div values
-	startDiv.value = g_TempSettings[0];
+    startDiv.value = g_TempSettings[0];
     endDiv.value = g_TempSettings[1];
     heatmapYearDiv.value = g_TempSettings[2];
 	
@@ -152,11 +152,11 @@ function ResetAllStatValues()
 // POST: saves all current radio buttons and dates and stores them in g_TempSettings array
 function SaveCurrentStatValues()
 {
-	var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    var startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
     
-	g_TempSettings[0] = startDiv.value;
+    g_TempSettings[0] = startDiv.value;
     g_TempSettings[1] = endDiv.value;
     g_TempSettings[2] = heatmapYearDiv.value;
     g_TempSettings[3] = g_GraphType;
@@ -171,10 +171,10 @@ function SaveCurrentStatValues()
 // POST: Assigns the global variables if ranges are valid, otherwise display error.
 function ApplySettings()
 {
-    var canContinue=true;
-    var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    var canContinue=true,
+        startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
 
     startDiv.style["box-shadow"]="";
     endDiv.style["box-shadow"]="";
@@ -196,7 +196,7 @@ function ApplySettings()
     document.getElementById(heatmapYearDiv.id+"-error").className="";
 
 
-    if(startDiv.value==""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max))||isNaN(startDiv.value))
+    if(startDiv.value===""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max))||isNaN(startDiv.value))
     {
         canContinue=false;
         startDiv.style["box-shadow"]="0px 0px 8px #F00";
@@ -205,7 +205,7 @@ function ApplySettings()
         document.getElementById(startDiv.id+"-error").setAttribute("tooltip","Out of range: "+startDiv.min+"-"+startDiv.max);
         document.getElementById(startDiv.id+"-error").className="settings-error";
     }
-    if(endDiv.value==""||(Number(endDiv.value)<Number(endDiv.min)||Number(endDiv.value)>Number(endDiv.max))||isNaN(endDiv.value))
+    if(endDiv.value===""||(Number(endDiv.value)<Number(endDiv.min)||Number(endDiv.value)>Number(endDiv.max))||isNaN(endDiv.value))
     {
         canContinue=false;
         endDiv.style["box-shadow"]="0px 0px 8px #F00";
@@ -214,7 +214,7 @@ function ApplySettings()
         document.getElementById(endDiv.id+"-error").setAttribute("tooltip","Out of range: "+endDiv.min+"-"+endDiv.max);
         document.getElementById(endDiv.id+"-error").className="settings-error";
     }
-    if(heatmapYearDiv.value==""||(Number(heatmapYearDiv.value)<Number(heatmapYearDiv.min)||Number(heatmapYearDiv.value)>Number(heatmapYearDiv.max))||isNaN(heatmapYearDiv.value))
+    if(heatmapYearDiv.value===""||(Number(heatmapYearDiv.value)<Number(heatmapYearDiv.min)||Number(heatmapYearDiv.value)>Number(heatmapYearDiv.max))||isNaN(heatmapYearDiv.value))
     {
         canContinue=false;
         heatmapYearDiv.style["box-shadow"]="0px 0px 8px #F00";
@@ -260,8 +260,10 @@ function ApplySettings()
         // saves all radio buttions and dates in g_TempSettings array
         SaveCurrentStatValues();
         
-        return(true);
+        return true;
     }
     else
-    	return(false);
+    {
+    	return false;
+    }
 }
