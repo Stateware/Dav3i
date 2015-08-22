@@ -55,7 +55,7 @@ $(function(){
     // Description: This function matches each country/region object in the vector map
     //              to its corresponding value in the HMS section of g_LookupTable and
     //              returns the array, indexed by CC2
-    ColorByHMS = function(){
+    function ColorByHMS(){
     // PRE:  g_LookupTable is initialized
     // POST: map is recolored in terms of the currently selected stat (based on g_VaccHMS if
     //       stat is vaccinations), where tint of a country is based on the magnitude of its
@@ -71,15 +71,19 @@ $(function(){
             type = 0,				// type of stat (regular or vaccine)
             i;					// indexing variable
 
-        for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)	// find which stat to pull
+        for (i = 0; i < g_ParsedStatList[1].length && type !== 1; i++)	// find which stat to pull
             {								//  if type 1
-                if (g_ParsedStatList[1][i] == g_StatID && g_ParsedStatList[0][i] == 1)
+                if (g_ParsedStatList[1][i] === g_StatID && g_ParsedStatList[0][i] === 1)
                 {
                     type = 1;
-                    if (g_VaccHMS == 1)
+                    if (g_VaccHMS === 1)
+                    {
                         hmsID = g_ParsedStatList[2][i];
-                    else if (g_VaccHMS == 2)
+                    }
+                    else if (g_VaccHMS === 2)
+                    {
                         hmsID = g_ParsedStatList[3][i];
+                    }
                 }
             }
 
@@ -90,14 +94,18 @@ $(function(){
 									//  format of by_stat.php
             for (key in map.regions) {					// match HMS to keys
                 index = Hash(key);					// index into g_LookupTable by CC2
-                if (g_LookupTable[index] !== undefined 			// if data exists for country, add
-                    && g_LookupTable[index][4] != -1)			//  to vector object and update
+                if (g_LookupTable[index] !== undefined && 		// if data exists for country, add
+                    g_LookupTable[index][4] !== -1)			//  to vector object and update
                 {							//  min/max
                     data[key] = g_LookupTable[index][4];
                     if (data[key] < min)
+                    {
                         min = data[key];
+                    }
                     if (data[key] > max)
+                    {
                         max = data[key];
+                    }
                 }
             }
             
@@ -107,9 +115,11 @@ $(function(){
             map.reset();
             map.series.regions[0].setValues(data);
             if (!g_HMSReady)						// if first time, set flag to true
+            {
                 g_HMSReady = true;
+            }
         });
-    };
+    }
 
     map = new jvm.Map(
     {
@@ -142,7 +152,7 @@ $(function(){
         // runs when a region is selected
         onRegionSelected: function()
         {
-            if (g_Clear != true)				// when clear is selected, each region is deselected one at a time,
+            if (g_Clear !== true)				// when clear is selected, each region is deselected one at a time,
             {							//  so we use this variable to avoid rebuilding the list, generating
                 BuildList(map.getSelectedRegions());		//  subdivs, and generating graphs on each deselect, which would run
                 GenerateSubDivs();				//  into n^2 time
@@ -161,33 +171,47 @@ $(function(){
                 index;						// index in g_LookupTable hashed from key
 
             index = Hash(key);					// get index into g_LookupTable
-            if (g_LookupTable[index] !== undefined)		// if entry exists for region, user server-defined
-                tipString += g_LookupTable[index][2] + " - ";		//  name in hover tip
+            if (g_LookupTable[index] !== undefined)		// if entry exists for region, use server-defined
+            {							//  name in hover tip
+                tipString += g_LookupTable[index][2] + " - ";
+            }
             else						// else use name defined in map	file
-                tipString += label.html()+" - ";
-            for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)		// get stat type and name
             {
-                if (g_ParsedStatList[1][i] == g_StatID && g_ParsedStatList[0][i] == 1)
+                tipString += label.html()+" - ";
+            }
+            for (i = 0; i < g_ParsedStatList[1].length && type !== 1; i++)		// get stat type and name
+            {
+                if (g_ParsedStatList[1][i] === g_StatID && g_ParsedStatList[0][i] === 1)
                 {
                     type = 1;
-                    if (g_VaccHMS == 1)
+                    if (g_VaccHMS === 1)
+                    {
                         hmsID = g_ParsedStatList[2][i];
-                    else if (g_VaccHMS == 2)
+                    }
+                    else if (g_VaccHMS === 2)
+                    {
                         hmsID = g_ParsedStatList[3][i];
+                    }
                 }
             }
-            if (type == 1)
+            if (type === 1)
             {
-                for (i = 0; i < (g_StatList[hmsID].indexOf("VACC")-1); i++)
+                for (i = 0; i < g_StatList[hmsID].indexOf("VACC")-1; i++)
+                {
                     tipString += g_StatList[hmsID][i];
+                }
                 tipString += " Vaccinations";
             }
             else
+            {
                 tipString += g_StatList[hmsID];
+            }
             tipString += " in " + g_HMSYear + ": ";
             if (map.series.regions[0].values[key] === undefined)		// notify if no data available
+            {
                 tipString += "No Data Available";
-            else if (type == 1)							// else if it is vaccinations,
+            }
+            else if (type === 1)							// else if it is vaccinations,
             {									// print percentage
                 tipString += (map.series.regions[0].values[key] * 100).toFixed(0) + "%";
             }

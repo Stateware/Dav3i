@@ -21,12 +21,12 @@
 // POST: FCTVAL == a 2d array containing stat, year in the form [stat][year]
 function ParseData(json)
 {
-    var data = new Array(); // Creates the array for the data to be returned
+    var data = []; // Creates the array for the data to be returned
     data = json[Object.keys(json)[0]];// Since there will only be one country in each json,
                                       // we can simply get the first key, and use that to
                                       // get the value for the data.
 
-    return (data);
+    return data;
 }
 
 
@@ -61,11 +61,13 @@ function BuildList(selectedRegions)
     var node;			// new node to be added to list
 
     if (g_DataList == null)					// create list if it does not exist
-         g_DataList = new c_List();
+    {
+	g_DataList = new c_List();
+    }
 
     g_DataList.clear();						// clear list
 
-    for(i = 0; i < selectedRegions.length; i++)			// iterate through list of selected countries
+    for(var i = 0; i < selectedRegions.length; i++)			// iterate through list of selected countries
     {
         index = Hash(selectedRegions[i]);			// index into hash table using CC2
         if (g_LookupTable[index] !== undefined)			// if data exists for country, create node
@@ -200,7 +202,7 @@ function ParseDescriptor()
 // POST: FCTVAL == the key of the correct bucket to which cc2 belongs
 function Hash(cc2)
 {
-    var key = (26 * (cc2.charCodeAt(0) - "A".charCodeAt(0))) + (cc2.charCodeAt(1) - "A".charCodeAt(0));
+    var key = 26 * (cc2.charCodeAt(0) - "A".charCodeAt(0)) + (cc2.charCodeAt(1) - "A".charCodeAt(0));
 
     return key;
 }
@@ -255,8 +257,10 @@ function SetInitalYears(DescriptorJSON)
 //       country (initialized to null), and the heat map value for that country (init to 0)
 function GenerateLookupTable(DescriptorJSON)
 {
-    var CID = 0;
-    var index;
+    var CID = 0,
+        index,
+        i;
+
     g_LookupTable = new Array(g_BUCKETS); // create bucket for all possible CC2s
     g_NumCountries = DescriptorJSON.cc2.length;
     for (i = 0; i < DescriptorJSON.cc2.length; i++)
@@ -283,6 +287,8 @@ function GenerateLookupTable(DescriptorJSON)
 // POST: g_StatList has the correct stat values
 function GenerateStatReferenceList(DescriptorJSON)
 {
+    var i;
+
     g_StatList = new Array(DescriptorJSON.stats.length); 
     for (i = 0; i < DescriptorJSON.stats.length; i++)
     {
@@ -299,9 +305,12 @@ function GenerateStatReferenceList(DescriptorJSON)
 //       g_LookupTable
 function SetTableData()
 {
-    for (i = 0; i < g_LookupTable.length; i++)			// each must be set separately so that
+    var i;
+
+    for (i = 0; i < g_LookupTable.length; i++)
+    {								// each must be set separately so that
         SetData(i);						//  i is hidden between calls, otherwise
-								//  loop will continue before data is set
+    }								//  loop will continue before data is set
 								//  data is lost or becomes redundant
 }
 
@@ -313,14 +322,18 @@ function SetTableData()
 // POST: if g_LookupTable[index] exists, g_LookupTable[index][data] contains its stat data
 function SetData(index)
 {
+    var parsedData;
+
     if (g_LookupTable[index] !== undefined)
     {
         $.when(GetData(g_LookupTable[index][0])).done(function(data){
-            var parsedData = ParseData(data);				// parse data and set data field
+            parsedData = ParseData(data);				// parse data and set data field
             g_LookupTable[index][3] = parsedData;
             g_DataLoaded++;
-            if (g_DataLoaded == g_NumCountries)				// if last region accounted for,
-                g_DataReady = true;					//  set ready flag to true
+            if (g_DataLoaded === g_NumCountries)				// if last region accounted for,
+            {								//  set ready flag to true
+                g_DataReady = true;
+            }
         });
     }
 }
@@ -333,10 +346,14 @@ function SetData(index)
 // POST: g_LookupTable has heat map values of hmsData
 function SetHMS(hmsData)
 {
-    for (var i = 0; i < g_LookupTable.length; i++)
+    var i;
+
+    for (i = 0; i < g_LookupTable.length; i++)
     {
         if (g_LookupTable[i] !== undefined)
+        {
             g_LookupTable[i][4] = Number(hmsData[g_LookupTable[i][0]]);
+        }
     }
 }
 
@@ -366,8 +383,8 @@ function GetHMS(hmsID, year)
 // POST: FCTVAL = cid (CID corresponding to the input CC2 in the lookup table), -1 if cc2 not found
 function GetCID(cc2)
 {
-    var key = Hash(cc2);
-    var cid = g_LookupTable[key][0];
+    var key = Hash(cc2),
+        cid = g_LookupTable[key][0];
 
     return cid; 
 }
@@ -389,57 +406,59 @@ function ParseStatList()
 //		 associated data (2-3).
 function ParseStatList()
 {
-	var sortedStatList = g_StatList.slice();
-	sortedStatList.sort();
-	var parsedStatList = [];						// 2d array
-	parsedStatList[0] = [];
+	var sortedStatList = g_StatList.slice(),
+            parsedStatList = [],						// 2d array
+            index = 0,
+            // 'global' variables for index locations
+	    statType = 0,
+	    headStat = 1,
+	    assocStat1 = 2,
+	    assocStat2 = 3,
+	    // index variables for the vaccination stats
+	    vaccL1 = -1,
+	    vaccL2 = -1,
+	    vaccSIAHead = -1,
+            i, j,
+            currentStat,
+            isAssociatedStat,
+            isVacc;
+
+        parsedStatList[0] = [];
 	parsedStatList[1] = [];
 	parsedStatList[2] = [];
 	parsedStatList[3] = [];
-	
-	var index = 0;
-	
-	// 'global' variables for index locations
-	var statType = 0;
-	var headStat = 1;
-	var assocStat1 = 2;
-	var assocStat2 = 3;
-	
-	// index variables for the vaccination stats
-	var vaccL1 = -1;
-	var vaccL2 = -1;
-	var vaccSIAHead = -1;
-	
+	sortedStatList.sort();
+
 	// this loop searches through the g_statList and places only single stats
 	// in the parsedStatList in the appropriate slot
-	for(var i = 0; i<sortedStatList.length; i++)
+	for(i = 0; i<sortedStatList.length; i++)
 	{
-		var currentStat = sortedStatList[i];
-		var isAssociatedStat = false;
-		var isVacc = false;
-		
+                currentStat = sortedStatList[i];
+                isAssociatedStat = false;
+                isVacc = false;
+
 		if(currentStat.indexOf('VACCL') >= 0)
 		{
 			// prevent any vaccination bounds from being put as a head stat and mark vaccl indexes
 			// also sets location of associated vaccination stats
 			isAssociatedStat = true;
-			if(vaccL1 == -1)
+			if(vaccL1 === -1)
 			{
 				vaccL1 = g_StatList.indexOf(currentStat);
 			}
-			else if(vaccL2 == -1)
+			else if(vaccL2 === -1)
 			{
 				vaccL2 = g_StatList.indexOf(currentStat); 
 			}
 		}
 		
 		// sets the assocaited stat indexes
-		if(i > 0 && currentStat.indexOf(sortedStatList[i-1]) == 0)
+		if(i > 0 && currentStat.indexOf(sortedStatList[i-1]) === 0)
 		{
 			isAssociatedStat = true;
 			parsedStatList[assocStat1][index-1] = g_StatList.indexOf(currentStat);
 		}
-		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) == 0)
+		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) === 0)
 		{
 			isAssociatedStat = true;
 			parsedStatList[assocStat2][index-1] = g_StatList.indexOf(currentStat);
@@ -470,11 +489,11 @@ function ParseStatList()
 	
 	
 	// hacky way of filling in nulls with -1 TODO: figure out how to do this better
-	for(var i=0;i<index;i++)
+	for(i=0;i<index;i++)
 	{
-		for(var j=0;j<4;j++)
+		for(j=0;j<4;j++)
 		{
-			if(parsedStatList[j][i] == null)
+			if(parsedStatList[j][i] === null)
 			{
 				parsedStatList[j][i] = -1;
 			}
@@ -538,12 +557,12 @@ function ApplyAndClose()
 // POST: 
 function CancelSettings()
 {
-	// remove box shadow and check marks or x marks	
-	var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    // remove box shadow and check marks or x marks	
+    var startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
 	
-	startDiv.style["box-shadow"]="none";
+    startDiv.style["box-shadow"]="none";
     endDiv.style["box-shadow"]="none";
     heatmapYearDiv.style["box-shadow"]="none";
         
@@ -552,7 +571,7 @@ function CancelSettings()
     document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
     
     // visually and globally set all values in the settings menu to the tempSettings array
- 	ResetAllStatValues();
+    ResetAllStatValues();
   	
     CloseSettings();
 }
@@ -566,12 +585,12 @@ function CancelSettings()
 //       based on the g_TempSettings array
 function ResetAllStatValues()
 {
-	var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    var startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
 
 	// set start end and heatmap div values
-	startDiv.value = g_TempSettings[0];
+    startDiv.value = g_TempSettings[0];
     endDiv.value = g_TempSettings[1];
     heatmapYearDiv.value = g_TempSettings[2];
 	
@@ -618,11 +637,11 @@ function ResetAllStatValues()
 // POST: saves all current radio buttons and dates and stores them in g_TempSettings array
 function SaveCurrentStatValues()
 {
-	var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    var startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
     
-	g_TempSettings[0] = startDiv.value;
+    g_TempSettings[0] = startDiv.value;
     g_TempSettings[1] = endDiv.value;
     g_TempSettings[2] = heatmapYearDiv.value;
     g_TempSettings[3] = g_GraphType;
@@ -637,18 +656,18 @@ function SaveCurrentStatValues()
 // POST: Assigns the global variables if ranges are valid, otherwise display error.
 function ApplySettings()
 {
-    var canContinue=true;
-    var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    var canContinue=true,
+        startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
 
     startDiv.style["box-shadow"]="";
     endDiv.style["box-shadow"]="";
     heatmapYearDiv.style["box-shadow"]="";
 
-    document.getElementById(startDiv.id+"-error").style["cursor"]="default";
-    document.getElementById(endDiv.id+"-error").style["cursor"]="default";
-    document.getElementById(heatmapYearDiv.id+"-error").style["cursor"]="default";
+    document.getElementById(startDiv.id+"-error").style.cursor="default";
+    document.getElementById(endDiv.id+"-error").style.cursor="default";
+    document.getElementById(heatmapYearDiv.id+"-error").style.cursor="default";
 
     document.getElementById(startDiv.id+"-error").innerHTML="&emsp;";
     document.getElementById(endDiv.id+"-error").innerHTML="&emsp;";
@@ -661,30 +680,29 @@ function ApplySettings()
     document.getElementById(endDiv.id+"-error").className="";
     document.getElementById(heatmapYearDiv.id+"-error").className="";
 
-
-    if(startDiv.value==""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max))||isNaN(startDiv.value))
+    if(startDiv.value===""||(Number(startDiv.value)<Number(startDiv.min)||Number(startDiv.value)>Number(startDiv.max))||isNaN(startDiv.value))
     {
         canContinue=false;
         startDiv.style["box-shadow"]="0px 0px 8px #F00";
-        document.getElementById(startDiv.id+"-error").style["cursor"]="help";
+        document.getElementById(startDiv.id+"-error").style.cursor="help";
         document.getElementById(startDiv.id+"-error").innerHTML="X";
         document.getElementById(startDiv.id+"-error").setAttribute("tooltip","Out of range: "+startDiv.min+"-"+startDiv.max);
         document.getElementById(startDiv.id+"-error").className="settings-error";
     }
-    if(endDiv.value==""||(Number(endDiv.value)<Number(endDiv.min)||Number(endDiv.value)>Number(endDiv.max))||isNaN(endDiv.value))
+    if(endDiv.value===""||(Number(endDiv.value)<Number(endDiv.min)||Number(endDiv.value)>Number(endDiv.max))||isNaN(endDiv.value))
     {
         canContinue=false;
         endDiv.style["box-shadow"]="0px 0px 8px #F00";
-        document.getElementById(endDiv.id+"-error").style["cursor"]="help";
+        document.getElementById(endDiv.id+"-error").style.cursor="help";
         document.getElementById(endDiv.id+"-error").innerHTML="X";
         document.getElementById(endDiv.id+"-error").setAttribute("tooltip","Out of range: "+endDiv.min+"-"+endDiv.max);
         document.getElementById(endDiv.id+"-error").className="settings-error";
     }
-    if(heatmapYearDiv.value==""||(Number(heatmapYearDiv.value)<Number(heatmapYearDiv.min)||Number(heatmapYearDiv.value)>Number(heatmapYearDiv.max))||isNaN(heatmapYearDiv.value))
+    if(heatmapYearDiv.value===""||(Number(heatmapYearDiv.value)<Number(heatmapYearDiv.min)||Number(heatmapYearDiv.value)>Number(heatmapYearDiv.max))||isNaN(heatmapYearDiv.value))
     {
         canContinue=false;
         heatmapYearDiv.style["box-shadow"]="0px 0px 8px #F00";
-		document.getElementById(heatmapYearDiv.id+"-error").style["cursor"]="help";
+		document.getElementById(heatmapYearDiv.id+"-error").style.cursor="help";
         document.getElementById(heatmapYearDiv.id+"-error").innerHTML="X";
         document.getElementById(heatmapYearDiv.id+"-error").setAttribute("tooltip","Out of range: "+heatmapYearDiv.min+"-"+heatmapYearDiv.max);
         document.getElementById(heatmapYearDiv.id+"-error").className="settings-error";
@@ -694,8 +712,8 @@ function ApplySettings()
         canContinue=false;
         startDiv.style["box-shadow"]="0px 0px 8px #F00";
         endDiv.style["box-shadow"]="0px 0px 8px #F00";
-        document.getElementById(startDiv.id+"-error").style["cursor"]="help";
-        document.getElementById(endDiv.id+"-error").style["cursor"]="help";
+        document.getElementById(startDiv.id+"-error").style.cursor="help";
+        document.getElementById(endDiv.id+"-error").style.cursor="help";
         document.getElementById(startDiv.id+"-error").innerHTML="X";
         document.getElementById(endDiv.id+"-error").innerHTML="X";
         document.getElementById(startDiv.id+"-error").setAttribute("tooltip","Year must be before End.");
@@ -726,10 +744,12 @@ function ApplySettings()
         // saves all radio buttions and dates in g_TempSettings array
         SaveCurrentStatValues();
         
-        return(true);
+        return true;
     }
     else
-    	return(false);
+    {
+    	return false;
+    }
 }
 
 // File Name: graph.js
@@ -751,14 +771,20 @@ function ApplySettings()
 //       whether the g_StatID selected is vaccination or not 
 function GenerateGraphs()
 {
-	if(g_DataList != undefined && g_DataList.size != 0)
+	var sumNode,
+            max,
+            element,
+            cur,
+            i;
+
+	if(g_DataList !== undefined && g_DataList.size !== 0)
 	{
-    	var curr=g_DataList.start;    
+    	    curr=g_DataList.start;    
 	    if (g_StatList[g_StatID].indexOf("VACC") > -1)
 	    {
-	        if (g_GraphType != 2)
+	        if (g_GraphType !== 2)
 	        {
-	            for(var i=1; i<=g_DataList.size; i++)
+	            for(i=1; i<=g_DataList.size; i++)
 	            {
 	                GraphVaccine("region-graphs-"+i, curr);
 	                curr=curr.next;
@@ -766,7 +792,7 @@ function GenerateGraphs()
 	        }
 	        else
 	        {
-	            var sumNode = GenerateSumNode();
+	            sumNode = GenerateSumNode();
 	            GraphVaccine("region-graphs-"+1,sumNode);
 	        }
 	    }
@@ -775,14 +801,14 @@ function GenerateGraphs()
 	        switch(g_GraphType)
 	        {
 	            case 0:    
-                        var max = FindMax();
-	                for(var i=1; i<=g_DataList.size; i++)
+                        max = FindMax();
+	                for(i=1; i<=g_DataList.size; i++)
 	                {
-	                    if(GraphRegional("region-graphs-"+i, curr, max) == -1)
-                        {
-                            var element = document.getElementById("region-graphs-"+i);
-                            element.parentNode.removeChild(element);
-                        }
+	                    if(GraphRegional("region-graphs-"+i, curr, max) === -1)
+                            {
+                                element = document.getElementById("region-graphs-"+i);
+                                element.parentNode.removeChild(element);
+                            }
 	                    curr=curr.next;
 	                }
 	                break;
@@ -790,7 +816,7 @@ function GenerateGraphs()
 	                GraphCombined("region-graphs-"+1);
 	                break;
 	            case 2:
-	                var sumNode = GenerateSumNode();
+	                sumNode = GenerateSumNode();
 	                GraphRegional("region-graphs-"+1, sumNode);
 	                break;
 	        }
@@ -806,38 +832,45 @@ function GenerateGraphs()
 //      a sum of countries, and maxVal is the max is maximum value of the selected stat for the entire list
 // POST: generates a single Google ComboChart for the given node on the divID
 function GraphRegional(divID, node, maxVal) {
-    var data = GenerateSingleData(node.data);
-    var options = {
-        title: node.name,
-        seriesType: "line",
-        legend: 'none',
-        vAxis: {
-            viewWindowMode:'explicit',
-            viewWindow: {min: 0, max: maxVal}
+    var data = GenerateSingleData(node.data),
+        options = {
+            title: node.name,
+            seriesType: "line",
+            legend: 'none',
+            vAxis: {
+                viewWindowMode:'explicit',
+                viewWindow: {min: 0, max: maxVal}
+            },
+            hAxis: {title: 'Year', format: '####'},
+            series: {1: {type: "area", color: "transparent"}, 2: {color: "navy"}, 3: {type: "area", color: "navy"}},
+            isStacked: true,
+            backgroundColor: '#EAE7C2',
+            tooltip: {trigger: 'both'}
         },
-        hAxis: {title: 'Year', format: '####'},
-        series: {1: {type: "area", color: "transparent"}, 2: {color: "navy"}, 3: {type: "area", color: "navy"}},
-        isStacked: true,
-        backgroundColor: '#EAE7C2',
-        tooltip: {trigger: 'both'}
-    };
+    formatter,
+    chart,
+    i;
     	
-    if(data != null)
+    if(data !== null)
     {
-        var formatter = new google.visualization.NumberFormat({pattern: '#,###.##'} );
-        for(var i=1; i < data.getNumberOfColumns(); i++)
+        formatter = new google.visualization.NumberFormat({pattern: '#,###.##'} );
+        for(i=1; i < data.getNumberOfColumns(); i++)
         {
-            if(data != null)
+            if(data !== null)
+            {
                 formatter.format(data, i);
+            }
         }
 
         // instantiate and draw chart using prepared data
-        var chart = new google.visualization.ComboChart(document.getElementById(divID));
+        chart = new google.visualization.ComboChart(document.getElementById(divID));
         chart.draw(data, options);
         return 0;
     }
     else
+    {
         return -1;
+    }
 }
 
 // Authors: Josh Crafts, Arun Kumar, Berty Ruan
@@ -848,8 +881,8 @@ function GraphRegional(divID, node, maxVal) {
 // PRE: divID is a div in the graphing section, GenerateCombinedData function is defined
 // POST: generates a single Google LineChart on divID for all regions on g_DataList
 function GraphCombined(divID) {
-    var data = GenerateCombinedData();
-    var options = {
+    var data = GenerateCombinedData(),
+        options = {
         seriesType: "line",
         legend: {position: 'top'},
         vAxis: {
@@ -859,20 +892,24 @@ function GraphCombined(divID) {
         hAxis: {title: 'Year', format: '####'},
         backgroundColor: '#EAE7C2',
         tooltip: {trigger: 'both'}
-    };
+    },
+    num,
+    formatter,
+    chart,
+    i;
 	
-	var num = [];
+	num = [];
 	
 	//console.log(num);
-	var formatter = new google.visualization.NumberFormat({pattern: '#,###.##'});
-	for(var i=1; i<data.getNumberOfColumns(); i++)
+	formatter = new google.visualization.NumberFormat({pattern: '#,###.##'});
+	for(i=1; i<data.getNumberOfColumns(); i++)
 	{
 		formatter.format(data, i);
 	}
 	
 	
     // instantiate and draw chart using prepared data
-    var chart = new google.visualization.LineChart(document.getElementById(divID));
+    chart = new google.visualization.LineChart(document.getElementById(divID));
     chart.draw(data, options);
 }
 
@@ -886,8 +923,8 @@ function GraphCombined(divID) {
 // POST: generates a single Google ComboChart for the given node's vaccination data on the divID 
 //       SIA data is shown in bars, whereas MCV1 and MCV2 data is shown in lines.
 function GraphVaccine(divID, node) {
-    var data = GenerateVaccineData(node.data);
-    var options = {
+    var data = GenerateVaccineData(node.data),
+        options = {
         title: node.name,
         vAxis: {
             viewWindowMode:'explicit',
@@ -904,15 +941,18 @@ function GraphVaccine(divID, node) {
             0: {type: "line"}, 1: {type: "line"}
         },
         tooltip: {trigger: 'both'}
-    };
+    },
+    formatter,
+    chart,
+    i;
 	
-	var formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
-    for(var i=1; i<data.getNumberOfColumns(); i++)
+    formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
+    for(i=1; i<data.getNumberOfColumns(); i++)
     {
         formatter.format(data,i);
     }
 	
-    var chart = new google.visualization.ComboChart(document.getElementById(divID));
+    chart = new google.visualization.ComboChart(document.getElementById(divID));
     chart.draw(data, options);
 }
 
@@ -925,9 +965,13 @@ function GraphVaccine(divID, node) {
 function FixMissingData(data)
 {
     if(data >= 0)
+    {
         return data;
+    }
     else
+    {
         return null;
+    }
 }
 
 // Author: Vanajam Soni, Joshua Crafts, Berty Ruan
@@ -943,20 +987,26 @@ function GenerateSingleData(data)
 {
     // type = 0 => unbounded or only has 1 bound
     // type = 1 => both bounds exist
-    var type = 0;
-    var dataAvailable = 0;
-    var dataTable = new google.visualization.DataTable(); // data table to be returned
+    var type = 0,
+        dataAvailable = 0,
+        dataTable = new google.visualization.DataTable(),
+        lowerBoundID,
+        upperBoundID,
+        i,
+        statIDNum,
+        lowerBoundNum,
+        lower; // data table to be returned
     
     dataTable.addColumn('number','year');
     dataTable.addColumn('number', g_StatList[g_StatID]);
 
     // get the bound stats from parsed stat list
-    var lowerBoundID = -1;
-    var upperBoundID = -1;
+    lowerBoundID = -1;
+    upperBoundID = -1;
 
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatID == g_ParsedStatList[1][i])
+        if(g_StatID === g_ParsedStatList[1][i])
         {
             lowerBoundID = g_ParsedStatList[2][i];
             upperBoundID = g_ParsedStatList[3][i];   
@@ -964,7 +1014,7 @@ function GenerateSingleData(data)
     }
 
     // if both bounds exist, add columns for those
-    if(lowerBoundID != -1 && upperBoundID != -1)
+    if(lowerBoundID !== -1 && upperBoundID !== -1)
     {
         dataTable.addColumn('number', 'lower bound space'); // area under lower bound
         dataTable.addColumn('number', 'lower bound of confidence interval'); // additional line to outline confidence interval
@@ -974,16 +1024,16 @@ function GenerateSingleData(data)
     }    
 
     // add data to table from start year to end year
-    for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_FirstYear)+1;i++)
+    for(i=g_YearStart-g_FirstYear;i<g_YearEnd-g_FirstYear+1;i++)
     {   
 
         //format numbers 
-        var statIDNum = FixMissingData(Number(data[g_StatID][i])); // FixMissingData(parseFloat((data[g_StatID][i]).toString));//FixMissingData(parseFloat(Math.ceil())); //null or int
+        statIDNum = FixMissingData(Number(data[g_StatID][i])); // FixMissingData(parseFloat((data[g_StatID][i]).toString));//FixMissingData(parseFloat(Math.ceil())); //null or int
 
         switch(type) 
         {
             case 0: // unbounded
-                if(dataAvailable == 0 && statIDNum != null)
+                if(dataAvailable === 0 && statIDNum !== null)
                 {
                     dataAvailable = 1;
                 }
@@ -991,15 +1041,15 @@ function GenerateSingleData(data)
                 break;
 
             case 1: // bounded
-                var lowerBoundNum = FixMissingData(Number(data[lowerBoundID][i]));
+                lowerBoundNum = FixMissingData(Number(data[lowerBoundID][i]));
                 
-                if(dataAvailable == 0 && statIDNum != null)
+                if(dataAvailable === 0 && statIDNum !== null)
                 {
                     dataAvailable = 1;
                 }
-                if (lowerBoundNum == null) // replace -1 with 0 when subtracting lower from upper for size of confidence interval
+                if (lowerBoundNum === null) // replace -1 with 0 when subtracting lower from upper for size of confidence interval
                 {
-                    var lower = 0;
+                    lower = 0;
                 }
                 else
                 {
@@ -1012,10 +1062,14 @@ function GenerateSingleData(data)
         }
     }
 
-    if(dataAvailable == 1)
+    if(dataAvailable === 1)
+    {
         return dataTable;
-    else 
+    }
+    else
+    {
         return null;
+    }
 }
 
 
@@ -1030,10 +1084,11 @@ function GenerateSingleData(data)
 function GenerateCombinedData()
 {
     // create array with indices for all years plus a header row
-    var currentNode;
-    var i, j;
-    var dataTable = new google.visualization.DataTable();
-    var type = 0;
+    var currentNode,
+        i, j,
+        dataTable = new google.visualization.DataTable(),
+        type = 0,
+        row;
     
     dataTable.addColumn('number','Year');
     
@@ -1046,16 +1101,16 @@ function GenerateCombinedData()
 
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatID == g_ParsedStatList[1][i] && (g_ParsedStatList[2][i] != -1 || g_ParsedStatList[2][i] != -1))
+        if(g_StatID === g_ParsedStatList[1][i] && (g_ParsedStatList[2][i] !== -1 || g_ParsedStatList[2][i] !== -1))
         {
             type = 1;  
         }
     } 
 
     // filling the data table, iterate through each node, then through each year
-    for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_FirstYear)+1;i++)
+    for(i=g_YearStart-g_FirstYear;i<g_YearEnd-g_FirstYear+1;i++)
     {   
-        var row = new Array(g_DataList.size + 1);
+        row = new Array(g_DataList.size + 1);
         row[0] = g_FirstYear+i;
         currentNode = g_DataList.start;
         for (j = 0; j < g_DataList.size; j++)
@@ -1079,76 +1134,98 @@ function GenerateCombinedData()
 //       data = sum of all data of the countries in g_DataList
 function GenerateSumNode(){
     
-    var data = new Array(g_StatList.length);	// data for the new node
-    var names = "";				// list of names of regions included
-    var i,j;
-    var currentNode = g_DataList.start;		// list iterator
-    
-    // get the associated stats from parsed stat list
-    var ass1ID = -1;
-    var ass2ID = -1;
+    var data = new Array(g_StatList.length),
+        names = "",
+        i,j,
+        currentNode = g_DataList.start,
+        ass1ID = -1,
+        ass2ID = -1,
+        newNode;
 
+    // get the associated stats from parsed stat list
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatID == g_ParsedStatList[1][i])
+        if(g_StatID === g_ParsedStatList[1][i])
         {
             ass1ID = g_ParsedStatList[2][i];
             ass2ID = g_ParsedStatList[3][i];   
         }
     }
     // create arrays for necessary data 
-    data[g_StatID] = new Array((g_YearEnd-g_FirstYear)+1);
+    data[g_StatID] = new Array(g_YearEnd-g_FirstYear+1);
     if (ass1ID > -1)
-        data[ass1ID] = new Array((g_YearEnd-g_FirstYear)+1);
+    {
+        data[ass1ID] = new Array(g_YearEnd-g_FirstYear+1);
+    }
     if (ass2ID > -1)
-        data[ass2ID] = new Array((g_YearEnd-g_FirstYear)+1);
+    {
+        data[ass2ID] = new Array(g_YearEnd-g_FirstYear+1);
+    }
 
     // initialize arrays to 0
-    for (j = 0; j < (g_YearEnd-g_FirstYear)+1; j++)
+    for (j = 0; j < g_YearEnd-g_FirstYear+1; j++)
     {
         data[g_StatID][j] = -1;
         if (ass1ID > -1)
+        {
             data[ass1ID][j] = -1;
+        }
         if (ass2ID > -1)
+        {
             data[ass2ID][j] = -1;
+        }
     }
 
     // add and store data for whole list
     for (i = 0; i < g_DataList.size; i++)
     {
-        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear)+1; j++)
+        for (j = g_YearStart-g_FirstYear; j < g_YearEnd-g_FirstYear+1; j++)
         {
             if (Number(currentNode.data[g_StatID][j]) > 0)
             {
-                if (data[g_StatID][j] == -1 && Number(currentNode.data[g_StatID][j]) != -1)
+                if (data[g_StatID][j] === -1 && Number(currentNode.data[g_StatID][j]) !== -1)
+                {
                     data[g_StatID][j] = Number(currentNode.data[g_StatID][j]);
-                else if (Number(currentNode.data[g_StatID][j]) != -1)
+                }
+                else if (Number(currentNode.data[g_StatID][j]) !== -1)
+                {
                     data[g_StatID][j] += Number(currentNode.data[g_StatID][j]);
+                }
             }
             if (ass1ID > -1 && Number(currentNode.data[ass1ID][j]) > 0)
             {
-                if (data[ass1ID][j] == -1 && Number(currentNode.data[ass1ID][j]) != -1)
+                if (data[ass1ID][j] === -1 && Number(currentNode.data[ass1ID][j]) !== -1)
+                {
                     data[ass1ID][j] = Number(currentNode.data[ass1ID][j]);
-                else if (Number(currentNode.data[ass1ID][j]) != -1)
+                }
+                else if (Number(currentNode.data[ass1ID][j]) !== -1)
+                {
                     data[ass1ID][j] += Number(currentNode.data[ass1ID][j]);
+                }
             }
             if (ass2ID > -1 && Number(currentNode.data[ass2ID][j]) > 0)
             {
-                if (data[ass2ID][j] == -1 && Number(currentNode.data[ass2ID][j]) != -1)
+                if (data[ass2ID][j] === -1 && Number(currentNode.data[ass2ID][j]) !== -1)
+                {
                     data[ass2ID][j] = Number(currentNode.data[ass2ID][j]);
-                else if (Number(currentNode.data[ass2ID][j]) != -1)
+                }
+                else if (Number(currentNode.data[ass2ID][j]) !== -1)
+                {
                     data[ass2ID][j] += Number(currentNode.data[ass2ID][j]);
+                }
             }
         }
         names += currentNode.name; // add name of current node to list of names
-        if (currentNode != g_DataList.end)
+        if (currentNode !== g_DataList.end)
+        {
             names += "; ";
+        }
         currentNode = currentNode.next;
     }
     // divide by size of list to maintain percentages if vaccines
     if (g_StatList[g_StatID].indexOf("VACC") > -1)
     {
-        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear)+1; j++)
+        for (j = g_YearStart-g_FirstYear; j < g_YearEnd-g_FirstYear+1; j++)
         {
             data[g_StatID][j] = data[g_StatID][j] / g_DataList.size;
             data[ass1ID][j] = data[ass1ID][j] / g_DataList.size;
@@ -1156,7 +1233,7 @@ function GenerateSumNode(){
         }
     }
     
-    var newNode = new t_AsdsNode(-1, "SUM", names, data);
+    newNode = new t_AsdsNode(-1, "SUM", names, data);
 
     return newNode;
 }
@@ -1173,20 +1250,25 @@ function GenerateSumNode(){
 //       so that we can graph it. 
 function GenerateVaccineData(data)
 {
-    var dataTable = new google.visualization.DataTable();
+    var dataTable = new google.visualization.DataTable(),
+        mcv1ID,
+        mcv2ID,
+        siaID,
+        i,
+        firstNum,
+        secondNum,
+        thirdNum;
     dataTable.addColumn('number','year');
     dataTable.addColumn('number', 'MCV1');
     dataTable.addColumn('number', 'MCV2');
     dataTable.addColumn('number', 'SIA');
-    
-    var mcv1ID, mcv2ID,siaID;
 
     // get associated stat ids
     siaID = g_StatID;
 
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatID == g_ParsedStatList[1][i])
+        if(g_StatID === g_ParsedStatList[1][i])
         {
             mcv1ID = g_ParsedStatList[2][i];
             mcv2ID = g_ParsedStatList[3][i];   
@@ -1194,9 +1276,7 @@ function GenerateVaccineData(data)
     }
 
     // add data to table
-    var i;
-    var firstNum, secondNum, thirdNum;
-    for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
+    for(i=g_YearStart-g_FirstYear;i<g_YearEnd-g_FirstYear+1;i++)
     {
         firstNum  = parseFloat((data[mcv1ID][i]  * 1).toFixed(4));
         secondNum = parseFloat((data[mcv2ID][i] * 1).toFixed(4));
@@ -1217,15 +1297,16 @@ function GenerateVaccineData(data)
 // POST: FCTVAL == maximum value of the selected stat for the entire list
 function FindMax()
 {
-    var max = Number.MIN_VALUE;
-    var currentNode = g_DataList.start;
-    
-    var assID, ass2ID;
+    var max = Number.MIN_VALUE,
+        currentNode = g_DataList.start,
+        assID,
+        ass2ID,
+        i, j;
 
     // get associated stat ids
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatID == g_ParsedStatList[1][i])
+        if(g_StatID === g_ParsedStatList[1][i])
         {
             ass1ID = g_ParsedStatList[2][i];
             ass2ID = g_ParsedStatList[3][i];   
@@ -1235,20 +1316,28 @@ function FindMax()
     // find max value of needed data set
     for (i = 0; i < g_DataList.size; i++)
     {
-        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear) + 1;j++)
+        for (j = g_YearStart-g_FirstYear; j < g_YearEnd-g_FirstYear + 1;j++)
         {
             if (Number(currentNode.data[g_StatID][j]) > max)
+            {
                 max = Number(currentNode.data[g_StatID][j]);
-            if (ass1ID != -1 && Number(currentNode.data[ass1ID][j]) > max)
+            }
+            if (ass1ID !== -1 && Number(currentNode.data[ass1ID][j]) > max)
+            {
                 max = Number(currentNode.data[ass1ID][j]);
-            if (ass2ID != -1 && Number(currentNode.data[ass2ID][j]) > max)
+            }
+            if (ass2ID !== -1 && Number(currentNode.data[ass2ID][j]) > max)
+            {
                 max = Number(currentNode.data[ass2ID][j]);
+            }
         }
         currentNode = currentNode.next;
     }
     
-    if (max < 0 || max == NaN || max === undefined || max == Number.MIN_VALUE)
-        max = 10;
+    if (max < 0 || max === undefined || max === Number.MIN_VALUE)
+    {
+        return -1;
+    }
 
     return max;   
 }
@@ -1272,23 +1361,28 @@ function FindMax()
 // POST: index.html contains tabs of the correct stat data from the lookup_table
 function BuildTabs()
 {
-    var i;
+    var i,
+        temp,
+        div;
+
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        var temp=g_StatList[g_ParsedStatList[1][i]];
-        var div=document.createElement("DIV");
+        temp=g_StatList[g_ParsedStatList[1][i]];
+        div=document.createElement("DIV");
         div.id="id-"+temp;
         div.setAttribute("stat",""+g_ParsedStatList[1][i]);
         div.className="graph-tab";
         div.setAttribute("onclick","ChooseTab(this)");
         div.innerHTML=temp;
         if (temp.indexOf("VACC") > -1)
+	{
             div.innerHTML="Vaccinations";
+	}
         document.getElementById("tabsDiv").appendChild(div);
 
         BuildDiv(temp);
 
-        if(g_ParsedStatList[1][i]==g_StatID)
+        if(g_ParsedStatList[1][i]===g_StatID)
         {
             document.getElementById("id-"+temp+"-graphs").style.display="block";
             div.className="graph-tab selected-tab";
@@ -1304,9 +1398,9 @@ function BuildTabs()
 // POST: appropriate input tags are modified and g_TempSettings array is initialized
 function UpdateInputs()
 {
-    var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    var startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
 	
 	// set min and max for the settings input boxes
     startDiv.max=g_LastYear;
@@ -1351,10 +1445,13 @@ function BuildDiv(stat)
 // POST: previous tab is switched out, and now tab is switched in
 function ChooseTab(element)
 {
+    var parentTabDivName,
+        prevTab;
+
     // remove divs in previous tab
-    var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+    parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
     document.getElementById(parentTabDivName).innerHTML = "";
-    var prevTab=document.getElementById("id-"+g_StatList[g_StatID]);
+    prevTab=document.getElementById("id-"+g_StatList[g_StatID]);
     // sets class names of tabs
     prevTab.className="graph-tab";
     element.className="graph-tab selected-tab";
@@ -1375,9 +1472,10 @@ function ChooseTab(element)
 // POST: The first/last tab is moved to the last/first position
 function RotateTabs(direction)
 {
-    var div;
-    var tabs=document.getElementById("tabsDiv");
-    var children=tabs.childNodes;
+    var div,
+    tabs=document.getElementById("tabsDiv"),
+    children=tabs.childNodes;
+
     if(direction>0)
     {
         div=children[0];
@@ -1411,7 +1509,7 @@ function SwitchToMain ()
 // POST: Settings overlay is showing with black backing mask and all stat values are reset
 function OpenSettings()
 {
-	 ResetAllStatValues();
+     ResetAllStatValues();
 	 
      $(".settings-screen, .settings-black").fadeIn(400);
      
@@ -1427,9 +1525,9 @@ function CloseSettings()
 {
     $(".settings-screen, .settings-black").fadeOut(400);
         
-    var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    var startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
      
     startDiv.style["box-shadow"]="";
     endDiv.style["box-shadow"]="";
@@ -1478,14 +1576,14 @@ function Expand()
     $(".expand-black").fadeIn(400);
     setTimeout(function () 
     {
-        if(g_DataList != undefined && g_DataList.size != 0)
+        if(g_DataList !== undefined && g_DataList.size !== 0)
         {
 	        GenerateSubDivs();
 	        // if single graph, graph is expanded to whole section
-	        if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
+	        if(g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1 || g_GraphType === 2)
 	        {
-	            document.getElementById("region-graphs-1").style["width"] = "100%";
-	            document.getElementById("region-graphs-1").style["height"] = "100%";
+	            document.getElementById("region-graphs-1").style.width = "100%";
+	            document.getElementById("region-graphs-1").style.height = "100%";
 	        }
 	        g_Expanded = true;
 	        GenerateSubDivs();
@@ -1511,7 +1609,7 @@ function Shrink()
     setTimeout(function()
     {
         g_Expanded = false;
-        while(document.getElementById("tabsDiv").childNodes[0]!=document.getElementById("id-"+g_StatList[g_StatID]))
+        while(document.getElementById("tabsDiv").childNodes[0]!==document.getElementById("id-"+g_StatList[g_StatID]))
         {
             RotateTabs(-1);
         }
@@ -1530,36 +1628,44 @@ function Shrink()
 //       Correct graphs are filled in the appropriate divs
 function GenerateSubDivs()
 {
+    var size,
+        i,
+        parentTabDivName,
+        currentNumDivs,
+        children,
+        newNumDivs;
+
     // only if there are countries in the data list
-    if(g_DataList != undefined)
+    if(g_DataList !== undefined)
     {
-        var size = g_DataList.size;
-        var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
-        var currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
-        var children = document.getElementById(parentTabDivName).childNodes;
-        var newNumDivs = size - currentNumDivs;
-        var div;
+        size = g_DataList.size;
+        parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+        currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
+        children = document.getElementById(parentTabDivName).childNodes;
+        newNumDivs = size - currentNumDivs;
         // if we only need one graph for either combined lines or summation of lines
-        if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
+        if(g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1 || g_GraphType === 2)
         {
             document.getElementById(parentTabDivName).innerHTML = "";
-            if(size != 0)
+            if(size !== 0)
             {
             	CreateSubDiv("region-graphs-1",parentTabDivName);
-	        }
+	    }
             // if the graph section is expanded
             if(g_Expanded)
             {
                 // expand graph
-                document.getElementById("region-graphs-1").style["width"] = "100%";
-                document.getElementById("region-graphs-1").style["height"] = "100%";    
+                document.getElementById("region-graphs-1").style.width = "100%";
+                document.getElementById("region-graphs-1").style.height = "100%";    
             }
         }
         else
         {
             document.getElementById(parentTabDivName).innerHTML = "";
-            for(var i = 1; i<=size; i++)
+            for(i = 1; i<=size; i++)
+            {
                 CreateSubDiv("region-graphs-"+i,parentTabDivName);
+            }
             while (g_DataList.size < currentNumDivs)
             {
                 $("#region-graphs-"+currentNumDivs).remove();
@@ -1583,13 +1689,16 @@ function GenerateSubDivs()
 // POST: Single div is appended to the parent div
 function CreateSubDiv(id,parent)
 {
-    var elem = document.createElement('div');
+    var elem = document.createElement('div'),
+        divs,
+        i;
     elem.id = id;
     elem.className = "subgraph";
-    var divs=document.getElementsByTagName("div");
-    for(var i in divs)
+    divs=document.getElementsByTagName("div");
+
+    for(i in divs)
     {
-        if(divs[i].className=="control-panel")
+        if(divs[i].className==="control-panel")
         {
             elem.style="max-width: "+divs[i].clientWidth+"px;";
         }
@@ -1597,26 +1706,30 @@ function CreateSubDiv(id,parent)
     document.getElementById(parent).appendChild(elem);
     
     if(!g_Expanded)
-        document.getElementById(elem.id).style["width"] = "100%";
+    {
+        document.getElementById(elem.id).style.width = "100%";
+    }
     else
-        document.getElementById(elem.id).style["width"] = "50%";
+    {
+        document.getElementById(elem.id).style.width = "50%";
+    }
 
-    document.getElementById(elem.id).style["height"] = "50%";
+    document.getElementById(elem.id).style.height = "50%";
 
-    if((((g_GraphType != 1) && (g_GraphType != 2)) && g_Expanded) || 
-        ((g_StatList[g_StatID].indexOf("VACC") != -1 && g_GraphType != 2 && g_Expanded)))
+    if(g_GraphType !== 1 && g_GraphType !== 2 && g_Expanded || 
+        g_StatList[g_StatID].indexOf("VACC") !== -1 && g_GraphType !== 2 && g_Expanded)
     {
         $(elem).click(function() {
-            if(document.getElementById(id).style.width != "100%")
+            if(document.getElementById(id).style.width !== "100%")
             {
             
-                document.getElementById(elem.id).style["width"] = "100%";
-                document.getElementById(elem.id).style["height"] = "100%";
+                document.getElementById(elem.id).style.width = "100%";
+                document.getElementById(elem.id).style.height = "100%";
             }
             else
             {
-                document.getElementById(elem.id).style["width"] = "50%";
-                document.getElementById(elem.id).style["height"] = "50%";
+                document.getElementById(elem.id).style.width = "50%";
+                document.getElementById(elem.id).style.height = "50%";
             }
             GenerateGraphs();
         });
@@ -1631,10 +1744,9 @@ function CreateSubDiv(id,parent)
 // POST: Alert box pops up with info about project contributors
 function teamPopup()
 {
-    window.alert("Stateware Team\nSpring 2015:\nWilliam Bittner,"
-        + " Joshua Crafts, Nicholas Denaro, Dylan Fetch, Paul Jang,"
-        + " Arun Kumar, Drew Lopreiato, Kyle Nicholson, Emma "
-        + "Roudabush, Berty Ruan, Vanajam Soni");
+    window.alert("Stateware Team\nSpring 2015:\nWilliam Bittner," + 
+        " Joshua Crafts, Nicholas Denaro, Dylan Fetch, Paul Jang," + 
+        " Arun Kumar, Drew Lopreiato, Kyle Nicholson, Emma " + "Roudabush, Berty Ruan, Vanajam Soni");
 }
 
 // Author: Joshua Crafts
@@ -1646,10 +1758,7 @@ function teamPopup()
 //       reporting a bug
 function bugPopup()
 {
-    window.alert("If you would like to report a bug, please send "
-        + "an email to stateware@acm.psu.edu with the following "
-        + "details included in your message:\n1. Description of the "
-        + "bug\n2. Steps for reproducing the bug\n3. What browser and"
-        + " operating system you experienced the bug on\n4. Any "
-        + "additional relevant information.");
+    window.alert("If you would like to report a bug, please send " + "an email to stateware@acm.psu.edu with the following " + 
+        "details included in your message:\n1. Description of the " + "bug\n2. Steps for reproducing the bug\n3. What browser and" + 
+        " operating system you experienced the bug on\n4. Any " + "additional relevant information.");
 }
