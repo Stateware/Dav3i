@@ -55,7 +55,7 @@ $(function(){
     // Description: This function matches each country/region object in the vector map
     //              to its corresponding value in the HMS section of g_LookupTable and
     //              returns the array, indexed by CC2
-    function ColorByHMS(){
+    ColorByHMS = function(){
     // PRE:  g_LookupTable is initialized
     // POST: map is recolored in terms of the currently selected stat (based on g_VaccHMS if
     //       stat is vaccinations), where tint of a country is based on the magnitude of its
