@@ -267,10 +267,6 @@ function ParseStatList()
 {
 	var sortedStatList = g_StatList.slice(),
             parsedStatList = [],						// 2d array
-	    parsedStatList[0] = [],
-	    parsedStatList[1] = [],
-	    parsedStatList[2] = [],
-	    parsedStatList[3] = [],
             index = 0,
             // 'global' variables for index locations
 	    statType = 0,
@@ -285,8 +281,12 @@ function ParseStatList()
             currentStat,
             isAssociatedStat,
             isVacc;
-	
-	sortedStatList.sort()
+
+        parsedStatList[0] = [];
+	parsedStatList[1] = [];
+	parsedStatList[2] = [];
+	parsedStatList[3] = [];
+	sortedStatList.sort();
 
 	// this loop searches through the g_statList and places only single stats
 	// in the parsedStatList in the appropriate slot
