@@ -122,7 +122,8 @@ function SetInitalYears(DescriptorJSON)
 function GenerateLookupTable(DescriptorJSON)
 {
     var CID = 0,
-        index;
+        index,
+        i;
 
     g_LookupTable = new Array(g_BUCKETS); // create bucket for all possible CC2s
     g_NumCountries = DescriptorJSON.cc2.length;
@@ -150,6 +151,8 @@ function GenerateLookupTable(DescriptorJSON)
 // POST: g_StatList has the correct stat values
 function GenerateStatReferenceList(DescriptorJSON)
 {
+    var i;
+
     g_StatList = new Array(DescriptorJSON.stats.length); 
     for (i = 0; i < DescriptorJSON.stats.length; i++)
     {
@@ -166,6 +169,8 @@ function GenerateStatReferenceList(DescriptorJSON)
 //       g_LookupTable
 function SetTableData()
 {
+    var i;
+
     for (i = 0; i < g_LookupTable.length; i++)
     {								// each must be set separately so that
         SetData(i);						//  i is hidden between calls, otherwise
@@ -277,7 +282,7 @@ function ParseStatList()
 	    vaccL1 = -1,
 	    vaccL2 = -1,
 	    vaccSIAHead = -1,
-            i,
+            i, j,
             currentStat,
             isAssociatedStat,
             isVacc;
@@ -348,9 +353,9 @@ function ParseStatList()
 	
 	
 	// hacky way of filling in nulls with -1 TODO: figure out how to do this better
-	for(var i=0;i<index;i++)
+	for(i=0;i<index;i++)
 	{
-		for(var j=0;j<4;j++)
+		for(j=0;j<4;j++)
 		{
 			if(parsedStatList[j][i] === null)
 			{
