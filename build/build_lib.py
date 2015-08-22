@@ -70,7 +70,7 @@ def ReplaceLinks(input, page, packageText):
 	# add production version app wide style
 	new += GenerateLink('app_style.min.css', 'css')
 	# add production version page specific style
-	new += GenerateLink(page + '.min.css', 'css')
+	new += GenerateLink(page + '_style.min.css', 'css')
 	# add externally created javascript sources
 	sources = packageText['scripts']['external']
 	for source in sources:
@@ -81,11 +81,9 @@ def ReplaceLinks(input, page, packageText):
 	new += GenerateLink(page + '_lib.min.js', 'javascript')
 	# add inline scripts text block, unchanged from source
 	new += packageText['inline'][page]
-	print new
 
 	# replace link module in HTML document and return
 	output = re.sub("\<\!\-\- begin link module[\s\S]*end link module \-\-\>", new, input)
-	print output
 	return output
 
 def GenerateLink(source, type):

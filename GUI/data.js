@@ -51,6 +51,7 @@ var g_TempSettings = new Array(5);  		// indicies are "first year, last year, He
 var g_DataReady = false;			// true when all lookup table data is loaded
 var g_HMSReady = false;				// true when init heat map data is loaded
 var g_DataLoaded = 0;				// number of countries for which data is loaded
+var ColorByHMS;					// function for recoloring map
 
 // prototype (constructor) for ASDS node
 function t_AsdsNode(cid, cc2, name, data)

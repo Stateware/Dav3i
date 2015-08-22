@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 			},
 			index: {
 				src: ['<%= pkg.scripts.index %>'],
-				dest: 'prod/index.js'
+				dest: 'prod/index_lib.js'
 			}
 		},
 		concat_css: {
@@ -38,14 +38,14 @@ module.exports = function(grunt) {
 			},
 			index: {
 				src: ['<%= pkg.css.index %>'],
-				dest: 'prod/index.css'
+				dest: 'prod/index_style.css'
 			}
 		},
 		cssmin: {
 			target: {
 				files: [
 					{'prod/app_style.min.css': '<%= concat_css.appWide.dest %>'},
-					{'prod/index.min.css': '<%= concat_css.index.dest %>'}
+					{'prod/index_style.min.css': '<%= concat_css.index.dest %>'}
 				]
 			}
 		},
@@ -59,7 +59,7 @@ module.exports = function(grunt) {
 			},
 			index: {
 				src: ['<%= concat.index.dest %>'],
-				dest: 'prod/index.min.js'
+				dest: 'prod/index_lib.min.js'
 			}
 		},
 		qunit: {

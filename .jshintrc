@@ -21,7 +21,8 @@
 			"g_HMSReady": true,
 			"g_DataLoaded": true,
 			"t_AsdsNode": true,
-			"c_List": true,		
+			"c_List": true,	
+			"ColorByHMS": true,	
 			"QUnit": true
 		},
 	"browser" : true,		// allows basic browser globals (window, document)
