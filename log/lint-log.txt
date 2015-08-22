@@ -1,0 +1,47 @@
+[4mRunning "jshint:gruntfile" (jshint) task[24m
+[32m>> [39m1 file lint free.
+
+[4mRunning "jshint:src" (jshint) task[24m
+
+[1m   GUI/dynamic_markup.js[22m
+    305 |[90mfunction GenerateSubDivs()[39m
+                                 ^ This function has too many statements. (23)
+    305 |[90mfunction GenerateSubDivs()[39m
+                                 ^ This function's cyclomatic complexity is too high. (9)
+[1m   GUI/graph.js[22m
+     39 |[90mfunction GenerateGraphs()[39m
+                                ^ This function's cyclomatic complexity is too high. (10)
+    253 |[90mfunction GenerateSingleData(data)[39m
+                                    ^ This function has too many statements. (25)
+    253 |[90mfunction GenerateSingleData(data)[39m
+                                    ^ This function's cyclomatic complexity is too high. (11)
+    402 |[90mfunction GenerateSumNode(){[39m
+                                 ^ This function has too many statements. (41)
+    402 |[90mfunction GenerateSumNode(){[39m
+                                 ^ This function's cyclomatic complexity is too high. (22)
+    565 |[90mfunction FindMax()[39m
+                         ^ This function's cyclomatic complexity is too high. (11)
+[1m   GUI/lookup_table.js[22m
+    271 |[90mfunction ParseStatList()[39m
+                               ^ This function has too many statements. (35)
+    271 |[90mfunction ParseStatList()[39m
+                               ^ This function's cyclomatic complexity is too high. (12)
+[1m   GUI/map.js[22m
+     84 |[90m            for (key in map.regions) {                    // match HMS to keys[39m
+                     ^ The body of a for in should be wrapped in an if statement to filter unwanted properties from the prototype.
+    111 |[90m    }[39m
+              ^ Missing semicolon.
+    152 |[90m        onRegionTipShow: function(e, label, key){[39m
+                                          ^ This function has too many statements. (22)
+    152 |[90m        onRegionTipShow: function(e, label, key){[39m
+                                          ^ This function's cyclomatic complexity is too high. (10)
+[1m   GUI/settings.js[22m
+    172 |[90mfunction ApplySettings()[39m
+                               ^ This function has too many statements. (65)
+    172 |[90mfunction ApplySettings()[39m
+                               ^ This function's cyclomatic complexity is too high. (15)
+
+[31m>> [39m16 errors in 8 files
+[33mWarning: Task "jshint:src" failed. Use --force to continue.[39m
+
+[31mAborted due to warnings.[39m
