@@ -107,6 +107,6 @@ def GenerateLink(source, type):
 	if (type == 'javascript'):
 		output += '></script>'
 	else:
-		output += '/>'
+		output += '\/>'
 
 	return output
