@@ -108,7 +108,7 @@ $(function(){
                 g_HMSReady = true;
             }
         });
-    }
+    };
 
     map = new jvm.Map(
     {
