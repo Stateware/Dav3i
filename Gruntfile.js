@@ -44,8 +44,8 @@ module.exports = function(grunt) {
 		cssmin: {
 			target: {
 				files: [
-					{'prod/app_style.min.css': 'prod/app_style.css'},
-					{'prod/index.min.css': 'prod/index.css'}
+					{'prod/app_style.min.css': '<%= concat_css.appWide.dest %>'},
+					{'prod/index.min.css': '<%= concat_css.index.dest %>'}
 				]
 			}
 		},
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
 				banner: '<%= banner %>'
 			},
 			appWide: {
-				src: '<%= concat.internal.dest %>',
+				src: '<%= concat.appWide.dest %>',
 				dest: 'prod/app_lib.min.js'
 			},
 			index: {
