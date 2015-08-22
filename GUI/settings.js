@@ -180,9 +180,9 @@ function ApplySettings()
     endDiv.style["box-shadow"]="";
     heatmapYearDiv.style["box-shadow"]="";
 
-    document.getElementById(startDiv.id+"-error").style["cursor"]="default";
-    document.getElementById(endDiv.id+"-error").style["cursor"]="default";
-    document.getElementById(heatmapYearDiv.id+"-error").style["cursor"]="default";
+    document.getElementById(startDiv.id+"-error").style.cursor="default";
+    document.getElementById(endDiv.id+"-error").style.cursor="default";
+    document.getElementById(heatmapYearDiv.id+"-error").style.cursor="default";
 
     document.getElementById(startDiv.id+"-error").innerHTML="&emsp;";
     document.getElementById(endDiv.id+"-error").innerHTML="&emsp;";
@@ -199,7 +199,7 @@ function ApplySettings()
     {
         canContinue=false;
         startDiv.style["box-shadow"]="0px 0px 8px #F00";
-        document.getElementById(startDiv.id+"-error").style["cursor"]="help";
+        document.getElementById(startDiv.id+"-error").style.cursor="help";
         document.getElementById(startDiv.id+"-error").innerHTML="X";
         document.getElementById(startDiv.id+"-error").setAttribute("tooltip","Out of range: "+startDiv.min+"-"+startDiv.max);
         document.getElementById(startDiv.id+"-error").className="settings-error";
@@ -208,7 +208,7 @@ function ApplySettings()
     {
         canContinue=false;
         endDiv.style["box-shadow"]="0px 0px 8px #F00";
-        document.getElementById(endDiv.id+"-error").style["cursor"]="help";
+        document.getElementById(endDiv.id+"-error").style.cursor="help";
         document.getElementById(endDiv.id+"-error").innerHTML="X";
         document.getElementById(endDiv.id+"-error").setAttribute("tooltip","Out of range: "+endDiv.min+"-"+endDiv.max);
         document.getElementById(endDiv.id+"-error").className="settings-error";
@@ -217,7 +217,7 @@ function ApplySettings()
     {
         canContinue=false;
         heatmapYearDiv.style["box-shadow"]="0px 0px 8px #F00";
-		document.getElementById(heatmapYearDiv.id+"-error").style["cursor"]="help";
+		document.getElementById(heatmapYearDiv.id+"-error").style.cursor="help";
         document.getElementById(heatmapYearDiv.id+"-error").innerHTML="X";
         document.getElementById(heatmapYearDiv.id+"-error").setAttribute("tooltip","Out of range: "+heatmapYearDiv.min+"-"+heatmapYearDiv.max);
         document.getElementById(heatmapYearDiv.id+"-error").className="settings-error";
@@ -227,8 +227,8 @@ function ApplySettings()
         canContinue=false;
         startDiv.style["box-shadow"]="0px 0px 8px #F00";
         endDiv.style["box-shadow"]="0px 0px 8px #F00";
-        document.getElementById(startDiv.id+"-error").style["cursor"]="help";
-        document.getElementById(endDiv.id+"-error").style["cursor"]="help";
+        document.getElementById(startDiv.id+"-error").style.cursor="help";
+        document.getElementById(endDiv.id+"-error").style.cursor="help";
         document.getElementById(startDiv.id+"-error").innerHTML="X";
         document.getElementById(endDiv.id+"-error").innerHTML="X";
         document.getElementById(startDiv.id+"-error").setAttribute("tooltip","Year must be before End.");

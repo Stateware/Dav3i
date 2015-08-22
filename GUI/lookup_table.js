@@ -189,7 +189,7 @@ function SetData(index)
             parsedData = ParseData(data);				// parse data and set data field
             g_LookupTable[index][3] = parsedData;
             g_DataLoaded++;
-            if (g_DataLoaded == g_NumCountries)				// if last region accounted for,
+            if (g_DataLoaded === g_NumCountries)				// if last region accounted for,
             {								//  set ready flag to true
                 g_DataReady = true;
             }
@@ -265,7 +265,7 @@ function ParseStatList()
 //		 associated data (2-3).
 function ParseStatList()
 {
-	var sortedStatList = g_StatList.slice();
+	var sortedStatList = g_StatList.slice(),
 	    sortedStatList.sort(),
             parsedStatList = [],						// 2d array
 	    parsedStatList[0] = [],
@@ -300,23 +300,23 @@ function ParseStatList()
 			// prevent any vaccination bounds from being put as a head stat and mark vaccl indexes
 			// also sets location of associated vaccination stats
 			isAssociatedStat = true;
-			if(vaccL1 == -1)
+			if(vaccL1 === -1)
 			{
 				vaccL1 = g_StatList.indexOf(currentStat);
 			}
-			else if(vaccL2 == -1)
+			else if(vaccL2 === -1)
 			{
 				vaccL2 = g_StatList.indexOf(currentStat); 
 			}
 		}
 		
 		// sets the assocaited stat indexes
-		if(i > 0 && currentStat.indexOf(sortedStatList[i-1]) == 0)
+		if(i > 0 && currentStat.indexOf(sortedStatList[i-1]) === 0)
 		{
 			isAssociatedStat = true;
 			parsedStatList[assocStat1][index-1] = g_StatList.indexOf(currentStat);
 		}
-		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) == 0)
+		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) === 0)
 		{
 			isAssociatedStat = true;
 			parsedStatList[assocStat2][index-1] = g_StatList.indexOf(currentStat);
@@ -351,7 +351,7 @@ function ParseStatList()
 	{
 		for(var j=0;j<4;j++)
 		{
-			if(parsedStatList[j][i] == null)
+			if(parsedStatList[j][i] === null)
 			{
 				parsedStatList[j][i] = -1;
 			}

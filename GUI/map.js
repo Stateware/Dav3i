@@ -108,7 +108,7 @@ $(function(){
                 g_HMSReady = true;
             }
         });
-    };
+    }
 
     map = new jvm.Map(
     {
@@ -185,7 +185,7 @@ $(function(){
             }
             if (type === 1)
             {
-                for (i = 0; i < (g_StatList[hmsID].indexOf("VACC")-1); i++)
+                for (i = 0; i < g_StatList[hmsID].indexOf("VACC")-1; i++)
                 {
                     tipString += g_StatList[hmsID][i];
                 }

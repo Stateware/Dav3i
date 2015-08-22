@@ -291,7 +291,7 @@ function GenerateSingleData(data)
     }    
 
     // add data to table from start year to end year
-    for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
+    for(i=g_YearStart-g_FirstYear;i<g_YearEnd-g_FirstYear+1;i++)
     {   
 
         //format numbers 
@@ -329,7 +329,7 @@ function GenerateSingleData(data)
         }
     }
 
-    if(dataAvailable == 1)
+    if(dataAvailable === 1)
     {
         return dataTable;
     }
@@ -354,7 +354,7 @@ function GenerateCombinedData()
     var currentNode,
         i, j,
         dataTable = new google.visualization.DataTable(),
-        type = 0.
+        type = 0,
         row;
     
     dataTable.addColumn('number','Year');
@@ -401,7 +401,7 @@ function GenerateCombinedData()
 //       data = sum of all data of the countries in g_DataList
 function GenerateSumNode(){
     
-    var data = new Array(g_StatList.length);,
+    var data = new Array(g_StatList.length),
         names = "",
         i,j,
         currentNode = g_DataList.start,
@@ -419,16 +419,16 @@ function GenerateSumNode(){
         }
     }
     // create arrays for necessary data 
-    data[g_StatID] = new Array((g_YearEnd-g_FirstYear)+1);
+    data[g_StatID] = new Array(g_YearEnd-g_FirstYear+1);
     if (ass1ID > -1)
-        data[ass1ID] = new Array((g_YearEnd-g_FirstYear)+1);
+        data[ass1ID] = new Array(g_YearEnd-g_FirstYear+1);
     if (ass2ID > -1)
     {
-        data[ass2ID] = new Array((g_YearEnd-g_FirstYear)+1);
+        data[ass2ID] = new Array(g_YearEnd-g_FirstYear+1);
     }
 
     // initialize arrays to 0
-    for (j = 0; j < (g_YearEnd-g_FirstYear)+1; j++)
+    for (j = 0; j < g_YearEnd-g_FirstYear+1; j++)
     {
         data[g_StatID][j] = -1;
         if (ass1ID > -1)
@@ -444,7 +444,7 @@ function GenerateSumNode(){
     // add and store data for whole list
     for (i = 0; i < g_DataList.size; i++)
     {
-        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear)+1; j++)
+        for (j = g_YearStart-g_FirstYear; j < g_YearEnd-g_FirstYear+1; j++)
         {
             if (Number(currentNode.data[g_StatID][j]) > 0)
             {
@@ -490,7 +490,7 @@ function GenerateSumNode(){
     // divide by size of list to maintain percentages if vaccines
     if (g_StatList[g_StatID].indexOf("VACC") > -1)
     {
-        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear)+1; j++)
+        for (j = g_YearStart-g_FirstYear; j < g_YearEnd-g_FirstYear+1; j++)
         {
             data[g_StatID][j] = data[g_StatID][j] / g_DataList.size;
             data[ass1ID][j] = data[ass1ID][j] / g_DataList.size;
@@ -541,7 +541,7 @@ function GenerateVaccineData(data)
     }
 
     // add data to table
-    for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
+    for(i=g_YearStart-g_FirstYear;i<g_YearEnd-g_FirstYear+1;i++)
     {
         firstNum  = parseFloat((data[mcv1ID][i]  * 1).toFixed(4));
         secondNum = parseFloat((data[mcv2ID][i] * 1).toFixed(4));
@@ -599,7 +599,7 @@ function FindMax()
         currentNode = currentNode.next;
     }
     
-    if (max < 0 || max === NaN || max === undefined || max === Number.MIN_VALUE)
+    if (max < 0 || max === undefined || max === Number.MIN_VALUE)
     {
         return -1;
     }
