@@ -1,6 +1,6 @@
 {
 	"globals" : {			// adds any predefined globals (d3, etc.)
-			"g_BUCKETS": false,
+			"g_BUCKETS": true,
 			"g_LookupTable": true,
 			"g_NumCountries": true,
 			"g_StatList": true,
@@ -40,7 +40,7 @@
 					 */
 	"freeze" : true,		// prohibits overwriting special object prototypes (Array, Date, etc.)
 	"funcscope" : false,		// prohibits using variables declared in lower scope
-	"latedef" : true,		// prohibits using variables before they are defined
+	"latedef" : false,		// prohibits using variables before they are defined
 	"maxcomplexity" : 7,		// limits cyclomatic complexity
 	"maxparams" : 5,		// limits number of formal parameters to a function; larger parameter lists should be condensed by using objects
 	"maxstatements" : 20,		// limits length of functions
