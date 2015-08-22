@@ -55,7 +55,7 @@ module.exports = function(grunt) {
 			},
 			internal: {
 				src: '<%= concat.internal.dest %>',
-				dest: 'prod/<%= pkg.name %>.min.js'
+				dest: 'prod/app_lib.min.js'
 			},
 			index: {
 				src: ['<%= concat.index.dest %>'],
