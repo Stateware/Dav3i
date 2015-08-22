@@ -118,10 +118,13 @@ function BuildDiv(stat)
 // POST: previous tab is switched out, and now tab is switched in
 function ChooseTab(element)
 {
+    var parentTabDivName,
+        prevTab;
+
     // remove divs in previous tab
-    var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+    parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
     document.getElementById(parentTabDivName).innerHTML = "";
-    var prevTab=document.getElementById("id-"+g_StatList[g_StatID]);
+    prevTab=document.getElementById("id-"+g_StatList[g_StatID]);
     // sets class names of tabs
     prevTab.className="graph-tab";
     element.className="graph-tab selected-tab";
@@ -142,9 +145,10 @@ function ChooseTab(element)
 // POST: The first/last tab is moved to the last/first position
 function RotateTabs(direction)
 {
-    var div;
-    var tabs=document.getElementById("tabsDiv");
-    var children=tabs.childNodes;
+    var div,
+    tabs=document.getElementById("tabsDiv"),
+    children=tabs.childNodes;
+
     if(direction>0)
     {
         div=children[0];
@@ -194,9 +198,9 @@ function CloseSettings()
 {
     $(".settings-screen, .settings-black").fadeOut(400);
         
-    var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    var startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
      
     startDiv.style["box-shadow"]="";
     endDiv.style["box-shadow"]="";
@@ -245,11 +249,11 @@ function Expand()
     $(".expand-black").fadeIn(400);
     setTimeout(function () 
     {
-        if(g_DataList !== undefined && g_DataList.size != 0)
+        if(g_DataList !== undefined && g_DataList.size !== 0)
         {
 	        GenerateSubDivs();
 	        // if single graph, graph is expanded to whole section
-	        if((g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1) || (g_GraphType == 2))
+	        if((g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1) || g_GraphType === 2)
 	        {
 	            document.getElementById("region-graphs-1").style.width = "100%";
 	            document.getElementById("region-graphs-1").style.height = "100%";
@@ -307,7 +311,7 @@ function GenerateSubDivs()
         var newNumDivs = size - currentNumDivs;
         var div;
         // if we only need one graph for either combined lines or summation of lines
-        if((g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1) || g_GraphType == 2)
+        if((g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1) || g_GraphType === 2)
         {
             document.getElementById(parentTabDivName).innerHTML = "";
             if(size !== 0)
@@ -364,9 +368,13 @@ function CreateSubDiv(id,parent)
     document.getElementById(parent).appendChild(elem);
     
     if(!g_Expanded)
+    {
         document.getElementById(elem.id).style["width"] = "100%";
+    }
     else
+    {
         document.getElementById(elem.id).style["width"] = "50%";
+    }
 
     document.getElementById(elem.id).style["height"] = "50%";
 
