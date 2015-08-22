@@ -306,7 +306,6 @@ function GenerateSubDivs()
 {
     var size,
         i,
-        size,
         parentTabDivName,
         currentNumDivs,
         children,

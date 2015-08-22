@@ -405,7 +405,7 @@ function GenerateSumNode(){
         names = "",
         i,j,
         currentNode = g_DataList.start,
-        ass1ID = -1;
+        ass1ID = -1,
         ass2ID = -1,
         newNode;
 
