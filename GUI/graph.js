@@ -49,7 +49,7 @@ function GenerateGraphs()
     	    curr=g_DataList.start;    
 	    if (g_StatList[g_StatID].indexOf("VACC") > -1)
 	    {
-	        if (g_GraphType != 2)
+	        if (g_GraphType !== 2)
 	        {
 	            for(i=1; i<=g_DataList.size; i++)
 	            {
@@ -291,7 +291,7 @@ function GenerateSingleData(data)
     }    
 
     // add data to table from start year to end year
-    for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_FirstYear)+1;i++)
+    for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
     {   
 
         //format numbers 
@@ -375,7 +375,7 @@ function GenerateCombinedData()
     } 
 
     // filling the data table, iterate through each node, then through each year
-    for(i=(g_YearStart-g_FirstYear);i<(g_YearEnd-g_FirstYear)+1;i++)
+    for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
     {   
         row = new Array(g_DataList.size + 1);
         row[0] = g_FirstYear+i;

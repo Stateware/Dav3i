@@ -253,7 +253,7 @@ function Expand()
         {
 	        GenerateSubDivs();
 	        // if single graph, graph is expanded to whole section
-	        if((g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1) || g_GraphType === 2)
+	        if(g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1 || g_GraphType === 2)
 	        {
 	            document.getElementById("region-graphs-1").style.width = "100%";
 	            document.getElementById("region-graphs-1").style.height = "100%";
@@ -301,23 +301,26 @@ function Shrink()
 //       Correct graphs are filled in the appropriate divs
 function GenerateSubDivs()
 {
+    var size,
+        i;
+
     // only if there are countries in the data list
     if(g_DataList !== undefined)
     {
-        var size = g_DataList.size;
-        var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
-        var currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
-        var children = document.getElementById(parentTabDivName).childNodes;
-        var newNumDivs = size - currentNumDivs;
-        var div;
+        size = g_DataList.size,
+        parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs",
+        currentNumDivs = document.getElementById(parentTabDivName).childNodes.length,
+        children = document.getElementById(parentTabDivName).childNodes,
+        newNumDivs = size - currentNumDivs,
+        div;
         // if we only need one graph for either combined lines or summation of lines
-        if((g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1) || g_GraphType === 2)
+        if(g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1 || g_GraphType === 2)
         {
             document.getElementById(parentTabDivName).innerHTML = "";
             if(size !== 0)
             {
             	CreateSubDiv("region-graphs-1",parentTabDivName);
-	        }
+	    }
             // if the graph section is expanded
             if(g_Expanded)
             {
@@ -329,8 +332,10 @@ function GenerateSubDivs()
         else
         {
             document.getElementById(parentTabDivName).innerHTML = "";
-            for(var i = 1; i<=size; i++)
+            for(i = 1; i<=size; i++)
+            {
                 CreateSubDiv("region-graphs-"+i,parentTabDivName);
+            }
             while (g_DataList.size < currentNumDivs)
             {
                 $("#region-graphs-"+currentNumDivs).remove();
@@ -354,11 +359,14 @@ function GenerateSubDivs()
 // POST: Single div is appended to the parent div
 function CreateSubDiv(id,parent)
 {
-    var elem = document.createElement('div');
+    var elem = document.createElement('div'),
+        divs,
+        i;
     elem.id = id;
     elem.className = "subgraph";
-    var divs=document.getElementsByTagName("div");
-    for(var i in divs)
+    divs=document.getElementsByTagName("div");
+
+    for(i in divs)
     {
         if(divs[i].className==="control-panel")
         {
@@ -378,11 +386,11 @@ function CreateSubDiv(id,parent)
 
     document.getElementById(elem.id).style["height"] = "50%";
 
-    if(((g_GraphType !== 1 && g_GraphType !== 2) && g_Expanded) || 
-        ((g_StatList[g_StatID].indexOf("VACC") !== -1 && g_GraphType !== 2 && g_Expanded)))
+    if(g_GraphType !== 1 && g_GraphType !== 2 && g_Expanded || 
+        g_StatList[g_StatID].indexOf("VACC") !== -1 && g_GraphType !== 2 && g_Expanded)
     {
         $(elem).click(function() {
-            if(document.getElementById(id).style.width != "100%")
+            if(document.getElementById(id).style.width !== "100%")
             {
             
                 document.getElementById(elem.id).style.width = "100%";
