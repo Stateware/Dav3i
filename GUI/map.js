@@ -83,8 +83,8 @@ $(function(){
 									//  format of by_stat.php
             for (key in map.regions) {					// match HMS to keys
                 index = Hash(key);					// index into g_LookupTable by CC2
-                if (g_LookupTable[index] !== undefined 			// if data exists for country, add
-                    && g_LookupTable[index][4] !== -1)			//  to vector object and update
+                if (g_LookupTable[index] !== undefined && 		// if data exists for country, add
+                    g_LookupTable[index][4] !== -1)			//  to vector object and update
                 {							//  min/max
                     data[key] = g_LookupTable[index][4];
                     if (data[key] < min)

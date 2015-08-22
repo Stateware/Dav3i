@@ -368,14 +368,14 @@ function GenerateCombinedData()
 
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        if(g_StatID === g_ParsedStatList[1][i] && (g_ParsedStatList[2][i] !== -1 || g_ParsedStatList[2][i] != -1))
+        if(g_StatID === g_ParsedStatList[1][i] && (g_ParsedStatList[2][i] !== -1 || g_ParsedStatList[2][i] !== -1))
         {
             type = 1;  
         }
     } 
 
     // filling the data table, iterate through each node, then through each year
-    for(i=g_YearStart-g_FirstYear;i<(g_YearEnd-g_FirstYear)+1;i++)
+    for(i=g_YearStart-g_FirstYear;i<g_YearEnd-g_FirstYear+1;i++)
     {   
         row = new Array(g_DataList.size + 1);
         row[0] = g_FirstYear+i;
@@ -421,7 +421,9 @@ function GenerateSumNode(){
     // create arrays for necessary data 
     data[g_StatID] = new Array(g_YearEnd-g_FirstYear+1);
     if (ass1ID > -1)
+    {
         data[ass1ID] = new Array(g_YearEnd-g_FirstYear+1);
+    }
     if (ass2ID > -1)
     {
         data[ass2ID] = new Array(g_YearEnd-g_FirstYear+1);
@@ -581,17 +583,17 @@ function FindMax()
     // find max value of needed data set
     for (i = 0; i < g_DataList.size; i++)
     {
-        for (j = g_YearStart-g_FirstYear; j < (g_YearEnd-g_FirstYear) + 1;j++)
+        for (j = g_YearStart-g_FirstYear; j < g_YearEnd-g_FirstYear + 1;j++)
         {
             if (Number(currentNode.data[g_StatID][j]) > max)
             {
                 max = Number(currentNode.data[g_StatID][j]);
             }
-            if (ass1ID != -1 && Number(currentNode.data[ass1ID][j]) > max)
+            if (ass1ID !== -1 && Number(currentNode.data[ass1ID][j]) > max)
             {
                 max = Number(currentNode.data[ass1ID][j]);
             }
-            if (ass2ID != -1 && Number(currentNode.data[ass2ID][j]) > max)
+            if (ass2ID !== -1 && Number(currentNode.data[ass2ID][j]) > max)
             {
                 max = Number(currentNode.data[ass2ID][j]);
             }

@@ -37,11 +37,14 @@
 // POST: index.html contains tabs of the correct stat data from the lookup_table
 function BuildTabs()
 {
-    var i;
+    var i,
+        temp,
+        div;
+
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
-        var temp=g_StatList[g_ParsedStatList[1][i]];
-        var div=document.createElement("DIV");
+        temp=g_StatList[g_ParsedStatList[1][i]];
+        div=document.createElement("DIV");
         div.id="id-"+temp;
         div.setAttribute("stat",""+g_ParsedStatList[1][i]);
         div.className="graph-tab";
@@ -71,9 +74,9 @@ function BuildTabs()
 // POST: appropriate input tags are modified and g_TempSettings array is initialized
 function UpdateInputs()
 {
-    var startDiv=document.getElementById("year-range-start");
-    var endDiv=document.getElementById("year-range-end");
-    var heatmapYearDiv=document.getElementById("heatmap-year");
+    var startDiv=document.getElementById("year-range-start"),
+        endDiv=document.getElementById("year-range-end"),
+        heatmapYearDiv=document.getElementById("heatmap-year");
 	
 	// set min and max for the settings input boxes
     startDiv.max=g_LastYear;
@@ -182,7 +185,7 @@ function SwitchToMain ()
 // POST: Settings overlay is showing with black backing mask and all stat values are reset
 function OpenSettings()
 {
-	 ResetAllStatValues();
+     ResetAllStatValues();
 	 
      $(".settings-screen, .settings-black").fadeIn(400);
      
@@ -302,17 +305,21 @@ function Shrink()
 function GenerateSubDivs()
 {
     var size,
-        i;
+        i,
+        size,
+        parentTabDivName,
+        currentNumDivs,
+        children,
+        newNumDivs;
 
     // only if there are countries in the data list
     if(g_DataList !== undefined)
     {
-        size = g_DataList.size,
-        parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs",
-        currentNumDivs = document.getElementById(parentTabDivName).childNodes.length,
-        children = document.getElementById(parentTabDivName).childNodes,
-        newNumDivs = size - currentNumDivs,
-        div;
+        size = g_DataList.size;
+        parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+        currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
+        children = document.getElementById(parentTabDivName).childNodes;
+        newNumDivs = size - currentNumDivs;
         // if we only need one graph for either combined lines or summation of lines
         if(g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1 || g_GraphType === 2)
         {
@@ -377,14 +384,14 @@ function CreateSubDiv(id,parent)
     
     if(!g_Expanded)
     {
-        document.getElementById(elem.id).style["width"] = "100%";
+        document.getElementById(elem.id).style.width = "100%";
     }
     else
     {
-        document.getElementById(elem.id).style["width"] = "50%";
+        document.getElementById(elem.id).style.width = "50%";
     }
 
-    document.getElementById(elem.id).style["height"] = "50%";
+    document.getElementById(elem.id).style.height = "50%";
 
     if(g_GraphType !== 1 && g_GraphType !== 2 && g_Expanded || 
         g_StatList[g_StatID].indexOf("VACC") !== -1 && g_GraphType !== 2 && g_Expanded)
@@ -414,10 +421,9 @@ function CreateSubDiv(id,parent)
 // POST: Alert box pops up with info about project contributors
 function teamPopup()
 {
-    window.alert("Stateware Team\nSpring 2015:\nWilliam Bittner,"
-        + " Joshua Crafts, Nicholas Denaro, Dylan Fetch, Paul Jang,"
-        + " Arun Kumar, Drew Lopreiato, Kyle Nicholson, Emma "
-        + "Roudabush, Berty Ruan, Vanajam Soni");
+    window.alert("Stateware Team\nSpring 2015:\nWilliam Bittner," + 
+        " Joshua Crafts, Nicholas Denaro, Dylan Fetch, Paul Jang," + 
+        " Arun Kumar, Drew Lopreiato, Kyle Nicholson, Emma " + "Roudabush, Berty Ruan, Vanajam Soni");
 }
 
 // Author: Joshua Crafts
@@ -429,10 +435,7 @@ function teamPopup()
 //       reporting a bug
 function bugPopup()
 {
-    window.alert("If you would like to report a bug, please send "
-        + "an email to stateware@acm.psu.edu with the following "
-        + "details included in your message:\n1. Description of the "
-        + "bug\n2. Steps for reproducing the bug\n3. What browser and"
-        + " operating system you experienced the bug on\n4. Any "
-        + "additional relevant information.");
+    window.alert("If you would like to report a bug, please send " + "an email to stateware@acm.psu.edu with the following " + 
+        "details included in your message:\n1. Description of the " + "bug\n2. Steps for reproducing the bug\n3. What browser and" + 
+        " operating system you experienced the bug on\n4. Any " + "additional relevant information.");
 }
