@@ -364,6 +364,7 @@ function ParseStatList()
 		}
 	}
 	g_ParsedStatList = parsedStatList;
+	console.log(g_ParsedStatList);
 }
 
 

@@ -29,6 +29,10 @@ module.exports = function(grunt) {
 			index: {
 				src: ['<%= pkg.scripts.index %>'],
 				dest: 'prod/index_lib.js'
+			},
+			upload: {
+				src: ['<%= pkg.scripts.upload %>'],
+				dest: 'prod/upload_lib.js'
 			}
 		},
 		concat_css: {
@@ -39,13 +43,18 @@ module.exports = function(grunt) {
 			index: {
 				src: ['<%= pkg.css.index %>'],
 				dest: 'prod/index_style.css'
+			},
+			upload: {
+				src: ['<%= pkg.css.upload %>'],
+				dest: 'prod/upload_style.css' 
 			}
 		},
 		cssmin: {
 			target: {
 				files: [
 					{'prod/app_style.min.css': '<%= concat_css.appWide.dest %>'},
-					{'prod/index_style.min.css': '<%= concat_css.index.dest %>'}
+					{'prod/index_style.min.css': '<%= concat_css.index.dest %>'},
+					{'prod/upload_style.min.css': '<%= concat_css.upload.dest %>'}
 				]
 			}
 		},
@@ -60,6 +69,10 @@ module.exports = function(grunt) {
 			index: {
 				src: ['<%= concat.index.dest %>'],
 				dest: 'prod/index_lib.min.js'
+			},
+			upload: {
+				src: ['<%= concat.upload.dest %>'],
+				dest: 'prod/upload_lib.min.js'
 			}
 		},
 		qunit: {
@@ -89,7 +102,7 @@ module.exports = function(grunt) {
 			options: {
 				csslintrc: '.csslintrc'
 			},
-			src: ['src/*.css']
+			src: ['res/*.css']
 		}
 	});
 

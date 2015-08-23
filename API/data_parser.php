@@ -36,136 +36,79 @@
  *                      while not actively being developed is NOT recommended.
  */
 
-require_once("connect.php");
+require_once("api_library.php");
 
-$testData = "";
-// when a file gets uploaded, it is placed in a temporary directory in the database.
-// this directory location can be accessed by PHP with the following line
-$fileTemporaryName = $_FILES['userfile']['tmp_name'];
-// we place the entire contents of the file into the $testData variable
-$testData = file_get_contents($fileTemporaryName);
-
-// Because the data needs to at least have a place holder, we will replace any missing
-// data (shown with a ',,') with a negative one. We run this twice because the first run
-// can still leave some double commas.
-$testData = preg_replace("/,,/", ",-1,", preg_replace("/,,/", ",-1,", $testData));
-// We also replace data that is read as NA with -1's.
-$testData = preg_replace("/,NA/", ",-1", preg_replace("/,NA/", ",-1", $testData));
-// We then remove any quotation marks in the file.
-$testData = preg_replace("/\"/", "", $testData);
-
-$databaseConnection = GetDatabaseConnection();
-
-// These are the fields set by the user in data_uploader.php
-$type = $_POST['data_type'];
-$tableName = $_POST['table_name'];
-$statisticName = $_POST['stat_name'];
-
-$metaTableQuery = "INSERT INTO meta_stats (stat_name, table_name) VALUES ('$statisticName', '$tableName')";
-$metaTableResults = $databaseConnection->query($metaTableQuery);
-if ($metaTableResults === false)
+if (!isset($_GET['type']))
 {
-    echo "meta_stats create table entry failed.";
-    die();
+	ThrowFatalError("Input is not defined: type");
 }
 
+$displayName = GetDisplayName($_POST['display_name']);
+$diseaseName = strtolower($_POST['disease']);
+$diseaseName = ltrim($diseaseName);
 
-// We will replace new lines in the data with a pipe. This will make it easier to parse into distinct rows.
-// sometimes you need the line directly below. sometimes you need the line two lines below. but never both.
-// if you're expecting the data to come in from a windows machine, the first line is needed.
-//$testData = preg_replace('~\R~', "|", preg_replace("/[\r\n]/", "|", $testData));
-$testData = trim(preg_replace('~\R~', "|", $testData));
-
-
-// separate the file into an array where each value is a row of the table
-$queryArray = array();
-$tableArray = explode("|", $testData);
-foreach($tableArray as $value)
+if ($_GET['type'] == 'lin')
 {
-    // inside each row, turn the individual columns into an array, but start after the first column
-    // because the first column is expected to be the country CC3.
-    $tempArray = explode(",", $value, 2);
-    if (isset($tempArray[1]))
-    {
-        // we are putting this into a key-value array where the key is the country CC3, and the value is the
-        // array containing the data in its row
-        $queryArray[$tempArray[0]] = $tempArray[1];
-    }
+	$data = file_get_contents($_FILES['userfile']['tmp_name']);
+	$data = PullData($data);
+	$data = Normalize($data);
+	$tableName = GetTableName($displayName, $_POST['disease'], 'lin');
+	AddStat($diseaseName, $displayName, $tableName, $_POST['data_type'], 'lin', $data, $_POST['tag']);
 }
-// we pop the first row off because its the headers row
-$headers = array_shift($queryArray);
-
-// we then create the table with the given headers from the file
-$columnsArray = explode(",", $headers);
-//TODO: Make the country_id column be the index
-$createTableQuery = "CREATE TABLE $tableName (`country_id` int(10)";
-foreach ($columnsArray as $column)
+else if ($_GET['type'] == 'est')
 {
-    $fixedColumnName = trim($column);
-    $createTableQuery .= ", `$fixedColumnName` $type";
+	$dataUB = file_get_contents($_FILES['userfile1']['tmp_name']);
+	$dataUB = PullData($dataUB);
+	$dataUB = Normalize($dataUB);
+	$tableNameUB = GetTableName($displayName, $_POST['disease'], 'eub');
+	AddStat($diseaseName, $displayName, $tableNameUB, $_POST['data_type'], 'eub', $dataUB, $_POST['tag']);
+	$dataST = file_get_contents($_FILES['userfile2']['tmp_name']);
+	$dataST = PullData($dataST);
+	$dataST = Normalize($dataST);
+	$tableNameST = GetTableName($displayName, $_POST['disease'], 'est');
+	AddStat($diseaseName, $displayName, $tableNameST, $_POST['data_type'], 'est', $dataST, $_POST['tag']);
+	$dataLB = file_get_contents($_FILES['userfile3']['tmp_name']);
+	$dataLB = PullData($dataLB);
+	$dataLB = Normalize($dataLB);
+	$tableNameLB = GetTableName($displayName, $_POST['disease'], 'elb');
+	AddStat($diseaseName, $displayName, $tableNameLB, $_POST['data_type'], 'elb', $dataLB, $_POST['tag']);
 }
-$createTableQuery .= ");";
-
-$createTableResults = $databaseConnection->query($createTableQuery);
-if ($createTableQuery === false)
+else if ($_GET['type'] == 'bar')
 {
-    echo "Table create query failed.";
-    die();
+	$data = file_get_contents($_FILES['userfile']['tmp_name']);
+	$data = PullData($data);
+	$data = Normalize($data);
+	$tableName = GetTableName($displayName, $_POST['disease'], 'bar');
+	AddStat($diseaseName, $displayName, $tableName, $_POST['data_type'], 'bar', $data, $_POST['tag']);
 }
-
-// We then create a lookup table where the key is the countries CC3 value, and the value is its country_id
-$countryLookupTable = array();
-$countryLookupQuery = "SELECT cc3, country_id FROM meta_countries";
-$countryLookupResults = $databaseConnection->query($countryLookupQuery);
-while($countryLookupRow = $countryLookupResults->fetch_assoc())
+else if ($_GET['type'] == 'int')
 {
-    $countryLookupTable[$countryLookupRow['cc3']] = $countryLookupRow['country_id'];
-}
-
-// insert every single row into the column
-foreach($queryArray as $country => $query)
-{
-	$specificQuery = "INSERT INTO $tableName VALUES(";
-    
-    $specificQuery .= $countryLookupTable[$country];
-
-    $allTheStats = explode(",", $query);
-    foreach ($allTheStats as $statistic) {
-        // this NEEDS TO BE SPRINTF because (fun fact) when you echo a number, it puts it into scientific
-        // notation. This breaks the query. HOWEVER if you use sprintf, it'll be guaranteed to have at
-        // least six sig figs.
-        $specificQuery .= sprintf(", %f", ScientificConversion($statistic));
-    }
-
-  	$specificQuery .= ");";
-	
-	$specificResults = $databaseConnection->query($specificQuery);
-	if ($specificResults === false)
+	$data1 = file_get_contents($_FILES['userfile1']['tmp_name']);
+	$data1 = PullData($data1);
+	$data1 = Normalize($data1);
+	$displayName1 = GetDisplayName($_POST['display_name1']);
+	$tableName1 = GetTableName($displayName1, $_POST['disease'], $_POST['graph_type1']);
+	$index1 = AddStat($diseaseName, $displayName1, $tableName1, $_POST['data_type1'], $_POST['graph_type1'], $data1, $_POST['tag']);
+	$data2 = file_get_contents($_FILES['userfile2']['tmp_name']);
+	$data2 = PullData($data2);
+	$data2 = Normalize($data2);
+	$displayName2 = GetDisplayName($_POST['display_name2']);
+	$tableName2 = GetTableName($displayName2, $_POST['disease'], $_POST['graph_type2']);
+	$index2 = AddStat($diseaseName, $displayName2, $tableName2, $_POST['data_type2'], $_POST['graph_type2'], $data2, $_POST['tag']);
+	if ($_POST['data_type3'] != false && $_FILES['userfile3']['tmp_name'] != false)
 	{
-		echo "Individual row query failed.";
+		$data3 = file_get_contents($_FILES['userfile3']['tmp_name']);
+		$data3 = PullData($data3);
+		$data3 = Normalize($data3);
+		$displayName3 = GetDisplayName($_POST['display_name3']);
+		$tableName3 = GetTableName($displayName3, $_POST['disease'], $_POST['graph_type3']);
+		$index3 = AddStat($diseaseName, $displayName3, $tableName3, $_POST['data_type3'], $_POST['graph_type3'], $data3, $_POST['tag']);
 	}
+	else
+	{
+		$tableName3 = -1;
+		$index3 = -1;
+	}
+	SetIntegrated($displayName, $tableName1, $index1, $tableName2, $index2, $tableName3, $index3);
 }
-// This is a line that should have been queried to the database to ensure speedy lookups
-//ALTER TABLE data_cases ORDER BY country_id ASC
-// oops.
-
-// convert text in scientific notation into a floating point value
-// Steven Shaffer, March 30, 2015
-function ScientificConversion($in) {
-    $pos = strpos($in, "E");
-    if ($pos === false) {
-        //Just convert it directly
-        return floatval($in);
-    }
-    else {
-        //Needs to be converted
-        $part1 = substr($in, 0, $pos);
-        $part2 = substr($in, $pos+1);
-        $base = $part1 + 0;
-        $exponent = $part2 + 0;
-        $answer = $base * (pow(10, $exponent));
-        return $answer;
-    }
-}
-
 ?>

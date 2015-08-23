@@ -1,0 +1,142 @@
+<html>
+<head>
+<title>Dav3i Data Uploader</title>
+<!-- begin link module -->
+<!-- begin remote linkages -->
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<!-- end remote linkages -->
+<!-- begin external css -->
+<!-- end external css -->
+<!-- begin app-wide css -->
+<link rel="stylesheet" type="text/css" href="res/reset.css"/>
+<link rel="stylesheet" type="text/css" href="res/forms.css"/>
+<!-- end app-wide css -->
+<!-- begin page-specific css -->
+<!-- end page-specific css -->
+<!-- begin external libraries -->
+<!-- end external libraries -->
+<!-- begin internal libraries -->
+<!-- end internal libraries -->
+<!-- begin page-specific scripts -->
+<script type="text/javascript" src="GUI/upload.js"></script>
+<!-- end page-specific scripts -->
+<!-- begin inline scripts -->
+<!-- end inline scripts -->
+<!-- end link module -->
+</head>
+<body>
+    <div class="loading"><p>Uploading Data...</p></div>
+    <div class="content">
+        <h4>Dav3i Data Uploader</h4></br>
+        <p>This applet allows you to add a new stat to the Dav3i database. Begin by selecting a graph type from the drop-down menu below:</p></br>
+        <select onchange="SelectType()" id="graph-type" name="graph_type" required>
+            <option value="lin">line</option>
+            <option value="est">estimation (including confidence interval)</option>
+            <option value="bar">bar</option>
+            <option value="int">integrated (up to 3 mutually relevant stats)</option>
+        </select> </br>
+        <!-- The data encoding type, enctype, MUST be specified as below -->
+        <form class="lin" id="lin" enctype="multipart/form-data" action="API/data_parser.php?type=lin" method="POST">
+            <p>Each line graph input requires the following information.</p><br />
+            <p>Disease Data Set (30 characters max): </p><input type="text" name="disease" required/><br />
+            <p>Stat Name (40 characters max): </p><input type="text" name="display_name" required/><br />
+            <p>Data Type: </p>
+            <select id="data-type-lin" name="data_type" required>
+                <option value="int">integer</option>
+                <option value="float">decimal</option>
+            </select> </br>
+            <p>This field allows you to optionally attach a tag to a data set. If you would like to maintain alternate data sets for a particular stat, (e.g. multiple estimation models for estimated stats) you can use this field to uniquely identify data sets for a stat. If left blank, a number will be assigned to this data set.</p><br />
+            <p>Data Tag (30 characters max): </p><input type="text" name="tag"/><br />
+            <input type="hidden" name="MAX_FILE_SIZE" value="300000" /><br />
+            <p>Stat Value Data: </p><input name="userfile" type="file" required/><br />
+            <input type="submit" value="Submit New Stat" />
+        </form>
+        <!-- The data encoding type, enctype, MUST be specified as below -->
+        <form class="est" id="est" enctype="multipart/form-data" action="API/data_parser.php?type=est" method="POST">
+            <p>Each estimation graph input requires the following information. You must enter both an upper and lower bound for estimated stats.</p><br />
+            <p>Disease Data Set (30 characters max): </p><input type="text" name="disease" required/><br />
+            <p>Stat Name (40 characters max): </p><input type="text" name="display_name" required/><br />
+	    <p>Data Type: </p>
+            <select id="data-type-est" name="data_type" required>
+                <option value="int">integer</option>
+                <option value="float">decimal</option>
+            </select></br>
+            <input type="hidden" name="MAX_FILE_SIZE" value="300000" /><br />
+            <p>Upper Bound Data: </p><input name="userfile1" type="file" required/><br />
+            <p>Stat Value Data: </p><input name="userfile2" type="file" required/><br />
+            <p>Lower Bound Data: </p><input name="userfile3" type="file" required/><br />
+            <p>This field allows you to optionally attach a tag to a data set. If you would like to maintain alternate data sets for a particular stat, (e.g. multiple estimation models for estimated stats) you can use this field to uniquely identify data sets for a stat. If left blank, a number will be assigned to this data set.</p><br />
+            <p>Data Tag (30 characters max): </p><input type="text" name="tag"/><br />
+            <input type="submit" value="Submit New Stat" />
+        </form>
+        <!-- The data encoding type, enctype, MUST be specified as below -->
+        <form class="bar" id="bar" enctype="multipart/form-data" action="API/data_parser.php?type=bar" method="POST">
+            <p>Each bar graph input requires the following information.</p><br />
+            <p>Disease Data Set (30 characters max): </p><input type="text" name="disease" required/><br />
+            <p>Stat Name (40 characters max): </p><input type="text" name="display_name" required/><br />
+	    <p>Data Type: </p>
+            <select id="data-type-bar" name="data_type" required>
+                <option value="int">integer</option>
+                <option value="float">decimal</option>
+            </select> </br>
+            <p>This field allows you to optionally attach a tag to a data set. If you would like to maintain alternate data sets for a particular stat, (e.g. multiple estimation models for estimated stats) you can use this field to uniquely identify data sets for a stat. If left blank, a number will be assigned to this data set.</p><br />
+            <p>Data Tag (30 characters max): </p><input type="text" name="tag"/><br />
+            <input type="hidden" name="MAX_FILE_SIZE" value="300000" /><br />
+            <p>Stat Value Data: </p><input name="userfile" type="file" required/><br />
+            <input type="submit" value="Submit New Stat" />
+        </form>
+        <!-- The data encoding type, enctype, MUST be specified as below -->
+        <form class="int" id="int" enctype="multipart/form-data" action="API/data_parser.php?type=int" method="POST">
+            <p>Each integrated graph input requires the following information. You must enter data for 2 or 3 stats to be graphed together. If you enter partial information for the 3rd stat input, it will be disregarded.</p><br />
+            <p>Disease Data Set (30 characters max): </p><input type="text" name="disease" required/><br />
+            <p>Integrated Stat Name: </p><input type="text" name="display_name" required/><br />
+            <input type="hidden" name="MAX_FILE_SIZE" value="300000" /><br />
+            <div class="block">
+            <p>First Stat Name (40 characters max): </p><input type="text" name="display_name1" required/><br />
+            <p>First Stat Value Data: </p><input name="userfile1" type="file" required/><br />
+	    <p>First Stat Data Type: </p>
+            <select id="data-type-int1" name="data_type1" required>
+                <option value="int">integer</option>
+                <option value="float">decimal</option>
+            </select> </br>
+            <p>First Stat Graph Type: </p>
+            <select id="graph-type1" name="graph_type1" required>
+                <option value="lin">line</option>
+                <option value="bar">bar</option>
+            </select> </br>
+            </div>
+            <div class="block">
+            <p>Second Stat Name (40 characters max): </p><input type="text" name="display_name2" required/><br />
+            <p>Second Stat Value Data: </p><input name="userfile2" type="file" required/><br />
+	    <p>Second Stat Data Type: </p>
+           <select id="data-type-int2" name="data_type2" required>
+                <option value="int">integer</option>
+                <option value="float">decimal</option>
+            </select> </br>
+            <p>Second Stat Graph Type: </p>
+            <select id="graph-type2" name="graph_type2" required>
+                <option value="lin">line</option>
+                <option value="bar">bar</option>
+            </select> </br>
+            </div>
+            <div class="block">
+            <p>Third Stat Name (40 characters max): </p><input type="text" name="display_name3"/><br />
+            <p>Third Stat Value Data: </p><input name="userfile3" type="file" /><br />
+	    <p>Third Stat Data Type: </p>
+            <select id="data-type-int3" name="data_type3">
+                <option value="int">integer</option>
+                <option value="float">decimal</option>
+            </select> </br>
+            <p>Third Stat Graph Type:  </p>
+            <select id="graph-type3" name="graph_type3">
+                <option value="lin">line</option>
+                <option value="bar">bar</option>
+            </select> </br>
+            </div>
+            <p>This field allows you to optionally attach a tag to a data set. If you would like to maintain alternate data sets for a particular stat, (e.g. multiple estimation models for estimated stats) you can use this field to uniquely identify data sets for a stat. If left blank, a number will be assigned to this data set.</p><br />
+            <p>Data Tag (30 characters max): </p><input type="text" name="tag"/><br />
+            <input type="submit" value="Submit New Stat" />
+        </form>
+    </div>
+</body>
+</html>

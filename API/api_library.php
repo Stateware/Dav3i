@@ -476,4 +476,281 @@ function GetCountryQueries($tableNames, $countries)
     return $returnValue;
 } // END getCountryQueries
 
+function PullData($input)
+// PRE:  $input is a data file in CSV format
+// POST: FCTVAL == the contents of the data file as a 2D array such that the axes of the table are arranged as [y][x]
+{
+	$input = preg_split('~\R~', $input);
+	$output = array();
+	foreach ($input as $row)
+	{
+		array_push($output, preg_split('/,/', $row));
+	}
+
+	return $output;
+}
+
+function Normalize($input)
+// PRE:  $input is the contents of a data file as a 2D array such that the axes of the table are arranged as [y][x]
+// POST: FCTVAL == $input s.t. all missing data is set as -1, all column indices are years, and all data is formatted in standard notation
+{
+	$rowLength = count($input[0]);
+	foreach ($input as $i => $row)
+	{
+		if (count($row) != $rowLength)
+		{
+			unset($input[$i]);
+			$input = array_values($input);
+		}
+		else
+		{
+			foreach($row as $j => $value)
+			{
+				$input[$i][$j] = preg_replace('/\"|\'/', '', $value);
+				if ($i == 0 && $j != 0)
+				{
+					preg_match("/[a-z]*(\d+)/i", $value, $index);
+					if ($index < START_YEAR)
+						$input[$i][$j] = START_YEAR + $index[1];
+					else
+						$input[$i][$j] = (int)$index[1];
+				}
+				else if ($j != 0)
+				{
+					if ($value == "NA" || $value == "")
+					{
+						$input[$i][$j] = DEFAULT_NUMBER;
+					}
+					else if (preg_match('/e|\./i', $value) != false)
+						$input[$i][$j] = ScientificConversion($value);
+					else
+						$input[$i][$j] = (int)$value;
+				}
+			}
+		}
+	}
+
+	return $input;
+}
+
+// convert text in scientific notation into a floating point value
+// Steven Shaffer, March 30, 2015
+function ScientificConversion($in) {
+    if (preg_match('/(\-?\d+)e(\-?\d+)/i', $in, $results) == false) {
+        //Just convert it directly
+        return floatval($in);
+    }
+    else {
+        //Needs to be converted
+        $part1 = $results[1];
+        $part2 = $results[2];
+        $base = (float)$part1;
+        $exponent = (int)$part2;
+        $answer = $base * (pow(10, $exponent));
+        return $answer;
+    }
+}
+
+function GetDisplayName($statName)
+// PRE:  $statName is a string
+// POST: FCTVAL == $statName s.t. the content is formatted as lowercase, with each word's
+//       first character uppercase
+{
+	$statName = ltrim($statName);
+	return ucwords(strtolower($statName));
+}
+
+function GetTableName($statName, $disease, $type)
+// PRE:  $statName is a correctly formatted display name for a stat
+//       $type == 'lin', 'bar', 'est', 'eub', 'elb', or 'int'
+{
+	$output = "data_";
+	// add up to first 5 characters of disease name to table name
+	for ($i = 0; $i < strlen($disease) && $i < 5; $i++)
+		$output .= $disease[$i];
+	$output .= '_';
+	// add type code for estimations to table name
+	if ($type == 'est' || $type == 'eub' || $type == 'elb')
+		$output .= $type;
+	// add display name to table name
+	$initSize = strlen($output);
+	$statName = preg_replace("/ /", "", $statName);
+	$statName = strtolower($statName);
+	for ($i = 0; $i + $initSize < 32; $i++)
+		$output .= $statName[$i];
+
+	return $output;
+}
+
+function IsValidTableName($tableName)
+// PRE:  $tableName is the default table name for a given stat
+// POST: FCTVAL == $tableName if it is valid, o.w. it is changed sufficiently to yield a valid name
+{
+	
+}
+
+function AddStat($disease, $displayName, $tableName, $dataType, $graphType, $data, $tag)
+// PRE:  $disease is the name of a disease for which $data is relevant data, or is 'shared'
+//       $displayName is the display name for the stat to be added
+//       $tableName is the name of the table to create or add $data to
+//       $dataType is either 'int' or 'float'
+//       $data is a 2D array representation of a csv, which has been normalized
+//       $tag is a tag to attach to this data set
+// POST: If stat is new, new entry in meta_stats is created and new data table is created
+//       O.w. new entry is made to data table and meta_stats['indices'] is incremented
+{
+	if (!TableExists($tableName))
+	{
+		CreateTable($disease, $displayName, $tableName, $graphType, $dataType, $data);
+	}
+	
+	return AddData($tableName, $data, $tag);
+}
+
+function TableExists($tableName)
+// PRE:  $tableName is the name of a table to check
+// POST: FCTVAL == true if table already exists in DB, o.w. false
+{
+	$databaseConnection = GetDatabaseConnection();
+	$query = "DESCRIBE " . $tableName . ";";
+	$result = $databaseConnection->query($query);
+
+	if ($result == false)
+		return false;
+	else
+		return true;
+}
+
+function DiseaseExists($disease)
+// PRE:  $disease is some string that describes the relevance of a data set
+// POST: FCTVAL == true if $disease exists in meta_diseases, o.w. false
+{
+	$databaseConnection = GetDatabaseConnection();
+	$query = 'SELECT * FROM meta_diseases';
+	$result = $databaseConnection->query($query);
+	while ($value = $result->fetch_assoc())
+	{
+		if ($value['disease'] == $disease)
+			return true;
+	}
+
+	return false;
+}
+
+function CreateTable($disease, $displayName, $tableName, $graphType, $dataType, $data)
+{
+	if (!DiseaseExists($disease))
+		CreateDisease($disease);
+	$databaseConnection = GetDatabaseConnection();
+	$query = "INSERT INTO meta_stats (display_name, table_name, type, disease, indices) VALUES ('" . $displayName . "', '" . $tableName . "', '" . $graphType . "', '" . $disease . "', '" . 0 . "');";
+	if ($databaseConnection->query($query) == false)
+		ThrowFatalError("Error creating stat entry.");
+	$columns = count($data[0]) + 1;
+	$query = "CREATE TABLE $tableName (data_set_index int(5), country_id int(10)";
+	for ($i = 1; $i < count($data[0]); $i++)
+	{
+		$query .= ", y_" . $data[0][$i] . " ";
+		if ($dataType == 'int')
+			$query .= "int(16)";
+		else
+			$query .= "float";
+	}
+	$query .= ");";
+	if ($databaseConnection->query($query) == false)
+		ThrowFatalError("Error creating stat table " . $tableName . ".");
+}
+
+function GetTableId($tableName)
+{
+	$databaseConnection = GetDatabaseConnection();
+	$query = "SELECT table_id FROM meta_stats WHERE table_name='$tableName';";
+	if (($result = $databaseConnection->query($query)) == false)
+		return false;
+	else
+	{
+		$result = $result->fetch_assoc();
+		return $result['table_id'];
+	}
+}
+
+function GetCountryId($cc3)
+{
+	$databaseConnection = GetDatabaseConnection();
+	$query = "SELECT country_id FROM meta_countries WHERE cc3='$cc3';";
+	if (($result = $databaseConnection->query($query)) == false)
+		return false;
+	else
+	{
+		$result = $result->fetch_assoc();
+		return $result['country_id'];
+	}
+}
+
+function GetTableIndices($tableName)
+{
+	$databaseConnection = GetDatabaseConnection();
+	$query = "SELECT indices FROM meta_stats WHERE table_name='$tableName';";
+	if (($result = $databaseConnection->query($query)) == false)
+		return false;
+	else
+	{
+		$result = $result->fetch_assoc();
+		return $result['indices'];
+	}
+}
+
+function GetTableDisplayName($tableName)
+{
+	$databaseConnection = GetDatabaseConnection();
+	$query = "SELECT display_name FROM meta_stats WHERE table_name='$tableName';";
+	if (($result = $databaseConnection->query($query)) == false)
+		return false;
+	else
+	{
+		$result = $result->fetch_assoc();
+		return $result['display_name'];
+	}
+}
+
+function CreateDisease($disease)
+{
+	$databaseConnection = GetDatabaseConnection();
+	$query = "INSERT INTO meta_diseases (disease) VALUES ('" . $disease . "')";
+	if ($databaseConnection->query($query) == false)
+		ThrowFatalError("Error creating disease entry.");
+}
+
+function AddData($tableName, $data, $tag)
+{
+	$databaseConnection = GetDatabaseConnection();
+	$index = GetTableIndices($tableName);
+	$statIndex = GetTableId($tableName);
+	foreach($data as $j => $row)
+	{
+		if ($j != 0)
+		{
+			$query = "INSERT INTO $tableName VALUES ('" . $index . "', " . GetCountryId($row[0]);
+			for ($i = 1; $i < count($row); $i++)
+				$query .= ", " . $row[$i];
+			$query .= ");";
+			if ($databaseConnection->query($query) == false)
+				ThrowFatalError("Error while inputting data in table $tableName");
+		}
+	}
+	$query = "UPDATE meta_stats SET indices=indices+1 WHERE table_id='$statIndex';";
+	if ($databaseConnection->query($query) == false)
+		ThrowFatalError("Error updating meta_stats indices.");
+	$query = "INSERT INTO meta_indices (stat_index, data_set_index, tag) VALUES ('$statIndex', '$index', '$tag');";
+	if ($databaseConnection->query($query) == false)
+		ThrowFatalError("Error updating meta_indices.");
+	return $index;
+}
+
+function SetIntegrated($display, $table1, $index1, $table2, $index2, $table3, $index3)
+{
+	$databaseConnection = GetDatabaseConnection();
+	$query = "INSERT INTO meta_int (display_name, stat1id, stat2id, stat3id, stat1index, stat2index, stat3index) VALUES ('$display', '" . GetTableId($table1) . "', '$index1', '" . GetTableId($table2) . "', '$index2', '" . GetTableId($table3) . "', '$index3');";
+	if ($databaseConnection->query($query) == false)
+		ThrowFatalError("Error updating meta_int.");
+}
 ?>
