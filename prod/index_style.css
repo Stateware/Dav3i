@@ -1,1 +1,516 @@
+/*
+ * Copyright 2015 Stateware Team: William Bittner, Joshua Crafts, 
+ * Nicholas Denaro, Dylan Fetch, Paul Jang, Arun Kumar, Drew Lopreiato,
+ * Kyle Nicholson, Emma Roudabush, Berty Ruan, Vanajam Soni
+ * 
+ * This file is part of Dav3i.
+ * 
+ * Dav3i is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Dav3i is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Dav3i.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
+/* 
+    File Name:               style.css
+    Description:             Style sheet for the loading screen and main page
+    Date Created:            2/19/2015
+    Contributors:            Emma Roudabush, Vanajam Soni, Joshua Crafts, Paul Jang, Nicholas Denaro, Kyle Nicholson
+    Date Last Modified:      4/23/2015
+    Last Modified By:        Kyle Nicholson
+    Dependencies:            none
+    Additional Notes:        N/A
+*/
+
+/* sets loading screen and main screen to full size of screen, with shared background color and position */
+.loading-screen, .main-screen {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: #efe;
+}
+
+/* sets loading screen to foreground */
+.loading-screen {
+    z-index: 5;
+    background-color: #efe;
+}
+
+/* sets control panel size and to foreground on main screen */
+.control-panel {
+    z-index: 3;
+    position: absolute;
+    width: 25%;
+    height: 88.5%;
+    background-color: #EAE7C2;
+    top: 2%;
+    left: 1.3%;
+    box-shadow: 1px 1px 5px #888888;
+}
+
+/* sets main screen to background */
+.main-screen {
+    z-index: 0;
+}
+
+/* sets open sans font styling and font for begin button */
+.open-sans, .begin {
+    font-family: 'Open Sans Condensed', sans-serif;
+    padding-top: 10px;
+}
+
+/* sets begin button styling */
+.begin {
+    background: none;
+    border: none;
+    margin: 75px 0 auto;
+    color: #583;
+    font-size: 30pt;
+    display: none;
+}
+
+/* sets styling for settings section */
+.settings {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    height: 20%;
+    width: 100%;
+    background-color: #EAE7C2;
+}
+
+/* sets styling for graph section */
+.graph {
+    display: inline-block;
+    position: absolute;
+    top: 20%;
+    left: 0;
+    z-index: 3;
+    height: 75%;
+    width: 100%;
+    background-color: #EAE7C2;
+    text-align: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+	border-bottom-style: solid;
+	border-bottom-color: #d2cfae;
+	border-bottom-width: 5px;
+}
+
+/* sets styling for tab graphs */
+#graphs {
+    border-top: 1px solid #bbb89b;
+}
+
+/* sets styling for the tabs for the graph section */
+.graph-tab {
+    display: inline-block;
+    font-family: 'Open Sans Condensed', sans-serif;
+    padding: 0.2% 2% 0.2% 2%;
+    border-radius: 2px 2px 0 0;
+    border: 1px solid #bbb89b;
+    box-shadow: 1px 1px 5px #888888;
+    font-size: 16px;
+    font-weight: normal;
+    text-align: center;
+    text-transform: uppercase;
+    background-color: #EAE7C2;
+    top: 4px;
+    cursor: default;
+    -webkit-transition: all 0.5s linear;
+       -moz-transition: all 0.5s linear;
+        -ms-transition: all 0.5s linear;
+         -o-transition: all 0.5s linear;
+            transition: all 0.5s linear;
+    pointer-events: all;
+}
+
+/*The tab that is used to scroll the other tabs to the left*/
+#scroll-left{
+    float: left;
+}
+
+/*The tab that is used to scroll the other tabs to the right*/
+#scroll-right{
+    position: absolute;
+    right: 0;
+    top: 0
+}
+
+/*Changes the background color of the currentlyed selected tab*/
+.selected-tab{
+    background-color: #FFF;
+}
+
+/* darkens the tabs as you hover over them*/
+.graph-tab:hover{
+    background-color: #d2cfae;
+}
+
+/* aligns the tabs to same line*/
+.tabWrapper{
+    overflow: hidden; 
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+/* allows for the showing of the tooltip*/
+.tab-tooltip{
+    padding: 7px 16px 2px 4px;
+    border-radius: 2px 2px 0 0;
+    border: 1px solid #bbb89b;
+    font-weight: normal;
+    text-align: center;
+    text-transform: uppercase;
+    background-color: #EAE7C2;
+    top: 0;
+    right: 0;
+    position: absolute;
+    z-index: 1;
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+    text-transform: uppercase;
+    background-color: #EAE7C2;
+}
+
+/* while hovering ver the ..., it shows the title*/
+.tab-tooltip:hover:after{
+    background: #333;
+    font-family: 'Open Sans Condensed', sans-serif;
+    background: rgba(0,0,0,.8);
+    border-radius: 5px;
+    color: #fff;
+    content: attr(tooltip);
+    right: 100%;
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    width: 220px;
+}
+
+/* while hovering ver the ..., it shows the title*/
+.settings-error:hover:after{
+    background: #333;
+    font-family: 'Open Sans Condensed', sans-serif;
+    background: rgba(0,0,0,.8);
+    border-radius: 5px;
+    color: #fff;
+    content: attr(tooltip);
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    width: 220px;
+}
+
+/* sets styling for subgraph section */
+.subgraph {
+    position: relative;
+    float: left;
+}
+
+/* sets stylings for expanding and shrinking section */
+.expand{
+    position: absolute;
+    top: 94.5%;
+    left: 0;
+    z-index: 3;
+    height: 5%;
+    width: 100%;
+    background-color: #EAE7C2;
+    text-align: right;
+}
+
+#expand {
+    height:100%;
+    padding: 0 5px 0 0;
+}
+
+/* sets styling for black mask for expanded state */
+.expand-black {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+    z-index: 1;
+    display: none;
+}
+
+/* sets styling for overlay settings menu */
+.settings-screen,
+.help-screen{
+    position: relative;
+    z-index: 5;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    height: 500px;
+    width: 500px;
+    background-color: #EAE7C2;
+    display: none;
+    text-align: center;
+    font-family: 'Open Sans Condensed', sans-serif;
+}
+
+.graph-choice {
+    position: absolute;
+    top: 15%;
+    left: 0;
+    width:50%;
+    height:30%;
+    font-size: 13pt; 
+}
+
+.vacc-choice {
+    position: absolute;
+    top: 45%;
+    left: 0;
+    width:100%;
+    height:30%;
+}
+
+.timespan {
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    width:50%;
+    height:30%;
+}
+
+.buttons {
+	position: relative;
+    top: 60%;
+    
+}
+
+
+.buttons
+
+#close-settings,
+#close-help {
+    position: relative;
+    top: 70%;
+}
+
+/*sets styling for timespan layout in settings*/
+.settings-timespans-table {
+    margin: 0px auto;
+}
+
+/* sets styling for timespan text in settings*/
+.settings-timespans-text {
+    text-align: right;
+}
+
+/* sets styling for timespan input tags in settings*/
+.settings-timespans-boxes {
+    text-align: left;
+}
+
+/* sets styling for black mask for settings overlay */
+.settings-black, .help-black {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+    z-index: 1;
+    display: none;
+}
+
+/* sets automatic size and placement for logo image */
+.logo {
+    height: 100%;
+    float: left;
+}
+
+/* sets up background div to create margin under control panel */
+.spacer {
+    height: 92.5%;
+    width: 27%;
+    float: left;
+}
+
+/* sets size for map */
+#map {
+    position: relative;
+    /*top: 1%;
+    right: 1%;
+    height:90.5%;
+    width: 72%;
+    float: right;*/
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* sets size for map-container */
+#map-container {
+    position: relative;
+    top: 1%;
+    right: 1%;
+    height:90.5%;
+    width: 72%;
+    float: right;
+    z-index: 1;
+}
+
+#clear {
+    position: absolute;
+    /*left: 28%;
+    top: 85%;*/
+    bottom: 1%;
+    left: 0;
+    z-index: 2;
+}
+
+/* sets font for graph, settings, and expand sections */
+.settings, .graph, .expand{
+    font-size: 10pt;
+    color: #000;
+}
+
+/* sets styling for footer  section*/
+.footer {
+    height:7.5%;
+    width:100%;
+    text-align:center;
+    overflow:hidden;
+    background-color: #001f3f;
+    color: #7FDBFF;
+    font-family: 'Open Sans Condensed', sans-serif;
+}
+
+.footer-text {
+    position: absolute;
+    width: 80%;
+    left: 10%;
+    top: 93%;
+    z-index: 3;
+}
+
+.bug-report {
+    position: absolute;
+    width: 10%;
+    left: 90%;
+    top: 93%;
+    z-index: 3;
+}
+
+/* sets link styling in footer */
+.footer a {
+    color: #7FDBFF;
+    text-decoration: none;
+}
+
+/* Button Stylization */
+.flat-button {
+  border: 0 none;
+  border-radius: 2px 2px 2px 2px;
+  color: #7FDBFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 100%;
+  line-height: 20px;
+  margin-bottom: 0;
+  margin-top: 10px;
+  padding: 7px 10px;
+  text-transform: none;
+  transition: all 0.3s ease 0s;
+  -moz-transition: all 0.3s ease 0s;
+  -webkit-transition: all 0.3s ease 0s;
+  width: auto;
+  background: none repeat scroll 0 0 #001f3f;
+}
+
+.flat-button:hover {
+    background: none repeat scroll 0 0 #000b17;
+    color: #7FDBFF;
+}
+
+/* sets styling for loading animation container */
+.spinner {
+    margin: 100px 0 auto;
+    width: 100px;
+    text-align: center;
+}
+
+/* sets styling for loading animation bubbles */
+.spinner > div {
+    width: 18px;
+    height: 18px;
+    background-color: rgb(84, 130, 53);
+    border-radius: 100%;
+    display: inline-block;
+    -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+    animation: bouncedelay 1.4s infinite ease-in-out;
+    /* Prevent first frame from flickering when animation starts */
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+.spinner .bounce1 {
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+}
+.spinner .bounce2 {
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
+}
+@-webkit-keyframes bouncedelay {
+    0%, 80%, 100% {
+        -webkit-transform: scale(0.0)
+    }
+    40% {
+        -webkit-transform: scale(1.0)
+    }
+}
+@keyframes bouncedelay {
+    0%, 80%, 100% {
+        transform: scale(0.0);
+        -webkit-transform: scale(0.0);
+    }
+    40% {
+        transform: scale(1.0);
+        -webkit-transform: scale(1.0);
+    }
+}
+
+/* Scroll Bar Style */
+::-webkit-scrollbar {
+      width: 15px;
+} /* this targets the default scrollbar (compulsory) */
+
+::-webkit-scrollbar-track {
+      background-color: #EAE7C2;
+} /* the new scrollbar will have a flat appearance with the set background color */
+ 
+::-webkit-scrollbar-thumb {
+      background-color: #d2cfae;
+} /* this will style the thumb, ignoring the track */
+ 
+::-webkit-scrollbar-button {
+      background-color: #EAE7C2;
+} /* optionally, you can style the top and the bottom buttons (left and right for horizontal bars) */
+ 
+::-webkit-scrollbar-corner {
+      background-color: #EAE7C2;
+} /* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */
