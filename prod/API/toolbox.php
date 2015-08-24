@@ -77,6 +77,8 @@ function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = fal
 // ===================== Variable Declaration =====================
 // These are global variables that describe our default values for data of the given types
 define("DEFAULT_NUMBER", -1);
+define("START_YEAR", 1980);
+define("TABLE_NAME_SIZE", 32);
 define("DEFAULT_STRING", "");
 /*      EFFECTS OF TESTING == TRUE:
  * The ThrowFatalError doesn't kill the page
