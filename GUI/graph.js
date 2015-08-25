@@ -46,48 +46,31 @@ function GenerateGraphs()
 
 	if(g_DataList !== undefined && g_DataList.size !== 0)
 	{
-    	    curr=g_DataList.start;    
-	    if (g_StatList[g_StatID].indexOf("VACC") > -1)
+            cur = g_DataList.start;
+	    switch(g_GraphType)
 	    {
-	        if (g_GraphType !== 2)
-	        {
+	        case 0:    
+                    max = FindMax();
 	            for(i=1; i<=g_DataList.size; i++)
 	            {
-	                GraphVaccine("region-graphs-"+i, curr);
-	                curr=curr.next;
+	                if(GraphRegional("region-graphs-"+i, cur, max) === -1)
+                        {
+                            element = document.getElementById("region-graphs-"+i);
+                            element.parentNode.removeChild(element);
+                        }
+	                cur=cur.next;
 	            }
-	        }
-	        else
-	        {
+	            break;
+	        case 1:
+	            GraphCombined("region-graphs-"+1);
+	            break;
+	        case 2:
 	            sumNode = GenerateSumNode();
-	            GraphVaccine("region-graphs-"+1,sumNode);
-	        }
+                    console.log(sumNode);
+	            GraphRegional("region-graphs-"+1, sumNode);
+	            break;
 	    }
-	    else
-	    {
-	        switch(g_GraphType)
-	        {
-	            case 0:    
-                        max = FindMax();
-	                for(i=1; i<=g_DataList.size; i++)
-	                {
-	                    if(GraphRegional("region-graphs-"+i, curr, max) === -1)
-                            {
-                                element = document.getElementById("region-graphs-"+i);
-                                element.parentNode.removeChild(element);
-                            }
-	                    curr=curr.next;
-	                }
-	                break;
-	            case 1:
-	                GraphCombined("region-graphs-"+1);
-	                break;
-	            case 2:
-	                sumNode = GenerateSumNode();
-	                GraphRegional("region-graphs-"+1, sumNode);
-	                break;
-	        }
-	    }
+
 	}
 }
 
@@ -189,29 +172,37 @@ function GraphCombined(divID) {
 //      a sum of countries, GenerateVaccineData function is defined
 // POST: generates a single Google ComboChart for the given node's vaccination data on the divID 
 //       SIA data is shown in bars, whereas MCV1 and MCV2 data is shown in lines.
-function GraphVaccine(divID, node) {
-    var data = GenerateVaccineData(node.data),
+function GraphIntegrated(divID, node) {
+    var data = GenerateIntegratedData(node),
+        dataSeries,
         options = {
-        title: node.name,
-        vAxis: {
-            viewWindowMode:'explicit',
-            viewWindow: {
-                min: 0,
-                max: 1
+            title: node.name,
+            vAxis: {
+                viewWindowMode:'explicit',
+                viewWindow: {
+                    min: 0,
+                    max: 1
+                },
+                format: '###%'
             },
-            format: '###%'
+            hAxis: {title: 'Year', format: '####'},
+            backgroundColor: '#EAE7C2',
+            seriesType: "bars",
+            tooltip: {trigger: 'both'}
         },
-        hAxis: {title: 'Year', format: '####'},
-        backgroundColor: '#EAE7C2',
-        seriesType: "bars",
-        series: {
-            0: {type: "line"}, 1: {type: "line"}
-        },
-        tooltip: {trigger: 'both'}
-    },
-    formatter,
-    chart,
-    i;
+        formatter,
+        chart,
+        i;
+
+    for (i in g_Stats[g_StatId]['subType'])
+    {
+        if (g_Stats[g_StatId]['subType'][i] == 'lin')
+        {
+             dataSeries[i]['type'] = 'line'; 
+        }
+    }
+
+    options['series'] = dataSeries;
 	
     formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
     for(i=1; i<data.getNumberOfColumns(); i++)
@@ -252,7 +243,77 @@ function FixMissingData(data)
 //       so that we can graph
 function GenerateSingleData(data)
 {
-    // type = 0 => unbounded or only has 1 bound
+    var dataTable = new google.visualization.DataTable(),
+        cur,
+        i, j;
+
+    cur = g_DataList.start;
+    // MUST clone initial object or you will modify country's data when summing
+    data = jQuery.extend(true, {}, g_Data[cur.cc2][g_StatId]['data']);
+    name += cur.name;
+    cur = cur.next;
+    for (i = 1; i < g_DataList.size; i++)
+    {
+        name += ", " + cur.name;
+        if (g_Stats[g_StatId]['type'] === 'est')
+        {
+            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
+            {
+		data[g_SelectedIndex]['values'][0]['y_' + j] = Number(data[g_SelectedIndex]['values'][0]['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['y_' + j]) != -1)
+                {
+                    data[g_SelectedIndex]['values'][0]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['y_' + j]);
+                }
+		data[g_SelectedIndex]['values'][1]['y_' + j] = Number(data[g_SelectedIndex]['values'][1]['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['y_' + j]) != -1)
+                {
+                    data[g_SelectedIndex]['values'][1]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['y_' + j]);
+                }
+		data[g_SelectedIndex]['values'][2]['y_' + j] = Number(data[g_SelectedIndex]['values'][2]['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]) != -1)
+                {
+                    data[g_SelectedIndex]['values'][2]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]);
+                }
+            }
+        }
+        else if (g_Stats[g_StatId]['type'] === 'int')
+        {
+            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
+            {
+		data[g_SelectedIndex]['values'][0]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][0]['values']['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['values']['y_' + j]) != -1)
+                {
+                    data[g_SelectedIndex]['values'][0]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['values']['y_' + j]);
+                }
+		data[g_SelectedIndex]['values'][1]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][1]['values']['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['values']['y_' + j]) != -1)
+                {
+                    data[g_SelectedIndex]['values'][1]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['values']['y_' + j]);
+                }
+                if (data[g_SelectedIndex].length === 3)
+                {
+		    data[g_SelectedIndex]['values'][2]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][2]['values']['y_' + j]);
+                    if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]) != -1)
+                    {
+                        data[g_SelectedIndex]['values'][2]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['values']['y_' + j]);
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
+            {
+		data[g_SelectedIndex]['values']['y_' + j] = Number(data[g_SelectedIndex]['values']['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values']['y_' + j]) != -1)
+                {
+                    data[g_SelectedIndex]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values']['y_' + j]);
+                }
+            }
+        }
+        cur = cur.next;
+    }
+/*    // type = 0 => unbounded or only has 1 bound
     // type = 1 => both bounds exist
     var type = 0,
         dataAvailable = 0,
@@ -336,7 +397,7 @@ function GenerateSingleData(data)
     else
     {
         return null;
-    }
+    }*/
 }
 
 
@@ -350,7 +411,7 @@ function GenerateSingleData(data)
 //       g_DataList, so that we can graph all data on one graph
 function GenerateCombinedData()
 {
-    // create array with indices for all years plus a header row
+/*    // create array with indices for all years plus a header row
     var currentNode,
         i, j,
         dataTable = new google.visualization.DataTable(),
@@ -387,7 +448,7 @@ function GenerateCombinedData()
         }
         dataTable.addRow(row);
     }
-    return dataTable;
+    return dataTable;*/
 }
 
 // Author: Vanajam Soni
@@ -399,110 +460,81 @@ function GenerateCombinedData()
 // POST: FCTVAL == t_AsdsNode with cid = -1, cc2 = "SUM", 
 //       name = comma separated names of all countries in g_DataList,
 //       data = sum of all data of the countries in g_DataList
-function GenerateSumNode(){
-    
-    var data = new Array(g_StatList.length),
-        names = "",
-        i,j,
-        currentNode = g_DataList.start,
-        ass1ID = -1,
-        ass2ID = -1,
-        newNode;
+function GenerateSumNode()
+{
+    var data,
+        cur,
+        i, j,
+        name = "";
 
-    // get the associated stats from parsed stat list
-    for(i=0;i<g_ParsedStatList[1].length;i++)
+    cur = g_DataList.start;
+    // MUST clone initial object or you will modify country's data when summing
+    data = jQuery.extend(true, {}, g_Data[cur.cc2][g_StatId]['data']);
+    name += cur.name;
+    cur = cur.next;
+    for (i = 1; i < g_DataList.size; i++)
     {
-        if(g_StatID === g_ParsedStatList[1][i])
+        name += ", " + cur.name;
+        if (g_Stats[g_StatId]['type'] === 'est')
         {
-            ass1ID = g_ParsedStatList[2][i];
-            ass2ID = g_ParsedStatList[3][i];   
-        }
-    }
-    // create arrays for necessary data 
-    data[g_StatID] = new Array(g_YearEnd-g_FirstYear+1);
-    if (ass1ID > -1)
-    {
-        data[ass1ID] = new Array(g_YearEnd-g_FirstYear+1);
-    }
-    if (ass2ID > -1)
-    {
-        data[ass2ID] = new Array(g_YearEnd-g_FirstYear+1);
-    }
-
-    // initialize arrays to 0
-    for (j = 0; j < g_YearEnd-g_FirstYear+1; j++)
-    {
-        data[g_StatID][j] = -1;
-        if (ass1ID > -1)
-        {
-            data[ass1ID][j] = -1;
-        }
-        if (ass2ID > -1)
-        {
-            data[ass2ID][j] = -1;
-        }
-    }
-
-    // add and store data for whole list
-    for (i = 0; i < g_DataList.size; i++)
-    {
-        for (j = g_YearStart-g_FirstYear; j < g_YearEnd-g_FirstYear+1; j++)
-        {
-            if (Number(currentNode.data[g_StatID][j]) > 0)
+            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
             {
-                if (data[g_StatID][j] === -1 && Number(currentNode.data[g_StatID][j]) !== -1)
+		data[g_SelectedIndex]['values'][0]['y_' + j] = Number(data[g_SelectedIndex]['values'][0]['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['y_' + j]) != -1)
                 {
-                    data[g_StatID][j] = Number(currentNode.data[g_StatID][j]);
+                    data[g_SelectedIndex]['values'][0]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['y_' + j]);
                 }
-                else if (Number(currentNode.data[g_StatID][j]) !== -1)
+		data[g_SelectedIndex]['values'][1]['y_' + j] = Number(data[g_SelectedIndex]['values'][1]['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['y_' + j]) != -1)
                 {
-                    data[g_StatID][j] += Number(currentNode.data[g_StatID][j]);
+                    data[g_SelectedIndex]['values'][1]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['y_' + j]);
                 }
-            }
-            if (ass1ID > -1 && Number(currentNode.data[ass1ID][j]) > 0)
-            {
-                if (data[ass1ID][j] === -1 && Number(currentNode.data[ass1ID][j]) !== -1)
+		data[g_SelectedIndex]['values'][2]['y_' + j] = Number(data[g_SelectedIndex]['values'][2]['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]) != -1)
                 {
-                    data[ass1ID][j] = Number(currentNode.data[ass1ID][j]);
-                }
-                else if (Number(currentNode.data[ass1ID][j]) !== -1)
-                {
-                    data[ass1ID][j] += Number(currentNode.data[ass1ID][j]);
-                }
-            }
-            if (ass2ID > -1 && Number(currentNode.data[ass2ID][j]) > 0)
-            {
-                if (data[ass2ID][j] === -1 && Number(currentNode.data[ass2ID][j]) !== -1)
-                {
-                    data[ass2ID][j] = Number(currentNode.data[ass2ID][j]);
-                }
-                else if (Number(currentNode.data[ass2ID][j]) !== -1)
-                {
-                    data[ass2ID][j] += Number(currentNode.data[ass2ID][j]);
+                    data[g_SelectedIndex]['values'][2]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]);
                 }
             }
         }
-        names += currentNode.name; // add name of current node to list of names
-        if (currentNode !== g_DataList.end)
+        else if (g_Stats[g_StatId]['type'] === 'int')
         {
-            names += "; ";
+            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
+            {
+		data[g_SelectedIndex]['values'][0]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][0]['values']['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['values']['y_' + j]) != -1)
+                {
+                    data[g_SelectedIndex]['values'][0]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['values']['y_' + j]);
+                }
+		data[g_SelectedIndex]['values'][1]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][1]['values']['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['values']['y_' + j]) != -1)
+                {
+                    data[g_SelectedIndex]['values'][1]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['values']['y_' + j]);
+                }
+                if (data[g_SelectedIndex].length === 3)
+                {
+		    data[g_SelectedIndex]['values'][2]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][2]['values']['y_' + j]);
+                    if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]) != -1)
+                    {
+                        data[g_SelectedIndex]['values'][2]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['values']['y_' + j]);
+                    }
+                }
+            }
         }
-        currentNode = currentNode.next;
-    }
-    // divide by size of list to maintain percentages if vaccines
-    if (g_StatList[g_StatID].indexOf("VACC") > -1)
-    {
-        for (j = g_YearStart-g_FirstYear; j < g_YearEnd-g_FirstYear+1; j++)
+        else
         {
-            data[g_StatID][j] = data[g_StatID][j] / g_DataList.size;
-            data[ass1ID][j] = data[ass1ID][j] / g_DataList.size;
-            data[ass2ID][j] = data[ass2ID][j] / g_DataList.size;
+            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
+            {
+		data[g_SelectedIndex]['values']['y_' + j] = Number(data[g_SelectedIndex]['values']['y_' + j]);
+                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values']['y_' + j]) != -1)
+                {
+                    data[g_SelectedIndex]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values']['y_' + j]);
+                }
+            }
         }
+        cur = cur.next;
     }
-    
-    newNode = new t_AsdsNode(-1, "SUM", names, data);
 
-    return newNode;
+    return new t_AsdsNode('sum', name, data);
 }
 
 
@@ -515,7 +547,7 @@ function GenerateSumNode(){
 //      g_ParsedStatList exists
 // POST: FCTVAL == data table containing vaccination data from the year g_YearStart to g_YearEnd, in the right format
 //       so that we can graph it. 
-function GenerateVaccineData(data)
+function GenerateIntegratedData(data)
 {
     var dataTable = new google.visualization.DataTable(),
         mcv1ID,

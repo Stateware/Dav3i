@@ -41,29 +41,36 @@ function BuildTabs()
         temp,
         div;
 
-    for(i=0;i<g_ParsedStatList[1].length;i++)
+    for(i in g_Stats)
     {
-        temp=g_StatList[g_ParsedStatList[1][i]];
+        temp=g_Stats[i]['name'];
         div=document.createElement("DIV");
-        div.id="id-"+temp;
-        div.setAttribute("stat",""+g_ParsedStatList[1][i]);
+        div.id="id-"+i;
+        div.setAttribute("stat",i);
         div.className="graph-tab";
         div.setAttribute("onclick","ChooseTab(this)");
         div.innerHTML=temp;
-        if (temp.indexOf("VACC") > -1)
-	{
-            div.innerHTML="Vaccinations";
-	}
         document.getElementById("tabsDiv").appendChild(div);
 
-        BuildDiv(temp);
+        BuildDiv(i);
 
-        if(g_ParsedStatList[1][i]===g_StatID)
+        if(i === g_StatId)
         {
-            document.getElementById("id-"+temp+"-graphs").style.display="block";
+            document.getElementById("id-"+i+"-graphs").style.display="block";
             div.className="graph-tab selected-tab";
         }
     }
+
+    temp='Custom';
+    div=document.createElement("DIV");
+    div.id="id-custom";
+    div.setAttribute("stat",'custom');
+    div.className="graph-tab";
+    div.setAttribute("onclick","ChooseTab(this)");
+    div.innerHTML=temp;
+    document.getElementById("tabsDiv").appendChild(div);
+
+    BuildDiv('custom');
 }
 
 // Author: Nicholas Denaro
@@ -102,10 +109,10 @@ function UpdateInputs()
 // Description: build divs where the graphs go in index.html
 // PRE: Called from BuildTabs
 // POST: appropriate divs are created
-function BuildDiv(stat)
+function BuildDiv(statId)
 {
     var div=document.createElement("DIV");
-    div.id="id-"+stat+"-graphs";
+    div.id="id-"+statId+"-graphs";
     div.style.display="none";
     div.style.top="8%";
     div.style.height="87%";
@@ -124,17 +131,21 @@ function ChooseTab(element)
     var parentTabDivName,
         prevTab;
 
+    g_SelectedIndex = 0;
     // remove divs in previous tab
-    parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+    parentTabDivName = "id-"+g_StatId+"-graphs";
     document.getElementById(parentTabDivName).innerHTML = "";
-    prevTab=document.getElementById("id-"+g_StatList[g_StatID]);
+    prevTab=document.getElementById("id-"+g_StatId);
     // sets class names of tabs
     prevTab.className="graph-tab";
     element.className="graph-tab selected-tab";
-    document.getElementById("id-"+g_StatList[g_StatID]+"-graphs").style.display="none";
+    document.getElementById("id-"+g_StatId+"-graphs").style.display="none";
     document.getElementById(element.id+"-graphs").style.display="block";
-    g_StatID=Number(element.getAttribute("stat"));
-    ColorByHMS();
+    g_StatId=element.getAttribute("stat");
+    if (g_StatId !== 'custom')
+    {
+        ColorByHMS();
+    }
 
     GenerateSubDivs();
     GenerateGraphs();
@@ -285,7 +296,7 @@ function Shrink()
     setTimeout(function()
     {
         g_Expanded = false;
-        while(document.getElementById("tabsDiv").childNodes[0]!==document.getElementById("id-"+g_StatList[g_StatID]))
+        while(document.getElementById("tabsDiv").childNodes[0]!==document.getElementById("id-"+g_Stats[g_StatId]['name']))
         {
             RotateTabs(-1);
         }
@@ -315,12 +326,12 @@ function GenerateSubDivs()
     if(g_DataList !== undefined)
     {
         size = g_DataList.size;
-        parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+        parentTabDivName = "id-"+g_StatId+"-graphs";
         currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
         children = document.getElementById(parentTabDivName).childNodes;
         newNumDivs = size - currentNumDivs;
         // if we only need one graph for either combined lines or summation of lines
-        if(g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1 || g_GraphType === 2)
+        if(g_GraphType === 1 && g_Stats[g_StatId]['type'] !== 'int' || g_GraphType === 2)
         {
             document.getElementById(parentTabDivName).innerHTML = "";
             if(size !== 0)
@@ -393,7 +404,7 @@ function CreateSubDiv(id,parent)
     document.getElementById(elem.id).style.height = "50%";
 
     if(g_GraphType !== 1 && g_GraphType !== 2 && g_Expanded || 
-        g_StatList[g_StatID].indexOf("VACC") !== -1 && g_GraphType !== 2 && g_Expanded)
+        g_Stats[g_StatId]['type'] === 'int' && g_GraphType !== 2 && g_Expanded)
     {
         $(elem).click(function() {
             if(document.getElementById(id).style.width !== "100%")

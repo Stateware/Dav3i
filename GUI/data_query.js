@@ -36,7 +36,7 @@
 // Description:     Parses the object that is passed in and returns data array.
 // PRE: json is valid JSON with data for only one country, assumed to be in the proper format
 // POST: FCTVAL == a 2d array containing stat, year in the form [stat][year]
-function ParseData(json)
+function ParseDescriptor(json)
 {
     var data = []; // Creates the array for the data to be returned
     data = json[Object.keys(json)[0]];// Since there will only be one country in each json,
@@ -85,14 +85,12 @@ function BuildList(selectedRegions)
     g_DataList.clear();						// clear list
 
     for(var i = 0; i < selectedRegions.length; i++)			// iterate through list of selected countries
-    {
-        index = Hash(selectedRegions[i]);			// index into hash table using CC2
-        if (g_LookupTable[index] !== undefined)			// if data exists for country, create node
-        {							//  and prepend it to list
-            node = new t_AsdsNode(g_LookupTable[index][0],
-                                  g_LookupTable[index][1],
-                                  g_LookupTable[index][2],
-                                  g_LookupTable[index][3]);
+    {									//  and prepend it to list
+        if (g_Data[selectedRegions[i]] !== undefined && g_Data[selectedRegions[i]][g_StatId] !== undefined)
+        {
+            node = new t_AsdsNode(selectedRegions[i],
+                                  g_Countries[selectedRegions[i]],
+                                  g_Data[selectedRegions[i]]);
             g_DataList.add(node);
         }
     }

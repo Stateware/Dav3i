@@ -45,9 +45,9 @@ function SetGraphType(type)
 // Description: To set g_VaccHMS
 // PRE: new is a number between 0-2
 // POST: g_VaccHMS is set to the appropriate stat, and the map is recolored/revalued accordingly
-function SetVaccHMS(newVaccHMS)
+function SetIntHms(newIntHms)
 {
-    g_VaccHMS = newVaccHMS;
+    g_IntHms = newIntHms;
 }
 
 // Author: Kyle Nicholson
@@ -126,22 +126,22 @@ function ResetAllStatValues()
     switch (g_TempSettings[4])
     {
     	case 0:
-    		document.getElementById("vacc-sia").checked = true;
+    		document.getElementById("int0").checked = true;
     		break;
     	case 1:
-    		document.getElementById("vacc-mcv1").checked = true;
+    		document.getElementById("int1").checked = true;
     		break;
     	case 2:
-    		document.getElementById("vacc-mcv2").checked = true;
+    		document.getElementById("int2").checked = true;
     		break;
     }
     
     // set the global settings stats
     g_YearStart = g_TempSettings[0];
     g_YearEnd = g_TempSettings[1];
-    g_HMSYear = g_TempSettings[2];
+    g_HmsYear = g_TempSettings[2];
     g_GraphType = g_TempSettings[3]; 
-    g_VaccHMS = g_TempSettings[4];	
+    g_IntHMS = g_TempSettings[4];	
 }
 
 // Author: Kyle Nicholson
@@ -160,7 +160,7 @@ function SaveCurrentStatValues()
     g_TempSettings[1] = endDiv.value;
     g_TempSettings[2] = heatmapYearDiv.value;
     g_TempSettings[3] = g_GraphType;
-    g_TempSettings[4] = g_VaccHMS;	
+    g_TempSettings[4] = g_IntHms;	
 }
 
 // Author: Nicholas Denaro
@@ -250,7 +250,7 @@ function ApplySettings()
     	// set settings
         g_YearStart=startDiv.value;
         g_YearEnd=endDiv.value;
-        g_HMSYear=heatmapYearDiv.value;
+        g_HmsYear=heatmapYearDiv.value;
 
         GenerateSubDivs();
         GenerateGraphs();

@@ -32,35 +32,32 @@
 var g_BUCKETS = 676;				// number of hashable buckets in the lookup table
 
 // global variables
-var g_LookupTable;      			// CID, CC2, name, and HMS lookup table
-var g_NumCountries;				// number of countries for which data exists
-var g_StatList;         			// stat reference list, indexed by stat ID
+var g_Data;      				// CID, CC2, name, and HMS lookup table
+var g_Countries;				// number of countries for which data exists
+var g_Stats;      	   			// stat reference list, indexed by stat ID
+var g_SelectedIndex = 0;
+var g_Diseases;
 var g_FirstYear;        			// first year for which data is available
 var g_LastYear;         			// last year for which data is available
 var g_YearStart;        			// first year for which user wants data
 var g_YearEnd;          			// last year for which user wants data
 var g_DataList;         			// data list for use in graphing
-var g_StatID;           			// stat ID corresponding to selected HMS.
-var g_HMSYear;          			// year for which HMS data is wanted
-var g_ParsedStatList;   			// parsed stat reference list
+var g_StatId;           			// stat ID corresponding to selected HMS.
+var g_HmsYear;          			// year for which HMS data is wanted
 var g_GraphType = 0;        			// represents the graph type, enumerated 0 to 2
 var g_Clear = false;				// used by the clear selection function to avoid rebuilding data list on each deselect
 var g_Expanded = false; 			// used to determine whether or not the graph section is expanded
-var g_VaccHMS = 1;				// used to determine which vaccination stat to use when heat mapping
-var g_TempSettings = new Array(5);  		// indicies are "first year, last year, Heat map year, graph type, vacc heat map"
-var g_DataReady = false;			// true when all lookup table data is loaded
-var g_HMSReady = false;				// true when init heat map data is loaded
-var g_DataLoaded = 0;				// number of countries for which data is loaded
-var ColorByHMS;					// function for recoloring map
+var g_IntHms = 0;				// used to determine which vaccination stat to use when heat mapping
+var g_TempSettings = new Array(5);  		// indicies are "first year, last year, heat map year, graph type, int heat map"
+var g_Map;					// number of countries for which data is loaded
 
 // prototype (constructor) for ASDS node
-function t_AsdsNode(cid, cc2, name, data)
+function t_AsdsNode(cc2, name, data)
 // PRE:  0 <= cid <= g_NumCountries, cc2 is a 2 alpha character code corresponding to the country whose country id is cid,
 //       name is the name of that country, and data is a 2D array of length (g_LastYear-g_FirstYear)+1, and depth g_StatList.length,
 //       which contains the data points from g_FirstYear to g_LastYear for all stats (enumerated 0 to g_StatList.length-1)
 // POST: FCTVAL == new ASDS node with the specified values for its data members, whose next pointer points to null
 {
-    this.cid = cid;
     this.cc2 = cc2;
     this.name = name;
     this.data = data;

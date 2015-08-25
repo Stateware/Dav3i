@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <meta charset="UTF-8">
 
@@ -67,7 +66,6 @@
 <script type="text/javascript" src="GUI/dynamic_markup.js"></script>
 <!-- end internal libraries -->
 <!-- begin page-specific scripts -->
-<script type="text/javascript" src="GUI/loading_script.js"></script>
 <script type="text/javascript" src="GUI/map.js"></script>
 <!-- end page-specific scripts -->
 <!-- begin inline scripts -->
@@ -117,11 +115,11 @@
             </table>
         </div>
         <div class="vacc-choice">
-            <h3>Statistic for Vaccinations Heat Map</h3>
+            <h3>Statistic Heat Mapped When Integrated Stat Selected</h3>
             <form action="">
-                <input id="vacc-sia" type="radio" onclick="SetVaccHMS(0)" name="graphType" value="0">SIA</input>
-                <input id="vacc-mcv1" type="radio" onclick="SetVaccHMS(1)" name="graphType" value="1">MCV1</input>
-                <input id="vacc-mcv2" type="radio" onclick="SetVaccHMS(2)" name="graphType" value="2">MCV2</input>    
+                <input id="int0" type="radio" onclick="SetIntHms(0)" name="graphType" value="0">Stat 1</input>
+                <input id="int1" type="radio" onclick="SetIntHms(1)" name="graphType" value="1">Stat 2</input>
+                <input id="int2" type="radio" onclick="SetIntHms(2)" name="graphType" value="2">Stat 3</input>    
             </form>
         </div>
         <div class="buttons">

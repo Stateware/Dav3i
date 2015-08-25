@@ -28,6 +28,91 @@
 // Dependencies:        descriptor.php, by_stat.php, data.js
 // Additional Notes:    N/A
 
+ColorByHMS = function(){
+// PRE:  g_LookupTable is initialized
+// POST: map is recolored in terms of the currently selected stat (based on g_VaccHMS if
+//       stat is vaccinations), where tint of a country is based on the magnitude of its
+//       selected stat value 
+    var data = {},				// object indexed by CC2 to attach data to
+						//  vector objects
+	data_set,
+	temp,
+        tempValue,
+        min,					// minimum data value from HMS data
+        max,					// maximum data value from HMS data
+        i, j;					// indexing variable
+
+    min = Number.MAX_VALUE;
+    max = Number.MIN_VALUE;
+
+    for (i in g_Map.regions) {
+        if (g_Data[i] !== undefined)
+        {							//  min/max
+            temp = g_Data[i][g_StatId]['data'];
+            for (j in temp)
+            {
+                if (temp[j]['index'] === g_SelectedIndex)
+		{
+			data_set = temp[j]['values'];
+		}
+            }
+            if (g_Data[i][g_StatId]['type'] === 'lin' || g_Data[i][g_StatId]['type'] === 'bar')
+            {
+                if (data_set['y_' + g_HmsYear] !== '-1')
+                {
+                    tempValue = data_set['y_' + g_HmsYear];
+                    if (tempValue != undefined)
+                    {
+                        data[i] = tempValue;
+                    }
+                }
+            }
+            else if (g_Data[i][g_StatId]['type'] === 'est')
+            {
+                if (data_set[1]['y_' + g_HmsYear] !== '-1')
+                {
+                    tempValue = data_set[1]['y_' + g_HmsYear];
+                    if (tempValue != undefined)
+                    {
+                        data[i] = tempValue;
+                    }
+                }
+            }
+            else // temp.type === 'int'
+            {
+                if (data_set[g_IntHms]['values']['y_' + g_HmsYear] !== '-1')
+                {
+                    tempValue = data_set[g_IntHms]['values']['y_' + g_HmsYear];
+                    if (tempValue != undefined)
+                    {
+                        data[i] = tempValue;
+                    }
+                }
+            }
+            if (data[i] !== undefined)
+            {
+                if (Number(data[i]) < min)
+                {
+                    min = data[i];
+                }
+                if (Number(data[i]) > max)
+                {
+                    max = data[i];
+                }
+            }
+        }
+    }
+
+    // set data series
+    g_Map.series.regions[0].params.min = min;
+    g_Map.series.regions[0].params.max = max;
+    g_Map.reset();
+    if (Object.keys(data).length > 0)
+    {
+        g_Map.series.regions[0].setValues(data);
+    }
+}
+
 // Author: Emma Roudabush, Joshua Crafts
 // Date Created: 3/5/2015
 // Last Modified: 4/16/2015 by Nicholas Denaro
@@ -37,23 +122,27 @@
 // PRE: DescriptorJSON, g_StatList, and g_LookupTable exist,
 //      GenerateLookupTable and GenerateStatReferenceList function correctly
 // POST: DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
-function ParseDescriptor()
+function ParseData()
 {
-    var DescriptorJSON;			// text returned from descriptor.php call
+    var DataJSON,
+	key;			// text returned from descriptor.php call
 
-    $.when(GetDescriptor()).done(function(DescriptorJSON){
-        SetInitalYears(DescriptorJSON);			// set year range
-        GenerateLookupTable(DescriptorJSON);		// initialize lookup table
-        SetTableData();					// get region data from server
-        GenerateStatReferenceList(DescriptorJSON);	// set stat list
-        ParseStatList();				// create parsed stat list
-        g_StatID = 1;					// set init stat id
-        g_HMSYear = g_LastYear;				// set init HMS year to end of data
+    $.when(GetData()).done(function(DataJSON){
+        SetInitalYears(DataJSON);			// set year range
+        g_Data = DataJSON.country_data;			// get region data from server
+	g_Stats = DataJSON.stats;
+	g_Countries = DataJSON.countries;
+	g_Diseases = DataJSON.diseases;
+	for (key in g_Stats)				// not sure if there's an easier way to set to one of the stat indices
+	{
+		g_StatId = key;
+		break;
+	}
+        g_HmsYear = g_LastYear;				// set init HMS year to end of data
         ColorByHMS();					// color map
-        // console.log(g_LookupTable);
-        // console.log(g_StatList);
         BuildTabs();					// build tab menu
         UpdateInputs();					// set init values for settings inputs
+	SwitchToMain();
     });
 }
 
@@ -77,10 +166,10 @@ function Hash(cc2)
 // Description: Retrieves descriptor.php from the server                
 // PRE: descriptor.php exists on the server.
 // POST: returns the contents of descriptor.php
-function GetDescriptor()
+function GetData()
 {
     return $.ajax({                                      
-        url: "API/descriptor.php",
+        url: "API/get_data.php",
         dataType: "JSON",
         error: function() {
             console.log("Error receiving descriptor.php");
@@ -99,12 +188,12 @@ function GetDescriptor()
 //		g_FirstYear, g_YearStart, g_LastYear and g_YearEnd exist
 // POST: g_FirstYear and g_YearStart have the correct beginning year of statistics.
 // 		 g_LastYear and g_YearEnd have the correct ending year of statistics. 
-function SetInitalYears(DescriptorJSON)
+function SetInitalYears(DataJSON)
 {
-	g_FirstYear = Number(DescriptorJSON.yearRange[0]);
-	g_YearStart = Number(DescriptorJSON.yearRange[0]);
-	g_LastYear = Number(DescriptorJSON.yearRange[1]);
-	g_YearEnd = Number(DescriptorJSON.yearRange[1]);
+	g_FirstYear = Number(DataJSON.firstYear);
+	g_YearStart = Number(DataJSON.firstYear);
+	g_LastYear = Number(DataJSON.lastYear);
+	g_YearEnd = Number(DataJSON.lastYear);
 }
 
 // Author: Emma Roudabush
