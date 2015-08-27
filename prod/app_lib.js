@@ -1,4 +1,4 @@
-/*! Dav3i - v0.1.0 - 2015-08-25
+/*! Dav3i - v0.1.0 - 2015-08-27
 * https://github.com/Stateware/Dav3i
 * Copyright (c) 2015 Stateware Team;
  Licensed GPL v3 (https://github.com/Stateware/Dav3i/blob/master/LICENSE) */
@@ -11,42 +11,6 @@
 // Last Modified By:        Vanajam Soni
 // Dependencies:            lookup_table.js, byCountry.php, parser.js
 // Additional Notes:        N/A
-
-
-// Author:          Nicholas Denaro
-// Date Created:    2/12/15
-// Last Modified:   3/19/15 by Nicholas Denaro
-// Description:     Parses the object that is passed in and returns data array.
-// PRE: json is valid JSON with data for only one country, assumed to be in the proper format
-// POST: FCTVAL == a 2d array containing stat, year in the form [stat][year]
-function ParseDescriptor(json)
-{
-    var data = []; // Creates the array for the data to be returned
-    data = json[Object.keys(json)[0]];// Since there will only be one country in each json,
-                                      // we can simply get the first key, and use that to
-                                      // get the value for the data.
-
-    return data;
-}
-
-
-// Author:          Vanajam Soni, Paul Jang
-// Date Created:    3/5/15
-// Last Modified:   3/26/15 by Vanajam Soni
-// Description:     Makes Ajax call to get country data from server
-// PRE: cid is a valid country-id
-// POST: FCTVAL == Ajax object that makes the API call with the given cid
-function GetData(cid)
-{
-    return $.ajax({                                      
-        url: "API/by_country.php?countryIDs=".concat(cid.toString()),                                                    
-        dataType: "JSON",
-        success: function(data){     
-            console.log("Successfully received by_country.php?countryIDs=".concat(cid.toString()));
-        } 
-    });
-
-}
 
 // Author: Vanajam Soni, Kyle Nicholson
 // Date Created: 3/24/15
@@ -179,7 +143,7 @@ ColorByHMS = function(){
 
     for (i in g_Map.regions) {
         if (g_Data[i] !== undefined)
-        {							//  min/max
+        {
             temp = g_Data[i][g_StatId]['data'];
             for (j in temp)
             {
@@ -265,11 +229,7 @@ function ParseData()
 	g_Stats = DataJSON.stats;
 	g_Countries = DataJSON.countries;
 	g_Diseases = DataJSON.diseases;
-	for (key in g_Stats)				// not sure if there's an easier way to set to one of the stat indices
-	{
-		g_StatId = key;
-		break;
-	}
+        g_StatId = Object.keys(g_Stats)[0];
         g_HmsYear = g_LastYear;				// set init HMS year to end of data
         ColorByHMS();					// color map
         BuildTabs();					// build tab menu
@@ -480,6 +440,11 @@ function ParseStatList()
 {
     g_ParsedStatList = [[1,0,0,0,0,0,0],[12,0,1,2,3,5,8],[4,-1,-1,-1,-1,10,11],[6,-1,-1,-1,-1,9,7]];
 }*/
+
+function SelectIndex(choice)
+{
+    g_SelectedIndex = Number(choice.value);
+}
 
 // Author: Kyle Nicholson
 // Date Created: 4/2/2015
@@ -866,30 +831,64 @@ function GenerateGraphs()
 	if(g_DataList !== undefined && g_DataList.size !== 0)
 	{
             cur = g_DataList.start;
-	    switch(g_GraphType)
-	    {
-	        case 0:    
-                    max = FindMax();
-	            for(i=1; i<=g_DataList.size; i++)
-	            {
-	                if(GraphRegional("region-graphs-"+i, cur, max) === -1)
-                        {
-                            element = document.getElementById("region-graphs-"+i);
-                            element.parentNode.removeChild(element);
-                        }
-	                cur=cur.next;
-	            }
-	            break;
-	        case 1:
-	            GraphCombined("region-graphs-"+1);
-	            break;
-	        case 2:
-	            sumNode = GenerateSumNode();
-                    console.log(sumNode);
-	            GraphRegional("region-graphs-"+1, sumNode);
-	            break;
-	    }
-
+            if (g_Stats[g_StatId]['type'] !== 'int')
+            {
+	        switch(g_GraphType)
+	        {
+	            case 0:    
+                        max = FindMax();
+	                for(i=1; i<=g_DataList.size; i++)
+	                {
+	                    if(GraphRegional("region-graphs-"+i, cur, max) === -1)
+                            {
+                                element = document.getElementById("region-graphs-"+i);
+                                element.parentNode.removeChild(element);
+                            }
+	                    cur=cur.next;
+	                }
+	                break;
+	            case 1:
+	                GraphCombined("region-graphs-"+1);
+	                break;
+	            case 2:
+	                sumNode = GenerateSumNode();
+	                GraphRegional("region-graphs-"+1, sumNode);
+	                break;
+	        }
+            }
+            else
+            {
+	        switch(g_GraphType)
+	        {
+	            case 0:    
+                        max = FindMax();
+	                for(i=1; i<=g_DataList.size; i++)
+	                {
+	                    if(GraphIntegrated("region-graphs-"+i, cur, max) === -1)
+                            {
+                                element = document.getElementById("region-graphs-"+i);
+                                element.parentNode.removeChild(element);
+                            }
+	                    cur=cur.next;
+	                }
+	                break;
+	            case 1:
+	                for(i=1; i<=g_DataList.size; i++)
+	                {
+	                    if(GraphIntegrated("region-graphs-"+i, cur, max) === -1)
+                            {
+                                element = document.getElementById("region-graphs-"+i);
+                                element.parentNode.removeChild(element);
+                            }
+	                    cur=cur.next;
+	                }
+	                break;
+	            case 2:
+	                sumNode = GenerateSumNode();
+	                GraphIntegrated("region-graphs-"+1, sumNode);
+	                break;
+                }
+            }
 	}
 }
 
@@ -901,7 +900,7 @@ function GenerateGraphs()
 //      a sum of countries, and maxVal is the max is maximum value of the selected stat for the entire list
 // POST: generates a single Google ComboChart for the given node on the divID
 function GraphRegional(divID, node, maxVal) {
-    var data = GenerateSingleData(node.data),
+    var data = GenerateSingleData(node['data'][g_StatId]['data']),
         options = {
             title: node.name,
             seriesType: "line",
@@ -911,7 +910,7 @@ function GraphRegional(divID, node, maxVal) {
                 viewWindow: {min: 0, max: maxVal}
             },
             hAxis: {title: 'Year', format: '####'},
-            series: {1: {type: "area", color: "transparent"}, 2: {color: "navy"}, 3: {type: "area", color: "navy"}},
+            series: {0: {color: "white" }, 1: {type: "area", color: "transparent"}, 2: {color: "navy"}, 3: {type: "area", color: "navy"}},
             isStacked: true,
             backgroundColor: '#EAE7C2',
             tooltip: {trigger: 'both'}
@@ -919,6 +918,11 @@ function GraphRegional(divID, node, maxVal) {
     formatter,
     chart,
     i;
+
+    if (g_Stats[g_StatId]['type'] !== 'est')
+    {
+        options['series'][0]['color'] = "navy";
+    }
     	
     if(data !== null)
     {
@@ -967,14 +971,14 @@ function GraphCombined(divID) {
     chart,
     i;
 	
-	num = [];
+    num = [];
 	
-	//console.log(num);
-	formatter = new google.visualization.NumberFormat({pattern: '#,###.##'});
-	for(i=1; i<data.getNumberOfColumns(); i++)
-	{
-		formatter.format(data, i);
-	}
+    //console.log(num);
+    formatter = new google.visualization.NumberFormat({pattern: '#,###.##'});
+    for(i=1; i<data.getNumberOfColumns(); i++)
+    {
+        formatter.format(data, i);
+    }
 	
 	
     // instantiate and draw chart using prepared data
@@ -991,9 +995,9 @@ function GraphCombined(divID) {
 //      a sum of countries, GenerateVaccineData function is defined
 // POST: generates a single Google ComboChart for the given node's vaccination data on the divID 
 //       SIA data is shown in bars, whereas MCV1 and MCV2 data is shown in lines.
-function GraphIntegrated(divID, node) {
-    var data = GenerateIntegratedData(node),
-        dataSeries,
+function GraphIntegrated(divID, node, maxVal) {
+    var data = GenerateSingleData(node['data'][g_StatId]['data']),
+        dataSeries = {0: {type: "bar"}, 1: {type: "bar"}, 2: {type: "bar"}},
         options = {
             title: node.name,
             vAxis: {
@@ -1013,9 +1017,14 @@ function GraphIntegrated(divID, node) {
         chart,
         i;
 
-    for (i in g_Stats[g_StatId]['subType'])
+    if (maxVal > 1)
     {
-        if (g_Stats[g_StatId]['subType'][i] == 'lin')
+        options['vAxis']['viewWindow']['max'] = maxVal;
+    }
+
+    for (i = 0; i < g_Stats[g_StatId]['subType'].length; i++)
+    {
+        if (g_Stats[g_StatId]['subType'][i] === 'lin')
         {
              dataSeries[i]['type'] = 'line'; 
         }
@@ -1041,7 +1050,7 @@ function GraphIntegrated(divID, node) {
 // POST: FCTVAL == data if data is not -1, null otherwise
 function FixMissingData(data)
 {
-    if(data >= 0)
+    if(data != -1)
     {
         return data;
     }
@@ -1049,6 +1058,38 @@ function FixMissingData(data)
     {
         return null;
     }
+}
+
+function GetYears(values)
+{
+    var years = [],
+        re = new RegExp("y_(\\d+)");
+
+    for (i in values)
+    {
+        if (i !== 'country_id' && i !== 'data_set_index')
+        {
+            year = re.exec(i);
+            years.push(Number(year[1]));
+        }
+    }
+
+    return years;
+}
+
+function GetValues(values)
+{
+    var row = [];
+
+    for (i in values)
+    {
+        if (i !== 'country_id' && i !== 'data_set_index')
+        {
+            row.push(FixMissingData(Number(values[i])));
+        }
+    }
+
+    return row;
 }
 
 // Author: Vanajam Soni, Joshua Crafts, Berty Ruan
@@ -1063,160 +1104,56 @@ function FixMissingData(data)
 function GenerateSingleData(data)
 {
     var dataTable = new google.visualization.DataTable(),
-        cur,
-        i, j;
-
-    cur = g_DataList.start;
-    // MUST clone initial object or you will modify country's data when summing
-    data = jQuery.extend(true, {}, g_Data[cur.cc2][g_StatId]['data']);
-    name += cur.name;
-    cur = cur.next;
-    for (i = 1; i < g_DataList.size; i++)
-    {
-        name += ", " + cur.name;
-        if (g_Stats[g_StatId]['type'] === 'est')
-        {
-            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
-            {
-		data[g_SelectedIndex]['values'][0]['y_' + j] = Number(data[g_SelectedIndex]['values'][0]['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values'][0]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['y_' + j]);
-                }
-		data[g_SelectedIndex]['values'][1]['y_' + j] = Number(data[g_SelectedIndex]['values'][1]['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values'][1]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['y_' + j]);
-                }
-		data[g_SelectedIndex]['values'][2]['y_' + j] = Number(data[g_SelectedIndex]['values'][2]['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values'][2]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]);
-                }
-            }
-        }
-        else if (g_Stats[g_StatId]['type'] === 'int')
-        {
-            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
-            {
-		data[g_SelectedIndex]['values'][0]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][0]['values']['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['values']['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values'][0]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['values']['y_' + j]);
-                }
-		data[g_SelectedIndex]['values'][1]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][1]['values']['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['values']['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values'][1]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['values']['y_' + j]);
-                }
-                if (data[g_SelectedIndex].length === 3)
-                {
-		    data[g_SelectedIndex]['values'][2]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][2]['values']['y_' + j]);
-                    if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]) != -1)
-                    {
-                        data[g_SelectedIndex]['values'][2]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['values']['y_' + j]);
-                    }
-                }
-            }
-        }
-        else
-        {
-            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
-            {
-		data[g_SelectedIndex]['values']['y_' + j] = Number(data[g_SelectedIndex]['values']['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values']['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values']['y_' + j]);
-                }
-            }
-        }
-        cur = cur.next;
-    }
-/*    // type = 0 => unbounded or only has 1 bound
-    // type = 1 => both bounds exist
-    var type = 0,
-        dataAvailable = 0,
-        dataTable = new google.visualization.DataTable(),
-        lowerBoundID,
-        upperBoundID,
         i,
-        statIDNum,
-        lowerBoundNum,
-        lower; // data table to be returned
-    
-    dataTable.addColumn('number','year');
-    dataTable.addColumn('number', g_StatList[g_StatID]);
+        temp = new Array(4);
 
-    // get the bound stats from parsed stat list
-    lowerBoundID = -1;
-    upperBoundID = -1;
-
-    for(i=0;i<g_ParsedStatList[1].length;i++)
+    if (g_Stats[g_StatId]['type'] === 'est')
     {
-        if(g_StatID === g_ParsedStatList[1][i])
-        {
-            lowerBoundID = g_ParsedStatList[2][i];
-            upperBoundID = g_ParsedStatList[3][i];   
-        }
-    }
-
-    // if both bounds exist, add columns for those
-    if(lowerBoundID !== -1 && upperBoundID !== -1)
-    {
+        temp[0] = GetYears(data[g_SelectedIndex]['values'][0]);
+        temp[1] = GetValues(data[g_SelectedIndex]['values'][0]);
+        temp[2] = GetValues(data[g_SelectedIndex]['values'][1]);
+        temp[3] = GetValues(data[g_SelectedIndex]['values'][2]);
+        dataTable.addColumn('number','year');
+        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][1]);
         dataTable.addColumn('number', 'lower bound space'); // area under lower bound
-        dataTable.addColumn('number', 'lower bound of confidence interval'); // additional line to outline confidence interval
+        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][2]); // additional line to outline confidence interval
         dataTable.addColumn('number', 'size of confidence interval'); // area between upper bound and lower bound
-        dataTable.addColumn('number', 'upper bound of confidence interval'); // additional line to generate accurate upper bound tooltip, ow it would show size of confidence interval
-        type = 1;
-    }    
-
-    // add data to table from start year to end year
-    for(i=g_YearStart-g_FirstYear;i<g_YearEnd-g_FirstYear+1;i++)
-    {   
-
-        //format numbers 
-        statIDNum = FixMissingData(Number(data[g_StatID][i])); // FixMissingData(parseFloat((data[g_StatID][i]).toString));//FixMissingData(parseFloat(Math.ceil())); //null or int
-
-        switch(type) 
+        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][0]); // additional line to generate accurate upper bound tooltip, ow it would show size of confidence interval
+        for (i = 0; i < temp[0].length; i++)
         {
-            case 0: // unbounded
-                if(dataAvailable === 0 && statIDNum !== null)
-                {
-                    dataAvailable = 1;
-                }
-                dataTable.addRow([g_FirstYear+i, statIDNum]);
-                break;
-
-            case 1: // bounded
-                lowerBoundNum = FixMissingData(Number(data[lowerBoundID][i]));
-                
-                if(dataAvailable === 0 && statIDNum !== null)
-                {
-                    dataAvailable = 1;
-                }
-                if (lowerBoundNum === null) // replace -1 with 0 when subtracting lower from upper for size of confidence interval
-                {
-                    lower = 0;
-                }
-                else
-                {
-                    lower = lowerBoundNum;
-                }
-
-                dataTable.addRow([g_FirstYear+i,statIDNum,lowerBoundNum,lowerBoundNum,
-                    FixMissingData(Number(data[upperBoundID][i])-lower),FixMissingData(Number(data[upperBoundID][i]))]);
-                break;
+            dataTable.addRow([temp[0][i],temp[2][i],temp[3][i],
+                    temp[3][i],temp[1][i] - temp[3][i], temp[1][i]]);
         }
+        
     }
-
-    if(dataAvailable === 1)
+    else if (g_Stats[g_StatId]['type'] === 'int')
     {
-        return dataTable;
+        temp[0] = GetYears(data[g_SelectedIndex]['values'][0]['values']);
+        temp[1] = GetValues(data[g_SelectedIndex]['values'][0]['values']);
+        temp[2] = GetValues(data[g_SelectedIndex]['values'][1]['values']);
+        temp[3] = GetValues(data[g_SelectedIndex]['values'][2]['values']);
+        dataTable.addColumn('number','year');
+        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][0]);
+        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][1]);
+        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][2]);
+        for (i = 0; i < temp[0].length; i++)
+        {
+            dataTable.addRow([temp[0][i],temp[1][i],temp[2][i],temp[3][i]]);
+        }
     }
     else
     {
-        return null;
-    }*/
+        dataTable.addColumn('number','year');
+        dataTable.addColumn('number', g_Stats[g_StatId]['name']);
+        temp[0] = GetYears(data[g_SelectedIndex]['values']);
+        temp[1] = GetValues(data[g_SelectedIndex]['values']);
+        for (i = 0; i < temp[0].length; i++)
+        {
+            dataTable.addRow([temp[0][i],temp[1][i]]);
+        }
+    }
+
+    return dataTable;
 }
 
 
@@ -1230,44 +1167,52 @@ function GenerateSingleData(data)
 //       g_DataList, so that we can graph all data on one graph
 function GenerateCombinedData()
 {
-/*    // create array with indices for all years plus a header row
-    var currentNode,
+    var dataTable = new google.visualization.DataTable(),
         i, j,
-        dataTable = new google.visualization.DataTable(),
-        type = 0,
+        cur,
+        temp = new Array(g_DataList.size + 1),
         row;
-    
-    dataTable.addColumn('number','Year');
-    
-    currentNode = g_DataList.start;
+
+    dataTable.addColumn('number','year');
+    cur = g_DataList.start;
     for (i = 0; i < g_DataList.size; i++)
     {
-        dataTable.addColumn('number', currentNode.name);
-        currentNode = currentNode.next;
+        dataTable.addColumn('number', cur.name);
+        cur = cur.next;
     }
 
-    for(i=0;i<g_ParsedStatList[1].length;i++)
+    cur = g_DataList.start;
+    if (g_Stats[g_StatId]['type'] === 'est')
     {
-        if(g_StatID === g_ParsedStatList[1][i] && (g_ParsedStatList[2][i] !== -1 || g_ParsedStatList[2][i] !== -1))
+        temp[0] = GetYears(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][1]);
+        for (i = 0; i < g_DataList.size; i++)
         {
-            type = 1;  
+            temp[i + 1] = GetValues(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][1]);
+            cur = cur.next;
         }
-    } 
+    }
+    else
+    {
+        temp[0] = GetYears(cur['data'][g_StatId]['data'][g_SelectedIndex]['values']);
+        for (i = 0; i < g_DataList.size; i++)
+        {
+            temp[i + 1] = GetValues(cur['data'][g_StatId]['data'][g_SelectedIndex]['values']);
+            cur = cur.next;
+        }
+    }
 
-    // filling the data table, iterate through each node, then through each year
-    for(i=g_YearStart-g_FirstYear;i<g_YearEnd-g_FirstYear+1;i++)
-    {   
-        row = new Array(g_DataList.size + 1);
-        row[0] = g_FirstYear+i;
-        currentNode = g_DataList.start;
-        for (j = 0; j < g_DataList.size; j++)
+    for (i = 0; i < temp[0].length; i++)
+    {
+        row = [];
+        for (j = 0; j < temp.length; j++)
         {
-            row[j+1] = FixMissingData(Number(currentNode.data[g_StatID][i]));
-            currentNode = currentNode.next;
+            row.push(temp[j][i]);
         }
+
         dataTable.addRow(row);
     }
-    return dataTable;*/
+
+    return dataTable;
 }
 
 // Author: Vanajam Soni
@@ -1281,14 +1226,17 @@ function GenerateCombinedData()
 //       data = sum of all data of the countries in g_DataList
 function GenerateSumNode()
 {
-    var data,
+    var clone,
+        data,
         cur,
         i, j,
-        name = "";
+        name = "",
+        temp;
 
     cur = g_DataList.start;
     // MUST clone initial object or you will modify country's data when summing
-    data = jQuery.extend(true, {}, g_Data[cur.cc2][g_StatId]['data']);
+    clone = jQuery.extend(true, {}, g_Data[cur.cc2]);
+    data = clone[g_StatId]['data'];
     name += cur.name;
     cur = cur.next;
     for (i = 1; i < g_DataList.size; i++)
@@ -1353,57 +1301,41 @@ function GenerateSumNode()
         cur = cur.next;
     }
 
-    return new t_AsdsNode('sum', name, data);
+    if (g_Stats[g_StatId]['type'] === 'int')
+    {
+        for (j = g_Data[g_DataList.start.cc2][g_StatId]['firstYear']; j <= g_Data[g_DataList.start.cc2][g_StatId]['lastYear']; j++)
+        {
+            data[g_SelectedIndex]['values'][0]['values']['y_' + j] = data[g_SelectedIndex]['values'][0]['values']['y_' + j] / g_DataList.size;
+            data[g_SelectedIndex]['values'][1]['values']['y_' + j] = data[g_SelectedIndex]['values'][0]['values']['y_' + j] / g_DataList.size;
+            data[g_SelectedIndex]['values'][2]['values']['y_' + j] = data[g_SelectedIndex]['values'][0]['values']['y_' + j] / g_DataList.size;
+        }
+    }
+    
+    sumNode = new t_AsdsNode('sum', name, clone);
+
+    return sumNode;
 }
 
-
-// Author: Vanajam Soni, Berty Ruan
-// Date Created: 4/7/2015
-// Last Modified: 4/25/2015 by Berty Ruan
-// Description: Prepares data for vaccination stats, for a given country
-//              Takes data of the country as input.
-// PRE: data is a 2d array, containing all data for one country, or a sum of countries,
-//      g_ParsedStatList exists
-// POST: FCTVAL == data table containing vaccination data from the year g_YearStart to g_YearEnd, in the right format
-//       so that we can graph it. 
-function GenerateIntegratedData(data)
+function GetMaxFromValueRow(values)
 {
-    var dataTable = new google.visualization.DataTable(),
-        mcv1ID,
-        mcv2ID,
-        siaID,
-        i,
-        firstNum,
-        secondNum,
-        thirdNum;
-    dataTable.addColumn('number','year');
-    dataTable.addColumn('number', 'MCV1');
-    dataTable.addColumn('number', 'MCV2');
-    dataTable.addColumn('number', 'SIA');
+    var max = Number.MIN_VALUE,
+        re = new RegExp("y_(\\d+)"),
+        temp;
 
-    // get associated stat ids
-    siaID = g_StatID;
-
-    for(i=0;i<g_ParsedStatList[1].length;i++)
+    for (i in values)
     {
-        if(g_StatID === g_ParsedStatList[1][i])
+        if (i !== 'country_id' && i !== 'data_set_index')
         {
-            mcv1ID = g_ParsedStatList[2][i];
-            mcv2ID = g_ParsedStatList[3][i];   
+            temp = re.exec(i);
+            year = Number(temp[1]);
+            if (year >= g_YearStart && year <= g_YearEnd && Number(values[i]) > max)
+            {
+                max = Number(values[i]);
+            }
         }
     }
 
-    // add data to table
-    for(i=g_YearStart-g_FirstYear;i<g_YearEnd-g_FirstYear+1;i++)
-    {
-        firstNum  = parseFloat((data[mcv1ID][i]  * 1).toFixed(4));
-        secondNum = parseFloat((data[mcv2ID][i] * 1).toFixed(4));
-        thirdNum  = parseFloat((data[siaID][i]  * 1).toFixed(4));
-
-        dataTable.addRow([1980+i, firstNum, secondNum, thirdNum]);
-    }
-    
-    return dataTable;   
+    return max;
 }
 
 // Author: Joshua Crafts
@@ -1416,40 +1348,32 @@ function GenerateIntegratedData(data)
 function FindMax()
 {
     var max = Number.MIN_VALUE,
-        currentNode = g_DataList.start,
-        assID,
-        ass2ID,
-        i, j;
-
-    // get associated stat ids
-    for(i=0;i<g_ParsedStatList[1].length;i++)
-    {
-        if(g_StatID === g_ParsedStatList[1][i])
-        {
-            ass1ID = g_ParsedStatList[2][i];
-            ass2ID = g_ParsedStatList[3][i];   
-        }
-    }
+        cur = g_DataList.start,
+        i,
+        thisNodeMax;
 
     // find max value of needed data set
     for (i = 0; i < g_DataList.size; i++)
     {
-        for (j = g_YearStart-g_FirstYear; j < g_YearEnd-g_FirstYear + 1;j++)
+        // get max of current node for current stat
+        if (g_Stats[g_StatId]['type'] === 'est')
         {
-            if (Number(currentNode.data[g_StatID][j]) > max)
-            {
-                max = Number(currentNode.data[g_StatID][j]);
-            }
-            if (ass1ID !== -1 && Number(currentNode.data[ass1ID][j]) > max)
-            {
-                max = Number(currentNode.data[ass1ID][j]);
-            }
-            if (ass2ID !== -1 && Number(currentNode.data[ass2ID][j]) > max)
-            {
-                max = Number(currentNode.data[ass2ID][j]);
-            }
+            thisNodeMax = Math.max.apply(Math, [GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][0]), GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][1]), GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][2])]);
         }
-        currentNode = currentNode.next;
+        else if (g_Stats[g_StatId]['type'] === 'int')
+        {
+            thisNodeMax = Math.max.apply(Math, [GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][0]['values']),GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][1]['values']),GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][2]['values'])]);
+        }
+        else
+        {
+            thisNodeMax = GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values']);
+        }
+
+        if (thisNodeMax > max)
+        {
+            max = thisNodeMax;
+        }
+        cur = cur.next;
     }
     
     if (max < 0 || max === undefined || max === Number.MIN_VALUE)
@@ -1556,10 +1480,53 @@ function BuildDiv(statId)
     var div=document.createElement("DIV");
     div.id="id-"+statId+"-graphs";
     div.style.display="none";
-    div.style.top="8%";
-    div.style.height="87%";
+    div.style.top="18%";
+    div.style.height="77%";
     div.className="graph";
+    document.getElementById("graphs").appendChild(BuildDropDown(statId));
     document.getElementById("graphs").appendChild(div);
+}
+
+function BuildDropDown(statId)
+{
+    var div=document.createElement("DIV"),
+        menu = "";
+    div.id="id-"+statId+"-dropdown";
+    div.style.display="none";
+    div.style.top="8%";
+    div.style.height="10%";
+    div.className="graph";
+
+    if (g_StatId === 'custom')
+    {
+        menu += "<p class='open-sans'>Select Data Set</p><select name='stat1' onchange='SelectIndex(this)'>";
+        for (i in g_Stats)
+        {
+            menu += "<option value='" + i + "'>" + i + " - ";
+        }
+    }
+    else
+    {
+        menu += "<p class='open-sans'>Select Data Set</p><select name='index' onchange='SelectIndex(this)'>";
+        for (i in g_Stats[g_StatId]['tags'])
+        {
+            menu += "<option value='" + i + "'>" + i + " - ";
+            if (g_Stats[g_StatId]['tags'][i] === "")
+            {
+                menu += "untagged";
+            }
+            else
+            {
+                menu += g_Stats[g_StatId]['tags'][g_SelectedIndex];
+            }
+            menu += "</option></br>";
+        }
+        menu += "</select>";
+    }
+
+    div.innerHTML = menu;
+
+    return div;
 }
 
 // Author: Paul Jang, Nicholas Denaro
@@ -1571,7 +1538,8 @@ function BuildDiv(statId)
 function ChooseTab(element)
 {
     var parentTabDivName,
-        prevTab;
+        prevTab,
+        menu = "";
 
     g_SelectedIndex = 0;
     // remove divs in previous tab
@@ -1582,14 +1550,22 @@ function ChooseTab(element)
     prevTab.className="graph-tab";
     element.className="graph-tab selected-tab";
     document.getElementById("id-"+g_StatId+"-graphs").style.display="none";
+    document.getElementById("id-"+g_StatId+"-dropdown").style.display="none";
     document.getElementById(element.id+"-graphs").style.display="block";
+    document.getElementById(element.id+"-dropdown").style.display="block";
     g_StatId=element.getAttribute("stat");
+
     if (g_StatId !== 'custom')
     {
         ColorByHMS();
     }
 
+    document.getElementById(element.id+"-graphs").innerHTML=menu;
     GenerateSubDivs();
+    if (g_GraphType === 0 || g_GraphType === 1 && g_Stats[g_StatId]['type'] === 'int')
+    {
+        FixDivSize();
+    }
     GenerateGraphs();
 }
 
@@ -1707,15 +1683,18 @@ function Expand()
     {
         if(g_DataList !== undefined && g_DataList.size !== 0)
         {
+	        g_Expanded = true;
 	        GenerateSubDivs();
 	        // if single graph, graph is expanded to whole section
-	        if(g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1 || g_GraphType === 2)
+	        if(g_GraphType === 1 && g_StatList[g_StatId]['type'] !== 'int' || g_GraphType === 2)
 	        {
 	            document.getElementById("region-graphs-1").style.width = "100%";
 	            document.getElementById("region-graphs-1").style.height = "100%";
 	        }
-	        g_Expanded = true;
-	        GenerateSubDivs();
+                else
+                {
+                    FixDivSize();
+                }
 	        GenerateGraphs();
 	    }
     }, 500);
@@ -1738,13 +1717,10 @@ function Shrink()
     setTimeout(function()
     {
         g_Expanded = false;
-        while(document.getElementById("tabsDiv").childNodes[0]!==document.getElementById("id-"+g_Stats[g_StatId]['name']))
-        {
-            RotateTabs(-1);
-        }
         GenerateSubDivs();
+        FixDivSize(); 
         GenerateGraphs();
-    }, 500);  
+    }, 500);
 }
 
 
@@ -1771,11 +1747,9 @@ function GenerateSubDivs()
         parentTabDivName = "id-"+g_StatId+"-graphs";
         currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
         children = document.getElementById(parentTabDivName).childNodes;
-        newNumDivs = size - currentNumDivs;
         // if we only need one graph for either combined lines or summation of lines
         if(g_GraphType === 1 && g_Stats[g_StatId]['type'] !== 'int' || g_GraphType === 2)
         {
-            document.getElementById(parentTabDivName).innerHTML = "";
             if(size !== 0)
             {
             	CreateSubDiv("region-graphs-1",parentTabDivName);
@@ -1790,17 +1764,12 @@ function GenerateSubDivs()
         }
         else
         {
-            document.getElementById(parentTabDivName).innerHTML = "";
-            for(i = 1; i<=size; i++)
-            {
-                CreateSubDiv("region-graphs-"+i,parentTabDivName);
-            }
-            while (g_DataList.size < currentNumDivs)
+            while (size < currentNumDivs)
             {
                 $("#region-graphs-"+currentNumDivs).remove();
                 currentNumDivs--;
             }
-            while (g_DataList.size > currentNumDivs)
+            while (size > currentNumDivs)
             {
                 CreateSubDiv("region-graphs-"+(currentNumDivs+1), parentTabDivName);
                 currentNumDivs++;
@@ -1825,28 +1794,10 @@ function CreateSubDiv(id,parent)
     elem.className = "subgraph";
     divs=document.getElementsByTagName("div");
 
-    for(i in divs)
-    {
-        if(divs[i].className==="control-panel")
-        {
-            elem.style="max-width: "+divs[i].clientWidth+"px;";
-        }
-    }
     document.getElementById(parent).appendChild(elem);
-    
-    if(!g_Expanded)
-    {
-        document.getElementById(elem.id).style.width = "100%";
-    }
-    else
-    {
-        document.getElementById(elem.id).style.width = "50%";
-    }
 
-    document.getElementById(elem.id).style.height = "50%";
-
-    if(g_GraphType !== 1 && g_GraphType !== 2 && g_Expanded || 
-        g_Stats[g_StatId]['type'] === 'int' && g_GraphType !== 2 && g_Expanded)
+    if(g_Expanded  && (g_GraphType === 0 || 
+        (g_Stats[g_StatId]['type'] === 'int' && g_GraphType === 1)))
     {
         $(elem).click(function() {
             if(document.getElementById(id).style.width !== "100%")
@@ -1862,6 +1813,24 @@ function CreateSubDiv(id,parent)
             }
             GenerateGraphs();
         });
+    }
+}
+
+function FixDivSize()
+{
+    var i;
+
+    for (i = 0; i < g_DataList.size; i++)
+    {
+        if(!g_Expanded)
+        {
+            document.getElementById("region-graphs-"+(i+1)).style.width = "100%";
+        }
+        else
+        {
+            document.getElementById("region-graphs-"+(i+1)).style.width = "50%";
+        }
+        document.getElementById("region-graphs-"+(i+1)).style.height = "50%";
     }
 }
 
