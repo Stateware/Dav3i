@@ -114,10 +114,53 @@ function BuildDiv(statId)
     var div=document.createElement("DIV");
     div.id="id-"+statId+"-graphs";
     div.style.display="none";
-    div.style.top="8%";
-    div.style.height="87%";
+    div.style.top="18%";
+    div.style.height="77%";
     div.className="graph";
+    document.getElementById("graphs").appendChild(BuildDropDown(statId));
     document.getElementById("graphs").appendChild(div);
+}
+
+function BuildDropDown(statId)
+{
+    var div=document.createElement("DIV"),
+        menu = "";
+    div.id="id-"+statId+"-dropdown";
+    div.style.display="none";
+    div.style.top="8%";
+    div.style.height="10%";
+    div.className="graph";
+
+    if (g_StatId === 'custom')
+    {
+        menu += "<p class='open-sans'>Select Data Set</p><select name='stat1' onchange='SelectIndex(this)'>";
+        for (i in g_Stats)
+        {
+            menu += "<option value='" + i + "'>" + i + " - ";
+        }
+    }
+    else
+    {
+        menu += "<p class='open-sans'>Select Data Set</p><select name='index' onchange='SelectIndex(this)'>";
+        for (i in g_Stats[g_StatId]['tags'])
+        {
+            menu += "<option value='" + i + "'>" + i + " - ";
+            if (g_Stats[g_StatId]['tags'][i] === "")
+            {
+                menu += "untagged";
+            }
+            else
+            {
+                menu += g_Stats[g_StatId]['tags'][g_SelectedIndex];
+            }
+            menu += "</option></br>";
+        }
+        menu += "</select>";
+    }
+
+    div.innerHTML = menu;
+
+    return div;
 }
 
 // Author: Paul Jang, Nicholas Denaro
@@ -129,7 +172,8 @@ function BuildDiv(statId)
 function ChooseTab(element)
 {
     var parentTabDivName,
-        prevTab;
+        prevTab,
+        menu = "";
 
     g_SelectedIndex = 0;
     // remove divs in previous tab
@@ -140,14 +184,22 @@ function ChooseTab(element)
     prevTab.className="graph-tab";
     element.className="graph-tab selected-tab";
     document.getElementById("id-"+g_StatId+"-graphs").style.display="none";
+    document.getElementById("id-"+g_StatId+"-dropdown").style.display="none";
     document.getElementById(element.id+"-graphs").style.display="block";
+    document.getElementById(element.id+"-dropdown").style.display="block";
     g_StatId=element.getAttribute("stat");
+
     if (g_StatId !== 'custom')
     {
         ColorByHMS();
     }
 
+    document.getElementById(element.id+"-graphs").innerHTML=menu;
     GenerateSubDivs();
+    if (g_GraphType === 0 || g_GraphType === 1 && g_Stats[g_StatId]['type'] === 'int')
+    {
+        FixDivSize();
+    }
     GenerateGraphs();
 }
 
@@ -265,15 +317,18 @@ function Expand()
     {
         if(g_DataList !== undefined && g_DataList.size !== 0)
         {
+	        g_Expanded = true;
 	        GenerateSubDivs();
 	        // if single graph, graph is expanded to whole section
-	        if(g_GraphType === 1 && g_StatList[g_StatID].indexOf("VACC") === -1 || g_GraphType === 2)
+	        if(g_GraphType === 1 && g_StatList[g_StatId]['type'] !== 'int' || g_GraphType === 2)
 	        {
 	            document.getElementById("region-graphs-1").style.width = "100%";
 	            document.getElementById("region-graphs-1").style.height = "100%";
 	        }
-	        g_Expanded = true;
-	        GenerateSubDivs();
+                else
+                {
+                    FixDivSize();
+                }
 	        GenerateGraphs();
 	    }
     }, 500);
@@ -296,13 +351,10 @@ function Shrink()
     setTimeout(function()
     {
         g_Expanded = false;
-        while(document.getElementById("tabsDiv").childNodes[0]!==document.getElementById("id-"+g_Stats[g_StatId]['name']))
-        {
-            RotateTabs(-1);
-        }
         GenerateSubDivs();
+        FixDivSize(); 
         GenerateGraphs();
-    }, 500);  
+    }, 500);
 }
 
 
@@ -329,11 +381,9 @@ function GenerateSubDivs()
         parentTabDivName = "id-"+g_StatId+"-graphs";
         currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
         children = document.getElementById(parentTabDivName).childNodes;
-        newNumDivs = size - currentNumDivs;
         // if we only need one graph for either combined lines or summation of lines
         if(g_GraphType === 1 && g_Stats[g_StatId]['type'] !== 'int' || g_GraphType === 2)
         {
-            document.getElementById(parentTabDivName).innerHTML = "";
             if(size !== 0)
             {
             	CreateSubDiv("region-graphs-1",parentTabDivName);
@@ -348,17 +398,12 @@ function GenerateSubDivs()
         }
         else
         {
-            document.getElementById(parentTabDivName).innerHTML = "";
-            for(i = 1; i<=size; i++)
-            {
-                CreateSubDiv("region-graphs-"+i,parentTabDivName);
-            }
-            while (g_DataList.size < currentNumDivs)
+            while (size < currentNumDivs)
             {
                 $("#region-graphs-"+currentNumDivs).remove();
                 currentNumDivs--;
             }
-            while (g_DataList.size > currentNumDivs)
+            while (size > currentNumDivs)
             {
                 CreateSubDiv("region-graphs-"+(currentNumDivs+1), parentTabDivName);
                 currentNumDivs++;
@@ -383,28 +428,10 @@ function CreateSubDiv(id,parent)
     elem.className = "subgraph";
     divs=document.getElementsByTagName("div");
 
-    for(i in divs)
-    {
-        if(divs[i].className==="control-panel")
-        {
-            elem.style="max-width: "+divs[i].clientWidth+"px;";
-        }
-    }
     document.getElementById(parent).appendChild(elem);
-    
-    if(!g_Expanded)
-    {
-        document.getElementById(elem.id).style.width = "100%";
-    }
-    else
-    {
-        document.getElementById(elem.id).style.width = "50%";
-    }
 
-    document.getElementById(elem.id).style.height = "50%";
-
-    if(g_GraphType !== 1 && g_GraphType !== 2 && g_Expanded || 
-        g_Stats[g_StatId]['type'] === 'int' && g_GraphType !== 2 && g_Expanded)
+    if(g_Expanded  && (g_GraphType === 0 || 
+        (g_Stats[g_StatId]['type'] === 'int' && g_GraphType === 1)))
     {
         $(elem).click(function() {
             if(document.getElementById(id).style.width !== "100%")
@@ -420,6 +447,24 @@ function CreateSubDiv(id,parent)
             }
             GenerateGraphs();
         });
+    }
+}
+
+function FixDivSize()
+{
+    var i;
+
+    for (i = 0; i < g_DataList.size; i++)
+    {
+        if(!g_Expanded)
+        {
+            document.getElementById("region-graphs-"+(i+1)).style.width = "100%";
+        }
+        else
+        {
+            document.getElementById("region-graphs-"+(i+1)).style.width = "50%";
+        }
+        document.getElementById("region-graphs-"+(i+1)).style.height = "50%";
     }
 }
 

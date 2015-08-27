@@ -47,7 +47,7 @@ ColorByHMS = function(){
 
     for (i in g_Map.regions) {
         if (g_Data[i] !== undefined)
-        {							//  min/max
+        {
             temp = g_Data[i][g_StatId]['data'];
             for (j in temp)
             {
@@ -133,11 +133,7 @@ function ParseData()
 	g_Stats = DataJSON.stats;
 	g_Countries = DataJSON.countries;
 	g_Diseases = DataJSON.diseases;
-	for (key in g_Stats)				// not sure if there's an easier way to set to one of the stat indices
-	{
-		g_StatId = key;
-		break;
-	}
+        g_StatId = Object.keys(g_Stats)[0];
         g_HmsYear = g_LastYear;				// set init HMS year to end of data
         ColorByHMS();					// color map
         BuildTabs();					// build tab menu
@@ -348,6 +344,11 @@ function ParseStatList()
 {
     g_ParsedStatList = [[1,0,0,0,0,0,0],[12,0,1,2,3,5,8],[4,-1,-1,-1,-1,10,11],[6,-1,-1,-1,-1,9,7]];
 }*/
+
+function SelectIndex(choice)
+{
+    g_SelectedIndex = Number(choice.value);
+}
 
 // Author: Kyle Nicholson
 // Date Created: 4/2/2015

@@ -33,7 +33,274 @@
  
 require_once("toolbox.php");
 require_once("connect.php");
- 
+
+class Data
+{
+	public $firstYear;
+	public $lastYear;
+	public $diseases;
+	public $stats;
+	public $countries;
+	public $country_data;
+
+	public function __construct($databaseConnection)
+	{
+		$descriptor = new Descriptor($databaseConnection);
+		$this->diseases = array();
+		$this->countries = array();
+		foreach($descriptor->diseases as $disease)
+			array_push($this->diseases, $disease['disease']);
+		$this->firstYear = 0xffffff;
+		$this->lastYear = 0;
+		foreach($descriptor->countries as $country)
+		{
+			$this->countries[$country['cc2']] = $country['common_name'];
+			foreach($descriptor->stats as $stat)
+			{
+				$integrated = true;
+				for ($i = 0; $i < $stat['indices'] && $integrated; $i++)
+					$integrated = IsIntegrated($databaseConnection, $stat['table_id'], $i);
+				if ($stat['type'] == 'int' || $stat['type'] == 'est' || (($stat['type'] == 'lin' || $stat['type'] == 'bar') && !$integrated))
+				{
+					$this->country_data[$country['cc2']][$stat['table_name']] = new Stat($databaseConnection, $stat['table_name'], $descriptor, $country['country_id']);
+					$this->firstYear = min([$this->firstYear, (int)$this->country_data[$country['cc2']][$stat['table_name']]->firstYear]);
+					$this->lastYear = max([$this->lastYear, (int)$this->country_data[$country['cc2']][$stat['table_name']]->lastYear]);
+				}
+			}
+		}
+		
+		foreach($this->country_data[$country['cc2']] as $table => $stat)
+		{
+			$this->stats[$table]['name'] = $stat->name;
+			$this->stats[$table]['subName'] = $stat->subName;
+			$this->stats[$table]['disease'] = $stat->disease;
+			$this->stats[$table]['indices'] = count($stat->data);
+			$this->stats[$table]['type'] = $stat->type;
+                        $this->stats[$table]['subType'] = $stat->subType;
+			$this->stats[$table]['tags'] = $stat->dataTag;
+		}
+	}
+}
+
+class Row
+{
+	public $index;
+	public $values;
+
+	public function __construct($index, $values)
+	{
+		$this->index = $index;
+		$this->values = $values;
+	}
+}
+
+class Stat
+{
+	public $name;
+	public $subName;
+	public $firstYear;
+	public $lastYear;
+	public $tableName;
+	public $disease;
+	public $type;
+	public $subType;
+	public $data;
+	public $dataTag;
+
+	public function __construct($databaseConnection, $tableName, $descriptor, $countryId)
+	{
+		$this->dataTag = array();
+		$this->data = array();
+		foreach($descriptor->stats as $stat)
+		{
+			if ($stat['table_name'] == $tableName)
+				$meta_stat = $stat;
+		}
+		$years = GetYearRange($databaseConnection, $tableName);
+		$this->firstYear = $years[0];
+		$this->lastYear = $years[1];
+		$this->name = $meta_stat['display_name'];
+		$this->disease = $meta_stat['disease'];
+		$this->tableName = $tableName;
+		$this->type = $meta_stat['type'];
+		$this->subType = 'none';
+		switch($meta_stat['type']) {
+			case 'lin':
+				$this->subName = "none";
+				for ($i = 0; $i < $meta_stat['indices']; $i++)
+				{
+					if (!IsIntegrated($databaseConnection, $meta_stat['table_id'], $i))
+					{
+						$query = "SELECT * FROM $tableName WHERE data_set_index='$i' AND country_id='$countryId';";
+						if (($result = $databaseConnection->query($query)) == false)
+							ThrowFatalError("Error reading data from index $i of $tableName");
+						array_push($this->data, new Row($i, $result->fetch_assoc()));
+
+						foreach($descriptor->indices as $index)
+						{
+							if ($index['stat_index'] == $meta_stat['table_id'] && $index['data_set_index'] == $i)
+								array_push($this->dataTag, $index['tag']);
+						}
+					}
+				}
+				break;
+			case 'bar':
+				$this->subName = "none";
+				for ($i = 0; $i < $meta_stat['indices']; $i++)
+				{
+					if (!IsIntegrated($databaseConnection, $meta_stat['table_id'], $i))
+					{
+						$query = "SELECT * FROM $tableName WHERE data_set_index='$i' AND country_id='$countryId';";
+						if (($result = $databaseConnection->query($query)) == false)
+							ThrowFatalError("Error reading data from index $i of $tableName");
+						array_push($this->data, new Row($i, $result->fetch_assoc()));
+
+						foreach($descriptor->indices as $index)
+						{
+							if ($index['stat_index'] == $meta_stat['table_id'] && $index['data_set_index'] == $i)
+								array_push($this->dataTag, $index['tag']);
+						}
+					}
+				}
+				break;
+			case 'est':
+				$this->subName = ["Upper Bound of Confidence Interval", "Estimated Stat Value", "Lower Bound of Confidence Interval"];
+				foreach($descriptor->stats as $stat)
+				{
+					if ($stat['display_name'] == $meta_stat['display_name'] && $stat['disease'] == $meta_stat['disease'])
+					{
+						if ($stat['type'] == 'eub')
+							$meta_upper = $stat;
+						else if ($stat['type'] == 'elb')
+							$meta_lower = $stat;
+					}					
+				}
+				for ($i = 0; $i < $meta_stat['indices']; $i++)
+				{
+					$values = array();
+					$query = "SELECT * FROM {$meta_upper['table_name']} WHERE data_set_index='$i' AND country_id='$countryId';";
+					if (($result = $databaseConnection->query($query)) == false)
+						ThrowFatalError("Error reading data from index $i of $tableName");
+					array_push($values, $result->fetch_assoc());
+					$query = "SELECT * FROM $tableName WHERE data_set_index='$i' AND country_id='$countryId';";
+					if (($result = $databaseConnection->query($query)) == false)
+						ThrowFatalError("Error reading data from index $i of $tableName");
+					array_push($values, $result->fetch_assoc());
+					$query = "SELECT * FROM {$meta_lower['table_name']} WHERE data_set_index='$i' AND country_id='$countryId';";
+					if (($result = $databaseConnection->query($query)) == false)
+						ThrowFatalError("Error reading data from index $i of $tableName");
+					array_push($values, $result->fetch_assoc());
+					array_push($this->data, new Row($i, $values));
+					foreach($descriptor->indices as $index)
+					{
+						if ($index['stat_index'] == $meta_stat['table_id'] && $index['data_set_index'] == $i)
+							array_push($this->dataTag, $index['tag']);
+					}
+				}
+				break;
+			case 'eub':
+				// only handle each stat when looking at 'est', then no duplication and no difficulty when looking at bound stats
+				break;
+			case 'elb':
+				// only handle each stat when looking at 'est', then no duplication and no difficulty when looking at bound stats
+				break;
+			case 'int':
+				$this->subType = array();
+				foreach($descriptor->integrated as $int)
+				{
+					for ($i = 0; $i < $meta_stat['indices']; $i++)
+					{
+						if ($int['display_name'] == $meta_stat['display_name'] && $int['disease'] == $meta_stat['disease'] && (int)$int['data_set_index'] == $i)
+						{
+							$years = GetYearRange($databaseConnection, GetTableNameById($descriptor, $int['stat1id']));
+							$this->firstYear = $years[0];
+							$this->lastYear = $years[1];
+							$this->subName = [GetDisplayNameById($descriptor, $int['stat1id']), GetDisplayNameById($descriptor, $int['stat2id'])];
+							$values = array();
+
+							$query = "SELECT * FROM " . GetTableNameById($descriptor, $int['stat1id']) . " WHERE data_set_index='{$int['stat1index']}' AND country_id='$countryId';";
+							if (($result = $databaseConnection->query($query)) == false)
+								ThrowFatalError("Error reading data from index {$int['stat1id']} of " . GetTableNameById($int['stat1id']));
+							array_push($values, new Row($int['stat1index'], $result->fetch_assoc()));
+							array_push($this->subType, GetTypeById($descriptor, $int['stat1id']));
+
+							$query = "SELECT * FROM " . GetTableNameById($descriptor, $int['stat2id']) . " WHERE data_set_index='{$int['stat2index']}' AND country_id='$countryId';";
+							if (($result = $databaseConnection->query($query)) == false)
+								ThrowFatalError("Error reading data from index {$int['stat2id']} of " . GetTableNameById($int['stat2id']));
+							array_push($values, new Row($int['stat3index'], $result->fetch_assoc()));
+							array_push($this->subType, GetTypeById($descriptor, $int['stat2id']));
+
+							if ($int['stat3id'] != -1)
+							{
+								array_push($this->subName, GetDisplayNameById($descriptor, $int['stat3id']));
+								$query = "SELECT * FROM " . GetTableNameById($descriptor, $int['stat3id']) . " WHERE data_set_index='{$int['stat3index']}' AND country_id='$countryId';";
+								if (($result = $databaseConnection->query($query)) == false)
+									ThrowFatalError("Error reading data from index {$int['stat3id']} of " . GetTableNameById($int['stat3id']));
+								array_push($values, new Row($int['stat1index'], $result->fetch_assoc()));
+								array_push($this->subType, GetTypeById($descriptor, $int['stat3id']));
+							}
+							array_push($this->data, new Row($i, $values));
+							foreach($descriptor->indices as $index)
+							{
+								if ($index['stat_index'] == $int['stat1id'] && $index['data_set_index'] == $i)
+									array_push($this->dataTag, $index['tag']);
+							}
+						}
+					}			
+				}
+				break;
+			default:
+				ThrowFatalError("Attempted to create invalid stat type: " . $stat['type']);
+		}
+	}
+}
+
+class Descriptor {
+	public $stats;
+	public $diseases;
+	public $integrated;
+	public $indices;
+	public $countries;
+
+	public function __construct($databaseConnection)
+	{
+		$this->stats = array();
+		$query = 'SELECT * FROM meta_stats';
+		$result = $databaseConnection->query($query);
+		while ($value = $result->fetch_assoc())
+		{
+			array_push($this->stats, $value);
+		}
+		$this->diseases = array();
+		$query = 'SELECT * FROM meta_diseases';
+		$result = $databaseConnection->query($query);
+		while ($value = $result->fetch_assoc())
+		{
+			array_push($this->diseases, $value);
+		}
+		$this->integrated = array();
+		$query = 'SELECT * FROM meta_int';
+		$result = $databaseConnection->query($query);
+		while ($value = $result->fetch_assoc())
+		{
+			array_push($this->integrated, $value);
+		}
+		$this->indices = array();
+		$query = 'SELECT * FROM meta_indices';
+		$result = $databaseConnection->query($query);
+		while ($value = $result->fetch_assoc())
+		{
+			array_push($this->indices, $value);
+		}
+		$this->countries = array();
+		$query = 'SELECT * FROM meta_countries';
+		$result = $databaseConnection->query($query);
+		while ($value = $result->fetch_assoc())
+		{
+			array_push($this->countries, $value);
+		}
+	}
+}
 // ======================== API Functions =========================
 
 
@@ -418,7 +685,7 @@ function GetYearRange($database, $table)
 // PRE:  $database is a mysqli database connection, and table is a valid table in that connection
 // POST: return an array with exactly two indices: index 0 is the lowest year, index 1 is the highest year  
 {
-    $indexOfFirstYearColumn = 1;
+    $indexOfFirstYearColumn = 2;
     $descriptionArray = array();
     $yearRange = array();
         
@@ -439,8 +706,8 @@ function GetYearRange($database, $table)
     } 
     
     //Put the first and last year into the returning array
-    array_push($yearRange, $descriptionArray[$indexOfFirstYearColumn]);
-    array_push($yearRange, $descriptionArray[count($descriptionArray) - 1]);
+    array_push($yearRange, preg_split("/\_/", $descriptionArray[$indexOfFirstYearColumn])[1]);
+    array_push($yearRange, preg_split("/\_/", $descriptionArray[count($descriptionArray) - 1])[1]);
     
     
     return $yearRange;
@@ -510,7 +777,7 @@ function Normalize($input)
 				if ($i == 0 && $j != 0)
 				{
 					preg_match("/[a-z]*(\d+)/i", $value, $index);
-					if ($index < START_YEAR)
+					if ($index[1] < START_YEAR)
 						$input[$i][$j] = START_YEAR + $index[1];
 					else
 						$input[$i][$j] = (int)$index[1];
@@ -536,7 +803,7 @@ function Normalize($input)
 // convert text in scientific notation into a floating point value
 // Steven Shaffer, March 30, 2015
 function ScientificConversion($in) {
-    if (preg_match('/(\-?\d+)e(\-?\d+)/i', $in, $results) == false) {
+    if (preg_match('/(\-?[\d\.]+)e(\-?[\d\.]+)/i', $in, $results) == false) {
         //Just convert it directly
         return floatval($in);
     }
@@ -678,7 +945,7 @@ function GetCountryId($cc3)
 	$databaseConnection = GetDatabaseConnection();
 	$query = "SELECT country_id FROM meta_countries WHERE cc3='$cc3';";
 	if (($result = $databaseConnection->query($query)) == false)
-		return false;
+		return -1;
 	else
 	{
 		$result = $result->fetch_assoc();
@@ -690,6 +957,19 @@ function GetTableIndices($tableName)
 {
 	$databaseConnection = GetDatabaseConnection();
 	$query = "SELECT indices FROM meta_stats WHERE table_name='$tableName';";
+	if (($result = $databaseConnection->query($query)) == false)
+		return -1;
+	else
+	{
+		$result = $result->fetch_assoc();
+		return $result['indices'];
+	}
+}
+
+function GetIndices($displayName)
+{
+	$databaseConnection = GetDatabaseConnection();
+	$query = "SELECT indices FROM meta_stats WHERE display_name='$displayName';";
 	if (($result = $databaseConnection->query($query)) == false)
 		return false;
 	else
@@ -746,11 +1026,78 @@ function AddData($tableName, $data, $tag)
 	return $index;
 }
 
-function SetIntegrated($display, $table1, $index1, $table2, $index2, $table3, $index3)
+function SetIntegrated($display, $disease, $table1, $index1, $table2, $index2, $table3, $index3)
 {
 	$databaseConnection = GetDatabaseConnection();
-	$query = "INSERT INTO meta_int (display_name, stat1id, stat2id, stat3id, stat1index, stat2index, stat3index) VALUES ('$display', '" . GetTableId($table1) . "', '$index1', '" . GetTableId($table2) . "', '$index2', '" . GetTableId($table3) . "', '$index3');";
+	$query = "SELECT * FROM meta_stats WHERE table_name='" . GetTableName($display, $disease, 'int') . "';";
+	$result = $databaseConnection->query($query);
+	if ($result == false)
+	{
+		$query = "INSERT INTO meta_stats (display_name, table_name, type, disease, indices) VALUES ('" . $display . "', '" . GetTableName($display, $disease, 'int') . "', 'int', '" . $disease . "', '" . 0 . "');";
+		if ($databaseConnection->query($query) == false)
+			ThrowFatalError("Error creating stat entry.");
+	}
+	$query = "INSERT INTO meta_int (data_set_index, display_name, disease, stat1id, stat2id, stat3id, stat1index, stat2index, stat3index) VALUES ('" . GetTableIndices(GetTableName($display, $disease, 'int')) . "', '$display', '$disease', '" . GetTableId($table1) . "', '" . GetTableId($table2) . "', '" . GetTableId($table3) . "', '$index1', '$index2', '$index3');";
 	if ($databaseConnection->query($query) == false)
 		ThrowFatalError("Error updating meta_int.");
+	$query = "UPDATE meta_stats SET indices=indices+1 WHERE table_name='" . GetTableName($display, $disease, 'int') . "';";
+	if ($databaseConnection->query($query) == false)
+		ThrowFatalError("Error updating meta_stats indices.");
+}
+
+function GetTableNameById($descriptor, $statId)
+{
+	foreach($descriptor->stats as $stat)
+	{
+		if ($stat['table_id'] == $statId)
+			return $stat['table_name'];
+	}
+	return false;
+}
+
+function GetTypeById($descriptor, $statId)
+{
+	foreach($descriptor->stats as $stat)
+	{
+		if ($stat['table_id'] == $statId)
+			return $stat['type'];
+	}
+	return false;
+}
+
+function GetDisplayNameById($descriptor, $statId)
+{
+	foreach($descriptor->stats as $stat)
+	{
+		if ($stat['table_id'] == $statId)
+			return $stat['display_name'];
+	}
+	return false;
+}
+
+function IsIntegrated($databaseConnection, $tableId, $index)
+{
+	$query = "SELECT * FROM meta_int WHERE stat1id='$tableId' AND stat1index='$index';";
+	$result = $databaseConnection->query($query);
+	$result = $result->fetch_assoc();
+	if ($result != null)
+	{
+		return true;
+	}
+	$query = "SELECT * FROM meta_int WHERE stat2id='$tableId' AND stat2index='$index';";
+	$result = $databaseConnection->query($query);
+	$result = $result->fetch_assoc();
+	if ($result != null)
+	{
+		return true;
+	}
+	$query = "SELECT * FROM meta_int WHERE stat3id='$tableId' AND stat3index='$index';";
+	$result = $databaseConnection->query($query);
+	$result = $result->fetch_assoc();
+	if ($result != null)
+	{
+		return true;
+	}
+	return false;
 }
 ?>

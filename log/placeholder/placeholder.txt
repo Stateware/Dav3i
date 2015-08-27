@@ -1,0 +1,1 @@
+This file only exists so Grunt Clean doesn't delete the entire log directory when it runs

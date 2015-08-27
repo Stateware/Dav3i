@@ -52,9 +52,6 @@ function ThrowInconvenientError($message = "An inconvenient error has occured - 
     echo "Error: " . $message;
 } // END ThrowInconvenientError
 
-
-
-
 function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = false)
 //PRE:     database: the database to query tableName: the table in the database to get the data from
 //            columnName: the column of the table from which to return the first row
@@ -72,7 +69,6 @@ function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = fal
     $results->free();
     return $row[$columnName];
 } // END GetFirstRowFromColumn
-
 
 // ===================== Variable Declaration =====================
 // These are global variables that describe our default values for data of the given types

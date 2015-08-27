@@ -803,7 +803,7 @@ function Normalize($input)
 // convert text in scientific notation into a floating point value
 // Steven Shaffer, March 30, 2015
 function ScientificConversion($in) {
-    if (preg_match('/(\-?\d+)e(\-?\d+)/i', $in, $results) == false) {
+    if (preg_match('/(\-?[\d\.]+)e(\-?[\d\.]+)/i', $in, $results) == false) {
         //Just convert it directly
         return floatval($in);
     }

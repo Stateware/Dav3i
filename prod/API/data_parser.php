@@ -109,6 +109,6 @@ else if ($_GET['type'] == 'int')
 		$tableName3 = -1;
 		$index3 = -1;
 	}
-	SetIntegrated($displayName, $tableName1, $index1, $tableName2, $index2, $tableName3, $index3);
+	SetIntegrated($displayName, $diseaseName, $tableName1, $index1, $tableName2, $index2, $tableName3, $index3);
 }
 ?>

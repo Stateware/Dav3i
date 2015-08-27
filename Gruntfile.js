@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 				src: ['prod/*.js', 'prod/*.css', 'prod/*.html']
 			},
 			log: {
-				src: ['log/*']
+				src: ['log/*.txt']
 			}
 		},
 		concat: {
@@ -95,7 +95,7 @@ module.exports = function(grunt) {
 				options: {
 					jshintrc: '.jshintrc'
 				},
-				src: ['tst/**/*.js']
+				src: ['tst/**/*.html']
 			}
 		},
 		csslint: {

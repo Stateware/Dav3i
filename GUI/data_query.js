@@ -29,42 +29,6 @@
 // Dependencies:            lookup_table.js, byCountry.php, parser.js
 // Additional Notes:        N/A
 
-
-// Author:          Nicholas Denaro
-// Date Created:    2/12/15
-// Last Modified:   3/19/15 by Nicholas Denaro
-// Description:     Parses the object that is passed in and returns data array.
-// PRE: json is valid JSON with data for only one country, assumed to be in the proper format
-// POST: FCTVAL == a 2d array containing stat, year in the form [stat][year]
-function ParseDescriptor(json)
-{
-    var data = []; // Creates the array for the data to be returned
-    data = json[Object.keys(json)[0]];// Since there will only be one country in each json,
-                                      // we can simply get the first key, and use that to
-                                      // get the value for the data.
-
-    return data;
-}
-
-
-// Author:          Vanajam Soni, Paul Jang
-// Date Created:    3/5/15
-// Last Modified:   3/26/15 by Vanajam Soni
-// Description:     Makes Ajax call to get country data from server
-// PRE: cid is a valid country-id
-// POST: FCTVAL == Ajax object that makes the API call with the given cid
-function GetData(cid)
-{
-    return $.ajax({                                      
-        url: "API/by_country.php?countryIDs=".concat(cid.toString()),                                                    
-        dataType: "JSON",
-        success: function(data){     
-            console.log("Successfully received by_country.php?countryIDs=".concat(cid.toString()));
-        } 
-    });
-
-}
-
 // Author: Vanajam Soni, Kyle Nicholson
 // Date Created: 3/24/15
 // Last Modified: 3/26/15 Vanajam Soni
