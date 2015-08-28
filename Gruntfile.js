@@ -82,7 +82,7 @@ module.exports = function(grunt) {
 		},
                 // javascript unit tests
 		qunit: {
-			files: ['test/*.html']
+			files: ['tst/**/*.html']
 		},
                 // javascript linting
 		jshint: {
@@ -102,7 +102,7 @@ module.exports = function(grunt) {
 				options: {
 					jshintrc: '.jshintrc'
 				},
-				src: ['tst/**/*.html']
+				src: ['tst/**/*.js']
 			}
 		},
                 // css linting
