@@ -28,6 +28,8 @@
 // Dependencies:        descriptor.php, by_stat.php, data.js
 // Additional Notes:    N/A
 
+// High Cyclical Complexity. Change if you want to, I think it looks reasonably simple enough. -Josh Crafts
+/* jshint ignore:start */
 function ColorByHms()
 // PRE:  g_Data, g_StatId, g_HmsYear, g_IntHms, and g_Map are initialized with server data
 // POST: map is recolored in terms of the currently selected stat (based on g_IntHms if
@@ -59,7 +61,7 @@ function ColorByHms()
 			dataSet = temp[j].values;
 		    }
                 }
-                GetColor(dataSet, data, i)
+                GetColor(dataSet, data, i);
                 if (data[i] !== undefined)
                 {
                     if (Number(data[i]) < min)
@@ -84,6 +86,7 @@ function ColorByHms()
         g_Map.series.regions[0].setValues(data);
     }
 }
+/* jshint ignore:end */
 
 function GetColor(dataSet, data, i)
 // PRE:  dataSet is the set of data values for a particular stat for country i

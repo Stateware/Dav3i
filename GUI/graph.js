@@ -494,7 +494,8 @@ function GenerateCombinedData()
     return dataTable;
 }
 
-// Reccommend compartmentalizing this behavior or using the GetValues and GetYears functions to do the same thing
+// Too many statements and high cyclical complexity
+// Reccommend compartmentalizing this behavior or using the GetValues and GetYears functions to do the same thing -Josh Crafts
 /* jshint ignore:start */
 function GenerateSumNode()
 // PRE:  g_DataList, g_StatId, and g_SelectedIndex are initialized with server data

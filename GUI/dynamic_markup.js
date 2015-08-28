@@ -174,6 +174,9 @@ function GetDropdownHTML(statId)
     return menu;
 }
 
+// High cyclical complexity, so throws error in jshint
+// Reccommend compartmentalizing code whenever convenient -Josh Crafts
+/* jshint ignore:start */
 function GetCustomDropdownHTML()
 // PRE:  g_Stats is initialized with server data
 // POST: FCTVAL == html representing 4 dropdown menus including choices for all available data sets and stats
@@ -222,6 +225,7 @@ function GetCustomDropdownHTML()
 
     return menu;
 }
+/* jshint ignore:end */
 
 function ChooseTab(element)
 // PRE: Called from the onclick of a tab
