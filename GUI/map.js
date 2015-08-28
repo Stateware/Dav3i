@@ -29,27 +29,21 @@
 // Dependencies:    index.html, descriptor.php, by_stat.php, lookup_table.js, loading_script.js, data.js
 // Additional Notes:    N/A
 
-
-// Author: Vanajam Soni, Joshua Crafts
-// Date Created: 2/24/2015
-// Last Modified: 4/14/2015 by Paul Jang
-// Description: This function initializes our map, and also includes overrides for custom functionality
-//              (on hover, on select, etc.) and some newly defined helper functions specified below.
-// PRE: index.html, jvectormap/jquery-jvectormap-world-mill-en.js, and div with id "map" exist 
-// POST: The map is initialized in the div "map"
 $(document).ready(function() {
+// PRE: document is loaded
+// POST: g_Map is initialized to a new jvectormap map object with behavior described below
 	g_Map = new jvm.Map(
 	{
 	    map: 'world_mill_en',					// load map file
 	    container: $('#map'),					// specify id of container div
-	    regionsSelectable: true, 				// allows us to select regions
+	    regionsSelectable: true, 					// allows us to select regions
 	    backgroundColor: 'transparent',
 	    regionStyle: {
 		initial: {						// grey out regions without data
 		    fill: '#888888'
 		},
 		hover: {
-		    "fill-opacity": 0.7				// animate hover
+		    "fill-opacity": 0.7					// animate hover
 		},
 		selected: {
 		    "stroke-width": 0.4,				// outline and color when selected
@@ -66,7 +60,7 @@ $(document).ready(function() {
 		    normalizeFunction: 'polynomial'
 		}]
 	    },
-	    // runs when a region is selected
+	    // OVERRIDE: runs when a region is selected
 	    onRegionSelected: function()
 	    {
 		if (g_Clear !== true)				// when clear is selected, each region is deselected one at a time,
@@ -76,7 +70,7 @@ $(document).ready(function() {
 		    GenerateGraphs();
 		}
 	    },
-	    // runs when region is hovered over
+	    // OVERRIDE: runs when region is hovered over
 	    onRegionTipShow: function(e, label, key){
 		var tipString = "",				// string to display when hovering over a country
 		    i, 						// indexing variable
@@ -93,20 +87,20 @@ $(document).ready(function() {
 		{
 		    tipString += label.html()+" - ";
 		}
-		if (g_Stats[g_StatId]['name'] === 'Vaccinations')
+		if (g_Stats[g_StatId].name === 'Vaccinations')
 		{
-			tipString += g_Stats[g_StatId]['subName'][g_IntHms] + ' ' + g_Stats[g_StatId]['name'];
+			tipString += g_Stats[g_StatId].subName[g_IntHms] + ' ' + g_Stats[g_StatId]['name'];
 		}
 		else
 		{
-			tipString += g_Stats[g_StatId]['name'];
+			tipString += g_Stats[g_StatId].name;
 		}
 		tipString += " in " + g_HmsYear + ": ";
 		if (g_Map.series.regions[0].values[key] === undefined)		// notify if no data available
 		{
 		    tipString += "No Data Available";
 		}
-		else if (g_Stats[g_StatId]['name'] === 'Vaccinations')			// else if it is vaccinations,
+		else if (g_Stats[g_StatId].name === 'Vaccinations')			// else if it is vaccinations,
 		{									// print percentage
 		    tipString += (g_Map.series.regions[0].values[key] * 100).toFixed(0) + "%";
 		}
@@ -130,5 +124,6 @@ $(document).ready(function() {
 	    g_Clear = false;
 	};
 
+	// trigger data pull, map coloring, and loading screen fade out
 	ParseData();
 });

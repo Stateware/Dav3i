@@ -28,64 +28,60 @@
 // Dependencies:            index.html, lookup_table.js, data.js
 // Additional Notes:        N/A
 
-// Author: Paul Jang, Nicholas Denaro
-// Date Created: 3/26/2015
-// Last Modified: 4/14/2015 by Nicholas Denaro
-// Description: Retrieve stat values from the lookup_table,
-//              Builds the tabs and inserts them into index.html
-// PRE: lookup_table is filled correctly, index.html exists
-// POST: index.html contains tabs of the correct stat data from the lookup_table
 function BuildTabs()
+// PRE:  .control-panel is loaded in the document, g_Stats is initialized with server data
+// POST: .control-panel contains all stat tabs, including 'custom'
 {
-    var i,
-        temp,
-        div;
+    var i;
 
+    // create stat tabs and divs
     for(i in g_Stats)
     {
-        temp=g_Stats[i]['name'];
-        div=document.createElement("DIV");
-        div.id="id-"+i;
-        div.setAttribute("stat",i);
-        div.className="graph-tab";
-        div.setAttribute("onclick","ChooseTab(this)");
-        div.innerHTML=temp;
-        document.getElementById("tabsDiv").appendChild(div);
-
-        BuildDiv(i);
-
-        if(i === g_StatId)
-        {
-            document.getElementById("id-"+i+"-graphs").style.display="block";
-            div.className="graph-tab selected-tab";
+	if (g_Stats.hasOwnProperty(i)) {
+            document.getElementById("tabsDiv").appendChild(CreateTab(g_Stats[i].name, i));
         }
     }
 
-    temp='Custom';
-    div=document.createElement("DIV");
-    div.id="id-custom";
-    div.setAttribute("stat",'custom');
-    div.className="graph-tab";
-    div.setAttribute("onclick","ChooseTab(this)");
-    div.innerHTML=temp;
-    document.getElementById("tabsDiv").appendChild(div);
-
-    BuildDiv('custom');
+    // create custom tab and div
+    document.getElementById("tabsDiv").appendChild(CreateTab('Custom', 'custom'));
 }
 
-// Author: Nicholas Denaro
-// Date Created: 4/16/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: Assigns values to the year ranges
-// PRE: lookup_table is filled correctly, index.html exists
-// POST: appropriate input tags are modified and g_TempSettings array is initialized
+function CreateTab(name, id)
+// PRE:  name is a text string representing the name to put on the tab
+//       id is a text string to be used to create that tab's id
+// POST: FCTVAL == a tab with text name and id id,
+//       and a div to go with this tab is created in the control panel
+{
+    var div;
+
+    div=document.createElement("div");
+    div.id="id-"+id;
+    div.setAttribute("stat", id);
+    div.className="graph-tab";
+    div.setAttribute("onclick","ChooseTab(this)");
+    div.innerHTML=name;
+
+    BuildDiv(id);
+
+    if(id === g_StatId)
+    {
+        document.getElementById("id-"+id+"-graphs").style.display="block";
+        div.className="graph-tab selected-tab";
+    }
+
+    return div;
+}
+
 function UpdateInputs()
+// PRE:  .settings-screen is loaded in the document, g_FirstYear and g_LastYear are initialized
+//       with server data
+// POST: default settings values are set and g_TempSettings array is initialized with original settings
 {
     var startDiv=document.getElementById("year-range-start"),
         endDiv=document.getElementById("year-range-end"),
         heatmapYearDiv=document.getElementById("heatmap-year");
 	
-	// set min and max for the settings input boxes
+    // set min and max for the settings input boxes
     startDiv.max=g_LastYear;
     startDiv.min=g_FirstYear;	
 	
@@ -100,16 +96,12 @@ function UpdateInputs()
     g_TempSettings[1]=g_LastYear;   
     g_TempSettings[2]=g_LastYear;
     g_TempSettings[3]=0;
-    g_TempSettings[4]=1;
+    g_TempSettings[4]=0;
 }
 
-// Author: Paul Jang, Nicholas Denaro
-// Date Created: 3/26/2015
-// Last Modified: 3/26/2015 by Paul Jang
-// Description: build divs where the graphs go in index.html
+function BuildDiv(statId)
 // PRE: Called from BuildTabs
 // POST: appropriate divs are created
-function BuildDiv(statId)
 {
     var div=document.createElement("DIV");
     div.id="id-"+statId+"-graphs";
@@ -122,21 +114,28 @@ function BuildDiv(statId)
 }
 
 function BuildDropDown(statId)
+// PRE:  statId is the name of some data table from the database
+//       ParseData() has been called and all globals have been set successfully
+// POST: FCTVAL == a div object which contains a dropdown menu with indices of all
+//       data sets relevant to statId and their tags if they exist
 {
     var div=document.createElement("DIV"),
         menu = "";
-    div.id="id-"+statId+"-dropdown";
-    div.style.display="none";
-    div.style.top="8%";
-    div.style.height="10%";
-    div.className="graph";
+        div.id="id-"+statId+"-dropdown";
+        div.style.display="none";
+        div.style.top="8%";
+        div.style.height="10%";
+        div.className="graph";
 
     if (g_StatId === 'custom')
     {
         menu += "<p class='open-sans'>Select Data Set</p><select name='stat1' onchange='SelectIndex(this)'>";
         for (i in g_Stats)
         {
-            menu += "<option value='" + i + "'>" + i + " - ";
+	    if (g_StatshasOwnProperty(i))
+            {
+                menu += "<option value='" + i + "'>" + i + " - ";
+            }
         }
     }
     else
@@ -144,16 +143,19 @@ function BuildDropDown(statId)
         menu += "<p class='open-sans'>Select Data Set</p><select name='index' onchange='SelectIndex(this)'>";
         for (i in g_Stats[g_StatId]['tags'])
         {
-            menu += "<option value='" + i + "'>" + i + " - ";
-            if (g_Stats[g_StatId]['tags'][i] === "")
+	    if (g_Stats[g_StatId].tags.hasOwnProperty(i))
             {
-                menu += "untagged";
+                menu += "<option value='" + i + "'>" + i + " - ";
+                if (g_Stats[g_StatId].tags[i] === "")
+                {
+                    menu += "untagged";
+                }
+                else
+                {
+                    menu += g_Stats[g_StatId].tags[g_SelectedIndex];
+                }
+                menu += "</option></br>";
             }
-            else
-            {
-                menu += g_Stats[g_StatId]['tags'][g_SelectedIndex];
-            }
-            menu += "</option></br>";
         }
         menu += "</select>";
     }
@@ -163,13 +165,9 @@ function BuildDropDown(statId)
     return div;
 }
 
-// Author: Paul Jang, Nicholas Denaro
-// Date Created: 3/26/2015
-// Last Modified: 4/14/2015 by Nicholas Denaro
-// Description: build divs where the graphs go in index.html
+function ChooseTab(element)
 // PRE: Called from the onclick of a tab
 // POST: previous tab is switched out, and now tab is switched in
-function ChooseTab(element)
 {
     var parentTabDivName,
         prevTab,
@@ -191,25 +189,21 @@ function ChooseTab(element)
 
     if (g_StatId !== 'custom')
     {
-        ColorByHMS();
+        ColorByHms();	
     }
 
     document.getElementById(element.id+"-graphs").innerHTML=menu;
     GenerateSubDivs();
-    if (g_GraphType === 0 || g_GraphType === 1 && g_Stats[g_StatId]['type'] === 'int')
+    if (g_GraphType === 0 || g_GraphType === 1 && g_Stats[g_StatId].type === 'int')
     {
         FixDivSize();
     }
     GenerateGraphs();
 }
 
-// Author: Nicholas Denaro
-// Date Created: 4/18/2015
-// Last Modified: 4/18/2015 by Nicholas Denaro
-// Description: Rotates the tabs left or right depending on the direction
+function RotateTabs(direction)
 // PRE: direction!=0
 // POST: The first/last tab is moved to the last/first position
-function RotateTabs(direction)
 {
     var div,
     tabs=document.getElementById("tabsDiv"),
@@ -229,24 +223,16 @@ function RotateTabs(direction)
     }
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 3/31/2015 by Emma Roudabush
-// Description: Fades the screen back to the main page
+function SwitchToMain ()
 // PRE: N/A
 // POST: Screen is switched to the main page
-function SwitchToMain ()
 {
     $(".loading-screen").fadeOut(750);
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/30/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: Opens the settings overlay
+function OpenSettings()
 // PRE: N/A
 // POST: Settings overlay is showing with black backing mask and all stat values are reset
-function OpenSettings()
 {
      ResetAllStatValues();
 	 
@@ -254,13 +240,9 @@ function OpenSettings()
      
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: Closes the settings overlay and assigns global values
+function CloseSettings()
 // PRE: Settings overlay is currently showing on screen
 // POST: Settings overlay and mask is gone
-function CloseSettings()
 {
     $(".settings-screen, .settings-black").fadeOut(400);
         
@@ -277,35 +259,23 @@ function CloseSettings()
     document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/30/2015
-// Last Modified: 3/31/2015 by Emma Roudabush
-// Description: Opens the settings overlay
+function OpenHelp()
 // PRE: N/A
 // POST: Settings overlay is showing with black backing mask
-function OpenHelp()
 {
      $(".help-screen, .help-black").fadeIn(400);
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 4/16/2015 by Nicholas Denaro
-// Description: Closes the settings overlay and assigns global values
+function CloseHelp()
 // PRE: Settings overlay is currently showing on screen
 // POST: Settings overlay and mask is gone
-function CloseHelp()
 {
     $(".help-screen, .help-black").fadeOut(400);
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 4/20/2015 by Kyle Nicholson
-// Description: Expands the c ontrol panel
+function Expand()
 // PRE: N/A
 // POST: Control panel is expanded and black mask is in place behind
-function Expand()
 {
     $(".control-panel").animate({width:"97.5%"}, 500);
     $("#expand").attr("onclick","Shrink()");
@@ -320,7 +290,7 @@ function Expand()
 	        g_Expanded = true;
 	        GenerateSubDivs();
 	        // if single graph, graph is expanded to whole section
-	        if(g_GraphType === 1 && g_StatList[g_StatId]['type'] !== 'int' || g_GraphType === 2)
+	        if(g_GraphType === 1 && g_StatList[g_StatId].type !== 'int' || g_GraphType === 2)
 	        {
 	            document.getElementById("region-graphs-1").style.width = "100%";
 	            document.getElementById("region-graphs-1").style.height = "100%";
@@ -334,13 +304,9 @@ function Expand()
     }, 500);
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 4/16/2015 by Paul Jang
-// Description: Shrinks the control panel
+function Shrink()
 // PRE: Control panel is currently expanded
 // POST: Control panel shrinks back to original size and black mask is gone
-function Shrink()
 {
     $(".control-panel").animate({width:"25%"}, 500);
     $("#expand").attr("onclick","Expand()");
@@ -357,18 +323,12 @@ function Shrink()
     }, 500);
 }
 
-
-// Author: Paul Jang
-// Date Created: 4/2/2015
-// Last Modified: 4/20/2015 by Kyle Nicholson
-// Description: Calls CreateDiv to dynamically generate subgraph divs and generate graphs
-// PRE: CreateDiv functions correctly, g_DataList is properly full
-// POST: Divs are created based on how many countries are selected,
-//       Correct graphs are filled in the appropriate divs
 function GenerateSubDivs()
+// PRE: g_DataList is initialized
+// POST: Divs are created based on how many countries are selected,
+//       Correct graphs are filled in the appropriate divs based on graph type
 {
-    var size,
-        i,
+    var i,
         parentTabDivName,
         currentNumDivs,
         children,
@@ -377,14 +337,13 @@ function GenerateSubDivs()
     // only if there are countries in the data list
     if(g_DataList !== undefined)
     {
-        size = g_DataList.size;
         parentTabDivName = "id-"+g_StatId+"-graphs";
         currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
         children = document.getElementById(parentTabDivName).childNodes;
         // if we only need one graph for either combined lines or summation of lines
-        if(g_GraphType === 1 && g_Stats[g_StatId]['type'] !== 'int' || g_GraphType === 2)
+        if(g_GraphType === 1 && g_Stats[g_StatId].type !== 'int' || g_GraphType === 2)
         {
-            if(size !== 0)
+            if(g_DataList.size !== 0)
             {
             	CreateSubDiv("region-graphs-1",parentTabDivName);
 	    }
@@ -398,28 +357,32 @@ function GenerateSubDivs()
         }
         else
         {
-            while (size < currentNumDivs)
-            {
-                $("#region-graphs-"+currentNumDivs).remove();
-                currentNumDivs--;
-            }
-            while (size > currentNumDivs)
-            {
-                CreateSubDiv("region-graphs-"+(currentNumDivs+1), parentTabDivName);
-                currentNumDivs++;
-            }
+            FixDivNum(currentNumDivs, parentTabDivName);
         }
     }
 }
 
-// Author: Paul Jang
-// Date Created: 4/2/2015
-// Last Modified: 4/20/2015 by Paul Jang
-// Description: Creates a single div with an inputted id and
-//              appends it to the specified parent div
-// PRE: Parent div exists
-// POST: Single div is appended to the parent div
+function FixDivNum(numDivs, parent)
+// PRE:  numDivs is the current number of divs available for graphing, and the g_GraphType
+//       is 1 or g_GraphType is 2 and the selected stat type is 'int'
+//       parent is the parent element into which any new divs must be appended
+// POST: numDivs == g_DataList.size
+{
+   while (g_DataList.size < numDivs)
+   {
+       $("#region-graphs-"+numDivs).remove();
+       numDivs--;
+   }
+   while (g_DataList.size > numDivs)
+   {
+       CreateSubDiv("region-graphs-"+(numDivs+1), parent);
+       numDivs++;
+   }
+}
+
 function CreateSubDiv(id,parent)
+// PRE: div parent with id id exists
+// POST: Single div is appended to parent
 {
     var elem = document.createElement('div'),
         divs,
@@ -431,7 +394,7 @@ function CreateSubDiv(id,parent)
     document.getElementById(parent).appendChild(elem);
 
     if(g_Expanded  && (g_GraphType === 0 || 
-        (g_Stats[g_StatId]['type'] === 'int' && g_GraphType === 1)))
+        (g_Stats[g_StatId].type === 'int' && g_GraphType === 1)))
     {
         $(elem).click(function() {
             if(document.getElementById(id).style.width !== "100%")
@@ -451,6 +414,11 @@ function CreateSubDiv(id,parent)
 }
 
 function FixDivSize()
+// PRE:  g_GraphType == 0 or g_GraphType == 1 and the stat being graphed is of type 'int'
+//       graph divs "region-graphs-1" through "region-graphs-" + g_DataList.size+1 exist in the document
+//       g_DataList is initialized and contains relevant data
+// POST: the size of the graph divs is adjusted to fit the view, either to fit a quarter of the expanded view, or half
+//       of the collapsed view (vertically)
 {
     var i;
 
@@ -468,27 +436,19 @@ function FixDivSize()
     }
 }
 
-// Author: Joshua Crafts
-// Date Created: 4/17/2015
-// Last Modified: 4/17/2015 by Joshua Crafts
-// Description: Pops up team info
+function teamPopup()
 // PRE: none
 // POST: Alert box pops up with info about project contributors
-function teamPopup()
 {
     window.alert("Stateware Team\nSpring 2015:\nWilliam Bittner," + 
         " Joshua Crafts, Nicholas Denaro, Dylan Fetch, Paul Jang," + 
         " Arun Kumar, Drew Lopreiato, Kyle Nicholson, Emma " + "Roudabush, Berty Ruan, Vanajam Soni");
 }
 
-// Author: Joshua Crafts
-// Date Created: 4/17/2015
-// Last Modified: 4/17/2015 by Joshua Crafts
-// Description: Pops up info on reporting a bug
+function bugPopup()
 // PRE: none
 // POST: Alert box pops up with info about and instructions for 
 //       reporting a bug
-function bugPopup()
 {
     window.alert("If you would like to report a bug, please send " + "an email to stateware@acm.psu.edu with the following " + 
         "details included in your message:\n1. Description of the " + "bug\n2. Steps for reproducing the bug\n3. What browser and" + 

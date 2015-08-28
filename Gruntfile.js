@@ -9,6 +9,7 @@ module.exports = function(grunt) {
 			'* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>;\n' +
 			' Licensed <%= pkg.license.type %> (<%= pkg.license.url %>) */\n',
 		// Task configuration.
+                // clean prod and log directories
 		clean: {
 			prod: {
 				src: ['prod/*.js', 'prod/*.css', 'prod/*.html']
@@ -17,6 +18,7 @@ module.exports = function(grunt) {
 				src: ['log/*.txt']
 			}
 		},
+                // concatenate javascript files
 		concat: {
 			options: {
 				banner: '<%= banner %>',
@@ -35,6 +37,7 @@ module.exports = function(grunt) {
 				dest: 'prod/upload_lib.js'
 			}
 		},
+                // concatenate css files
 		concat_css: {
 			appWide: {
 				src: ['<%= pkg.css.appWide %>'],
@@ -49,6 +52,7 @@ module.exports = function(grunt) {
 				dest: 'prod/upload_style.css' 
 			}
 		},
+                // minify css files
 		cssmin: {
 			target: {
 				files: [
@@ -58,6 +62,7 @@ module.exports = function(grunt) {
 				]
 			}
 		},
+                // minify javascript files
 		uglify: {
 			options: {
 				banner: '<%= banner %>'
@@ -75,9 +80,11 @@ module.exports = function(grunt) {
 				dest: 'prod/upload_lib.min.js'
 			}
 		},
+                // javascript unit tests
 		qunit: {
 			files: ['test/*.html']
 		},
+                // javascript linting
 		jshint: {
 			gruntfile: {
 				options: {
@@ -98,6 +105,7 @@ module.exports = function(grunt) {
 				src: ['tst/**/*.html']
 			}
 		},
+                // css linting
 		csslint: {
 			options: {
 				csslintrc: '.csslintrc'

@@ -35,8 +35,8 @@ var g_BUCKETS = 676;				// number of hashable buckets in the lookup table
 var g_Data;      				// CID, CC2, name, and HMS lookup table
 var g_Countries;				// number of countries for which data exists
 var g_Stats;      	   			// stat reference list, indexed by stat ID
-var g_SelectedIndex = 0;
-var g_Diseases;
+var g_SelectedIndex = 0;			// index of selected stat data set
+var g_Diseases;					// list of diseases
 var g_FirstYear;        			// first year for which data is available
 var g_LastYear;         			// last year for which data is available
 var g_YearStart;        			// first year for which user wants data
