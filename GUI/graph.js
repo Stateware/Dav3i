@@ -274,7 +274,7 @@ function GraphIntegrated(divID, node, maxVal)
         }
     }
 
-    options['series'] = dataSeries;
+    options.series = dataSeries;
 	
     formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
     for(i=1; i<data.getNumberOfColumns(); i++)
@@ -355,7 +355,7 @@ function GenerateSingleData(data)
     {
         dataTable = GenerateSingleEstData(data);
     }
-    else if (g_Stats[g_StatId]['type'] === 'int')
+    else if (g_Stats[g_StatId].type === 'int')
     {
         dataTable = GenerateSingleIntData(data);
     }
@@ -494,6 +494,8 @@ function GenerateCombinedData()
     return dataTable;
 }
 
+// Reccommend compartmentalizing this behavior or using the GetValues and GetYears functions to do the same thing
+/* jshint ignore:start */
 function GenerateSumNode()
 // PRE:  g_DataList, g_StatId, and g_SelectedIndex are initialized with server data
 // POST: FCTVAL == t_AsdsNode with cc2 = 'sum', name = comma delimited list of country names,
@@ -515,6 +517,7 @@ function GenerateSumNode()
     for (i = 1; i < g_DataList.size; i++)
     {
         name += ", " + cur.name;
+        // add all data values for stat and substats to the copied node, effectively creating a sum node with respect to the needed stat
         if (g_Stats[g_StatId].type === 'est')
         {
             for (j = g_Data[cur.cc2][g_StatId].firstYear; j <= g_Data[cur.cc2][g_StatId].lastYear; j++)
@@ -536,7 +539,7 @@ function GenerateSumNode()
                 }
             }
         }
-        else if (g_Stats[g_StatId]['type'] === 'int')
+        else if (g_Stats[g_StatId].type === 'int')
         {
             for (j = g_Data[cur.cc2][g_StatId].firstYear; j <= g_Data[cur.cc2][g_StatId].lastYear; j++)
             {
@@ -565,7 +568,7 @@ function GenerateSumNode()
             for (j = g_Data[cur.cc2][g_StatId].firstYear; j <= g_Data[cur.cc2][g_StatId].lastYear; j++)
             {
 		data[g_SelectedIndex].values['y_' + j] = Number(data[g_SelectedIndex].values['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId].data[g_SelectedIndex].values['y_' + j]) != -1)
+                if (Number(g_Data[cur.cc2][g_StatId].data[g_SelectedIndex].values['y_' + j]) !== -1)
                 {
                     data[g_SelectedIndex].values['y_' + j] += Number(g_Data[cur.cc2][g_StatId].data[g_SelectedIndex].values['y_' + j]);
                 }
@@ -588,6 +591,7 @@ function GenerateSumNode()
 
     return sumNode;
 }
+/* jshint ignore:end */
 
 function GetMaxFromValueRow(values)
 // PRE:  values is an object with its keys being column ids from the source database table,
@@ -597,7 +601,8 @@ function GetMaxFromValueRow(values)
 {
     var max = Number.MIN_VALUE,
         re = new RegExp("y_(\\d+)"),
-        temp;
+        temp,
+        i;
 
     for (i in values)
     {
@@ -629,19 +634,7 @@ function FindMax()
     for (i = 0; i < g_DataList.size; i++)
     {
         // get max of current node for current stat
-        if (g_Stats[g_StatId]['type'] === 'est')
-        {
-            thisNodeMax = Math.max.apply(Math, [GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][0]), GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][1]), GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][2])]);
-        }
-        else if (g_Stats[g_StatId]['type'] === 'int')
-        {
-            thisNodeMax = Math.max.apply(Math, [GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][0]['values']),GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][1]['values']),GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][2]['values'])]);
-        }
-        else
-        {
-            thisNodeMax = GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values']);
-        }
-
+        thisNodeMax = GetMaxThisNode(cur);
         if (thisNodeMax > max)
         {
             max = thisNodeMax;
@@ -657,3 +650,26 @@ function FindMax()
     return max;   
 }
 
+function GetMaxThisNode(node)
+// PRE:  g_DataList, g_StatId, and g_SelectedIndex are initialized with server data
+//       g_ParsedStatList, g_YearFirst, g_FirstYear and g_YearEnd exist and contain correct data
+//       node is a particular node of g_DataList
+// POST: FCTVAL == the max value of stat g_StatId for node node
+{
+    var max;
+
+    if (g_Stats[g_StatId].type === 'est')
+    {
+        max = Math.max.apply(Math, [GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[0]), GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[1]), GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[2])]);
+    }
+    else if (g_Stats[g_StatId].type === 'int')
+    {
+        max = Math.max.apply(Math, [GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[0].values),GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[1].values),GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[2].values)]);
+    }
+    else
+    {
+        max = GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values);
+    }
+
+    return max;
+}

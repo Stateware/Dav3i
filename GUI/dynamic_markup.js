@@ -30,7 +30,8 @@
 
 function BuildTabs()
 // PRE:  .control-panel is loaded in the document, g_Stats is initialized with server data
-// POST: .control-panel contains all stat tabs, including 'custom'
+// POST: .control-panel contains all stat tabs, including 'custom', as well as their graph sections
+//       and dropdown menus
 {
     var i;
 
@@ -66,6 +67,7 @@ function CreateTab(name, id)
     if(id === g_StatId)
     {
         document.getElementById("id-"+id+"-graphs").style.display="block";
+        document.getElementById("id-"+id+"-dropdown").style.display="block";
         div.className="graph-tab selected-tab";
     }
 
@@ -104,65 +106,121 @@ function BuildDiv(statId)
 // POST: appropriate divs are created
 {
     var div=document.createElement("DIV");
+
     div.id="id-"+statId+"-graphs";
     div.style.display="none";
     div.style.top="18%";
     div.style.height="77%";
     div.className="graph";
-    document.getElementById("graphs").appendChild(BuildDropDown(statId));
+    document.getElementById("graphs").appendChild(BuildDropdown(statId));
     document.getElementById("graphs").appendChild(div);
 }
 
-function BuildDropDown(statId)
+function BuildDropdown(statId)
 // PRE:  statId is the name of some data table from the database
 //       ParseData() has been called and all globals have been set successfully
 // POST: FCTVAL == a div object which contains a dropdown menu with indices of all
 //       data sets relevant to statId and their tags if they exist
 {
     var div=document.createElement("DIV"),
-        menu = "";
-        div.id="id-"+statId+"-dropdown";
-        div.style.display="none";
-        div.style.top="8%";
-        div.style.height="10%";
-        div.className="graph";
+        menu = "",
+        i;
 
-    if (g_StatId === 'custom')
+    div.id="id-"+statId+"-dropdown";
+    div.style.display="none";
+    div.style.top="8%";
+    div.style.height="10%";
+
+    if (statId === 'custom')
     {
-        menu += "<p class='open-sans'>Select Data Set</p><select name='stat1' onchange='SelectIndex(this)'>";
-        for (i in g_Stats)
-        {
-	    if (g_StatshasOwnProperty(i))
-            {
-                menu += "<option value='" + i + "'>" + i + " - ";
-            }
-        }
+        menu += GetCustomDropdownHTML();
     }
     else
     {
-        menu += "<p class='open-sans'>Select Data Set</p><select name='index' onchange='SelectIndex(this)'>";
-        for (i in g_Stats[g_StatId]['tags'])
-        {
-	    if (g_Stats[g_StatId].tags.hasOwnProperty(i))
-            {
-                menu += "<option value='" + i + "'>" + i + " - ";
-                if (g_Stats[g_StatId].tags[i] === "")
-                {
-                    menu += "untagged";
-                }
-                else
-                {
-                    menu += g_Stats[g_StatId].tags[g_SelectedIndex];
-                }
-                menu += "</option></br>";
-            }
-        }
-        menu += "</select>";
+        menu += GetDropdownHTML(statId);
     }
 
     div.innerHTML = menu;
 
     return div;
+}
+
+function GetDropdownHTML(statId)
+// PRE:  statId is the id of some stat that exists in g_Stats, and g_Stats is initialized with server data
+// POST: FCTVAL == html representing a dropdown menu including choices for all available data sets for stat statId
+{
+    var i,
+        menu = "";
+
+    menu += "<p class='open-sans'>Select Data Set</p><select name='index' onchange='SelectIndex(this)'>";
+    for (i in g_Stats[statId].tags)
+    {
+	if (g_Stats[statId].tags.hasOwnProperty(i))
+        {
+            menu += "<option value='" + i + "'>" + i + " - ";
+            if (g_Stats[statId].tags[i] === "")
+            {
+                menu += "untagged";
+            }
+            else
+            {
+                menu += g_Stats[statId].tags[g_SelectedIndex];
+            }
+            menu += "</option></br>";
+        }
+    }
+    menu += "</select>";
+
+    return menu;
+}
+
+function GetCustomDropdownHTML()
+// PRE:  g_Stats is initialized with server data
+// POST: FCTVAL == html representing 4 dropdown menus including choices for all available data sets and stats
+{
+    var i, j,
+        menu = "";
+
+    menu += "<p class='open-sans'>Stat 1</p><select id='stat1' name='index' onchange='SelectStat(this)'>";
+    for (i in g_Stats)
+    {
+	if (g_Stats.hasOwnProperty(i))
+        {
+            if (g_Stats[i].type === 'int')
+            {
+                for (j = 0; j < g_Stats[i].subName.length; j++)
+                {
+                    menu += "<option value='" + i + "+" + j + "'>" + g_Stats[i].name + " - " + g_Stats[i].subName[j] + "</option>";
+                }
+            }
+            else
+            {
+                menu += "<option value='" + i + "'>" + g_Stats[i].name + "</option>";
+            }
+        }
+    }
+    menu += "</select>";
+    menu += "<p class='open-sans'>Stat 2</p><select id='stat2' name='index' onchange='SelectStat(this)'>";
+    for (i in g_Stats)
+    {
+	if (g_Stats.hasOwnProperty(i))
+        {
+            if (g_Stats[i].type === 'int')
+            {
+                for (j = 0; j < g_Stats[i].length; j++)
+                {
+                    menu += "<option value='" + i + "'>" + g_Stats[i].name + ' - ' + g_Stats[i].subName[j] + "</option>";
+                }
+            }
+            else
+            {
+                menu += "<option value='" + i + "'>" + g_Stats[i].name + "</option>";
+            }
+        }
+    }
+    menu += "</select>";
+
+    return menu;
 }
 
 function ChooseTab(element)
@@ -394,7 +452,7 @@ function CreateSubDiv(id,parent)
     document.getElementById(parent).appendChild(elem);
 
     if(g_Expanded  && (g_GraphType === 0 || 
-        (g_Stats[g_StatId].type === 'int' && g_GraphType === 1)))
+        g_Stats[g_StatId].type === 'int' && g_GraphType === 1))
     {
         $(elem).click(function() {
             if(document.getElementById(id).style.width !== "100%")

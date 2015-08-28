@@ -10,6 +10,11 @@
 			"g_YearEnd": true,
 			"g_DataList": true,
 			"g_StatID": true,
+			"g_StatID1": true,
+			"g_StatID2": true,
+			"g_SelectedIndex": true,
+			"g_SelectedIndex1": true,
+			"g_SelectedIndex2": true,
 			"g_HMSYear": true,
 			"g_ParsedStatList": true,
 			"g_GraphType": true,
@@ -44,7 +49,7 @@
 	"latedef" : false,		// prohibits using variables before they are defined
 	"maxcomplexity" : 7,		// limits cyclomatic complexity
 	"maxparams" : 5,		// limits number of formal parameters to a function; larger parameter lists should be condensed by using objects
-	"maxstatements" : 20,		// limits length of functions
+	"maxstatements" : 25,		// limits length of functions
 	"nocomma" : true,		// prohibits use of comma operator
 	"nonbsp" : true,		// prohibits non-breaking whitespace that can break non utf-8 pages
 	"singleGroups" : true,		// prohibits the use of parentheses when it does not change the meaning of code (primarily unary operators)

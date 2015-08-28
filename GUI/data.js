@@ -42,7 +42,11 @@ var g_LastYear;         			// last year for which data is available
 var g_YearStart;        			// first year for which user wants data
 var g_YearEnd;          			// last year for which user wants data
 var g_DataList;         			// data list for use in graphing
-var g_StatId;           			// stat ID corresponding to selected HMS.
+var g_StatId;           			// stat ID corresponding to selected stat
+var g_StatId1;					// first selected stat ID for comparison
+var g_SelectedIndex1 = 0;			// index of selected stat data set for stat 1
+var g_StatId2;					// second selected stat ID for comparison
+var g_SelectedIndex2 = 0;			// index of selected stat data set for stat 2
 var g_HmsYear;          			// year for which HMS data is wanted
 var g_GraphType = 0;        			// represents the graph type, enumerated 0 to 2
 var g_Clear = false;				// used by the clear selection function to avoid rebuilding data list on each deselect

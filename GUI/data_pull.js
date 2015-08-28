@@ -59,21 +59,10 @@ function ColorByHms()
 			dataSet = temp[j].values;
 		    }
                 }
-                if (g_Data[i][g_StatId].type === 'int')
-                {
-                    GetIntColor(dataSet, data, i);
-                }
-                else if (g_Data[i][g_StatId].type === 'est')
-                {
-                    GetEstColor(dataSet, data, i);
-                }
-                else // g_Data[i][g_StatId].type === 'lin' || g_Data[i][g_StatId].type === 'bar'
-                {
-                    GetOtherColor(dataSet, data, i);
-                }
+                GetColor(dataSet, data, i)
                 if (data[i] !== undefined)
                 {
-                   if (Number(data[i]) < min)
+                    if (Number(data[i]) < min)
                     {
                         min = data[i];
                     }
@@ -93,6 +82,26 @@ function ColorByHms()
     if (Object.keys(data).length > 0)
     {
         g_Map.series.regions[0].setValues(data);
+    }
+}
+
+function GetColor(dataSet, data, i)
+// PRE:  dataSet is the set of data values for a particular stat for country i
+//       i is a valid cc2 code
+//       data is the array of values to be attached to the map
+// POST: data[i] is set to value of the stat identified by g_StatId for year g_HmsYear for country i
+{
+    if (g_Data[i][g_StatId].type === 'int')
+    {
+        GetIntColor(dataSet, data, i);
+    }
+    else if (g_Data[i][g_StatId].type === 'est')
+    {
+        GetEstColor(dataSet, data, i);
+    }
+    else // g_Data[i][g_StatId].type === 'lin' || g_Data[i][g_StatId].type === 'bar'
+    {
+        GetOtherColor(dataSet, data, i);
     }
 }
 
@@ -221,14 +230,14 @@ function BuildList(selectedRegions)
     var i,			// indexing variable
         node;			// new node to be added to list
 
-    if (g_DataList == null)					// create list if it does not exist
+    if (g_DataList == null)						// create list if it does not exist
     {
 	g_DataList = new c_List();
     }
 
-    g_DataList.clear();						// clear list
+    g_DataList.clear();							// clear list
 
-    for(var i = 0; i < selectedRegions.length; i++)			// iterate through list of selected countries
+    for(i = 0; i < selectedRegions.length; i++)				// iterate through list of selected countries
     {									//  and prepend associated object to list
         if (g_Data[selectedRegions[i]] !== undefined && g_Data[selectedRegions[i]][g_StatId] !== undefined)
         {

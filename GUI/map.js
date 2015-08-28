@@ -89,7 +89,7 @@ $(document).ready(function() {
 		}
 		if (g_Stats[g_StatId].name === 'Vaccinations')
 		{
-			tipString += g_Stats[g_StatId].subName[g_IntHms] + ' ' + g_Stats[g_StatId]['name'];
+			tipString += g_Stats[g_StatId].subName[g_IntHms] + ' ' + g_Stats[g_StatId].name;
 		}
 		else
 		{
