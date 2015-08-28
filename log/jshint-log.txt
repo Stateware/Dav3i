@@ -1,0 +1,10 @@
+[4mRunning "jshint:gruntfile" (jshint) task[24m
+[32m>> [39m1 file lint free.
+
+[4mRunning "jshint:src" (jshint) task[24m
+[32m>> [39m7 files lint free.
+
+[4mRunning "jshint:test" (jshint) task[24m
+[32m>> [39m1 file lint free.
+
+[32mDone, without errors.[39m
