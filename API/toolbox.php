@@ -22,11 +22,11 @@
 
 /* File Name:           toolbox.php
  * Description:         This will be included in nearly every PHP file we write and it will hold commonly
- *                             used functions and any globals we may need.
+ *                      used functions and any globals we may need.
  * Date Created:        2/12/2015
- * Contributors:        Drew Lopreiato, William Bittner, Kyle Nicholson, Berty Ruan, Arun Kumar
- * Date Last Modified:  5/1/2015
- * Last Modified By:    William Bittner
+ * Contributors:        Drew Lopreiato, William Bittner, Kyle Nicholson, Berty Ruan, Arun Kumar, Joshua Crafts
+ * Date Last Modified:  8/19/2015
+ * Last Modified By:    Joshua Crafts
  * Dependencies:        none
  * Input:               none
  * Output:              none

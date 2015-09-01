@@ -21,19 +21,14 @@
  */
 
 /* File Name:           data_parser.php
- * Description:         This file takes an CSV given by data_uploader.php, and parses it into
+ * Description:         This file takes a CSV  or CSVs given by upload.html, and parses it into
  *                      the database.
- * 
  * Date Created:        3/18/2015
- * Contributors:        Drew Lopreiato, William Bittner
+ * Contributors:        Drew Lopreiato, William Bittner, Joshua Crafts
  * Date Last Modified:  4/23/2015
- * Last Modified By:    Drew Lopreiato
+ * Last Modified By:    Joshua Crafts
  * Dependencies:        connect.php
- * Input:               NONE
- * Output:              NONE
- * Additional Notes:    In its current iteration, this document has security vulnerabilities
- *                      that could seriously damage the database. Keeping this file uploaded
- *                      while not actively being developed is NOT recommended.
+ * Additional Notes:    N/A
  */
 
 require_once("api_library.php");

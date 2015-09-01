@@ -23,9 +23,9 @@
 /* File Name:           api_library.php
  * Description:         This file holds all of the functions which the api calls will return as well as helper functions to those calls
  * Date Created:        2/19/2015
- * Contributors:        William Bittner, Drew Lopreiato, Kyle Nicholson, Arun Kumar, Dylan Fetch
- * Date Last Modified:  5/1/2015
- * Last Modified By:    William Bittner
+ * Contributors:        William Bittner, Drew Lopreiato, Kyle Nicholson, Arun Kumar, Dylan Fetch, Joshua Crafts
+ * Date Last Modified:  9/1/2015
+ * Last Modified By:    Joshua Crafts
  * Dependencies:        connect.php, toolbox.php
  * Input:               none                     
  * Output:              none
