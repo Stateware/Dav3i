@@ -495,6 +495,8 @@ function GenerateSingleOtherData(data)
     return dataTable;
 }
 
+//TODO: reduce cyclomatic complexity to below jshint threshold
+/* jshint ignore:start */
 function GenerateCustomData(node)
 // PRE:  node is a pointer to a particular node in g_DataList
 // POST: FCTVAL == a google charts DataTable object containing all necessary data from 2 stats
@@ -578,6 +580,7 @@ function GenerateCustomData(node)
     }
     return dataTable;
 }
+/* jshint ignore:end */
 
 function GenerateCombinedData()
 // PRE:  g_DataList, g_StatId, and g_SelectedIndex are initialized with server data
@@ -683,6 +686,8 @@ function GenerateSumNode()
     return sumNode;
 }
 
+//TODO: reduce cyclomatic complexity to below jshint threshold
+/* jshint ignore:start */
 function AddValuesFromNode(data, node, statId, index)
 // PRE:  data is a pointer to the 'data' field of the output node's node[cc2][statId] object
 //       node is the current node in the list being traversed
@@ -747,9 +752,9 @@ function AddValuesFromNode(data, node, statId, index)
             }
         }
     }
-    console.log(data);
     return data;
 }
+/* jshint ignore:end */
 
 function GetMaxFromValueRow(values)
 // PRE:  values is an object with its keys being column ids from the source database table,

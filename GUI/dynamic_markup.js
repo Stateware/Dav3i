@@ -174,8 +174,7 @@ function GetDropdownHTML(statId)
     return menu;
 }
 
-// High cyclical complexity, so throws error in jshint
-// Reccommend compartmentalizing code whenever convenient -Josh Crafts
+//TODO: reduce cyclomatic complexity to below jshint threshold
 /* jshint ignore:start */
 function GetCustomDropdownHTML()
 // PRE:  g_Stats is initialized with server data
@@ -261,11 +260,15 @@ function GetCustomDropdownHTML()
 
     return menu;
 }
-/* jshint ignore:end */
 
+//TODO: reduce cyclomatic complexity to below jshint threshold
 function RefreshIndices(id)
+// PRE:  id is the id of a dropdown menu for an index in the custom tab
+// POST: the dropdown menu with id id has its options replaced with those
+//       for the selected stat
 {
-    var menu = "";
+    var menu = "",
+    i;
 
     if (id === 'stat1index')
     {
@@ -307,6 +310,7 @@ function RefreshIndices(id)
     }
     document.getElementById(id).innerHTML = menu;
 }
+/* jshint ignore:end */
 
 function ChooseTab(element)
 // PRE: Called from the onclick of a tab
