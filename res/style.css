@@ -494,6 +494,42 @@
     }
 }
 
+#stats-select {
+    position: absolute;
+    top: 4%;
+    left: 5%;
+}
+
+#indices-select {
+    position: absolute;
+    top: 4%;
+    left: 53%;
+}
+
+#stat1 {
+    position: absolute;
+    top: 9%;
+    left: 4%;
+}
+
+#stat2 {
+    position: absolute;
+    top: 16%;
+    left: 4%;
+}
+
+#stat1index {
+    position: absolute;
+    top: 9%;
+    left: 52%;
+}
+
+#stat2index {
+    position: absolute;
+    top: 16%;
+    left: 52%;
+}
+
 /* Scroll Bar Style */
 ::-webkit-scrollbar {
       width: 15px;

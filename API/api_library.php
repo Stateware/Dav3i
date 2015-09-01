@@ -222,13 +222,15 @@ class Stat
 							if (($result = $databaseConnection->query($query)) == false)
 								ThrowFatalError("Error reading data from index {$int['stat1id']} of " . GetTableNameById($int['stat1id']));
 							array_push($values, new Row($int['stat1index'], $result->fetch_assoc()));
-							array_push($this->subType, GetTypeById($descriptor, $int['stat1id']));
+							if ($i == 0)
+								array_push($this->subType, GetTypeById($descriptor, $int['stat1id']));
 
 							$query = "SELECT * FROM " . GetTableNameById($descriptor, $int['stat2id']) . " WHERE data_set_index='{$int['stat2index']}' AND country_id='$countryId';";
 							if (($result = $databaseConnection->query($query)) == false)
 								ThrowFatalError("Error reading data from index {$int['stat2id']} of " . GetTableNameById($int['stat2id']));
 							array_push($values, new Row($int['stat3index'], $result->fetch_assoc()));
-							array_push($this->subType, GetTypeById($descriptor, $int['stat2id']));
+							if ($i == 0)
+								array_push($this->subType, GetTypeById($descriptor, $int['stat2id']));
 
 							if ($int['stat3id'] != -1)
 							{
@@ -237,7 +239,8 @@ class Stat
 								if (($result = $databaseConnection->query($query)) == false)
 									ThrowFatalError("Error reading data from index {$int['stat3id']} of " . GetTableNameById($int['stat3id']));
 								array_push($values, new Row($int['stat1index'], $result->fetch_assoc()));
-								array_push($this->subType, GetTypeById($descriptor, $int['stat3id']));
+								if ($i == 0)
+									array_push($this->subType, GetTypeById($descriptor, $int['stat3id']));
 							}
 							array_push($this->data, new Row($i, $values));
 							foreach($descriptor->indices as $index)

@@ -19,13 +19,13 @@
  * along with Dav3i.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// File Name:           lookup_table.js
-// Description:         Generates lookup table
+// File Name:           data_pull.js
+// Description:         Contains functions relevant to global server data
 // Date Created:        3/5/2015
 // Contributors:        Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts
-// Date Last Modified:  4/7/2015
-// Last Modified By:    Emma Roudabush
-// Dependencies:        descriptor.php, by_stat.php, data.js
+// Date Last Modified:  8/30/2015
+// Last Modified By:    Joshua Crafts
+// Dependencies:        ../API/get_data.php, data.js, map.js, graph.js, dynamic_markup.js, settings.js
 // Additional Notes:    N/A
 
 // High Cyclical Complexity. Change if you want to, I think it looks reasonably simple enough. -Josh Crafts
@@ -53,7 +53,14 @@ function ColorByHms()
         {
             if (g_Data[i] !== undefined)
             {
-                temp = g_Data[i][g_StatId].data;
+                if (g_StatId !== 'custom')
+                {
+                    temp = g_Data[i][g_StatId].data;
+                }
+                else
+                {
+                    temp = g_Data[i][g_StatId1].data;
+                }
                 for (j in temp)
                 {
                     if (temp[j].index === g_SelectedIndex)
@@ -182,6 +189,10 @@ function ParseData()
 	g_Countries = DataJSON.countries;               // set country list
 	g_Diseases = DataJSON.diseases;                 // set disease list
         g_StatId = Object.keys(g_Stats)[0];             // set default stat to first in list
+        g_StatId1 = Object.keys(g_Stats)[0];            // set default stat to first in list
+        g_StatId2 = Object.keys(g_Stats)[0];            // set default stat to first in list
+        g_SubStat1 = 0;            			// set default stat to first in list
+        g_SubStat2 = 0;  			        // set default stat to first in list
         g_HmsYear = g_LastYear;				// set init HMS year to end of data
         ColorByHms();					// color map
         BuildTabs();					// build tab menu

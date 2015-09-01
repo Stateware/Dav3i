@@ -22,10 +22,10 @@
 // File Name:               settings.js
 // Description:             Module to modify and work with settings
 // Date Created:            3/26/2015
-// Contributors:            Emma Roudabush, Paul Jang, Kyle Nicholson
-// Date Last Modified:      4/23/2015
-// Last Modified By:       	Kyle Nicholson
-// Dependencies:            data.js, index.html
+// Contributors:            Emma Roudabush, Paul Jang, Kyle Nicholson, Joshua Crafts
+// Date Last Modified:      9/1/2015
+// Last Modified By:        Joshua Crafts
+// Dependencies:            data.js, dynamic_markup.js, graph.js
 // Additional Notes:        N/A
 
 function SetGraphType(type)
@@ -229,8 +229,11 @@ function ApplySettings()
 
         GenerateSubDivs();
         GenerateGraphs();
-        ColorByHms();	
-        
+        if (g_StatId !== 'custom')
+        {
+            ColorByHms();	
+        }
+
         // saves all radio buttions and dates in g_TempSettings array
         SaveCurrentStatValues();
         
@@ -242,3 +245,59 @@ function ApplySettings()
     }
 }
 /* jshint ignore:end */
+
+function SelectIndex(id)
+// PRE:  id is the id of a dropdown menu used to select a data set index
+// POST: based on the use of the dropdown menu (select index for a selected stat, or
+//       for one of the 2 custom stats), the appropriate global variable is set to the
+//       newly selected value
+{
+    if (id !== 'stat1index' && id !== 'stat2index')
+    {
+        g_SelectedIndex = document.getElementById(id).value;
+    }
+    else
+    {
+        if (id === 'stat1Index')
+        {
+            g_SelectedIndex1 = document.getElementById(id).value;
+        }
+        else
+        {
+            g_SelectedIndex2 = document.getElementById(id).value;
+        }
+    }
+    GenerateGraphs();
+}
+
+function SelectStat(id)
+// PRE:  id is the id of a dropdown menu used to select a stat
+// POST: based on the use of the dropdown menu (which custom stat is being selected), 
+//       the appropriate global variable is set to the newly selected value
+{
+    var re = new RegExp('([a-z\_]+)\\+?(\\d+)?'),
+        results;
+
+    results = re.exec(document.getElementById(id).value);
+    if (id === 'stat1')
+    {
+        g_StatId1 = results[1];
+        if (results[2] !== undefined)
+        {
+            g_SubStat1 = results[2];
+        }
+        RefreshIndices('stat1index');
+        g_SelectedIndex1 = 0;
+    }
+    else
+    {
+        g_StatId2 = results[1];
+        if (results[2] !== undefined)
+        {
+            g_SubStat2 = results[2];
+        }
+        RefreshIndices('stat2index');
+        g_SelectedIndex2 = 0;
+    }
+    GenerateGraphs();
+}

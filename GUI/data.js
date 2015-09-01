@@ -23,9 +23,9 @@
 // Description:             This module holds all global data for the other modules of the project
 // Date Created:            3/19/2015
 // Contributors:            Joshua Crafts, Vanajam Soni, Paul Jang
-// Date Last Modified:      4/23/2015
-// Last Modified By:        Kyle Nicholson
-// Dependencies:            index.html
+// Date Last Modified:      8/30/2015
+// Last Modified By:        Joshua Crafts
+// Dependencies:            none
 // Additional Notes:        N/A
 
 // constants
@@ -45,8 +45,10 @@ var g_DataList;         			// data list for use in graphing
 var g_StatId;           			// stat ID corresponding to selected stat
 var g_StatId1;					// first selected stat ID for comparison
 var g_SelectedIndex1 = 0;			// index of selected stat data set for stat 1
+var g_SubStat1;					// index of selected stat data set for stat 1
 var g_StatId2;					// second selected stat ID for comparison
 var g_SelectedIndex2 = 0;			// index of selected stat data set for stat 2
+var g_SubStat2;					// index of selected stat data set for stat 1
 var g_HmsYear;          			// year for which HMS data is wanted
 var g_GraphType = 0;        			// represents the graph type, enumerated 0 to 2
 var g_Clear = false;				// used by the clear selection function to avoid rebuilding data list on each deselect

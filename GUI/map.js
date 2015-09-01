@@ -19,14 +19,14 @@
  * along with Dav3i.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// File Name:       map.js
-// Description:     This module generates a map inside the div 'map', and
-//          defines a listener for the button "clear"
-// Date Created:    2/24/2015
-// Contributors:    Vanajam Soni, Joshua Crafts
-// Date Last Modified:  3/26/2015
-// Last Modified By:    Vanajam Soni
-// Dependencies:    index.html, descriptor.php, by_stat.php, lookup_table.js, loading_script.js, data.js
+// File Name:           map.js
+// Description:         This module generates a map inside the div 'map', and
+//                      defines a listener for the button "clear"
+// Date Created:        2/24/2015
+// Contributors:        Vanajam Soni, Joshua Crafts
+// Date Last Modified:  8/27/2015
+// Last Modified By:    Joshua Crafts
+// Dependencies:        index.html, data_pull.js, data.js, graph.js
 // Additional Notes:    N/A
 
 $(document).ready(function() {

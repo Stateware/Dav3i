@@ -20,12 +20,12 @@
  */
 
 // File Name:               dynamic_markup.js
-// Description:             This module contains the code needed to dynamically create modules on the client
+// Description:             This module contains the code needed to dynamically create markup on the page based on server data
 // Date Created:            3/26/2015
-// Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
-// Date Last Modified:      4/20/2015
-// Last Modified By:        Paul Jang
-// Dependencies:            index.html, lookup_table.js, data.js
+// Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush, Joshua Crafts
+// Date Last Modified:      8/29/2015
+// Last Modified By:        Joshua Crafts
+// Dependencies:            data_pull.js, data.js, graph.js, settings.js
 // Additional Notes:        N/A
 
 function BuildTabs()
@@ -109,8 +109,8 @@ function BuildDiv(statId)
 
     div.id="id-"+statId+"-graphs";
     div.style.display="none";
-    div.style.top="18%";
-    div.style.height="77%";
+    div.style.top="23%";
+    div.style.height="72%";
     div.className="graph";
     document.getElementById("graphs").appendChild(BuildDropdown(statId));
     document.getElementById("graphs").appendChild(div);
@@ -129,7 +129,7 @@ function BuildDropdown(statId)
     div.id="id-"+statId+"-dropdown";
     div.style.display="none";
     div.style.top="8%";
-    div.style.height="10%";
+    div.style.height="15%";
 
     if (statId === 'custom')
     {
@@ -152,7 +152,7 @@ function GetDropdownHTML(statId)
     var i,
         menu = "";
 
-    menu += "<p class='open-sans'>Select Data Set</p><select name='index' onchange='SelectIndex(this)'>";
+    menu += "<p class='open-sans'>Select Data Set</p><select id='stat-indices-" + statId + "' name='index' onchange=\"SelectIndex('stat-indices-" + statId + "')\">";
     for (i in g_Stats[statId].tags)
     {
 	if (g_Stats[statId].tags.hasOwnProperty(i))
@@ -164,7 +164,7 @@ function GetDropdownHTML(statId)
             }
             else
             {
-                menu += g_Stats[statId].tags[g_SelectedIndex];
+                menu += g_Stats[statId].tags[i];
             }
             menu += "</option></br>";
         }
@@ -184,7 +184,7 @@ function GetCustomDropdownHTML()
     var i, j,
         menu = "";
 
-    menu += "<p class='open-sans'>Stat 1</p><select id='stat1' name='index' onchange='SelectStat(this)'>";
+    menu += "<p class='open-sans' id='stats-select'>Select Stats</p><p class='open-sans' id='indices-select'>Select Data Sets</p><select id='stat1' name='stat1' onchange=\"SelectStat('stat1')\">";
     for (i in g_Stats)
     {
 	if (g_Stats.hasOwnProperty(i))
@@ -203,16 +203,16 @@ function GetCustomDropdownHTML()
         }
     }
     menu += "</select>";
-    menu += "<p class='open-sans'>Stat 2</p><select id='stat2' name='index' onchange='SelectStat(this)'>";
+    menu += "<select id='stat2' name='stat2' onchange=\"SelectStat('stat2')\">";
     for (i in g_Stats)
     {
 	if (g_Stats.hasOwnProperty(i))
         {
             if (g_Stats[i].type === 'int')
             {
-                for (j = 0; j < g_Stats[i].length; j++)
+                for (j = 0; j < g_Stats[i].subName.length; j++)
                 {
-                    menu += "<option value='" + i + "'>" + g_Stats[i].name + ' - ' + g_Stats[i].subName[j] + "</option>";
+                    menu += "<option value='" + i + "+" + j + "'>" + g_Stats[i].name + " - " + g_Stats[i].subName[j] + "</option>";
                 }
             }
             else
@@ -222,10 +222,91 @@ function GetCustomDropdownHTML()
         }
     }
     menu += "</select>";
+    menu += "<select id='stat1index' name='stat1index' onchange=\"SelectIndex('stat1index')\">";
+    for (i in g_Stats[g_StatId1].tags)
+    {
+	if (g_Stats[g_StatId1].tags.hasOwnProperty(i))
+        {
+            menu += "<option value='" + i + "'>" + i + " - ";
+            if (g_Stats[g_StatId1].tags[i] === "")
+            {
+                menu += "untagged";
+            }
+            else
+            {
+                menu += g_Stats[g_StatId1].tags[i];
+            }
+            menu += "</option></br>";
+        }
+    }
+    menu += "</select>";
+    menu += "<select id='stat2index' name='stat2index' onchange=\"SelectIndex('stat2index')\">";
+    for (i in g_Stats[g_StatId2].tags)
+    {
+	if (g_Stats[g_StatId2].tags.hasOwnProperty(i))
+        {
+            menu += "<option value='" + i + "'>" + i + " - ";
+            if (g_Stats[g_StatId2].tags[i] === "")
+            {
+                menu += "untagged";
+            }
+            else
+            {
+                menu += g_Stats[g_StatId2].tags[i];
+            }
+            menu += "</option></br>";
+        }
+    }
+    menu += "</select>";
 
     return menu;
 }
 /* jshint ignore:end */
+
+function RefreshIndices(id)
+{
+    var menu = "";
+
+    if (id === 'stat1index')
+    {
+        for (i in g_Stats[g_StatId1].tags)
+        {
+            if (g_Stats[g_StatId1].tags.hasOwnProperty(i))
+            {
+                menu += "<option value='" + i + "'>" + i + " - ";
+                if (g_Stats[g_StatId1].tags[i] === "")
+                {
+                    menu += "untagged";
+                }
+                else
+                {
+                    menu += g_Stats[g_StatId1].tags[i];
+                }
+                menu += "</option></br>";
+            }
+        }
+    }
+    else
+    {
+        for (i in g_Stats[g_StatId2].tags)
+        {
+            if (g_Stats[g_StatId2].tags.hasOwnProperty(i))
+            {
+                menu += "<option value='" + i + "'>" + i + " - ";
+                if (g_Stats[g_StatId2].tags[i] === "")
+                {
+                    menu += "untagged";
+                }
+                else
+                {
+                    menu += g_Stats[g_StatId2].tags[i];
+                }
+                menu += "</option></br>";
+            }
+        }
+    }
+    document.getElementById(id).innerHTML = menu;
+}
 
 function ChooseTab(element)
 // PRE: Called from the onclick of a tab
@@ -256,7 +337,7 @@ function ChooseTab(element)
 
     document.getElementById(element.id+"-graphs").innerHTML=menu;
     GenerateSubDivs();
-    if (g_GraphType === 0 || g_GraphType === 1 && g_Stats[g_StatId].type === 'int')
+    if (g_GraphType === 0 || g_GraphType === 1 && (g_StatId === 'custom' || g_Stats[g_StatId].type === 'int'))
     {
         FixDivSize();
     }
@@ -352,7 +433,7 @@ function Expand()
 	        g_Expanded = true;
 	        GenerateSubDivs();
 	        // if single graph, graph is expanded to whole section
-	        if(g_GraphType === 1 && g_StatList[g_StatId].type !== 'int' || g_GraphType === 2)
+	        if(g_GraphType === 1 && (g_StatId !== 'custom' || g_StatList[g_StatId].type !== 'int') || g_GraphType === 2)
 	        {
 	            document.getElementById("region-graphs-1").style.width = "100%";
 	            document.getElementById("region-graphs-1").style.height = "100%";
@@ -403,8 +484,9 @@ function GenerateSubDivs()
         currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
         children = document.getElementById(parentTabDivName).childNodes;
         // if we only need one graph for either combined lines or summation of lines
-        if(g_GraphType === 1 && g_Stats[g_StatId].type !== 'int' || g_GraphType === 2)
+        if(g_GraphType === 1 && g_StatId !== 'custom' && g_Stats[g_StatId].type !== 'int'  || g_GraphType === 2)
         {
+            document.getElementById(parentTabDivName).innerHTML = "";
             if(g_DataList.size !== 0)
             {
             	CreateSubDiv("region-graphs-1",parentTabDivName);
@@ -512,7 +594,7 @@ function bugPopup()
 // POST: Alert box pops up with info about and instructions for 
 //       reporting a bug
 {
-    window.alert("If you would like to report a bug, please send " + "an email to stateware@acm.psu.edu with the following " + 
-        "details included in your message:\n1. Description of the " + "bug\n2. Steps for reproducing the bug\n3. What browser and" + 
-        " operating system you experienced the bug on\n4. Any " + "additional relevant information.");
+    window.alert("If you would like to report an issue, please send " + "an email to stateware@acm.psu.edu with the following " + 
+        "details included in your message:\n1. Description of the " + "issue\n2. Steps for reproducing the issue\n3. What browser and" + 
+        " operating system you experienced the issue on\n4. Any " + "additional relevant information.");
 }
