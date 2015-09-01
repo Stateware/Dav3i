@@ -36,12 +36,12 @@ require_once("connect.php");
 
 class Data
 {
-	public $firstYear;
-	public $lastYear;
-	public $diseases;
-	public $stats;
-	public $countries;
-	public $country_data;
+	public $firstYear;		// first year for which data is available
+	public $lastYear;		// last year for which data is available
+	public $diseases;		// diseases for which data is available
+	public $stats;			// list of stats and stat metadata
+	public $countries;		// list of countries, keyed by cc2
+	public $country_data;		// list of stats and associated data for each country, keyed by cc2
 
 	public function __construct($databaseConnection)
 	{
@@ -84,8 +84,10 @@ class Data
 
 class Row
 {
-	public $index;
-	public $values;
+	public $index;			// data set index for this particular set of values
+	public $values;			// either an associative array representing a row from one of the data tables in the database (lin or bar stats), or
+					//  an array of rows from the database (est stats), or an array of Row objects which themselves
+					//  have index fields (int stats)
 
 	public function __construct($index, $values)
 	{
@@ -96,16 +98,16 @@ class Row
 
 class Stat
 {
-	public $name;
-	public $subName;
-	public $firstYear;
-	public $lastYear;
-	public $tableName;
-	public $disease;
-	public $type;
-	public $subType;
-	public $data;
-	public $dataTag;
+	public $name;			// stat name (display name)
+	public $subName;		// names of substats (for est and int stats)
+	public $firstYear;		// first year for which data is available for this stat
+	public $lastYear;		// last year for which data is available for this stat
+	public $tableName;		// stat's table name
+	public $disease;		// disease for which this stat is relevant ('shared' if used for all diseases)
+	public $type;			// stat type (lin, bar, est, or int)
+	public $subType;		// subtypes (for int stats)
+	public $data;			// all data for a stat, for a given country
+	public $dataTag;		// data set tags
 
 	public function __construct($databaseConnection, $tableName, $descriptor, $countryId)
 	{
@@ -259,11 +261,11 @@ class Stat
 }
 
 class Descriptor {
-	public $stats;
-	public $diseases;
-	public $integrated;
-	public $indices;
-	public $countries;
+	public $stats;			// full meta_stats table
+	public $diseases;		// full meta_diseases table
+	public $integrated;		// full meta_int table
+	public $indices;		// full meta_indices table
+	public $countries;		// full meta_countries table
 
 	public function __construct($databaseConnection)
 	{
@@ -852,11 +854,20 @@ function GetTableName($statName, $disease, $type)
 	return $output;
 }
 
+// TODO: replace this function with code replicating pseudocode below, use it when setting table names
 function IsValidTableName($tableName)
 // PRE:  $tableName is the default table name for a given stat
 // POST: FCTVAL == $tableName if it is valid, o.w. it is changed sufficiently to yield a valid name
 {
-	
+	// planned implementation:
+	// if $tableName exists already in database
+	//	if $tableName is less than 32 characters (max allowed by MySQL)
+	//		append random character to $tableName
+	//	else
+	//		change random character (preserving data_disease_ prefix)
+	//	return IsValidTableName($tableName)
+	// else
+	//	return $tableName
 }
 
 function AddStat($disease, $displayName, $tableName, $dataType, $graphType, $data, $tag)
