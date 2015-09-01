@@ -25,3 +25,7 @@
 
  * I suggest refactoring the construction of the data object on the back end. In retrospect, it was rushed and could be improved considerably. It is functional, and (as far as I can tell) bug free, but its readability and cyclomatic complexity could be greatly improved.
  * All of the upload functions instantiate their own database connection instead of having it passed in from `API/data_parser.php`. This doesn't seem to provide a huge performance lag, but the backend scripts should only have to instantiate one database connection, so this should be changed.
+
+###Database/Security
+
+ * Give `data_parser.php` and `api_library.php` a serious security analysis. Depend on Will's experience from the Spring for cleaning up security holes in the API functions.
