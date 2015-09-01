@@ -1,4 +1,4 @@
-#Reccommendations for Fall 2015 Release
+#Recommendations for Fall 2015 Release
 
 ###Testing and Debugging
 
@@ -19,7 +19,7 @@
 
 ###Data Pull
 
- * If you would like to implement tentative data pulls (which may provide useful later on as the project architecture develops), I reccommend implementing a dynamic programming solution. That is, pull the full data object, with each country's field in `g_Data.data` set to `null`, then when a country is selected, if the data does not exist, pull for that country. This would require minimal effort as far as implementation in the back end.
+ * If you would like to implement tentative data pulls (which may provide useful later on as the project architecture develops), I recommend implementing a dynamic programming solution. That is, pull the full data object, with each country's field in `g_Data.data` set to `null`, then when a country is selected, if the data does not exist, pull for that country. This would require minimal effort as far as implementation in the back end.
 
 ###Refactoring
 
