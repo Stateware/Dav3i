@@ -1,5 +1,5 @@
 [4mRunning "qunit:files" (qunit) task[24m
 Testing tst/GUI/libtest.html .[32mOK[39m
-[32m>> [39m1 assertions passed (8ms)
+[32m>> [39m1 assertions passed (15ms)
 
 [32mDone, without errors.[39m
