@@ -1,55 +1,14 @@
-/*! Dav3i - v0.1.0 - 2015-08-27
+/*! Dav3i - v0.1.0 - 2015-09-01
 * https://github.com/Stateware/Dav3i
 * Copyright (c) 2015 Stateware Team;
  Licensed GPL v3 (https://github.com/Stateware/Dav3i/blob/master/LICENSE) */
-// File Name:               data_query.js
-// Description:             takes CC2 codes and sends them to lookup_table.js, receives CIDs, queries the database,
-//                          parses the JSON and returns the array
-// Date Created:            3/5/2015
-// Contributors:            Paul Jang, Vanajam Soni, Kyle Nicholson
-// Date Last Modified:      3/26/2015
-// Last Modified By:        Vanajam Soni
-// Dependencies:            lookup_table.js, byCountry.php, parser.js
-// Additional Notes:        N/A
-
-// Author: Vanajam Soni, Kyle Nicholson
-// Date Created: 3/24/15
-// Last Modified: 3/26/15 Vanajam Soni
-// Description: adds or removes a node to the g_DataList to reflect the chosen regions on the map
-// PRE:  selectedRegions is a 1D array of CC2 codes output from map.getSelectedRegions in map.js
-// POST: the current data list is replaced with a list containing the relevant data for all countries
-//       whose CC2s are in selectedRegions which have data available
-function BuildList(selectedRegions) 
-{
-    var index;			// index in g_LookupTable for a given entry, hashed based on CC2
-    var node;			// new node to be added to list
-
-    if (g_DataList == null)					// create list if it does not exist
-    {
-	g_DataList = new c_List();
-    }
-
-    g_DataList.clear();						// clear list
-
-    for(var i = 0; i < selectedRegions.length; i++)			// iterate through list of selected countries
-    {									//  and prepend it to list
-        if (g_Data[selectedRegions[i]] !== undefined && g_Data[selectedRegions[i]][g_StatId] !== undefined)
-        {
-            node = new t_AsdsNode(selectedRegions[i],
-                                  g_Countries[selectedRegions[i]],
-                                  g_Data[selectedRegions[i]]);
-            g_DataList.add(node);
-        }
-    }
-}
-
 // File Name:               data.js
 // Description:             This module holds all global data for the other modules of the project
 // Date Created:            3/19/2015
 // Contributors:            Joshua Crafts, Vanajam Soni, Paul Jang
-// Date Last Modified:      4/23/2015
-// Last Modified By:        Kyle Nicholson
-// Dependencies:            index.html
+// Date Last Modified:      8/30/2015
+// Last Modified By:        Joshua Crafts
+// Dependencies:            none
 // Additional Notes:        N/A
 
 // constants
@@ -59,14 +18,20 @@ var g_BUCKETS = 676;				// number of hashable buckets in the lookup table
 var g_Data;      				// CID, CC2, name, and HMS lookup table
 var g_Countries;				// number of countries for which data exists
 var g_Stats;      	   			// stat reference list, indexed by stat ID
-var g_SelectedIndex = 0;
-var g_Diseases;
+var g_SelectedIndex = 0;			// index of selected stat data set
+var g_Diseases;					// list of diseases
 var g_FirstYear;        			// first year for which data is available
 var g_LastYear;         			// last year for which data is available
 var g_YearStart;        			// first year for which user wants data
 var g_YearEnd;          			// last year for which user wants data
 var g_DataList;         			// data list for use in graphing
-var g_StatId;           			// stat ID corresponding to selected HMS.
+var g_StatId;           			// stat ID corresponding to selected stat
+var g_StatId1;					// first selected stat ID for comparison
+var g_SelectedIndex1 = 0;			// index of selected stat data set for stat 1
+var g_SubStat1;					// index of selected stat data set for stat 1
+var g_StatId2;					// second selected stat ID for comparison
+var g_SelectedIndex2 = 0;			// index of selected stat data set for stat 2
+var g_SubStat2;					// index of selected stat data set for stat 1
 var g_HmsYear;          			// year for which HMS data is wanted
 var g_GraphType = 0;        			// represents the graph type, enumerated 0 to 2
 var g_Clear = false;				// used by the clear selection function to avoid rebuilding data list on each deselect
@@ -115,85 +80,66 @@ function c_List()
     };
 }
 
-// File Name:           lookup_table.js
-// Description:         Generates lookup table
+// File Name:           data_pull.js
+// Description:         Contains functions relevant to global server data
 // Date Created:        3/5/2015
 // Contributors:        Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts
-// Date Last Modified:  4/7/2015
-// Last Modified By:    Emma Roudabush
-// Dependencies:        descriptor.php, by_stat.php, data.js
+// Date Last Modified:  8/30/2015
+// Last Modified By:    Joshua Crafts
+// Dependencies:        ../API/get_data.php, data.js, map.js, graph.js, dynamic_markup.js, settings.js
 // Additional Notes:    N/A
 
-ColorByHMS = function(){
-// PRE:  g_LookupTable is initialized
-// POST: map is recolored in terms of the currently selected stat (based on g_VaccHMS if
-//       stat is vaccinations), where tint of a country is based on the magnitude of its
+// High Cyclical Complexity. Change if you want to, I think it looks reasonably simple enough. -Josh Crafts
+/* jshint ignore:start */
+function ColorByHms()
+// PRE:  g_Data, g_StatId, g_HmsYear, g_IntHms, and g_Map are initialized with server data
+// POST: map is recolored in terms of the currently selected stat (based on g_IntHms if
+//       stat is of type 'int'), where tint of a country is based on the magnitude of its
 //       selected stat value 
+{
     var data = {},				// object indexed by CC2 to attach data to
 						//  vector objects
-	data_set,
-	temp,
-        tempValue,
-        min,					// minimum data value from HMS data
-        max,					// maximum data value from HMS data
+	dataSet,                                // a given country's set of data values for a particular stat
+	temp,                                   // temporary holder for country's data set
+        tempValue,                              // value for a country for a stat for a particular year
+        min,					// minimum data value from Hms data
+        max,					// maximum data value from Hms data
         i, j;					// indexing variable
 
     min = Number.MAX_VALUE;
     max = Number.MIN_VALUE;
 
     for (i in g_Map.regions) {
-        if (g_Data[i] !== undefined)
+        if (g_Map.regions.hasOwnProperty(i))
         {
-            temp = g_Data[i][g_StatId]['data'];
-            for (j in temp)
+            if (g_Data[i] !== undefined)
             {
-                if (temp[j]['index'] === g_SelectedIndex)
-		{
-			data_set = temp[j]['values'];
-		}
-            }
-            if (g_Data[i][g_StatId]['type'] === 'lin' || g_Data[i][g_StatId]['type'] === 'bar')
-            {
-                if (data_set['y_' + g_HmsYear] !== '-1')
+                if (g_StatId !== 'custom')
                 {
-                    tempValue = data_set['y_' + g_HmsYear];
-                    if (tempValue != undefined)
+                    temp = g_Data[i][g_StatId].data;
+                }
+                else
+                {
+                    temp = g_Data[i][g_StatId1].data;
+                }
+                for (j in temp)
+                {
+                    if (temp[j].index === g_SelectedIndex)
+		    {
+			dataSet = temp[j].values;
+		    }
+                }
+                GetColor(dataSet, data, i);
+                if (data[i] !== undefined)
+                {
+                    if (Number(data[i]) < min)
                     {
-                        data[i] = tempValue;
+                        min = data[i];
                     }
-                }
-            }
-            else if (g_Data[i][g_StatId]['type'] === 'est')
-            {
-                if (data_set[1]['y_' + g_HmsYear] !== '-1')
-                {
-                    tempValue = data_set[1]['y_' + g_HmsYear];
-                    if (tempValue != undefined)
+                    if (Number(data[i]) > max)
                     {
-                        data[i] = tempValue;
+                        max = data[i];
                     }
-                }
-            }
-            else // temp.type === 'int'
-            {
-                if (data_set[g_IntHms]['values']['y_' + g_HmsYear] !== '-1')
-                {
-                    tempValue = data_set[g_IntHms]['values']['y_' + g_HmsYear];
-                    if (tempValue != undefined)
-                    {
-                        data[i] = tempValue;
-                    }
-                }
-            }
-            if (data[i] !== undefined)
-            {
-                if (Number(data[i]) < min)
-                {
-                    min = data[i];
-                }
-                if (Number(data[i]) > max)
-                {
-                    max = data[i];
                 }
             }
         }
@@ -208,17 +154,91 @@ ColorByHMS = function(){
         g_Map.series.regions[0].setValues(data);
     }
 }
+/* jshint ignore:end */
 
-// Author: Emma Roudabush, Joshua Crafts
-// Date Created: 3/5/2015
-// Last Modified: 4/16/2015 by Nicholas Denaro
-// Description: Fills g_DescriptorJSON with the contents of descriptor.php,
-//              fills g_LookupTable and g_StatList with their corresponding data
-//              and logs the resulting variables to the console.
-// PRE: DescriptorJSON, g_StatList, and g_LookupTable exist,
-//      GenerateLookupTable and GenerateStatReferenceList function correctly
-// POST: DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
+function GetColor(dataSet, data, i)
+// PRE:  dataSet is the set of data values for a particular stat for country i
+//       i is a valid cc2 code
+//       data is the array of values to be attached to the map
+// POST: data[i] is set to value of the stat identified by g_StatId for year g_HmsYear for country i
+{
+    if (g_Data[i][g_StatId].type === 'int')
+    {
+        GetIntColor(dataSet, data, i);
+    }
+    else if (g_Data[i][g_StatId].type === 'est')
+    {
+        GetEstColor(dataSet, data, i);
+    }
+    else // g_Data[i][g_StatId].type === 'lin' || g_Data[i][g_StatId].type === 'bar'
+    {
+        GetOtherColor(dataSet, data, i);
+    }
+}
+
+function GetIntColor(dataSet, data, i)
+// PRE:  dataSet is the set of data values for a particular stat for country i
+//       i is a valid cc2 code
+//       data is the array of values to be attached to the map
+//       g_Stats[g_StatId]['type'] == 'int'
+// POST: data[i] is set to value of the stat identified by g_StatId for year g_HmsYear for country i
+{
+    var tempValue;
+
+    if (dataSet[g_IntHms].values['y_' + g_HmsYear] !== '-1')
+    {
+        tempValue = dataSet[g_IntHms].values['y_' + g_HmsYear];
+        if (tempValue !== undefined)
+        {
+            data[i] = tempValue;
+        }
+    }
+}
+
+function GetEstColor(dataSet, data, i)
+// PRE:  dataSet is the set of data values for a particular stat for country i
+//       i is a valid cc2 code
+//       data is the array of values to be attached to the map
+//       g_Stats[g_StatId]['type'] == 'est'
+// POST: data[i] is set to value of the stat identified by g_StatId for year g_HmsYear for country i
+{
+    var tempValue;
+
+    if (dataSet[1]['y_' + g_HmsYear] !== '-1')
+    {
+        tempValue = dataSet[1]['y_' + g_HmsYear];
+        if (tempValue !== undefined)
+        {
+            data[i] = tempValue;
+        }
+    }
+}
+
+function GetOtherColor(dataSet, data, i)
+// PRE:  dataSet is the set of data values for a particular stat for country i
+//       i is a valid cc2 code
+//       data is the array of values to be attached to the map
+//       g_Stats[g_StatId]['type'] == 'lin' or 'bar'
+// POST: data[i] is set to value of the stat identified by g_StatId for year g_HmsYear for country i
+{
+    var tempValue;
+
+    if (dataSet['y_' + g_HmsYear] !== '-1')
+    {
+        tempValue = dataSet['y_' + g_HmsYear];
+        if (tempValue !== undefined)
+        {
+            data[i] = tempValue;
+        }
+    }
+}
+
 function ParseData()
+// PRE: Document is loaded and g_Map is initialized
+// POST: g_Data, g_Stats, g_Countries, g_Diseases, g_StatId, and g_HmsYear are all
+//       set to default values based on server data. Map is colored by default Hms
+//       and Hms year. Tabs are built based on stat list. Init settings values are
+//       set. Loading screen fades out.
 {
     var DataJSON,
 	key;			// text returned from descriptor.php call
@@ -226,39 +246,25 @@ function ParseData()
     $.when(GetData()).done(function(DataJSON){
         SetInitalYears(DataJSON);			// set year range
         g_Data = DataJSON.country_data;			// get region data from server
-	g_Stats = DataJSON.stats;
-	g_Countries = DataJSON.countries;
-	g_Diseases = DataJSON.diseases;
-        g_StatId = Object.keys(g_Stats)[0];
+	g_Stats = DataJSON.stats;                       // set stat list
+	g_Countries = DataJSON.countries;               // set country list
+	g_Diseases = DataJSON.diseases;                 // set disease list
+        g_StatId = Object.keys(g_Stats)[0];             // set default stat to first in list
+        g_StatId1 = Object.keys(g_Stats)[0];            // set default stat to first in list
+        g_StatId2 = Object.keys(g_Stats)[0];            // set default stat to first in list
+        g_SubStat1 = 0;            			// set default stat to first in list
+        g_SubStat2 = 0;  			        // set default stat to first in list
         g_HmsYear = g_LastYear;				// set init HMS year to end of data
-        ColorByHMS();					// color map
+        ColorByHms();					// color map
         BuildTabs();					// build tab menu
         UpdateInputs();					// set init values for settings inputs
-	SwitchToMain();
+	SwitchToMain();                                 // disappear loading screen
     });
 }
-
-// Author: Joshua Crafts
-// Date Created: 5/20/2015
-// Last Modified: 5/20/2015 by Joshua Crafts
-// Description: This function takes in a 2 character CC2 code and returns the key of g_LookupTable
-//              to which the CC2 belongs
-// PRE:  cc2 is a 2 alpha character code
-// POST: FCTVAL == the key of the correct bucket to which cc2 belongs
-function Hash(cc2)
-{
-    var key = 26 * (cc2.charCodeAt(0) - "A".charCodeAt(0)) + (cc2.charCodeAt(1) - "A".charCodeAt(0));
-
-    return key;
-}
-
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 3/19/2015 by Emma Roudabush
-// Description: Retrieves descriptor.php from the server                
-// PRE: descriptor.php exists on the server.
-// POST: returns the contents of descriptor.php
+              
 function GetData()
+// PRE: data exists on server and database is set up correctly
+// POST: returns the contents of get_data.php encoded as JSON
 {
     return $.ajax({                                      
         url: "API/get_data.php",
@@ -271,16 +277,12 @@ function GetData()
         }
     });
 }
-
-// Author: Emma Roudabush
-// Date Created: 4/7/2015
-// Last Modified: 4/7/2015 by Emma Roudabush
-// Description: Sets the time span to the correct span given by descriptor.php				
-// PRE: DescriptorJSON exists with the correct data from descriptor.php,
+			
+function SetInitalYears(DataJSON)
+// PRE: DataJSON exists with the correct data from get_data.php,
 //		g_FirstYear, g_YearStart, g_LastYear and g_YearEnd exist
 // POST: g_FirstYear and g_YearStart have the correct beginning year of statistics.
 // 		 g_LastYear and g_YearEnd have the correct ending year of statistics. 
-function SetInitalYears(DataJSON)
 {
 	g_FirstYear = Number(DataJSON.firstYear);
 	g_YearStart = Number(DataJSON.firstYear);
@@ -288,311 +290,66 @@ function SetInitalYears(DataJSON)
 	g_YearEnd = Number(DataJSON.lastYear);
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 3/19/2015 by Emma Roudabush
-// Description: Fills the contents of g_LookupTable with data from
-//              DescriptorJSON. This includes the CC2 codes, the 
-//              names, and the HMS values are set to 0.
-// PRE: DescriptorJSON exists with the correct data from descriptor.php,
-//      g_LookupTable exists
-// POST: g_LookupTable has 676 buckets, of which 193 are initialized to 5 element vectors, of which
-//       their keys are the hashed values of all 193 CC2s from descriptor.php. The vectors contain
-//       (in order) the CID of a country, the CC2, the name, a field containing the data set for the
-//       country (initialized to null), and the heat map value for that country (init to 0)
-function GenerateLookupTable(DescriptorJSON)
-{
-    var CID = 0,
-        index,
-        i;
-
-    g_LookupTable = new Array(g_BUCKETS); // create bucket for all possible CC2s
-    g_NumCountries = DescriptorJSON.cc2.length;
-    for (i = 0; i < DescriptorJSON.cc2.length; i++)
-    {
-        index = Hash(DescriptorJSON.cc2[CID]);				// get hash key for current CC2
-        g_LookupTable[index] = new Array(5);				// create fields
-        g_LookupTable[index][0] = CID;					// set CID field to index of current
-									//  cc2 in descriptor.php
-        g_LookupTable[index][1] = DescriptorJSON.cc2[CID];		// set cc2 to current cc2
-        g_LookupTable[index][2] = DescriptorJSON.common_name[CID];	// set name to current name
-        g_LookupTable[index][3] = null;					// init null data field
-        g_LookupTable[index][4] = 0;					// init 0 heat map stat
-        CID++;								// increment index
-    }
-}
-
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 3/19/2015 by Emma Roudabush
-// Description: Fills the contents of g_StatList with the stats
-//              data from DescriptorJSON            
-// PRE: DescriptorJSON exists with the correct data from descriptor.php,
-//      g_StatList exists
-// POST: g_StatList has the correct stat values
-function GenerateStatReferenceList(DescriptorJSON)
-{
-    var i;
-
-    g_StatList = new Array(DescriptorJSON.stats.length); 
-    for (i = 0; i < DescriptorJSON.stats.length; i++)
-    {
-        g_StatList[i] = DescriptorJSON.stats[i];
-    }
-}
-
-// Author: Joshua Crafts
-// Date Created: 5/20/2015
-// Last Modified: 5/27/2015 by Joshua Crafts
-// Desription: Gets all region data from server and fills table
-// PRE:  g_LookupTable is initialized
-// POST: All table entries for which data exists on the server now have data stored locally in
-//       g_LookupTable
-function SetTableData()
-{
-    var i;
-
-    for (i = 0; i < g_LookupTable.length; i++)
-    {								// each must be set separately so that
-        SetData(i);						//  i is hidden between calls, otherwise
-    }								//  loop will continue before data is set
-								//  data is lost or becomes redundant
-}
-
-// Author: Joshua Crafts
-// Date Created: 5/27/2015
-// Last Modified: 5/27/2015 by Joshua Crafts
-// Description: Gets data for a single table entry if it exists and sets data field in g_LookupTable
-// PRE:  g_LookupTable is initialized and 0 <= index < g_LookupTable.length
-// POST: if g_LookupTable[index] exists, g_LookupTable[index][data] contains its stat data
-function SetData(index)
-{
-    var parsedData;
-
-    if (g_LookupTable[index] !== undefined)
-    {
-        $.when(GetData(g_LookupTable[index][0])).done(function(data){
-            parsedData = ParseData(data);				// parse data and set data field
-            g_LookupTable[index][3] = parsedData;
-            g_DataLoaded++;
-            if (g_DataLoaded === g_NumCountries)				// if last region accounted for,
-            {								//  set ready flag to true
-                g_DataReady = true;
-            }
-        });
-    }
-}
-
-// Author: Emma Roudabush, Joshua Crafts
-// Date Created: 3/17/2015
-// Last Modified: 3/23/2015 by Joshua Crafts
-// Description:Replace HMS values in lookup table with new HMS data (will happen just after lookup table generation for default HMS)
-// PRE: hmsData contains valid heat map values and hmsData is of size g_LookupTable.length
-// POST: g_LookupTable has heat map values of hmsData
-function SetHMS(hmsData)
-{
-    var i;
-
-    for (i = 0; i < g_LookupTable.length; i++)
-    {
-        if (g_LookupTable[i] !== undefined)
-        {
-            g_LookupTable[i][4] = Number(hmsData[g_LookupTable[i][0]]);
-        }
-    }
-}
-
-// Author: Vanajam Soni, Kyle Nicholson, Joshua Crafts
-// Date Created: 3/19/2015
-// Last Modified: 3/23/2015 by Joshua Crafts
-// Description: Returns HMS data based on hmsID
-// PRE: hmsID is an integer and a valid heat map stat id, year is an integer and within the valid range
-// POST: FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
-function GetHMS(hmsID, year)
-{
-    return $.ajax({                                      
-        url: "API/by_stat.php?statID=".concat(hmsID.toString()+"&year="+year.toString()),                                                     
-        dataType: "JSON",
-        success: function(data){     
-            console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));
-        } 
-    });
-}
-
-// Author: Emma Rouabush, Joshua Crafts
-// Date Created: 3/17/2015
-// Last Modified: 3/22/2015 by Joshua Crafts
-// Description: Translate CC2 to CID using g_LookupTable
-// PRE: cc2 is a string that is a valid CC2 code corresponding to a country/region in the lookup table,
-//		g_LookupTable exists and has the correct data
-// POST: FCTVAL = cid (CID corresponding to the input CC2 in the lookup table), -1 if cc2 not found
-function GetCID(cc2)
-{
-    var key = Hash(cc2),
-        cid = g_LookupTable[key][0];
-
-    return cid; 
-}
-
-/*
-// I'm keeping this here just in case something breaks TODO: Delete these comments when approval is granted
-function ParseStatList()
-{
-    g_ParsedStatList = [[1,0,0,0,0,0,0],[12,0,1,2,3,5,8],[4,-1,-1,-1,-1,10,11],[6,-1,-1,-1,-1,9,7]];
-}*/
-
 function SelectIndex(choice)
+// PRE:  choice is an option in a dropdown menu
+// POST: g_SelectedIndex == the 'value' field of choice
 {
     g_SelectedIndex = Number(choice.value);
 }
 
-// Author: Kyle Nicholson
-// Date Created: 4/2/2015
-// Last Modified: 4/15/2015 by Kyle Nicholson
-// Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
-// PRE: g_StatList, g_ParsedStatList exist
-// POST: g_ParsedStat is set up as a 2D array A[x][y], in which each x value represents a selectable 
-// 		 stat, and each y value either represents stat type (0), indicates head stat (1), or indicates 
-//		 associated data (2-3).
-function ParseStatList()
+// PRE:  selectedRegions is a 1D array of CC2 codes output from map.getSelectedRegions in map.js
+// POST: the current data list is replaced with a list containing the relevant data for all countries
+//       whose CC2s are in selectedRegions which have data available
+function BuildList(selectedRegions) 
 {
-	var sortedStatList = g_StatList.slice(),
-            parsedStatList = [],						// 2d array
-            index = 0,
-            // 'global' variables for index locations
-	    statType = 0,
-	    headStat = 1,
-	    assocStat1 = 2,
-	    assocStat2 = 3,
-	    // index variables for the vaccination stats
-	    vaccL1 = -1,
-	    vaccL2 = -1,
-	    vaccSIAHead = -1,
-            i, j,
-            currentStat,
-            isAssociatedStat,
-            isVacc;
+    var i,			// indexing variable
+        node;			// new node to be added to list
 
-        parsedStatList[0] = [];
-	parsedStatList[1] = [];
-	parsedStatList[2] = [];
-	parsedStatList[3] = [];
-	sortedStatList.sort();
+    if (g_DataList == null)						// create list if it does not exist
+    {
+	g_DataList = new c_List();
+    }
 
-	// this loop searches through the g_statList and places only single stats
-	// in the parsedStatList in the appropriate slot
-	for(i = 0; i<sortedStatList.length; i++)
-	{
-                currentStat = sortedStatList[i];
-                isAssociatedStat = false;
-                isVacc = false;
+    g_DataList.clear();							// clear list
 
-		if(currentStat.indexOf('VACCL') >= 0)
-		{
-			// prevent any vaccination bounds from being put as a head stat and mark vaccl indexes
-			// also sets location of associated vaccination stats
-			isAssociatedStat = true;
-			if(vaccL1 === -1)
-			{
-				vaccL1 = g_StatList.indexOf(currentStat);
-			}
-			else if(vaccL2 === -1)
-			{
-				vaccL2 = g_StatList.indexOf(currentStat); 
-			}
-		}
-		
-		// sets the assocaited stat indexes
-		if(i > 0 && currentStat.indexOf(sortedStatList[i-1]) === 0)
-		{
-			isAssociatedStat = true;
-			parsedStatList[assocStat1][index-1] = g_StatList.indexOf(currentStat);
-		}
-		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) === 0)
-		{
-			isAssociatedStat = true;
-			parsedStatList[assocStat2][index-1] = g_StatList.indexOf(currentStat);
-		}
-		
-		// sets the head stats
-		if(!isAssociatedStat)
-		{
-			parsedStatList[headStat][index] = g_StatList.indexOf(currentStat);
-			// if the current stat doesn't contain vacc then set statType to 0
-			if(currentStat.indexOf('VACCB') < 0)
-			{
-				parsedStatList[statType][index] = 0;
-			}
-			else
-			{
-				parsedStatList[statType][index] = 1;
-				isSIAInList = true; 
-				vaccSIAHead = index;
-			}
-			index++;
-		}
-	}
-	
-	// set the associated stats for the SIA vaccination stat
-	parsedStatList[assocStat1][vaccSIAHead] = vaccL1;
-	parsedStatList[assocStat2][vaccSIAHead] = vaccL2;
-	
-	
-	// hacky way of filling in nulls with -1 TODO: figure out how to do this better
-	for(i=0;i<index;i++)
-	{
-		for(j=0;j<4;j++)
-		{
-			if(parsedStatList[j][i] === null)
-			{
-				parsedStatList[j][i] = -1;
-			}
-		}
-	}
-	g_ParsedStatList = parsedStatList;
-	console.log(g_ParsedStatList);
+    for(i = 0; i < selectedRegions.length; i++)				// iterate through list of selected countries
+    {									//  and prepend associated object to list
+        if (g_Data[selectedRegions[i]] !== undefined && g_Data[selectedRegions[i]][g_StatId] !== undefined)
+        {
+            node = new t_AsdsNode(selectedRegions[i],
+                                  g_Countries[selectedRegions[i]],
+                                  g_Data[selectedRegions[i]]);
+            g_DataList.add(node);
+        }
+    }
 }
-
-
 
 // File Name:               settings.js
 // Description:             Module to modify and work with settings
 // Date Created:            3/26/2015
-// Contributors:            Emma Roudabush, Paul Jang, Kyle Nicholson
-// Date Last Modified:      4/23/2015
-// Last Modified By:       	Kyle Nicholson
-// Dependencies:            data.js, index.html
+// Contributors:            Emma Roudabush, Paul Jang, Kyle Nicholson, Joshua Crafts
+// Date Last Modified:      9/1/2015
+// Last Modified By:        Joshua Crafts
+// Dependencies:            data.js, dynamic_markup.js, graph.js
 // Additional Notes:        N/A
 
-// Author: Emma Roudabush
-// Date Created: 4/14/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: To set g_GraphType
+function SetGraphType(type)
 // PRE: type is a number between 0-2
 // POST: g_GraphType is set to the appropriate graph type
-function SetGraphType(type)
 {
     g_GraphType = type;
 }
 
-// Author: Joshua Crafts
-// Date Created: 4/19/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: To set g_VaccHMS
-// PRE: new is a number between 0-2
-// POST: g_VaccHMS is set to the appropriate stat, and the map is recolored/revalued accordingly
 function SetIntHms(newIntHms)
+// PRE: new is a number between 0-2
+// POST: g_IntHms is set to the appropriate stat, and the map is recolored/revalued accordingly
 {
     g_IntHms = newIntHms;
 }
 
-// Author: Kyle Nicholson
-// Date Created: 4/23/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: To set settings for the year ranges
+function ApplyAndClose()
 // PRE: See ApplySettings() and CloseSettings()
 // POST: if apply settings fails nothing happens, else apply settings and close the menu
-function ApplyAndClose()
 {
 	if(ApplySettings())
 	{
@@ -600,13 +357,9 @@ function ApplyAndClose()
 	}
 }
 
-// Author: Kyle Nicholson
-// Date Created: 4/23/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: To set settings for the year ranges
-// PRE: N/A
-// POST: 
 function CancelSettings()
+// PRE:  N/A
+// POST: All settings values are returned to g_TempSettings values
 {
     // remove box shadow and check marks or x marks	
     var startDiv=document.getElementById("year-range-start"),
@@ -627,14 +380,10 @@ function CancelSettings()
     CloseSettings();
 }
 
-// Author: Kyle Nicholson
-// Date Created: 4/23/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: sets all of the settings based on the g_TempSettings array
-// PRE: g_TempSettingsArray is initialized
+function ResetAllStatValues()
+// PRE: g_TempSettings is initialized
 // POST: all settings in the settings menu are visually set and their global variables are set
 //       based on the g_TempSettings array
-function ResetAllStatValues()
 {
     var startDiv=document.getElementById("year-range-start"),
         endDiv=document.getElementById("year-range-end"),
@@ -680,13 +429,9 @@ function ResetAllStatValues()
     g_IntHMS = g_TempSettings[4];	
 }
 
-// Author: Kyle Nicholson
-// Date Created: 4/23/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: saves all current radio buttons and dates 
+function SaveCurrentStatValues()
 // PRE: there are values in each radio button and date div
 // POST: saves all current radio buttons and dates and stores them in g_TempSettings array
-function SaveCurrentStatValues()
 {
     var startDiv=document.getElementById("year-range-start"),
         endDiv=document.getElementById("year-range-end"),
@@ -699,13 +444,12 @@ function SaveCurrentStatValues()
     g_TempSettings[4] = g_IntHms;	
 }
 
-// Author: Nicholas Denaro
-// Date Created: 4/18/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: To set settings for the year ranges
+// JS Hint throws errors on this function for high statement count and high cyclical complexity.
+// Reccommend compartmentalizing some of this code when adding new features.
+/* jshint ignore:start */
+function ApplySettings()
 // PRE: N/A
 // POST: Assigns the global variables if ranges are valid, otherwise display error.
-function ApplySettings()
 {
     var canContinue=true,
         startDiv=document.getElementById("year-range-start"),
@@ -790,8 +534,11 @@ function ApplySettings()
 
         GenerateSubDivs();
         GenerateGraphs();
-        ColorByHMS();	
-        
+        if (g_StatId !== 'custom')
+        {
+            ColorByHms();	
+        }
+
         // saves all radio buttions and dates in g_TempSettings array
         SaveCurrentStatValues();
         
@@ -802,105 +549,230 @@ function ApplySettings()
     	return false;
     }
 }
+/* jshint ignore:end */
 
-// File Name: graph.js
-// Description: This file generates graphs based on parsed data
-// Date Created: 3/17/2015
-// Contributors: Nicholas Dyszel, Berty Ruan, Arun Kumar, Paul Jang, Vanajam Soni
-// Date Last Modified: 4/23/2015
-// Last Modified By: Vanajam Soni
-// Dependencies: client_parser.js, ..., [Google Charts API]
-// Additional Notes: N/A
-
-// Author: Arun Kumar
-// Date Created: 4/14/2015
-// Last Modified: 4/23/2015 by Vanajam Soni
-// Description: Creates switch case to determine which function to call
-// PRE: The divs for the graphs exist, and correct data is stored in g_DataList,
-//      g_GraphType and g_StatList 
-// POST: Calls the appropriate graphing functions depending on the g_GraphType and 
-//       whether the g_StatID selected is vaccination or not 
-function GenerateGraphs()
+function SelectIndex(id)
+// PRE:  id is the id of a dropdown menu used to select a data set index
+// POST: based on the use of the dropdown menu (select index for a selected stat, or
+//       for one of the 2 custom stats), the appropriate global variable is set to the
+//       newly selected value
 {
-	var sumNode,
-            max,
-            element,
-            cur,
-            i;
+    if (id !== 'stat1index' && id !== 'stat2index')
+    {
+        g_SelectedIndex = document.getElementById(id).value;
+    }
+    else
+    {
+        if (id === 'stat1Index')
+        {
+            g_SelectedIndex1 = document.getElementById(id).value;
+        }
+        else
+        {
+            g_SelectedIndex2 = document.getElementById(id).value;
+        }
+    }
+    GenerateGraphs();
+}
+
+function SelectStat(id)
+// PRE:  id is the id of a dropdown menu used to select a stat
+// POST: based on the use of the dropdown menu (which custom stat is being selected), 
+//       the appropriate global variable is set to the newly selected value
+{
+    var re = new RegExp('([a-z\_]+)\\+?(\\d+)?'),
+        results;
+
+    results = re.exec(document.getElementById(id).value);
+    if (id === 'stat1')
+    {
+        g_StatId1 = results[1];
+        if (results[2] !== undefined)
+        {
+            g_SubStat1 = results[2];
+        }
+        RefreshIndices('stat1index');
+        g_SelectedIndex1 = 0;
+    }
+    else
+    {
+        g_StatId2 = results[1];
+        if (results[2] !== undefined)
+        {
+            g_SubStat2 = results[2];
+        }
+        RefreshIndices('stat2index');
+        g_SelectedIndex2 = 0;
+    }
+    GenerateGraphs();
+}
+
+// File Name:          graph.js
+// Description:        This file generates graphs based on server data
+// Date Created:       3/17/2015
+// Contributors:       Berty Ruan, Arun Kumar, Paul Jang, Vanajam Soni, Joshua Crafts
+// Date Last Modified: 9/1/2015
+// Last Modified By:   Joshua Crafts
+// Dependencies:       data.js, data_pull.js, dynamic_markup.js
+// Additional Notes:   N/A
+
+function BuildList(selectedRegions)
+// PRE:  selectedRegions is a 1D array of CC2 codes output from g_Map.getSelectedRegions in map.js
+// POST: the current data list is replaced with a list containing the relevant data for all countries
+//       whose CC2s are in selectedRegions which have data available
+{
+    var i,			// index in selectedRegions
+        node;			// new node to be added to list
+
+    if (g_DataList == null)					// create list if it does not exist
+    {
+	g_DataList = new c_List();
+    }
+
+    g_DataList.clear();						// clear list
+
+    for(i = 0; i < selectedRegions.length; i++)			// iterate through list of selected countries
+    {								//  and prepend it to list
+        if (g_Data[selectedRegions[i]] !== undefined && (g_Data[selectedRegions[i]][g_StatId] !== undefined || g_StatId === 'custom' && g_Data[selectedRegions[i]][g_StatId1] !== undefined && g_Data[selectedRegions[i]][g_StatId2] !== undefined))
+        {
+            node = new t_AsdsNode(selectedRegions[i],
+                                  g_Countries[selectedRegions[i]],
+                                  g_Data[selectedRegions[i]]);
+            g_DataList.add(node);
+        }
+    }
+}
+ 
+function GenerateGraphs()
+// PRE:  The divs for the graphs exist, and correct data is stored in g_DataList,
+//       g_GraphType and g_StatList 
+// POST: Calls the appropriate graphing functions depending on the g_GraphType and 
+//       whether the g_StatID selected is vaccination or not
+{
+	var sumNode,		// temp node for use in 'whole selection' option
+            max,		// max value between regional graphs
+            cur,		// points to nodes as we iterate through list
+            i;			// indexing variable
 
 	if(g_DataList !== undefined && g_DataList.size !== 0)
 	{
-            cur = g_DataList.start;
-            if (g_Stats[g_StatId]['type'] !== 'int')
+            if (g_StatId === 'custom')
             {
-	        switch(g_GraphType)
-	        {
-	            case 0:    
-                        max = FindMax();
-	                for(i=1; i<=g_DataList.size; i++)
-	                {
-	                    if(GraphRegional("region-graphs-"+i, cur, max) === -1)
-                            {
-                                element = document.getElementById("region-graphs-"+i);
-                                element.parentNode.removeChild(element);
-                            }
-	                    cur=cur.next;
-	                }
-	                break;
-	            case 1:
-	                GraphCombined("region-graphs-"+1);
-	                break;
-	            case 2:
-	                sumNode = GenerateSumNode();
-	                GraphRegional("region-graphs-"+1, sumNode);
-	                break;
-	        }
+                GenerateCustomGraphs();
+            }
+            else if (g_Stats[g_StatId].type === 'int')
+            {
+                GenerateIntegratedGraphs();
             }
             else
             {
-	        switch(g_GraphType)
-	        {
-	            case 0:    
-                        max = FindMax();
-	                for(i=1; i<=g_DataList.size; i++)
-	                {
-	                    if(GraphIntegrated("region-graphs-"+i, cur, max) === -1)
-                            {
-                                element = document.getElementById("region-graphs-"+i);
-                                element.parentNode.removeChild(element);
-                            }
-	                    cur=cur.next;
-	                }
-	                break;
-	            case 1:
-	                for(i=1; i<=g_DataList.size; i++)
-	                {
-	                    if(GraphIntegrated("region-graphs-"+i, cur, max) === -1)
-                            {
-                                element = document.getElementById("region-graphs-"+i);
-                                element.parentNode.removeChild(element);
-                            }
-	                    cur=cur.next;
-	                }
-	                break;
-	            case 2:
-	                sumNode = GenerateSumNode();
-	                GraphIntegrated("region-graphs-"+1, sumNode);
-	                break;
-                }
+                GenerateOtherGraphs();
             }
 	}
 }
 
-// Author: Arun Kumar, Berty Ruan, Vanajam Soni
-// Date Created:4/2/2015
-// Last Modified: 4/25/2015 By Berty Ruan
-// Description: Takes stat data and divID to generate a graph for a single country and stat
-// PRE: divID is a div in the graphing section, node is a valid t_AsdsNode containing data for a country or 
-//      a sum of countries, and maxVal is the max is maximum value of the selected stat for the entire list
-// POST: generates a single Google ComboChart for the given node on the divID
-function GraphRegional(divID, node, maxVal) {
-    var data = GenerateSingleData(node['data'][g_StatId]['data']),
+function GenerateCustomGraphs()
+// PRE:  g_DataList is initialized with server data and the document is ready
+// POST: appropriate graphs are drawn for the 'custom' tab according to the stats
+//       to be graphed and the data type (est, int, lin, or bar)
+{
+    var i,
+        cur = g_DataList.start,
+        max;
+
+    switch(g_GraphType)
+    {
+        case 0:
+            for(i=1; i<=g_DataList.size; i++)
+            {
+                GraphCustom("region-graphs-"+i, cur);
+                cur=cur.next;
+            }
+            break;
+        case 1:
+            for(i=1; i<=g_DataList.size; i++)
+            {
+                GraphCustom("region-graphs-"+i, cur);
+                cur=cur.next;
+            }
+            break;
+        case 2:
+            sumNode = GenerateSumNode();
+            GraphCustom("region-graphs-"+1, sumNode);
+            break;
+    }
+}
+
+function GenerateIntegratedGraphs()
+// PRE:  g_DataList has been initialized with server data g_Stats[g_StatId] is of type 'int'
+// POST: graphs of the appropriate number and type are rendered in the graph section of the
+//       control panel
+{
+    var i,
+        cur = g_DataList.start,
+        max;
+
+    switch(g_GraphType)
+    {
+        case 0:    
+            max = FindMax();
+            for(i=1; i<=g_DataList.size; i++)
+            {
+                GraphIntegrated("region-graphs-"+i, cur, max);
+                cur=cur.next;
+            }
+            break;
+        case 1:
+            max = FindMax();
+            for(i=1; i<=g_DataList.size; i++)
+            {
+                GraphIntegrated("region-graphs-"+i, cur, max);
+                cur=cur.next;
+            }
+            break;
+        case 2:
+            sumNode = GenerateSumNode();
+            GraphIntegrated("region-graphs-"+1, sumNode);
+            break;
+    }
+}
+
+function GenerateOtherGraphs()
+// PRE:  g_DataList has been initialized with server data g_Stats[g_StatId] is not of type 'int'
+// POST: graphs of the appropriate number and type are rendered in the graph section of the
+//       control panel
+{
+    var i,
+        cur = g_DataList.start,
+        max;
+
+    switch(g_GraphType)
+    {
+        case 0:    
+            max = FindMax();
+            for(i=1; i<=g_DataList.size; i++)
+            {
+                GraphRegional("region-graphs-"+i, cur, max);
+                cur=cur.next;
+            }
+            break;
+        case 1:
+            GraphCombined("region-graphs-"+1);
+            break;
+        case 2:
+            sumNode = GenerateSumNode();
+            GraphRegional("region-graphs-"+1, sumNode);
+            break;
+    }
+}
+
+
+function GraphRegional(divID, node, maxVal)
+// PRE:  divID is a div of class "region-graphs-\d", node is a valid t_AsdsNode containing data for a country or 
+//       a sum of countries, and maxVal is the max is maximum value of the selected stat for the entire list
+// POST: generates a single Google ComboChart for g_Stats[g_StatId] for the given node on the divID
+{
+    var data = GenerateSingleData(node.data[g_StatId].data),
         options = {
             title: node.name,
             seriesType: "line",
@@ -919,9 +791,11 @@ function GraphRegional(divID, node, maxVal) {
     chart,
     i;
 
-    if (g_Stats[g_StatId]['type'] !== 'est')
+    // default options are for 'est'
+    // if single line, make navy
+    if (g_Stats[g_StatId].type !== 'est')
     {
-        options['series'][0]['color'] = "navy";
+        options.series[0].color = "navy";
     }
     	
     if(data !== null)
@@ -946,14 +820,10 @@ function GraphRegional(divID, node, maxVal) {
     }
 }
 
-// Authors: Josh Crafts, Arun Kumar, Berty Ruan
-// Date Created: 3/27/2015
-// Last Modified: 4/25/2015 by Berty Ruan
-// Description: Takes stat data from multiple countries and generates a graph
-// using data from multiple countries combined
-// PRE: divID is a div in the graphing section, GenerateCombinedData function is defined
-// POST: generates a single Google LineChart on divID for all regions on g_DataList
-function GraphCombined(divID) {
+function GraphCombined(divID)
+// PRE:  divID is a div of class "region-graphs-\d", g_DataList is initialized with server data
+// POST: generates a single Google LineChart on divID for all regions in g_DataList
+{
     var data = GenerateCombinedData(),
         options = {
         seriesType: "line",
@@ -986,17 +856,12 @@ function GraphCombined(divID) {
     chart.draw(data, options);
 }
 
-// Author: Arun Kumar, Berty Ruan
-// Date Created: 4/14/2015
-// Last Modified: 4/25/2015 by Berty Ruan
-// Description: Takes stat data from multiple countries and generates a graph for vaccinations
-// creating bars with mass vaccinations and line graphs with periodic vaccinations
-// PRE: divID is a div in the graphing section, node is a valid t_AsdsNode containing data for a country or 
-//      a sum of countries, GenerateVaccineData function is defined
-// POST: generates a single Google ComboChart for the given node's vaccination data on the divID 
-//       SIA data is shown in bars, whereas MCV1 and MCV2 data is shown in lines.
-function GraphIntegrated(divID, node, maxVal) {
-    var data = GenerateSingleData(node['data'][g_StatId]['data']),
+function GraphIntegrated(divID, node, maxVal)
+// PRE:  divID is a div of class "region-graphs-\d", node is a valid t_AsdsNode containing data for a country or 
+//       a sum of countries, and maxVal is the max is maximum value of the selected stat for the entire list
+// POST: generates a single Google ComboChart for integrated stat g_Stats[g_StatId] for the given node on the divID
+{
+    var data = GenerateSingleData(node.data[g_StatId].data),
         dataSeries = {0: {type: "bar"}, 1: {type: "bar"}, 2: {type: "bar"}},
         options = {
             title: node.name,
@@ -1019,18 +884,18 @@ function GraphIntegrated(divID, node, maxVal) {
 
     if (maxVal > 1)
     {
-        options['vAxis']['viewWindow']['max'] = maxVal;
+        options.vAxis.viewWindow.max = maxVal;
     }
 
-    for (i = 0; i < g_Stats[g_StatId]['subType'].length; i++)
+    for (i = 0; i < g_Stats[g_StatId].subType.length; i++)
     {
-        if (g_Stats[g_StatId]['subType'][i] === 'lin')
+        if (g_Stats[g_StatId].subType[i] === 'lin')
         {
-             dataSeries[i]['type'] = 'line'; 
+             dataSeries[i].type = 'line'; 
         }
     }
 
-    options['series'] = dataSeries;
+    options.series = dataSeries;
 	
     formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
     for(i=1; i<data.getNumberOfColumns(); i++)
@@ -1042,15 +907,32 @@ function GraphIntegrated(divID, node, maxVal) {
     chart.draw(data, options);
 }
 
-// Author: Vanajam Soni, Berty Ruan
-// Date Created: 4/16/2015
-// Last Modified: 4/25/2015 by Berty Ruan
-// Description: Checks for missing data and returns null, if data is missing.
+function GraphCustom(divID, node)
+// PRE:  node is a pointer to a particular node in g_DataList
+//       divID is the id of a particular div in which to graph
+// POST: a graph of the 2 stats indicated by g_StatId1 and g_StatId2 from node is created in div divID
+{
+    var data = GenerateCustomData(node),
+        options = {
+            title: node.name,
+            hAxis: {title: 'Year', format: '####'},
+            backgroundColor: '#EAE7C2',
+            seriesType: "line",
+            tooltip: {trigger: 'both'}
+        },
+        formatter,
+        chart,
+        i;
+	
+    chart = new google.visualization.ComboChart(document.getElementById(divID));
+    chart.draw(data, options);
+}
+
+function FixMissingData(data)
 // PRE: data is an integer or float, missing data is represented as -1
 // POST: FCTVAL == data if data is not -1, null otherwise
-function FixMissingData(data)
 {
-    if(data != -1)
+    if(data !== -1)
     {
         return data;
     }
@@ -1061,9 +943,14 @@ function FixMissingData(data)
 }
 
 function GetYears(values)
+// PRE:  values is an object with its keys being column ids from the source database table,
+//       and the values matched to them being the data values from the table for a particular
+//       country
+// POST: FCTVAL == an array of years as Numbers with the prefix "y_" stripped from the column name
 {
     var years = [],
-        re = new RegExp("y_(\\d+)");
+        re = new RegExp("y_(\\d+)"),
+        i;
 
     for (i in values)
     {
@@ -1078,8 +965,13 @@ function GetYears(values)
 }
 
 function GetValues(values)
+// PRE:  values is an object with its keys being column ids from the source database table,
+//       and the values matched to them being the data values from the table for a particular
+//       country
+// POST: FCTVAL == an array of the data values from values as Numbers
 {
-    var row = [];
+    var row = [],
+        i;
 
     for (i in values)
     {
@@ -1092,80 +984,196 @@ function GetValues(values)
     return row;
 }
 
-// Author: Vanajam Soni, Joshua Crafts, Berty Ruan
-// Date Created: 4/7/2015
-// Last Modified: 4/25/2015 by Berty Ruan 
-// Description: Prepares Data given for a single country (taken as argument) into data table, for the global statID, 
-//              Also depends on graph type for bounded or unbounded data
-// PRE: data is a 2d array, containing all data for one country, or a sum of countries,
-//      g_ParsedStatList exists and contains valid data
+function GenerateSingleData(data)
+// PRE:  data == g_Data[{{country}}][g_StatId]['data']
 // POST: FCTVAL == data table containing data from the year g_YearStart to g_YearEnd, for the given country's data
 //       so that we can graph
-function GenerateSingleData(data)
 {
-    var dataTable = new google.visualization.DataTable(),
+    var dataTable,
         i,
         temp = new Array(4);
 
-    if (g_Stats[g_StatId]['type'] === 'est')
+    if (g_Stats[g_StatId].type === 'est')
     {
-        temp[0] = GetYears(data[g_SelectedIndex]['values'][0]);
-        temp[1] = GetValues(data[g_SelectedIndex]['values'][0]);
-        temp[2] = GetValues(data[g_SelectedIndex]['values'][1]);
-        temp[3] = GetValues(data[g_SelectedIndex]['values'][2]);
-        dataTable.addColumn('number','year');
-        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][1]);
-        dataTable.addColumn('number', 'lower bound space'); // area under lower bound
-        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][2]); // additional line to outline confidence interval
-        dataTable.addColumn('number', 'size of confidence interval'); // area between upper bound and lower bound
-        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][0]); // additional line to generate accurate upper bound tooltip, ow it would show size of confidence interval
-        for (i = 0; i < temp[0].length; i++)
-        {
-            dataTable.addRow([temp[0][i],temp[2][i],temp[3][i],
-                    temp[3][i],temp[1][i] - temp[3][i], temp[1][i]]);
-        }
-        
+        dataTable = GenerateSingleEstData(data);
     }
-    else if (g_Stats[g_StatId]['type'] === 'int')
+    else if (g_Stats[g_StatId].type === 'int')
     {
-        temp[0] = GetYears(data[g_SelectedIndex]['values'][0]['values']);
-        temp[1] = GetValues(data[g_SelectedIndex]['values'][0]['values']);
-        temp[2] = GetValues(data[g_SelectedIndex]['values'][1]['values']);
-        temp[3] = GetValues(data[g_SelectedIndex]['values'][2]['values']);
-        dataTable.addColumn('number','year');
-        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][0]);
-        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][1]);
-        dataTable.addColumn('number', g_Stats[g_StatId]['subName'][2]);
-        for (i = 0; i < temp[0].length; i++)
-        {
-            dataTable.addRow([temp[0][i],temp[1][i],temp[2][i],temp[3][i]]);
-        }
+        dataTable = GenerateSingleIntData(data);
     }
     else
     {
-        dataTable.addColumn('number','year');
-        dataTable.addColumn('number', g_Stats[g_StatId]['name']);
-        temp[0] = GetYears(data[g_SelectedIndex]['values']);
-        temp[1] = GetValues(data[g_SelectedIndex]['values']);
-        for (i = 0; i < temp[0].length; i++)
-        {
-            dataTable.addRow([temp[0][i],temp[1][i]]);
-        }
+        dataTable = GenerateSingleOtherData(data);
     }
 
     return dataTable;
 }
 
+function GenerateSingleEstData(data)
+// PRE:  data is initialized with server data, and g_Stats[g_StatId]['type] == 'est'
+//       g_SelectedIndex and g_StatId are initialized
+// POST: FCTVAL == a data table of data with the appropriate format
+{
+    var temp = [],
+        dataTable = new google.visualization.DataTable(),
+        i;
 
-// Author: Joshua Crafts
-// Date Created: 3/27/2015
-// Last Modified: 3/27/2015 by Joshua Crafts
-// Description: Prepares data in terms of the data type needed by graphing api
-// PRE: g_DataList > 0, 
-//      g_ParsedStatList exists and contains valid data.
+    temp.push(GetYears(data[g_SelectedIndex].values[0]));
+    temp.push(GetValues(data[g_SelectedIndex].values[0]));
+    temp.push(GetValues(data[g_SelectedIndex].values[1]));
+    temp.push(GetValues(data[g_SelectedIndex].values[2]));
+    dataTable.addColumn('number','year');
+    dataTable.addColumn('number', g_Stats[g_StatId].subName[1]);
+    dataTable.addColumn('number', 'lower bound space'); // area under lower bound
+    dataTable.addColumn('number', g_Stats[g_StatId].subName[2]); // additional line to outline confidence interval
+    dataTable.addColumn('number', 'size of confidence interval'); // area between upper bound and lower bound
+    dataTable.addColumn('number', g_Stats[g_StatId].subName[0]); // additional line to generate accurate upper bound tooltip, ow it would show size of confidence interval
+    for (i = 0; i < temp[0].length; i++)
+    {
+        dataTable.addRow([temp[0][i],temp[2][i],temp[3][i],
+                temp[3][i],temp[1][i] - temp[3][i], temp[1][i]]);
+    }
+
+    return dataTable;
+}
+
+function GenerateSingleIntData(data)
+// PRE:  data is initialized with server data, and g_Stats[g_StatId]['type] == 'int'
+//       g_SelectedIndex and g_StatId are initialized
+// POST: FCTVAL == a data table of data with the appropriate format
+{
+    var temp = [],
+        dataTable = new google.visualization.DataTable(),
+        i;
+
+    temp.push(GetYears(data[g_SelectedIndex].values[0].values));
+    temp.push(GetValues(data[g_SelectedIndex].values[0].values));
+    temp.push(GetValues(data[g_SelectedIndex].values[1].values));
+    temp.push(GetValues(data[g_SelectedIndex].values[2].values));
+    dataTable.addColumn('number','year');
+    dataTable.addColumn('number', g_Stats[g_StatId].subName[0]);
+    dataTable.addColumn('number', g_Stats[g_StatId].subName[1]);
+    dataTable.addColumn('number', g_Stats[g_StatId].subName[2]);
+    for (i = 0; i < temp[0].length; i++)
+    {
+        dataTable.addRow([temp[0][i],temp[1][i],temp[2][i],temp[3][i]]);
+    }
+
+    return dataTable;
+}
+
+function GenerateSingleOtherData(data)
+// PRE:  data is initialized with server data, and g_Stats[g_StatId]['type] != 'est' or 'int'
+//       g_SelectedIndex and g_StatId are initialized
+// POST: FCTVAL == a data table of data with the appropriate format
+{
+    var temp = [],
+        dataTable = new google.visualization.DataTable(),
+        i;
+
+    dataTable.addColumn('number','year');
+    dataTable.addColumn('number', g_Stats[g_StatId].name);
+    temp.push(GetYears(data[g_SelectedIndex].values));
+    temp.push(GetValues(data[g_SelectedIndex].values));
+    for (i = 0; i < temp[0].length; i++)
+    {
+        dataTable.addRow([temp[0][i],temp[1][i]]);
+    }
+
+    return dataTable;
+}
+
+//TODO: reduce cyclomatic complexity to below jshint threshold
+/* jshint ignore:start */
+function GenerateCustomData(node)
+// PRE:  node is a pointer to a particular node in g_DataList
+// POST: FCTVAL == a google charts DataTable object containing all necessary data from 2 stats
+//       from node
+{
+    var temp1 = [],
+        temp2 = [],
+        dataTable = new google.visualization.DataTable(),
+        i, j;
+
+    console.log(g_StatId1);
+    console.log(g_SelectedIndex1);
+    dataTable.addColumn('number','year');
+    if (g_Stats[g_StatId1].type !== 'int')
+    {
+        dataTable.addColumn('number', g_Stats[g_StatId1].name);
+    }
+    else
+    {
+        dataTable.addColumn('number', g_Stats[g_StatId1].subName[g_SubStat1]);
+    }
+    if (g_Stats[g_StatId2].type !== 'int')
+    {
+        dataTable.addColumn('number', g_Stats[g_StatId2].name);
+    }
+    else
+    {
+        dataTable.addColumn('number', g_Stats[g_StatId2].subName[g_SubStat2]);
+    }
+    if (g_Stats[g_StatId1].type === 'est')
+    {
+        temp1.push(GetYears(node.data[g_StatId1].data[g_SelectedIndex1].values[1]));
+        temp1.push(GetValues(node.data[g_StatId1].data[g_SelectedIndex1].values[1]));
+    }
+    else if (g_Stats[g_StatId1].type === 'int')
+    {
+        temp1.push(GetYears(node.data[g_StatId1].data[g_SelectedIndex1].values[g_SubStat1].values));
+        temp1.push(GetValues(node.data[g_StatId1].data[g_SelectedIndex1].values[g_SubStat1].values));
+    }
+    else
+    {
+        temp1.push(GetYears(node.data[g_StatId1].data[g_SelectedIndex1].values));
+        temp1.push(GetValues(node.data[g_StatId1].data[g_SelectedIndex1].values));
+    }
+    console.log(g_StatId2);
+    console.log(g_SelectedIndex2);
+    if (g_Stats[g_StatId2].type === 'est')
+    {
+        temp2.push(GetYears(node.data[g_StatId2].data[g_SelectedIndex2].values[1]));
+        temp2.push(GetValues(node.data[g_StatId2].data[g_SelectedIndex2].values[1]));
+    }
+    else if (g_Stats[g_StatId2].type === 'int')
+    {
+        temp2.push(GetYears(node.data[g_StatId2].data[g_SelectedIndex2].values[g_SubStat2].values));
+        temp2.push(GetValues(node.data[g_StatId2].data[g_SelectedIndex2].values[g_SubStat2].values));
+    }
+    else
+    {
+        temp2.push(GetYears(node.data[g_StatId2].data[g_SelectedIndex2].values));
+        temp2.push(GetValues(node.data[g_StatId2].data[g_SelectedIndex2].values));
+    }
+
+    j = 0;
+    i = 0;
+    while (temp1[0][i] !== temp2[0][j])
+    {
+        j++;
+    }
+    if (temp1[0][i] !== temp2[0][j])
+    {
+        j = 0;
+        while (temp1[0][i] !== temp2[0][j])
+        {
+            i++;
+        }
+    }
+    for (i = i; i < temp1[0].length; i++)
+    {
+        dataTable.addRow([temp1[0][i],temp1[1][i],temp2[1][j]]);
+        j++;
+    }
+    return dataTable;
+}
+/* jshint ignore:end */
+
+function GenerateCombinedData()
+// PRE:  g_DataList, g_StatId, and g_SelectedIndex are initialized with server data
 // POST: FCTVAL == data table containing data from the year g_YearStart to g_YearEnd, for all countries on the 
 //       g_DataList, so that we can graph all data on one graph
-function GenerateCombinedData()
 {
     var dataTable = new google.visualization.DataTable(),
         i, j,
@@ -1182,21 +1190,21 @@ function GenerateCombinedData()
     }
 
     cur = g_DataList.start;
-    if (g_Stats[g_StatId]['type'] === 'est')
+    if (g_Stats[g_StatId].type === 'est')
     {
-        temp[0] = GetYears(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][1]);
+        temp[0] = GetYears(cur.data[g_StatId].data[g_SelectedIndex].values[1]);
         for (i = 0; i < g_DataList.size; i++)
         {
-            temp[i + 1] = GetValues(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][1]);
+            temp[i + 1] = GetValues(cur.data[g_StatId].data[g_SelectedIndex].values[1]);
             cur = cur.next;
         }
     }
     else
     {
-        temp[0] = GetYears(cur['data'][g_StatId]['data'][g_SelectedIndex]['values']);
+        temp[0] = GetYears(cur.data[g_StatId].data[g_SelectedIndex].values);
         for (i = 0; i < g_DataList.size; i++)
         {
-            temp[i + 1] = GetValues(cur['data'][g_StatId]['data'][g_SelectedIndex]['values']);
+            temp[i + 1] = GetValues(cur.data[g_StatId].data[g_SelectedIndex].values);
             cur = cur.next;
         }
     }
@@ -1215,16 +1223,10 @@ function GenerateCombinedData()
     return dataTable;
 }
 
-// Author: Vanajam Soni
-// Date Created: 4/7/2015
-// Last Modified: 4/13/2015 by Vanajam Soni
-// Description: Generates an ASDS node with all data summed over selected regions
-// PRE: g_DataList.size > 0, 
-//      g_ParsedStatList, g_YearEnd and g_FirstYear exist and contain correct data
-// POST: FCTVAL == t_AsdsNode with cid = -1, cc2 = "SUM", 
-//       name = comma separated names of all countries in g_DataList,
-//       data = sum of all data of the countries in g_DataList
 function GenerateSumNode()
+// PRE:  g_DataList, g_StatId, and g_SelectedIndex are initialized with server data
+// POST: FCTVAL == t_AsdsNode with cc2 = 'sum', name = comma delimited list of country names,
+//       and data being a partial data set that includes summed values for only the needed stats
 {
     var clone,
         data,
@@ -1236,78 +1238,34 @@ function GenerateSumNode()
     cur = g_DataList.start;
     // MUST clone initial object or you will modify country's data when summing
     clone = jQuery.extend(true, {}, g_Data[cur.cc2]);
-    data = clone[g_StatId]['data'];
     name += cur.name;
     cur = cur.next;
     for (i = 1; i < g_DataList.size; i++)
     {
         name += ", " + cur.name;
-        if (g_Stats[g_StatId]['type'] === 'est')
+        // add all data values for stat and substats to the copied node, effectively creating a sum node with respect to the needed stat
+        if (g_StatId === 'custom')
         {
-            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
+            clone[g_StatId1].data = AddValuesFromNode(clone[g_StatId1].data, cur, g_StatId1, g_SelectedIndex1);
+            if (g_StatId1 !== g_StatId2)
             {
-		data[g_SelectedIndex]['values'][0]['y_' + j] = Number(data[g_SelectedIndex]['values'][0]['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values'][0]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['y_' + j]);
-                }
-		data[g_SelectedIndex]['values'][1]['y_' + j] = Number(data[g_SelectedIndex]['values'][1]['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values'][1]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['y_' + j]);
-                }
-		data[g_SelectedIndex]['values'][2]['y_' + j] = Number(data[g_SelectedIndex]['values'][2]['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values'][2]['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]);
-                }
-            }
-        }
-        else if (g_Stats[g_StatId]['type'] === 'int')
-        {
-            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
-            {
-		data[g_SelectedIndex]['values'][0]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][0]['values']['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['values']['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values'][0]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][0]['values']['y_' + j]);
-                }
-		data[g_SelectedIndex]['values'][1]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][1]['values']['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['values']['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values'][1]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][1]['values']['y_' + j]);
-                }
-                if (data[g_SelectedIndex].length === 3)
-                {
-		    data[g_SelectedIndex]['values'][2]['values']['y_' + j] = Number(data[g_SelectedIndex]['values'][2]['values']['y_' + j]);
-                    if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['y_' + j]) != -1)
-                    {
-                        data[g_SelectedIndex]['values'][2]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values'][2]['values']['y_' + j]);
-                    }
-                }
+                clone[g_StatId2].data = AddValuesFromNode(clone[g_StatId2].data, cur, g_StatId2, g_SelectedIndex2);
             }
         }
         else
         {
-            for (j = g_Data[cur.cc2][g_StatId]['firstYear']; j <= g_Data[cur.cc2][g_StatId]['lastYear']; j++)
-            {
-		data[g_SelectedIndex]['values']['y_' + j] = Number(data[g_SelectedIndex]['values']['y_' + j]);
-                if (Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values']['y_' + j]) != -1)
-                {
-                    data[g_SelectedIndex]['values']['y_' + j] += Number(g_Data[cur.cc2][g_StatId]['data'][g_SelectedIndex]['values']['y_' + j]);
-                }
-            }
+            clone[g_StatId].data = AddValuesFromNode(clone[g_StatId].data, cur, g_StatId, g_SelectedIndex);
         }
         cur = cur.next;
     }
 
-    if (g_Stats[g_StatId]['type'] === 'int')
+    if (g_StatId !== 'custom' && g_Stats[g_StatId].type === 'int')
     {
-        for (j = g_Data[g_DataList.start.cc2][g_StatId]['firstYear']; j <= g_Data[g_DataList.start.cc2][g_StatId]['lastYear']; j++)
+        for (j = g_Data[g_DataList.start.cc2][g_StatId].firstYear; j <= g_Data[g_DataList.start.cc2][g_StatId].lastYear; j++)
         {
-            data[g_SelectedIndex]['values'][0]['values']['y_' + j] = data[g_SelectedIndex]['values'][0]['values']['y_' + j] / g_DataList.size;
-            data[g_SelectedIndex]['values'][1]['values']['y_' + j] = data[g_SelectedIndex]['values'][0]['values']['y_' + j] / g_DataList.size;
-            data[g_SelectedIndex]['values'][2]['values']['y_' + j] = data[g_SelectedIndex]['values'][0]['values']['y_' + j] / g_DataList.size;
+            data[g_SelectedIndex].values[0].values['y_' + j] = data[g_SelectedIndex].values[0].values['y_' + j] / g_DataList.size;
+            data[g_SelectedIndex].values[1].values['y_' + j] = data[g_SelectedIndex].values[0].values['y_' + j] / g_DataList.size;
+            data[g_SelectedIndex].values[2].values['y_' + j] = data[g_SelectedIndex].values[0].values['y_' + j] / g_DataList.size;
         }
     }
     
@@ -1316,11 +1274,86 @@ function GenerateSumNode()
     return sumNode;
 }
 
+//TODO: reduce cyclomatic complexity to below jshint threshold
+/* jshint ignore:start */
+function AddValuesFromNode(data, node, statId, index)
+// PRE:  data is a pointer to the 'data' field of the output node's node[cc2][statId] object
+//       node is the current node in the list being traversed
+//       statId is the id of the stat whose values are being added to the output node
+//       index is the index of the stat data set whose values are being added to the output node
+// POST: FCTVAL == a data object with the values of the current node added to the desired stat
+//       and data set index
+{
+    if (g_Stats[statId].type === 'est')
+    {
+        for (j = g_Data[node.cc2][statId].firstYear; j <= g_Data[node.cc2][statId].lastYear; j++)
+        {
+            data[index].values[0]['y_' + j] = Number(data[index].values[0]['y_' + j]);
+            if (Number(g_Data[node.cc2][statId].data[index].values[0]['y_' + j]) !== -1)
+            {
+                data[index].values[0]['y_' + j] += Number(g_Data[node.cc2][statId].data[index].values[0]['y_' + j]);
+            }
+            data[index].values[1]['y_' + j] = Number(data[index].values[1]['y_' + j]);
+            if (Number(g_Data[node.cc2][statId].data[index].values[1]['y_' + j]) !== -1)
+            {
+                data[index].values[1]['y_' + j] += Number(g_Data[node.cc2][statId].data[index].values[1]['y_' + j]);
+            }
+            data[index].values[2]['y_' + j] = Number(data[index].values[2]['y_' + j]);
+            if (Number(g_Data[node.cc2][statId].data[index].values[2]['y_' + j]) !== -1)
+            {
+                data[index].values[2]['y_' + j] += Number(g_Data[node.cc2][statId].data[index].values[2]['y_' + j]);
+            }
+        }
+    }
+    else if (g_Stats[statId].type === 'int')
+    {
+        for (j = g_Data[node.cc2][statId].firstYear; j <= g_Data[node.cc2][statId].lastYear; j++)
+        {
+            data[index].values[0].values['y_' + j] = Number(data[index].values[0].values['y_' + j]);
+            if (Number(g_Data[node.cc2][statId].data[index].values[0].values['y_' + j]) !== -1)
+            {
+                data[index].values[0].values['y_' + j] += Number(g_Data[node.cc2][statId].data[index].values[0].values['y_' + j]);
+            }
+            data[index].values[1].values['y_' + j] = Number(data[index].values[1].values['y_' + j]);
+            if (Number(g_Data[node.cc2][statId].data[index].values[1].values['y_' + j]) !== -1)
+            {
+                data[index].values[1].values['y_' + j] += Number(g_Data[node.cc2][statId].data[index].values[1].values['y_' + j]);
+            }
+            if (data[index].length === 3)
+            {
+		data[index].values[2].values['y_' + j] = Number(data[index].values[2].values['y_' + j]);
+                if (Number(g_Data[node.cc2][statId].data[index].values[2]['y_' + j]) !== -1)
+                {
+                    data[index].values[2].values['y_' + j] += Number(g_Data[node.cc2][statId].data[index].values[2].values['y_' + j]);
+                }
+            }
+        }
+    }
+    else
+    {
+        for (j = g_Data[node.cc2][statId].firstYear; j <= g_Data[node.cc2][statId].lastYear; j++)
+        {
+            data[index].values['y_' + j] = Number(data[index].values['y_' + j]);
+            if (Number(g_Data[node.cc2][statId].data[index].values['y_' + j]) !== -1)
+            {
+                data[index].values['y_' + j] += Number(g_Data[node.cc2][statId].data[index].values['y_' + j]);
+            }
+        }
+    }
+    return data;
+}
+/* jshint ignore:end */
+
 function GetMaxFromValueRow(values)
+// PRE:  values is an object with its keys being column ids from the source database table,
+//       and the values matched to them being the data values from the table for a particular
+//       country
+// POST: FCTVAL == maximum value from values
 {
     var max = Number.MIN_VALUE,
         re = new RegExp("y_(\\d+)"),
-        temp;
+        temp,
+        i;
 
     for (i in values)
     {
@@ -1338,14 +1371,10 @@ function GetMaxFromValueRow(values)
     return max;
 }
 
-// Author: Joshua Crafts
-// Date Created: 4/7/2015
-// Last Modified: 4/13/2015 by Vanajam Soni
-// Description: Finds and returns maximum value of a stat for the entire list
-// PRE: g_DataList.size > 0, 
-//      g_ParsedStatList, g_YearFirst, g_FirstYear and g_YearEnd exist and contain correct data
-// POST: FCTVAL == maximum value of the selected stat for the entire list
 function FindMax()
+// PRE:  g_DataList, g_StatId, and g_SelectedIndex are initialized with server data
+//       g_ParsedStatList, g_YearFirst, g_FirstYear and g_YearEnd exist and contain correct data
+// POST: FCTVAL == maximum value of the selected stat for the entire list
 {
     var max = Number.MIN_VALUE,
         cur = g_DataList.start,
@@ -1356,19 +1385,7 @@ function FindMax()
     for (i = 0; i < g_DataList.size; i++)
     {
         // get max of current node for current stat
-        if (g_Stats[g_StatId]['type'] === 'est')
-        {
-            thisNodeMax = Math.max.apply(Math, [GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][0]), GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][1]), GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][2])]);
-        }
-        else if (g_Stats[g_StatId]['type'] === 'int')
-        {
-            thisNodeMax = Math.max.apply(Math, [GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][0]['values']),GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][1]['values']),GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values'][2]['values'])]);
-        }
-        else
-        {
-            thisNodeMax = GetMaxFromValueRow(cur['data'][g_StatId]['data'][g_SelectedIndex]['values']);
-        }
-
+        thisNodeMax = GetMaxThisNode(cur);
         if (thisNodeMax > max)
         {
             max = thisNodeMax;
@@ -1384,74 +1401,95 @@ function FindMax()
     return max;   
 }
 
+function GetMaxThisNode(node)
+// PRE:  g_DataList, g_StatId, and g_SelectedIndex are initialized with server data
+//       g_ParsedStatList, g_YearFirst, g_FirstYear and g_YearEnd exist and contain correct data
+//       node is a particular node of g_DataList
+// POST: FCTVAL == the max value of stat g_StatId for node node
+{
+    var max;
+
+    if (g_Stats[g_StatId].type === 'est')
+    {
+        max = Math.max.apply(Math, [GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[0]), GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[1]), GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[2])]);
+    }
+    else if (g_Stats[g_StatId].type === 'int')
+    {
+        max = Math.max.apply(Math, [GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[0].values),GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[1].values),GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values[2].values)]);
+    }
+    else
+    {
+        max = GetMaxFromValueRow(node.data[g_StatId].data[g_SelectedIndex].values);
+    }
+
+    return max;
+}
 
 // File Name:               dynamic_markup.js
-// Description:             This module contains the code needed to dynamically create modules on the client
+// Description:             This module contains the code needed to dynamically create markup on the page based on server data
 // Date Created:            3/26/2015
-// Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
-// Date Last Modified:      4/20/2015
-// Last Modified By:        Paul Jang
-// Dependencies:            index.html, lookup_table.js, data.js
+// Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush, Joshua Crafts
+// Date Last Modified:      8/29/2015
+// Last Modified By:        Joshua Crafts
+// Dependencies:            data_pull.js, data.js, graph.js, settings.js
 // Additional Notes:        N/A
 
-// Author: Paul Jang, Nicholas Denaro
-// Date Created: 3/26/2015
-// Last Modified: 4/14/2015 by Nicholas Denaro
-// Description: Retrieve stat values from the lookup_table,
-//              Builds the tabs and inserts them into index.html
-// PRE: lookup_table is filled correctly, index.html exists
-// POST: index.html contains tabs of the correct stat data from the lookup_table
 function BuildTabs()
+// PRE:  .control-panel is loaded in the document, g_Stats is initialized with server data
+// POST: .control-panel contains all stat tabs, including 'custom', as well as their graph sections
+//       and dropdown menus
 {
-    var i,
-        temp,
-        div;
+    var i;
 
+    // create stat tabs and divs
     for(i in g_Stats)
     {
-        temp=g_Stats[i]['name'];
-        div=document.createElement("DIV");
-        div.id="id-"+i;
-        div.setAttribute("stat",i);
-        div.className="graph-tab";
-        div.setAttribute("onclick","ChooseTab(this)");
-        div.innerHTML=temp;
-        document.getElementById("tabsDiv").appendChild(div);
-
-        BuildDiv(i);
-
-        if(i === g_StatId)
-        {
-            document.getElementById("id-"+i+"-graphs").style.display="block";
-            div.className="graph-tab selected-tab";
+	if (g_Stats.hasOwnProperty(i)) {
+            document.getElementById("tabsDiv").appendChild(CreateTab(g_Stats[i].name, i));
         }
     }
 
-    temp='Custom';
-    div=document.createElement("DIV");
-    div.id="id-custom";
-    div.setAttribute("stat",'custom');
-    div.className="graph-tab";
-    div.setAttribute("onclick","ChooseTab(this)");
-    div.innerHTML=temp;
-    document.getElementById("tabsDiv").appendChild(div);
-
-    BuildDiv('custom');
+    // create custom tab and div
+    document.getElementById("tabsDiv").appendChild(CreateTab('Custom', 'custom'));
 }
 
-// Author: Nicholas Denaro
-// Date Created: 4/16/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: Assigns values to the year ranges
-// PRE: lookup_table is filled correctly, index.html exists
-// POST: appropriate input tags are modified and g_TempSettings array is initialized
+function CreateTab(name, id)
+// PRE:  name is a text string representing the name to put on the tab
+//       id is a text string to be used to create that tab's id
+// POST: FCTVAL == a tab with text name and id id,
+//       and a div to go with this tab is created in the control panel
+{
+    var div;
+
+    div=document.createElement("div");
+    div.id="id-"+id;
+    div.setAttribute("stat", id);
+    div.className="graph-tab";
+    div.setAttribute("onclick","ChooseTab(this)");
+    div.innerHTML=name;
+
+    BuildDiv(id);
+
+    if(id === g_StatId)
+    {
+        document.getElementById("id-"+id+"-graphs").style.display="block";
+        document.getElementById("id-"+id+"-dropdown").style.display="block";
+        div.className="graph-tab selected-tab";
+    }
+
+    return div;
+}
+
 function UpdateInputs()
+// PRE:  .settings-screen is loaded in the document, g_FirstYear and g_LastYear are initialized
+//       with server data
+// POST: default settings values are set and g_TempSettings array is initialized with original settings
 {
     var startDiv=document.getElementById("year-range-start"),
         endDiv=document.getElementById("year-range-end"),
         heatmapYearDiv=document.getElementById("heatmap-year");
 	
-	// set min and max for the settings input boxes
+    // set min and max for the settings input boxes
     startDiv.max=g_LastYear;
     startDiv.min=g_FirstYear;	
 	
@@ -1466,62 +1504,46 @@ function UpdateInputs()
     g_TempSettings[1]=g_LastYear;   
     g_TempSettings[2]=g_LastYear;
     g_TempSettings[3]=0;
-    g_TempSettings[4]=1;
+    g_TempSettings[4]=0;
 }
 
-// Author: Paul Jang, Nicholas Denaro
-// Date Created: 3/26/2015
-// Last Modified: 3/26/2015 by Paul Jang
-// Description: build divs where the graphs go in index.html
+function BuildDiv(statId)
 // PRE: Called from BuildTabs
 // POST: appropriate divs are created
-function BuildDiv(statId)
 {
     var div=document.createElement("DIV");
+
     div.id="id-"+statId+"-graphs";
     div.style.display="none";
-    div.style.top="18%";
-    div.style.height="77%";
+    div.style.top="23%";
+    div.style.height="72%";
     div.className="graph";
-    document.getElementById("graphs").appendChild(BuildDropDown(statId));
+    document.getElementById("graphs").appendChild(BuildDropdown(statId));
     document.getElementById("graphs").appendChild(div);
 }
 
-function BuildDropDown(statId)
+function BuildDropdown(statId)
+// PRE:  statId is the name of some data table from the database
+//       ParseData() has been called and all globals have been set successfully
+// POST: FCTVAL == a div object which contains a dropdown menu with indices of all
+//       data sets relevant to statId and their tags if they exist
 {
     var div=document.createElement("DIV"),
-        menu = "";
+        menu = "",
+        i;
+
     div.id="id-"+statId+"-dropdown";
     div.style.display="none";
     div.style.top="8%";
-    div.style.height="10%";
-    div.className="graph";
+    div.style.height="15%";
 
-    if (g_StatId === 'custom')
+    if (statId === 'custom')
     {
-        menu += "<p class='open-sans'>Select Data Set</p><select name='stat1' onchange='SelectIndex(this)'>";
-        for (i in g_Stats)
-        {
-            menu += "<option value='" + i + "'>" + i + " - ";
-        }
+        menu += GetCustomDropdownHTML();
     }
     else
     {
-        menu += "<p class='open-sans'>Select Data Set</p><select name='index' onchange='SelectIndex(this)'>";
-        for (i in g_Stats[g_StatId]['tags'])
-        {
-            menu += "<option value='" + i + "'>" + i + " - ";
-            if (g_Stats[g_StatId]['tags'][i] === "")
-            {
-                menu += "untagged";
-            }
-            else
-            {
-                menu += g_Stats[g_StatId]['tags'][g_SelectedIndex];
-            }
-            menu += "</option></br>";
-        }
-        menu += "</select>";
+        menu += GetDropdownHTML(statId);
     }
 
     div.innerHTML = menu;
@@ -1529,13 +1551,176 @@ function BuildDropDown(statId)
     return div;
 }
 
-// Author: Paul Jang, Nicholas Denaro
-// Date Created: 3/26/2015
-// Last Modified: 4/14/2015 by Nicholas Denaro
-// Description: build divs where the graphs go in index.html
+function GetDropdownHTML(statId)
+// PRE:  statId is the id of some stat that exists in g_Stats, and g_Stats is initialized with server data
+// POST: FCTVAL == html representing a dropdown menu including choices for all available data sets for stat statId
+{
+    var i,
+        menu = "";
+
+    menu += "<p class='open-sans'>Select Data Set</p><select id='stat-indices-" + statId + "' name='index' onchange=\"SelectIndex('stat-indices-" + statId + "')\">";
+    for (i in g_Stats[statId].tags)
+    {
+	if (g_Stats[statId].tags.hasOwnProperty(i))
+        {
+            menu += "<option value='" + i + "'>" + i + " - ";
+            if (g_Stats[statId].tags[i] === "")
+            {
+                menu += "untagged";
+            }
+            else
+            {
+                menu += g_Stats[statId].tags[i];
+            }
+            menu += "</option></br>";
+        }
+    }
+    menu += "</select>";
+
+    return menu;
+}
+
+//TODO: reduce cyclomatic complexity to below jshint threshold
+/* jshint ignore:start */
+function GetCustomDropdownHTML()
+// PRE:  g_Stats is initialized with server data
+// POST: FCTVAL == html representing 4 dropdown menus including choices for all available data sets and stats
+{
+    var i, j,
+        menu = "";
+
+    menu += "<p class='open-sans' id='stats-select'>Select Stats</p><p class='open-sans' id='indices-select'>Select Data Sets</p><select id='stat1' name='stat1' onchange=\"SelectStat('stat1')\">";
+    for (i in g_Stats)
+    {
+	if (g_Stats.hasOwnProperty(i))
+        {
+            if (g_Stats[i].type === 'int')
+            {
+                for (j = 0; j < g_Stats[i].subName.length; j++)
+                {
+                    menu += "<option value='" + i + "+" + j + "'>" + g_Stats[i].name + " - " + g_Stats[i].subName[j] + "</option>";
+                }
+            }
+            else
+            {
+                menu += "<option value='" + i + "'>" + g_Stats[i].name + "</option>";
+            }
+        }
+    }
+    menu += "</select>";
+    menu += "<select id='stat2' name='stat2' onchange=\"SelectStat('stat2')\">";
+    for (i in g_Stats)
+    {
+	if (g_Stats.hasOwnProperty(i))
+        {
+            if (g_Stats[i].type === 'int')
+            {
+                for (j = 0; j < g_Stats[i].subName.length; j++)
+                {
+                    menu += "<option value='" + i + "+" + j + "'>" + g_Stats[i].name + " - " + g_Stats[i].subName[j] + "</option>";
+                }
+            }
+            else
+            {
+                menu += "<option value='" + i + "'>" + g_Stats[i].name + "</option>";
+            }
+        }
+    }
+    menu += "</select>";
+    menu += "<select id='stat1index' name='stat1index' onchange=\"SelectIndex('stat1index')\">";
+    for (i in g_Stats[g_StatId1].tags)
+    {
+	if (g_Stats[g_StatId1].tags.hasOwnProperty(i))
+        {
+            menu += "<option value='" + i + "'>" + i + " - ";
+            if (g_Stats[g_StatId1].tags[i] === "")
+            {
+                menu += "untagged";
+            }
+            else
+            {
+                menu += g_Stats[g_StatId1].tags[i];
+            }
+            menu += "</option></br>";
+        }
+    }
+    menu += "</select>";
+    menu += "<select id='stat2index' name='stat2index' onchange=\"SelectIndex('stat2index')\">";
+    for (i in g_Stats[g_StatId2].tags)
+    {
+	if (g_Stats[g_StatId2].tags.hasOwnProperty(i))
+        {
+            menu += "<option value='" + i + "'>" + i + " - ";
+            if (g_Stats[g_StatId2].tags[i] === "")
+            {
+                menu += "untagged";
+            }
+            else
+            {
+                menu += g_Stats[g_StatId2].tags[i];
+            }
+            menu += "</option></br>";
+        }
+    }
+    menu += "</select>";
+
+    return menu;
+}
+
+//TODO: reduce cyclomatic complexity to below jshint threshold
+function RefreshIndices(id)
+// PRE:  id is the id of a dropdown menu for an index in the custom tab
+// POST: the dropdown menu with id id has its options replaced with those
+//       for the selected stat
+{
+    var menu = "",
+    i;
+
+    if (id === 'stat1index')
+    {
+        for (i in g_Stats[g_StatId1].tags)
+        {
+            if (g_Stats[g_StatId1].tags.hasOwnProperty(i))
+            {
+                menu += "<option value='" + i + "'>" + i + " - ";
+                if (g_Stats[g_StatId1].tags[i] === "")
+                {
+                    menu += "untagged";
+                }
+                else
+                {
+                    menu += g_Stats[g_StatId1].tags[i];
+                }
+                menu += "</option></br>";
+            }
+        }
+    }
+    else
+    {
+        for (i in g_Stats[g_StatId2].tags)
+        {
+            if (g_Stats[g_StatId2].tags.hasOwnProperty(i))
+            {
+                menu += "<option value='" + i + "'>" + i + " - ";
+                if (g_Stats[g_StatId2].tags[i] === "")
+                {
+                    menu += "untagged";
+                }
+                else
+                {
+                    menu += g_Stats[g_StatId2].tags[i];
+                }
+                menu += "</option></br>";
+            }
+        }
+    }
+    document.getElementById(id).innerHTML = menu;
+}
+/* jshint ignore:end */
+
+function ChooseTab(element)
 // PRE: Called from the onclick of a tab
 // POST: previous tab is switched out, and now tab is switched in
-function ChooseTab(element)
 {
     var parentTabDivName,
         prevTab,
@@ -1557,25 +1742,21 @@ function ChooseTab(element)
 
     if (g_StatId !== 'custom')
     {
-        ColorByHMS();
+        ColorByHms();	
     }
 
     document.getElementById(element.id+"-graphs").innerHTML=menu;
     GenerateSubDivs();
-    if (g_GraphType === 0 || g_GraphType === 1 && g_Stats[g_StatId]['type'] === 'int')
+    if (g_GraphType === 0 || g_GraphType === 1 && (g_StatId === 'custom' || g_Stats[g_StatId].type === 'int'))
     {
         FixDivSize();
     }
     GenerateGraphs();
 }
 
-// Author: Nicholas Denaro
-// Date Created: 4/18/2015
-// Last Modified: 4/18/2015 by Nicholas Denaro
-// Description: Rotates the tabs left or right depending on the direction
+function RotateTabs(direction)
 // PRE: direction!=0
 // POST: The first/last tab is moved to the last/first position
-function RotateTabs(direction)
 {
     var div,
     tabs=document.getElementById("tabsDiv"),
@@ -1595,24 +1776,16 @@ function RotateTabs(direction)
     }
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 3/31/2015 by Emma Roudabush
-// Description: Fades the screen back to the main page
+function SwitchToMain ()
 // PRE: N/A
 // POST: Screen is switched to the main page
-function SwitchToMain ()
 {
     $(".loading-screen").fadeOut(750);
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/30/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: Opens the settings overlay
+function OpenSettings()
 // PRE: N/A
 // POST: Settings overlay is showing with black backing mask and all stat values are reset
-function OpenSettings()
 {
      ResetAllStatValues();
 	 
@@ -1620,13 +1793,9 @@ function OpenSettings()
      
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: Closes the settings overlay and assigns global values
+function CloseSettings()
 // PRE: Settings overlay is currently showing on screen
 // POST: Settings overlay and mask is gone
-function CloseSettings()
 {
     $(".settings-screen, .settings-black").fadeOut(400);
         
@@ -1643,35 +1812,23 @@ function CloseSettings()
     document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/30/2015
-// Last Modified: 3/31/2015 by Emma Roudabush
-// Description: Opens the settings overlay
+function OpenHelp()
 // PRE: N/A
 // POST: Settings overlay is showing with black backing mask
-function OpenHelp()
 {
      $(".help-screen, .help-black").fadeIn(400);
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 4/16/2015 by Nicholas Denaro
-// Description: Closes the settings overlay and assigns global values
+function CloseHelp()
 // PRE: Settings overlay is currently showing on screen
 // POST: Settings overlay and mask is gone
-function CloseHelp()
 {
     $(".help-screen, .help-black").fadeOut(400);
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 4/20/2015 by Kyle Nicholson
-// Description: Expands the c ontrol panel
+function Expand()
 // PRE: N/A
 // POST: Control panel is expanded and black mask is in place behind
-function Expand()
 {
     $(".control-panel").animate({width:"97.5%"}, 500);
     $("#expand").attr("onclick","Shrink()");
@@ -1686,7 +1843,7 @@ function Expand()
 	        g_Expanded = true;
 	        GenerateSubDivs();
 	        // if single graph, graph is expanded to whole section
-	        if(g_GraphType === 1 && g_StatList[g_StatId]['type'] !== 'int' || g_GraphType === 2)
+	        if(g_GraphType === 1 && (g_StatId !== 'custom' || g_StatList[g_StatId].type !== 'int') || g_GraphType === 2)
 	        {
 	            document.getElementById("region-graphs-1").style.width = "100%";
 	            document.getElementById("region-graphs-1").style.height = "100%";
@@ -1700,13 +1857,9 @@ function Expand()
     }, 500);
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 4/16/2015 by Paul Jang
-// Description: Shrinks the control panel
+function Shrink()
 // PRE: Control panel is currently expanded
 // POST: Control panel shrinks back to original size and black mask is gone
-function Shrink()
 {
     $(".control-panel").animate({width:"25%"}, 500);
     $("#expand").attr("onclick","Expand()");
@@ -1723,18 +1876,12 @@ function Shrink()
     }, 500);
 }
 
-
-// Author: Paul Jang
-// Date Created: 4/2/2015
-// Last Modified: 4/20/2015 by Kyle Nicholson
-// Description: Calls CreateDiv to dynamically generate subgraph divs and generate graphs
-// PRE: CreateDiv functions correctly, g_DataList is properly full
-// POST: Divs are created based on how many countries are selected,
-//       Correct graphs are filled in the appropriate divs
 function GenerateSubDivs()
+// PRE: g_DataList is initialized
+// POST: Divs are created based on how many countries are selected,
+//       Correct graphs are filled in the appropriate divs based on graph type
 {
-    var size,
-        i,
+    var i,
         parentTabDivName,
         currentNumDivs,
         children,
@@ -1743,14 +1890,14 @@ function GenerateSubDivs()
     // only if there are countries in the data list
     if(g_DataList !== undefined)
     {
-        size = g_DataList.size;
         parentTabDivName = "id-"+g_StatId+"-graphs";
         currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
         children = document.getElementById(parentTabDivName).childNodes;
         // if we only need one graph for either combined lines or summation of lines
-        if(g_GraphType === 1 && g_Stats[g_StatId]['type'] !== 'int' || g_GraphType === 2)
+        if(g_GraphType === 1 && g_StatId !== 'custom' && g_Stats[g_StatId].type !== 'int'  || g_GraphType === 2)
         {
-            if(size !== 0)
+            document.getElementById(parentTabDivName).innerHTML = "";
+            if(g_DataList.size !== 0)
             {
             	CreateSubDiv("region-graphs-1",parentTabDivName);
 	    }
@@ -1764,28 +1911,32 @@ function GenerateSubDivs()
         }
         else
         {
-            while (size < currentNumDivs)
-            {
-                $("#region-graphs-"+currentNumDivs).remove();
-                currentNumDivs--;
-            }
-            while (size > currentNumDivs)
-            {
-                CreateSubDiv("region-graphs-"+(currentNumDivs+1), parentTabDivName);
-                currentNumDivs++;
-            }
+            FixDivNum(currentNumDivs, parentTabDivName);
         }
     }
 }
 
-// Author: Paul Jang
-// Date Created: 4/2/2015
-// Last Modified: 4/20/2015 by Paul Jang
-// Description: Creates a single div with an inputted id and
-//              appends it to the specified parent div
-// PRE: Parent div exists
-// POST: Single div is appended to the parent div
+function FixDivNum(numDivs, parent)
+// PRE:  numDivs is the current number of divs available for graphing, and the g_GraphType
+//       is 1 or g_GraphType is 2 and the selected stat type is 'int'
+//       parent is the parent element into which any new divs must be appended
+// POST: numDivs == g_DataList.size
+{
+   while (g_DataList.size < numDivs)
+   {
+       $("#region-graphs-"+numDivs).remove();
+       numDivs--;
+   }
+   while (g_DataList.size > numDivs)
+   {
+       CreateSubDiv("region-graphs-"+(numDivs+1), parent);
+       numDivs++;
+   }
+}
+
 function CreateSubDiv(id,parent)
+// PRE: div parent with id id exists
+// POST: Single div is appended to parent
 {
     var elem = document.createElement('div'),
         divs,
@@ -1797,7 +1948,7 @@ function CreateSubDiv(id,parent)
     document.getElementById(parent).appendChild(elem);
 
     if(g_Expanded  && (g_GraphType === 0 || 
-        (g_Stats[g_StatId]['type'] === 'int' && g_GraphType === 1)))
+        g_Stats[g_StatId].type === 'int' && g_GraphType === 1))
     {
         $(elem).click(function() {
             if(document.getElementById(id).style.width !== "100%")
@@ -1817,6 +1968,11 @@ function CreateSubDiv(id,parent)
 }
 
 function FixDivSize()
+// PRE:  g_GraphType == 0 or g_GraphType == 1 and the stat being graphed is of type 'int'
+//       graph divs "region-graphs-1" through "region-graphs-" + g_DataList.size+1 exist in the document
+//       g_DataList is initialized and contains relevant data
+// POST: the size of the graph divs is adjusted to fit the view, either to fit a quarter of the expanded view, or half
+//       of the collapsed view (vertically)
 {
     var i;
 
@@ -1834,29 +1990,21 @@ function FixDivSize()
     }
 }
 
-// Author: Joshua Crafts
-// Date Created: 4/17/2015
-// Last Modified: 4/17/2015 by Joshua Crafts
-// Description: Pops up team info
+function teamPopup()
 // PRE: none
 // POST: Alert box pops up with info about project contributors
-function teamPopup()
 {
     window.alert("Stateware Team\nSpring 2015:\nWilliam Bittner," + 
         " Joshua Crafts, Nicholas Denaro, Dylan Fetch, Paul Jang," + 
         " Arun Kumar, Drew Lopreiato, Kyle Nicholson, Emma " + "Roudabush, Berty Ruan, Vanajam Soni");
 }
 
-// Author: Joshua Crafts
-// Date Created: 4/17/2015
-// Last Modified: 4/17/2015 by Joshua Crafts
-// Description: Pops up info on reporting a bug
+function bugPopup()
 // PRE: none
 // POST: Alert box pops up with info about and instructions for 
 //       reporting a bug
-function bugPopup()
 {
-    window.alert("If you would like to report a bug, please send " + "an email to stateware@acm.psu.edu with the following " + 
-        "details included in your message:\n1. Description of the " + "bug\n2. Steps for reproducing the bug\n3. What browser and" + 
-        " operating system you experienced the bug on\n4. Any " + "additional relevant information.");
+    window.alert("If you would like to report an issue, please send " + "an email to stateware@acm.psu.edu with the following " + 
+        "details included in your message:\n1. Description of the " + "issue\n2. Steps for reproducing the issue\n3. What browser and" + 
+        " operating system you experienced the issue on\n4. Any " + "additional relevant information.");
 }
