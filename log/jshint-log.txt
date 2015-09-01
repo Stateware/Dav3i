@@ -2,25 +2,9 @@
 [32m>> [39m1 file lint free.
 
 [4mRunning "jshint:src" (jshint) task[24m
+[32m>> [39m7 files lint free.
 
-[1m   GUI/dynamic_markup.js[22m
-    272 |[90m        for (i in g_Stats[g_StatId1].tags)[39m
-                      ^ Creating global 'for' variable. Should be 'for (var i ...'.
-    291 |[90m        for (i in g_Stats[g_StatId2].tags)[39m
-                      ^ Creating global 'for' variable. Should be 'for (var i ...'.
-    266 |[90mfunction RefreshIndices(id)[39m
-                                ^ This function's cyclomatic complexity is too high. (8)
-[1m   GUI/graph.js[22m
-    498 |[90mfunction GenerateCustomData(node)[39m
-                                    ^ This function has too many statements. (38)
-    498 |[90mfunction GenerateCustomData(node)[39m
-                                    ^ This function's cyclomatic complexity is too high. (11)
-    686 |[90mfunction AddValuesFromNode(data, node, statId, index)[39m
-                                   ^ This function has too many statements. (28)
-    686 |[90mfunction AddValuesFromNode(data, node, statId, index)[39m
-                                   ^ This function's cyclomatic complexity is too high. (14)
+[4mRunning "jshint:test" (jshint) task[24m
+[32m>> [39m1 file lint free.
 
-[31m>> [39m7 errors in 7 files
-[33mWarning: Task "jshint:src" failed. Use --force to continue.[39m
-
-[31mAborted due to warnings.[39m
+[32mDone, without errors.[39m
