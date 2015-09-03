@@ -29,7 +29,7 @@ require_once("toolbox.php");
 function GetDatabaseConnection()
 //Post: A database connection has been created and returned
 {
-    $databaseConnection = new mysqli("localhost", "root", "kennyl0gindangerz0ne$", "davvvi_dev");
+    $databaseConnection = new mysqli(HOST, USER, PASSWORD, DATABASE);
     
     if ($databaseConnection->connect_error)
     {
