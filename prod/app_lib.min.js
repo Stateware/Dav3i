@@ -1,4 +1,4 @@
-/*! Dav3i - v0.1.0 - 2015-09-01
+/*! Dav3i - v0.1.0 - 2015-09-03
 * https://github.com/Stateware/Dav3i
 * Copyright (c) 2015 Stateware Team;
  Licensed GPL v3 (https://github.com/Stateware/Dav3i/blob/master/LICENSE) */
