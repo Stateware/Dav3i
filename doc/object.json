@@ -1,0 +1,97 @@
+{
+	firstYear: *,			// first year for which data is available
+	lastYear: *,			// last year for which data is available
+	diseases: [*, *, *],		// array of diseases for which data is available
+	stats: {		// stats are indexed by table name (known as g_StatId on the front end) and contain metadata about each stat
+		table_name: { // est stat
+			name: *,			// display name
+			subName: ["Upper Bound of Confidence Interval", "Estimated Stat Value", "Lower Bound of Confidence Interval"],		// always the same for estimated stats
+			disease: *,			// disease for which this stat is relevant
+			indices: *,			// number of data sets, should be same as length of 'tags'
+			type: "est",			// estimated stat
+			subType: "none",		// irrelevant for est stats
+			tags: [*]			// data set tags
+		},
+		table_name: { // lin, bar stat
+			name: *,			// display name
+			subName: "none",		// irrelevant for lin, bar stats
+			disease: *,			// disease for which this stat is relevant
+			indices: *,			// number of data sets, should be same as length of 'tags'
+			type: *,			// lin or bar stat
+			subType: "none",		// irrelevant for lin, bar stats
+			tags: [*]			// data set tags
+		},
+		table_name: { // int stat
+			name: *,			// display name
+			subName: [*, *, *],		// names of component stats
+			disease: *,			// disease for which this stat is relevant
+			indices: *,			// number of data sets, should be same as length of 'tags'
+			type: "int",			// integrated stats
+			subType: [*, *, *],		// types of component stats
+			tags: [*]			// data set tags
+		}
+	},
+	countries: {		// countries is simply an associative array of country names indexed by their cc2, allowing constant time access for country names based on cc2
+		CC2: name,
+		CC2: name,
+		CC2: name
+	},
+	country_data: {		// data is indexed by CC2, then by table name. Each stat type is held slightly differently, as you can see below
+				// metadata for stats is the same as in the above "stats" field
+		CC2: {
+			table_name: { // est stat
+				name: *,
+				subName: ["Upper Bound of Confidence Interval", "Estimated Stat Value", "Lower Bound of Confidence Interval"],
+				disease: *,
+				indices: *,
+				type: "est",
+				subType: "none",
+				data: [{
+					index: *,
+					values: [[upper bound data], [estimated values], [lower bound data]]
+				}]
+				tags: [*]
+			}
+		},
+		CC2: {
+			table_name: { // lin, bar stat
+				name: *,
+				subName: "none",
+				disease: *,
+				indices: *,
+				type: *,
+				subType: "none",
+				data: [{
+					index: *,
+					values: [data]
+				}]
+				tags: [*]
+			}
+		},
+		CC2: {
+			table_name: { // int stat
+				name: *,
+				subName: [*, *, *],
+				disease: *,
+				indices: *,
+				type: "int",
+				subType: [*, *, *],
+				data: [{
+					index: *,
+					values: [{
+						index: *,
+						values: [stat 1 data]
+					},
+					{
+						index: *,
+						values: [stat 2 data]
+					},
+					{
+						index: *,
+						values: [stat 3 data]
+					}]
+				}]
+				tags: [*]
+			}
+		},
+	}

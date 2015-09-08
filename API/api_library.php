@@ -44,21 +44,24 @@ class Data
 	public $country_data;		// list of stats and associated data for each country, keyed by cc2
 
 	public function __construct($databaseConnection)
+	// PRE:  $databaseConnection is an open connection to a database with at least 1 data table, and with
+	//       meta tables meta_stats, meta_diseases, meta_countries, meta_int, and meta_indices
+	// POST: FCTVAL == an object fitting the description annotated in doc/object.json
 	{
-		$descriptor = new Descriptor($databaseConnection);
+		$descriptor = new Descriptor($databaseConnection);		// create meta tables object
 		$this->diseases = array();
 		$this->countries = array();
-		foreach($descriptor->diseases as $disease)
+		foreach($descriptor->diseases as $disease)			// add diseases array to output object
 			array_push($this->diseases, $disease['disease']);
-		$this->firstYear = 0xffffff;
+		$this->firstYear = 0xffffff;					// set init max and min years
 		$this->lastYear = 0;
-		foreach($descriptor->countries as $country)
+		foreach($descriptor->countries as $country)			// iterate through countries to add countries field and country_data field
 		{
-			$this->countries[$country['cc2']] = $country['common_name'];
-			foreach($descriptor->stats as $stat)
+			$this->countries[$country['cc2']] = $country['common_name'];	// set fields as 'cc2: name'
+			foreach($descriptor->stats as $stat)				// iterate through stats and add stats to country
 			{
 				$integrated = true;
-				for ($i = 0; $i < $stat['indices'] && $integrated; $i++)
+				for ($i = 0; $i < $stat['indices'] && $integrated; $i++)			// only add stats if they are not component stats of an integrated stat
 					$integrated = IsIntegrated($databaseConnection, $stat['table_id'], $i);
 				if ($stat['type'] == 'int' || $stat['type'] == 'est' || (($stat['type'] == 'lin' || $stat['type'] == 'bar') && !$integrated))
 				{
@@ -69,7 +72,7 @@ class Data
 			}
 		}
 		
-		foreach($this->country_data[$country['cc2']] as $table => $stat)
+		foreach($this->country_data[$country['cc2']] as $table => $stat)	// set up stats metadata using last country_data field
 		{
 			$this->stats[$table]['name'] = $stat->name;
 			$this->stats[$table]['subName'] = $stat->subName;
@@ -109,25 +112,51 @@ class Stat
 	public $data;			// all data for a stat, for a given country
 	public $dataTag;		// data set tags
 
+	// TODO: condense cases into their own functions
 	public function __construct($databaseConnection, $tableName, $descriptor, $countryId)
+	// PRE:  $databaseConnection is an open MySQL database connection
+	//       $tableName is the name of a data table in the database connected to by $databaseConnection
+	//       $descriptor is an object representing all of the meta tables from the database connected to by $databaseConnection
+	//       $countryId is a numerical country id for a particular country
+	// POST: FCTVAL == new stat object with metadata appropriate for the stat associated with $tableName, and $this->data including
+	//       all data for this stat for the country associated with $countryId
 	{
 		$this->dataTag = array();
 		$this->data = array();
-		foreach($descriptor->stats as $stat)
+		foreach($descriptor->stats as $stat)			// search descriptor for table name for stat
 		{
 			if ($stat['table_name'] == $tableName)
 				$meta_stat = $stat;
 		}
-		$years = GetYearRange($databaseConnection, $tableName);
+		$years = GetYearRange($databaseConnection, $tableName);	// get first and last year
 		$this->firstYear = $years[0];
 		$this->lastYear = $years[1];
 		$this->name = $meta_stat['display_name'];
 		$this->disease = $meta_stat['disease'];
 		$this->tableName = $tableName;
 		$this->type = $meta_stat['type'];
-		$this->subType = 'none';
+		$this->subType = 'none';				// set subtype init to none
 		switch($meta_stat['type']) {
-			case 'lin':
+			case 'lin':					// line graph
+				$this->subName = "none";		// no component stats
+				for ($i = 0; $i < $meta_stat['indices']; $i++)						// iterate through stat data sets
+				{
+					if (!IsIntegrated($databaseConnection, $meta_stat['table_id'], $i))		// if this stat data set is not part of an integrated stat, add data
+					{
+						$query = "SELECT * FROM $tableName WHERE data_set_index='$i' AND country_id='$countryId';";
+						if (($result = $databaseConnection->query($query)) == false)
+							ThrowFatalError("Error reading data from index $i of $tableName");
+						array_push($this->data, new Row($i, $result->fetch_assoc()));
+
+						foreach($descriptor->indices as $index)					// add data tags
+						{
+							if ($index['stat_index'] == $meta_stat['table_id'] && $index['data_set_index'] == $i)
+								array_push($this->dataTag, $index['tag']);
+						}
+					}
+				}
+				break;
+			case 'bar':					// bar graph, very similar logic to line graph, perhaps consider condensing
 				$this->subName = "none";
 				for ($i = 0; $i < $meta_stat['indices']; $i++)
 				{
@@ -146,29 +175,12 @@ class Stat
 					}
 				}
 				break;
-			case 'bar':
-				$this->subName = "none";
-				for ($i = 0; $i < $meta_stat['indices']; $i++)
-				{
-					if (!IsIntegrated($databaseConnection, $meta_stat['table_id'], $i))
-					{
-						$query = "SELECT * FROM $tableName WHERE data_set_index='$i' AND country_id='$countryId';";
-						if (($result = $databaseConnection->query($query)) == false)
-							ThrowFatalError("Error reading data from index $i of $tableName");
-						array_push($this->data, new Row($i, $result->fetch_assoc()));
-
-						foreach($descriptor->indices as $index)
-						{
-							if ($index['stat_index'] == $meta_stat['table_id'] && $index['data_set_index'] == $i)
-								array_push($this->dataTag, $index['tag']);
-						}
-					}
-				}
-				break;
-			case 'est':
+			case 'est':					// estimated graph
+				// subnames are labels for bounds v. stat value, used for tooltips when graphing
 				$this->subName = ["Upper Bound of Confidence Interval", "Estimated Stat Value", "Lower Bound of Confidence Interval"];
 				foreach($descriptor->stats as $stat)
 				{
+					// find and save upper and lower bound stat
 					if ($stat['display_name'] == $meta_stat['display_name'] && $stat['disease'] == $meta_stat['disease'])
 					{
 						if ($stat['type'] == 'eub')
@@ -177,6 +189,7 @@ class Stat
 							$meta_lower = $stat;
 					}					
 				}
+				// get data from each table and push to values array
 				for ($i = 0; $i < $meta_stat['indices']; $i++)
 				{
 					$values = array();
@@ -192,7 +205,8 @@ class Stat
 					if (($result = $databaseConnection->query($query)) == false)
 						ThrowFatalError("Error reading data from index $i of $tableName");
 					array_push($values, $result->fetch_assoc());
-					array_push($this->data, new Row($i, $values));
+					array_push($this->data, new Row($i, $values));	
+					// add data tags
 					foreach($descriptor->indices as $index)
 					{
 						if ($index['stat_index'] == $meta_stat['table_id'] && $index['data_set_index'] == $i)
@@ -201,13 +215,14 @@ class Stat
 				}
 				break;
 			case 'eub':
-				// only handle each stat when looking at 'est', then no duplication and no difficulty when looking at bound stats
+				// only handle each estimated stat when looking at 'est', then no duplication and no difficulty when looking at bound stats
 				break;
 			case 'elb':
-				// only handle each stat when looking at 'est', then no duplication and no difficulty when looking at bound stats
+				// only handle each estimated stat when looking at 'est', then no duplication and no difficulty when looking at bound stats
 				break;
-			case 'int':
+			case 'int':					// integrated graph
 				$this->subType = array();
+				// iterate through int table and to find this stat and relevant table ids/indices, then create row for each
 				foreach($descriptor->integrated as $int)
 				{
 					for ($i = 0; $i < $meta_stat['indices']; $i++)
@@ -244,7 +259,9 @@ class Stat
 								if ($i == 0)
 									array_push($this->subType, GetTypeById($descriptor, $int['stat3id']));
 							}
+							// create row where values field is 3 component rows just created
 							array_push($this->data, new Row($i, $values));
+							// add data tags
 							foreach($descriptor->indices as $index)
 							{
 								if ($index['stat_index'] == $int['stat1id'] && $index['data_set_index'] == $i)
@@ -268,6 +285,8 @@ class Descriptor {
 	public $countries;		// full meta_countries table
 
 	public function __construct($databaseConnection)
+	// PRE:  $databaseConnection is an open MySQL database connection containing meta tables meta_stats, meta_diseases, meta_int, meta_indices, and meta_diseases
+	// POST: FCTVAL == object containing data from all meta tables
 	{
 		$this->stats = array();
 		$query = 'SELECT * FROM meta_stats';
@@ -807,6 +826,7 @@ function Normalize($input)
 
 // convert text in scientific notation into a floating point value
 // Steven Shaffer, March 30, 2015
+// TODO: fix scientific notation parsing bug; has something to do with negative exponents
 function ScientificConversion($in) {
     if (preg_match('/(\-?[\d\.]+)e(\-?[\d\.]+)/i', $in, $results) == false) {
         //Just convert it directly
@@ -919,6 +939,14 @@ function DiseaseExists($disease)
 }
 
 function CreateTable($disease, $displayName, $tableName, $graphType, $dataType, $data)
+// PRE:  $disease is the name of a disease for which data is being added
+//       $displayName is the name of the stat for which a table needs to be created
+//       $tableName is the name of the table to be created
+//       $graphType is either 'int', 'lin', 'bar', or 'est'
+//       $dataType is either 'int' or 'float'
+//       $data is a 2D array of data to add to the table, indexed first by row, then by column
+// POST: a table with name $tableName is created in the database, with columns country_id, data_set_index, and one column each
+//       for all years for which data is available
 {
 	if (!DiseaseExists($disease))
 		CreateDisease($disease);
@@ -942,6 +970,8 @@ function CreateTable($disease, $displayName, $tableName, $graphType, $dataType, 
 }
 
 function GetTableId($tableName)
+// PRE:  $tableName is the name of a table described in meta_stats
+// POST: FCTVAL == the table_id field of the row with table_name $tableName
 {
 	$databaseConnection = GetDatabaseConnection();
 	$query = "SELECT table_id FROM meta_stats WHERE table_name='$tableName';";
@@ -955,6 +985,8 @@ function GetTableId($tableName)
 }
 
 function GetCountryId($cc3)
+// PRE:  $cc3 is the cc3 of a country described in meta_countries
+// POST: FCTVAL == the country_id field of the row with cc3 $cc3
 {
 	$databaseConnection = GetDatabaseConnection();
 	$query = "SELECT country_id FROM meta_countries WHERE cc3='$cc3';";
@@ -968,6 +1000,8 @@ function GetCountryId($cc3)
 }
 
 function GetTableIndices($tableName)
+// PRE:  $tableName is the name of a table described in meta_stats
+// POST: FCTVAL == the indices field of the row with table_name $tableName
 {
 	$databaseConnection = GetDatabaseConnection();
 	$query = "SELECT indices FROM meta_stats WHERE table_name='$tableName';";
@@ -981,6 +1015,8 @@ function GetTableIndices($tableName)
 }
 
 function GetIndices($displayName)
+// PRE:  $displayName is the display name of a table described in meta_stats
+// POST: FCTVAL == the indices field of the row with display_name $displayName
 {
 	$databaseConnection = GetDatabaseConnection();
 	$query = "SELECT indices FROM meta_stats WHERE display_name='$displayName';";
@@ -994,6 +1030,8 @@ function GetIndices($displayName)
 }
 
 function GetTableDisplayName($tableName)
+// PRE:  $tableName is the name of a table described in meta_stats
+// POST: FCTVAL == the display_name field of the row with table_name $tableName
 {
 	$databaseConnection = GetDatabaseConnection();
 	$query = "SELECT display_name FROM meta_stats WHERE table_name='$tableName';";
@@ -1007,6 +1045,9 @@ function GetTableDisplayName($tableName)
 }
 
 function CreateDisease($disease)
+// PRE:  meta_diseases exists in the database
+//       $disease does not currently exist in meta_diseases
+// POST: a new entry in meta_diseases is created for $disease
 {
 	$databaseConnection = GetDatabaseConnection();
 	$query = "INSERT INTO meta_diseases (disease) VALUES ('" . $disease . "')";
@@ -1015,6 +1056,11 @@ function CreateDisease($disease)
 }
 
 function AddData($tableName, $data, $tag)
+// PRE:  $tableName is the name of a table that exists in the database
+//       $data is a 2D array of input data, indexed first by row, then by column
+//       $tag is a tag to attach to this particular data set
+// POST: $data is added to table $tableName, with an entry in meta_indices attaching tag $tag to this particular
+//       stat data set, and the indices field of the row in meta_stats with table_name $tableName is incremented
 {
 	$databaseConnection = GetDatabaseConnection();
 	$index = GetTableIndices($tableName);
@@ -1041,6 +1087,16 @@ function AddData($tableName, $data, $tag)
 }
 
 function SetIntegrated($display, $disease, $table1, $index1, $table2, $index2, $table3, $index3)
+// PRE:  $display is the display name of an integrated stat
+//       $disease is the disease for which this stat is relevant
+//       $table1 is the table_id of the first component stat
+//       $index1 is the data set index of the first component stat
+//       $table2 is the table_id of the second component stat
+//       $index2 is the data set index of the second component stat
+//       $table3 is the table_id of the third component stat, or -1
+//       $index3 is the data set index of the third component stat, or -1
+// POST: a new entry is created in meta_int such that it connects all 3 component stats and the display name of the integrated stat itself
+//       the indices field of the row in meta_stats with display_name $display and disease $disease is incremented
 {
 	$databaseConnection = GetDatabaseConnection();
 	$query = "SELECT * FROM meta_stats WHERE table_name='" . GetTableName($display, $disease, 'int') . "';";
@@ -1060,6 +1116,9 @@ function SetIntegrated($display, $disease, $table1, $index1, $table2, $index2, $
 }
 
 function GetTableNameById($descriptor, $statId)
+// PRE:  $descriptor is a Descriptor object containing all data from the meta tables of the database
+//       $statId is the table_id of a stat in meta_stats
+// POST: FCTVAL == table_name from the row of meta_stats with table_id $statId
 {
 	foreach($descriptor->stats as $stat)
 	{
@@ -1070,6 +1129,9 @@ function GetTableNameById($descriptor, $statId)
 }
 
 function GetTypeById($descriptor, $statId)
+// PRE:  $descriptor is a Descriptor object containing all data from the meta tables of the database
+//       $statId is the table_id of a stat in meta_stats
+// POST: FCTVAL == type from the row of meta_stats with table_id $statId
 {
 	foreach($descriptor->stats as $stat)
 	{
@@ -1080,6 +1142,9 @@ function GetTypeById($descriptor, $statId)
 }
 
 function GetDisplayNameById($descriptor, $statId)
+// PRE:  $descriptor is a Descriptor object containing all data from the meta tables of the database
+//       $statId is the table_id of a stat in meta_stats
+// POST: FCTVAL == display_name from the row of meta_stats with table_id $statId
 {
 	foreach($descriptor->stats as $stat)
 	{
@@ -1090,6 +1155,10 @@ function GetDisplayNameById($descriptor, $statId)
 }
 
 function IsIntegrated($databaseConnection, $tableId, $index)
+// PRE:  $databaseConnection is an open MySQL database connection
+//       $tableId is the table_id field of a row from meta_stats
+//       $index is the data set index of a particular stat data set for the stat associated with $tableId
+// POST: FCTVAL == true if the stat $tableId with index $index is part of an integrated stat, o.w. false
 {
 	$query = "SELECT * FROM meta_int WHERE stat1id='$tableId' AND stat1index='$index';";
 	$result = $databaseConnection->query($query);
