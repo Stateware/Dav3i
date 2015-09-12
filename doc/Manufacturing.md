@@ -1,3 +1,11 @@
+#Manufacturing Doc
+This document will assist you in setting up a development environment. This will enable you to run Dav3i on your local machine for development and testing purposes.
+
+###Prerequisites
+  1. XAMPP: [https://www.apachefriends.org/download.html?ModPagespeed=noscript](https://www.apachefriends.org/download.html?ModPagespeed=noscript)
+  2. PHPUnit: [https://phpunit.de/](https://phpunit.de/)
+
+###1. Set up a XAMPP Stack
   1. Install XAMPP.
   2. Enabled the service modules for Apache and MySQL.
   3. Start MySQL and Apache.
@@ -35,4 +43,13 @@
     3. Open "Connect.php" in API/ and modify line 41  
       `$databaseConnection = new mysqli(HOST, USER, PASWWORD, DATABASE);`  
       to  
-      `$databaseConnection = new mysqli("localhost", "root", "", "dav3i");`
+      `$databaseConnection = new mysqli("localhost", "root", "", "Dav3i");`
+
+###2. Set up PHPUnit
+  1. Add XAMPP's php to your Path  
+    (Windows)
+    1. Navigate to XAMPP installation folder
+    2. Navigate to php
+    3. Open up your System's environment variables.
+    4. Append `;<path of the php folder>` to Path
+  2. Follow the instructions at [https://phpunit.de/manual/current/en/installation.html](https://phpunit.de/manual/current/en/installation.html) to finish installing PHPUnit.
