@@ -51,17 +51,26 @@ $(function(){
     //       HMS value. Should be used as argument to maps.series.regions[0].setValues()
     ColorByHMS = function(){
         var data = {},
-            key,
-            isFound,
-            min,
-            max,
-            hmsID = g_StatID,
+            hmsID = g_StatID, //stat chosen by user
             type = 0;
 
+        var key,
+            isFound,
+            min,
+            max;
+
+        //define g_parsedstatelist[1]
+
+        // iterate through list of stats until we found the one chosen by user
         for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)
             {
+                //for each stat which type != 1
+
+                //
                 if (g_ParsedStatList[1][i] == g_StatID && g_ParsedStatList[0][i] == 1)
                 {
+                    // if it is of type '1' we want to set the type variable
+
                     type = 1;
                     if (g_VaccHMS == 1)
                         hmsID = g_ParsedStatList[2][i];
@@ -83,6 +92,7 @@ $(function(){
                     // set value by key if key is equal to cc2 in lookup table
                     if (key === g_LookupTable[i][0] && g_LookupTable[i][2] != -1)
                     {
+                        //raw numbers?
                         data[key] = g_LookupTable[i][2];
                         if (data[key] < min)
                             min = data[key];

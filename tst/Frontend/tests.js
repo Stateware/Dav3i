@@ -1,4 +1,4 @@
 QUnit.module("Group a");
-QUnit.test( "hello test", function( assert ) {
-  assert.equal(ParseData(), "Passed!" );
+QUnit.test( "loading-screen test", function( assert ) {
+  assert.ok($('loading-screen').length, "idControl exists");
 });

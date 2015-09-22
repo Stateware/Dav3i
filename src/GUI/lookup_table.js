@@ -67,7 +67,7 @@ function ParseDescriptor()
 function GetDescriptor()
 {
     return $.ajax({                                      
-        url: 'http://usve74985.serverprofi24.com/API/descriptor.php',                                                     
+        url: 'http://localhost/dav3i/API/descriptor.php',                                                     
         dataType: 'JSON',                 
         success: function(data){     
             //console.log("Successfully received descriptor.php");
@@ -151,8 +151,8 @@ function SetHMS(hmsData)
 // POST: FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
 function GetHMS(hmsID, year)
 {
-    return $.ajax({                                      
-        url: 'http://usve74985.serverprofi24.com/API/by_stat.php?statID='.concat(hmsID.toString()+"&year="+year.toString()),                                                     
+    return $.ajax({                                     
+        url: 'http://localhost/dav3i/API/by_stat.php?statID='.concat(hmsID.toString()+"&year="+year.toString()),                                                     
         dataType: 'JSON',
         success: function(data){     
             //console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));
@@ -200,7 +200,7 @@ function ParseStatList()
 //		 associated data (2-3).
 function ParseStatList()
 {
-	var sortedStatList = g_StatList.slice();
+	var sortedStatList = g_StatList.slice();		// copy into a new array	
 	sortedStatList.sort();
 	var parsedStatList = [];						// 2d array
 	parsedStatList[0] = [];
