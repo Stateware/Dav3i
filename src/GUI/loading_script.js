@@ -35,14 +35,15 @@
 //              displaying loading screen
 // PRE: divs with class "spinner" and "begin" exist, and the function ParseDescriptor is defined
 // POST: lookup table is generated, generate map colored by default HMS
-$(".loading-screen").ready(function () {
-// Generate lookup table and heat map
+function initPage() 
+{
+	// Generate lookup table and heat map
     ParseDescriptor();
-// Do below process when heat map is generated
+	// Do below process when heat map is generated
     $(".spinner").fadeOut(1250);
     setTimeout(function () {
         $(".begin").fadeIn(1500);
     }, 1250);
-});
+};
 
 
