@@ -38,10 +38,14 @@ function ThrowFatalError($message = "An error has occured - the program has been
 //PRE: string message - optional further description of error
 //POST: This function will cause the program to close itself after echoing an error message.
 {
-    echo "{\"error\" : \"" . $message . "\"}";
     if(!TESTING)
     {
+        echo "{\"error\" : \"" . $message . "\"}";
         die();
+    }
+    else
+    {
+        throw new Exception("{\"error\" : \"" . $message . "\"}");
     }
 } // END ThrowFatalError
 
@@ -81,7 +85,7 @@ define("DEFAULT_STRING", "");
 /*      EFFECTS OF TESTING == TRUE:
  * The ThrowFatalError doesn't kill the page
  */
-define("TESTING", FALSE);
+define("TESTING", TRUE);
 /*  EFFECTS OF EXTERNAL_ACCESS == TRUE:
  * All API calls are allowed to be accessed by non-server users
  */

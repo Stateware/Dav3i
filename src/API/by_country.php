@@ -34,24 +34,31 @@
 
 require_once("api_library.php");
 
-// enable foreign access in testing
-if (EXTERNAL_ACCESS)
+$_countryIDs = $_GET['countryIDs'];
+
+by_country_exec($_countryIDs);
+
+function by_country_exec($countryIDs)
 {
-	header("Access-Control-Allow-Origin: *");
+	// enable foreign access in testing
+	if (EXTERNAL_ACCESS)
+	{
+		header("Access-Control-Allow-Origin: *");
+	}
+
+	//This checks to see if anything was passed in for the parameter countryID
+	if (!isset($countryIDs))
+	{
+		ThrowFatalError("Input is not defined: countryIDs");
+	}
+
+	//Here we are calling our function ByCountry - which is in api_library.php - and assigning the output to an array
+	$byCountryArray = ByCountry($countryIDs);
+
+	//encode results of ByCountry into json
+	$byCountryJSON = json_encode($byCountryArray);
+
+	// return byCountry json string
+	echo $byCountryJSON;
 }
-
-//This checks to see if anything was passed in for the parameter countryID
-if (!isset($_GET['countryIDs']))
-{
-	ThrowFatalError("Input is not defined: countryIDs");
-}
-
-//Here we are calling our function ByCountry - which is in api_library.php - and assigning the output to an array
-$byCountryArray = ByCountry($_GET['countryIDs']);
-
-//encode results of ByCountry into json
-$byCountryJSON = json_encode($byCountryArray);
-
-// return byCountry json string
-echo $byCountryJSON;
 ?>
