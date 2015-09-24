@@ -28,17 +28,17 @@
 // Dependencies:            descriptor.php, by_stat.php, lookup_table.js, map.js, data.js, index.html
 // Additional Notes:        N/A
 
-// Author: Emma Roudabush
+// Author: Emma Roudabush, William Bittner
 // Date Created: 3/5/2015
-// Last Modified: 3/23/2015 by Joshua Crafts
+// Last Modified: 9/24/2015 by William Bittner
 // Description: Generates lookup table and heat map while 
 //              displaying loading screen
-// PRE: divs with class "spinner" and "begin" exist, and the function ParseDescriptor is defined
+// PRE: divs with class "spinner" and "begin" exist, and the function GetDescriptor is defined somewhere
 // POST: lookup table is generated, generate map colored by default HMS
 function initPage() 
 {
 	// Generate lookup table and heat map
-    ParseDescriptor();
+    GetDescriptor();
 	// Do below process when heat map is generated
     $(".spinner").fadeOut(1250);
     setTimeout(function () {

@@ -28,50 +28,50 @@
 // Dependencies:        descriptor.php, by_stat.php, data.js
 // Additional Notes:    N/A
 
-// Author: Emma Roudabush, Joshua Crafts
+// Author: Emma Roudabush, Joshua Crafts, William Bittner
 // Date Created: 3/5/2015
-// Last Modified: 4/16/2015 by Nicholas Denaro
+// Last Modified: 9/24/2015 by William Bittner
 // Description: Fills g_DescriptorJSON with the contents of descriptor.php,
 //              fills g_LookupTable and g_StatList with their corresponding data
 //              and logs the resulting variables to the console.
 // PRE: DescriptorJSON, g_StatList, and g_LookupTable exist,
 //      GenerateLookupTable and GenerateStatReferenceList function correctly
 // POST: DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
-function ParseDescriptor()
+function ParseDescriptor(DescriptorJSON)
 {
-    var DescriptorJSON;
     var hmsData;
 
-    $.when(GetDescriptor()).done(function(DescriptorJSON){
-        SetInitalYears(DescriptorJSON);
-        SetGraphType(0);
-        GenerateLookupTable(DescriptorJSON);
-        GenerateStatReferenceList(DescriptorJSON);
-        ParseStatList();
-        g_StatID = 1;
-        g_HMSYear = g_LastYear;
-        ColorByHMS();
-        //console.log(g_LookupTable);
-        //console.log(g_StatList);
-        BuildTabs();
-        UpdateInputs();
-    });
+    SetInitalYears(DescriptorJSON);
+    SetGraphType(0);
+    GenerateLookupTable(DescriptorJSON);
+    GenerateStatReferenceList(DescriptorJSON);
+    ParseStatList();
+    g_StatID = 1;
+    g_HMSYear = g_LastYear;
+    ColorByHMS();
+    BuildTabs();
+    UpdateInputs();
+        
 }
 
-// Author: Emma Roudabush
+// Author: Emma Roudabush, William Bittner
 // Date Created: 3/5/2015
-// Last Modified: 3/19/2015 by Emma Roudabush
+// Last Modified: 9/24/2015 by William Bittner
 // Description: Retrieves descriptor.php from the server                
 // PRE: descriptor.php exists on the server.
-// POST: returns the contents of descriptor.php
+// POST: If retrieval is successful, call the function to parse the descriptor
+//			if retrieval is not, error is logged.
 function GetDescriptor()
 {
     return $.ajax({                                      
         url: 'http://localhost/dav3i/API/descriptor.php',                                                     
         dataType: 'JSON',                 
-        success: function(data){     
-            //console.log("Successfully received descriptor.php");
-        } 
+        success: function(data){
+        	ParseDescriptor(data);
+        },
+        error: function(xhr, textStatus, errorThrown){
+       		console.log('Descriptor could not be fetched. The error is as follows: ' + errorThrown);
+    	}
     });
 }
 
