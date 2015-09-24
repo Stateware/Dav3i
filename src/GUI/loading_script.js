@@ -40,6 +40,7 @@ function initPage()
 	// Generate lookup table and heat map
     GetDescriptor();
 	// Do below process when heat map is generated
+	// Check opacity in testing?
     $(".spinner").fadeOut(1250);
     setTimeout(function () {
         $(".begin").fadeIn(1500);

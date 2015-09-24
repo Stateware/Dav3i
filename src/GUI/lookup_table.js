@@ -41,8 +41,19 @@ function ParseDescriptor(DescriptorJSON)
 {
     var hmsData;
 
-    SetInitalYears(DescriptorJSON);
+	//Grab an object containing the first and last year 
+    var yearRangeObject = GetInitalYears(DescriptorJSON);
+    
+    //Set the globals for the year range and initial year values
+    g_FirstYear = yearRangeObject.FirstYear;
+	g_YearStart = yearRangeObject.FirstYear;
+	g_LastYear = yearRangeObject.LastYear;
+	g_YearEnd = yearRangeObject.LastYear;
+    
+    //settings.js
     SetGraphType(0);
+    
+    
     GenerateLookupTable(DescriptorJSON);
     GenerateStatReferenceList(DescriptorJSON);
     ParseStatList();
@@ -75,20 +86,22 @@ function GetDescriptor()
     });
 }
 
-// Author: Emma Roudabush
+// Author: Emma Roudabush, William Bittner
 // Date Created: 4/7/2015
-// Last Modified: 4/7/2015 by Emma Roudabush
-// Description: Sets the time span to the correct span given by descriptor.php				
-// PRE: DescriptorJSON exists with the correct data from descriptor.php,
-//		g_FirstYear, g_YearStart, g_LastYear and g_YearEnd exist
-// POST: g_FirstYear and g_YearStart have the correct beginning year of statistics.
-// 		 g_LastYear and g_YearEnd have the correct ending year of statistics. 
-function SetInitalYears(DescriptorJSON)
+// Last Modified: 9/24/2015 by William Bittner
+// Description: Returns an object corresponding to the year range defined in the descriptor			
+// PRE: DescriptorJSON is formatted as to the specifications in the documentation
+// POST: An object with the first and last year values defined
+function GetInitalYears(DescriptorJSON)
 {
-	g_FirstYear = Number(DescriptorJSON.yearRange[0]);
-	g_YearStart = Number(DescriptorJSON.yearRange[0]);
-	g_LastYear = Number(DescriptorJSON.yearRange[1]);
-	g_YearEnd = Number(DescriptorJSON.yearRange[1]);
+	var firstYear = Number(DescriptorJSON.yearRange[0]);
+	var lastYear = Number(DescriptorJSON.yearRange[1]);
+	var yearRangeObject = {
+						FirstYear : firstYear,
+						LastYear  : lastYear
+					};
+
+	return yearRangeObject;
 }
 
 // Author: Emma Roudabush
