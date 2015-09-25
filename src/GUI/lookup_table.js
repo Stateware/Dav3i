@@ -34,7 +34,7 @@
 // Description: Fills g_DescriptorJSON with the contents of descriptor.php,
 //              fills g_LookupTable and g_StatList with their corresponding data
 //              and logs the resulting variables to the console.
-// PRE: DescriptorJSON, g_StatList, and g_LookupTable exist,
+// PRE: DescriptorJSON is not null, g_StatList and g_LookupTable exist,
 //      GenerateLookupTable and GenerateStatReferenceList function correctly
 // POST: DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
 function ParseDescriptor(DescriptorJSON)
@@ -53,12 +53,23 @@ function ParseDescriptor(DescriptorJSON)
     //settings.js
     SetGraphType(0);
     
+    //Set global for lookup table
+    g_LookupTable = InitializeLookupTable(DescriptorJSON);
     
-    GenerateLookupTable(DescriptorJSON);
-    GenerateStatReferenceList(DescriptorJSON);
-    ParseStatList();
+    //Generate an array of stat names
+    g_StatList = GenerateStatReferenceList(DescriptorJSON);
+    
+    //Generate a parsed stat list
+    //TODO: Figure out what this is doing and why
+    g_ParsedStatList = ParseStatList();
+    
+    //Set initial stat displayed to deaths
     g_StatID = 1;
+    
+    //Set the initial year displayed to the most current year for which we have data
     g_HMSYear = g_LastYear;
+    
+    
     ColorByHMS();
     BuildTabs();
     UpdateInputs();
@@ -104,42 +115,45 @@ function GetInitalYears(DescriptorJSON)
 	return yearRangeObject;
 }
 
-// Author: Emma Roudabush
+// Author: Emma Roudabush, William Bittner
 // Date Created: 3/5/2015
-// Last Modified: 3/19/2015 by Emma Roudabush
-// Description: Fills the contents of g_LookupTable with data from
-//              DescriptorJSON. This includes the CC2 codes, the 
-//              names, and the HMS values are set to 0.
+// Last Modified: 9/24/2015 by William Bittner
+// Description: Returns a table of Countries CC2 codes, the country
+//              names, and HMS values are set to 0.
 // PRE: DescriptorJSON exists with the correct data from descriptor.php,
-//      g_LookupTable exists
-// POST: g_LookupTable has the correct CC2, name, and HMS values
-function GenerateLookupTable(DescriptorJSON)
+// POST: A 2d array is returned that has the correct CC2, name, and HMS values zero'd for each country
+function InitializeLookupTable(DescriptorJSON)
 {
-    g_LookupTable = new Array(DescriptorJSON.cc2.length);
+    var lookupTable = new Array(DescriptorJSON.cc2.length);
+    
     for (i = 0; i < DescriptorJSON.cc2.length; i++)
     {
-        g_LookupTable[i] = new Array(3);
-        g_LookupTable[i][0] = DescriptorJSON.cc2[i];
-        g_LookupTable[i][1] = DescriptorJSON.common_name[i];
-        g_LookupTable[i][2] = 0;
+    	//TODO: Get rid of magic numbers?
+        lookupTable[i] = new Array(3);
+        lookupTable[i][0] = DescriptorJSON.cc2[i];
+        lookupTable[i][1] = DescriptorJSON.common_name[i];
+        lookupTable[i][2] = 0;
     }
+    
+    return lookupTable;
 }
 
-// Author: Emma Roudabush
+// Author: Emma Roudabush, William Bittner
 // Date Created: 3/5/2015
-// Last Modified: 3/19/2015 by Emma Roudabush
-// Description: Fills the contents of g_StatList with the stats
-//              data from DescriptorJSON            
-// PRE: DescriptorJSON exists with the correct data from descriptor.php,
-//      g_StatList exists
-// POST: g_StatList has the correct stat values
+// Last Modified: 9/24/2015 by William Bittner
+// Description: Returns an array of stat names gathered from DescriptorJSON            
+// PRE: DescriptorJSON exists with the correct data from descriptor.php
+// POST: returns an array containing the correct stat names
 function GenerateStatReferenceList(DescriptorJSON)
 {
-    g_StatList = new Array(DescriptorJSON.stats.length); 
+    var statList = new Array(DescriptorJSON.stats.length); 
+    
     for (i = 0; i < DescriptorJSON.stats.length; i++)
     {
-        g_StatList[i] = DescriptorJSON.stats[i];
+        statList[i] = DescriptorJSON.stats[i];
     }
+    
+    return statList;
 }
 
 // Author: Emma Roudabush, Joshua Crafts
@@ -196,19 +210,12 @@ function GetCID(cc2)
     return cid; 
 }
 
-/*
-// I'm keeping this here just in case something breaks TODO: Delete these comments when approval is granted
-function ParseStatList()
-{
-    g_ParsedStatList = [[1,0,0,0,0,0,0],[12,0,1,2,3,5,8],[4,-1,-1,-1,-1,10,11],[6,-1,-1,-1,-1,9,7]];
-}*/
-
-// Author: Kyle Nicholson
+// Author: Kyle Nicholson, William Bittner
 // Date Created: 4/2/2015
-// Last Modified: 4/15/2015 by Kyle Nicholson
+// Last Modified: 9/24/2015 by William Bittner
 // Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
-// PRE: g_StatList, g_ParsedStatList exist
-// POST: g_ParsedStat is set up as a 2D array A[x][y], in which each x value represents a selectable 
+// PRE: g_StatList exist
+// POST: return a 2D array A[x][y], in which each x value represents a selectable 
 // 		 stat, and each y value either represents stat type (0), indicates head stat (1), or indicates 
 //		 associated data (2-3).
 function ParseStatList()
@@ -304,7 +311,7 @@ function ParseStatList()
 			}
 		}
 	}
-	g_ParsedStatList = parsedStatList;
+	return parsedStatList;
 }
 
 
