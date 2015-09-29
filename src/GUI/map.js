@@ -41,7 +41,7 @@
 $(function(){
     // Author: Joshua Crafts
     // Date Created: 3/21/2015
-    // Last Modified: 4/14/2015 by Paul Jang
+    // Last Modified: 9/28/2015 by Murlin Wei
     // Description: This function matches each country/region object in the vector map
     //              to its corresponding value in the HMS section of g_LookupTable and
     //              returns the array, indexed by CC2
@@ -51,7 +51,7 @@ $(function(){
     //       HMS value. Should be used as argument to maps.series.regions[0].setValues()
     ColorByHMS = function(){
         var data = {},
-            hmsID = g_StatID, //stat chosen by user
+            hmsID = g_StatID,
             type = 0;
 
         var key,
@@ -59,18 +59,11 @@ $(function(){
             min,
             max;
 
-        //define g_parsedstatelist[1]
-
         // iterate through list of stats until we found the one chosen by user
         for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)
             {
-                //for each stat which type != 1
-
-                //
                 if (g_ParsedStatList[1][i] == g_StatID && g_ParsedStatList[0][i] == 1)
                 {
-                    // if it is of type '1' we want to set the type variable
-
                     type = 1;
                     if (g_VaccHMS == 1)
                         hmsID = g_ParsedStatList[2][i];
@@ -83,7 +76,13 @@ $(function(){
             isFound = false;
             min = Number.MAX_VALUE;
             max = Number.MIN_VALUE;
-            SetHMS(hmsData[hmsID]);     // Need to index in due to JSON format of by_stat.php
+
+            var hms = SetHMS(hmsData[hmsID]);
+            for (var i = 0; i < g_LookupTable.length; i++)
+            {
+                g_LookupTable[i][2] = Number(hms[i]);
+            }
+
             // iterate through regions by key
             for (key in map.regions) {
                 // iterate through lookup table by index

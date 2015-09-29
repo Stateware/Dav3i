@@ -71,7 +71,9 @@ function ParseDescriptor(DescriptorJSON)
     
     
     ColorByHMS();
+
     BuildTabs();
+
     g_TempSettings = UpdateInputs();
         
 }
@@ -158,16 +160,19 @@ function GenerateStatReferenceList(DescriptorJSON)
 
 // Author: Emma Roudabush, Joshua Crafts
 // Date Created: 3/17/2015
-// Last Modified: 3/23/2015 by Joshua Crafts
+// Last Modified: 9/28/2015 by Murlin Wei
 // Description:Replace HMS values in lookup table with new HMS data (will happen just after lookup table generation for default HMS)
 // PRE: hmsData contains valid heat map values and hmsData is of size g_LookupTable.length
 // POST: g_LookupTable has heat map values of hmsData
 function SetHMS(hmsData)
 {
+	var heatMapValues = [];
     for (var i = 0; i < g_LookupTable.length; i++)
     {
-        g_LookupTable[i][2] = Number(hmsData[i]);
+    	heatMapValues[i] = hmsData[i]
     }
+
+    return heatMapValues
 }
 
 // Author: Vanajam Soni, Kyle Nicholson, Joshua Crafts
