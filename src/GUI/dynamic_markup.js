@@ -63,7 +63,7 @@ function BuildTabs()
 
 // Author: Nicholas Denaro
 // Date Created: 4/16/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
+// Last Modified: 9/28/2015 by Murlin Wei
 // Description: Assigns values to the year ranges
 // PRE: lookup_table is filled correctly, index.html exists
 // POST: appropriate input tags are modified and g_TempSettings array is initialized
@@ -83,12 +83,8 @@ function UpdateInputs()
     heatmapYearDiv.max=g_LastYear;
     heatmapYearDiv.min=g_FirstYear;
     
-    // initialize TempSettings array
-    g_TempSettings[0]=g_FirstYear;
-    g_TempSettings[1]=g_LastYear;   
-	g_TempSettings[2]=g_LastYear;
-	g_TempSettings[3]=0;
-	g_TempSettings[4]=1;
+    var tempSettings = [g_FirstYear, g_LastYear, g_LastYear, 0, 1];
+    return tempSettings
 }
 
 // Author: Paul Jang, Nicholas Denaro

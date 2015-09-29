@@ -72,7 +72,7 @@ function ParseDescriptor(DescriptorJSON)
     
     ColorByHMS();
     BuildTabs();
-    UpdateInputs();
+    g_TempSettings = UpdateInputs();
         
 }
 
