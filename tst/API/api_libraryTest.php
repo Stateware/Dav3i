@@ -140,7 +140,7 @@ class api_libraryTest extends \PHPUnit_Framework_TestCase
 		//$this->assertTrue($ret == $expected);
 	}
 
-	public function testDescriptorNoTables()
+	/*public function testDescriptorNoTables()
 	{
 		try
 		{
@@ -152,9 +152,9 @@ class api_libraryTest extends \PHPUnit_Framework_TestCase
 			echo $e->getMessage();
 			$this->assertTrue("{\"error\" : \"No tables with years exist\"}" == $e->getMessage());
 		}
-	}
+	}*/
 
-	public function testDescriptorMetaCorrupt()
+	/*public function testDescriptorMetaCorrupt()
 	{
 		try
 		{
@@ -166,7 +166,7 @@ class api_libraryTest extends \PHPUnit_Framework_TestCase
 			echo $e->getMessage();
 			$this->assertTrue("{\"error\" : \"The meta_country data is corrupt\"}" == $e->getMessage());
 		}
-	}
+	}*/
 
 	public function testDescriptorReturnValue()
 	{
