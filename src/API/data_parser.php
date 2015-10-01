@@ -38,11 +38,16 @@
 
 require_once("connect.php");
 
+parser();
+function parser(){
 $testData = "";
 // when a file gets uploaded, it is placed in a temporary directory in the database.
 // this directory location can be accessed by PHP with the following line
+
 $fileTemporaryName = $_FILES['userfile']['tmp_name'];
+
 // we place the entire contents of the file into the $testData variable
+
 $testData = file_get_contents($fileTemporaryName);
 
 // Because the data needs to at least have a place holder, we will replace any missing
@@ -144,6 +149,7 @@ foreach($queryArray as $country => $query)
 	{
 		echo "Individual row query failed.";
 	}
+}
 }
 // This is a line that should have been queried to the database to ensure speedy lookups
 //ALTER TABLE data_cases ORDER BY country_id ASC

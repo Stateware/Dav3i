@@ -35,21 +35,22 @@
  * Additional Notes:    Before completion of this file we need a populated
  *                      database on the correct server
  */
-
 require_once("api_library.php");
 
-// enable foreign access in testing
-if (EXTERNAL_ACCESS)
-{
-	header("Access-Control-Allow-Origin: *");
+desc();
+function desc(){	
+	// enable foreign access in testing
+	if (EXTERNAL_ACCESS)
+	{
+		header("Access-Control-Allow-Origin: *");
+	}
+
+	$descriptorArray = Descriptor();
+
+	//encode results of Descriptor() into json
+	$descriptorJSON = json_encode($descriptorArray);
+
+	// return descriptor json string
+	echo $descriptorJSON;
 }
-
-$descriptorArray = Descriptor();
-
-//encode results of Descriptor() into json
-$descriptorJSON = json_encode($descriptorArray);
-
-// return descriptor json string
-echo $descriptorJSON;
-
 ?>
