@@ -1,6 +1,6 @@
-#Dav3i Coding Standards
+#Stateware Coding Standards
 
-###Headers
+##Headers
 
 #####File Headers
 
@@ -20,9 +20,13 @@ All functions must include headers with the following fields. PRE and POST condi
 `// PRE:  a and b are initialized`  
 `// POST: if a > b, FCTVAL == a, o.w. FCTVAL == b`  
 
-###Naming Conventions
+##Commenting
 
-All names must be descriptive and unambiguous, though short enough as to not impede programming or readability. Use your common sense and don't use names that can be easily conflated.
+It is better to comment too much than it is to not comment enough. Each piece of logic in a function should have a comment briefly explaining what it does.
+
+##Naming Conventions
+
+All names must be descriptive and unambiguous, though short enough as to not impede programming or readability. Use your common sense and don't use names that can be easily confused.
 
 #####File Names
 
@@ -64,7 +68,7 @@ All constants must be named in all capital letters, with underscores separating 
 
 Treat acronyms or initialisms as regular words for the purposes of naming. Follow the regular convention for whatever you are naming.
 
-###Structuring Your Code
+##Structuring Your Code
 
 #####Indents
 
@@ -73,6 +77,10 @@ Consistently tab *all* blocks so that the organization of your code is easily re
 #####"Magic" Numbers
 
 Any constants used in your code should be named constants, never hardcoded values. This gives flexibility in changing these values easily, especially when they are used more than once. The golden rule is "If you want to change something, you should only have to change it in one place."
+
+#####Gloabl Variables
+
+Gloabl variables that are not constants are dangerous and can cause errors that are difficult to debug. Avoid using globals that are not constants whenever possible.
 
 #####Loose Coupling
 
@@ -98,7 +106,7 @@ Because floating point numbers are inexact, any time the value of a `float` is c
 
 Fully parenthesize each expression. Never rely on default order of operations and assume correct functionality. This invites incorrect functionality, and makes the incorrect assumption that whoever maintains your code will always understand your intention. Don't parenthesize atomic statements (jshint will sniff this out for us).
 
-###Language Specific Conventions
+##Language Specific Conventions
 
 ####HTML/CSS
 
