@@ -69,9 +69,8 @@ function ParseDescriptor(DescriptorJSON)
     //Set the initial year displayed to the most current year for which we have data
     g_HMSYear = g_LastYear;
     
-    
+    FindCountriesNoData();
     ColorByHMS();
-
     BuildTabs();
 
     g_TempSettings = UpdateInputs();
@@ -183,10 +182,11 @@ function SetHMS(hmsData)
 // POST: FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
 function GetHMS(hmsID, year)
 {
-    return $.ajax({        
+    $.ajax({        
         url: 'http://localhost/dav3i/API/by_stat.php?statID='.concat(hmsID.toString()+"&year="+year.toString()),                                                     
         dataType: 'JSON',
         success: function(data){     
+        	ParseMapData(data,hmsID);
             //console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));
         } 
     });

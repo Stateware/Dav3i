@@ -37,8 +37,10 @@
 // POST: lookup table is generated, generate map colored by default HMS
 function initPage() 
 {
+	initMap();
 	// Generate lookup table and heat map
     GetDescriptor();
+
 	// Do below process when heat map is generated
 	// Check opacity in testing?
     $(".spinner").fadeOut(1250);
