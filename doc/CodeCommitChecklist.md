@@ -6,6 +6,7 @@ Ask yourself these questions before you commit your code?
 * Is my code commented well enough for another person to easily understand it?
 * Are my functions unit tested?
 * Are all parts of my commit functional?
+* Are my commit title and description descriptive and follow the guidelines set by my team leader?
 
 #####If your answer to any of the above questions is "yes", you should work more on your code before committing
 
