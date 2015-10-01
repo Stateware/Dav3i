@@ -51,7 +51,7 @@ class data_parserTest extends \PHPUnit_Framework_TestCase
 {
 	function testStandard()
 	{
-		standard run through with no deviations
+		//standard run through with no deviations
 		$test = parser();
 		$this->assertTrue($test == NULL);
 	}

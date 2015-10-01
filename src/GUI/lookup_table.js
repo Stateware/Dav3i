@@ -67,11 +67,16 @@ function ParseDescriptor()
 function GetDescriptor()
 {
     return $.ajax({                                      
-        url: 'http://usve74985.serverprofi24.com/API/descriptor.php',                                                     
+        url: 'http://localhost/dav3i/API/descriptor.php',                                                     
         dataType: 'JSON',                 
         success: function(data){     
-            //console.log("Successfully received descriptor.php");
-        } 
+            console.log("Successfully received descriptor.php");
+        },
+        error: function(xhr, error){
+        	console.log("Failed to receive descriptor.");
+        	console.log(error);
+        	console.log(xhr);
+        }
     });
 }
 
@@ -152,7 +157,7 @@ function SetHMS(hmsData)
 function GetHMS(hmsID, year)
 {
     return $.ajax({                                      
-        url: 'http://usve74985.serverprofi24.com/API/by_stat.php?statID='.concat(hmsID.toString()+"&year="+year.toString()),                                                     
+        url: 'http://localhost/dav3i/API/by_stat.php?statID='.concat(hmsID.toString()+"&year="+year.toString()),                                                     
         dataType: 'JSON',
         success: function(data){     
             //console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));
