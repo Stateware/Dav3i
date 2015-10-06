@@ -52,16 +52,18 @@ function SetVaccHMS(newVaccHMS)
 
 // Author: Kyle Nicholson
 // Date Created: 4/23/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: To set settings for the year ranges
+// Last Modified: 10/6/2015 by Nicholas Denaro
+// Description: To set settings for the year ranges.
 // PRE: See ApplySettings() and CloseSettings()
-// POST: if apply settings fails nothing happens, else apply settings and close the menu
+// POST: if apply settings fails nothing happens, else apply settings and close the menu. FCTVAL = true on successful close, false on failure to close.
 function ApplyAndClose()
 {
 	if(ApplySettings())
 	{
 		CloseSettings();
+        return(true);
 	}
+    return(false);
 }
 
 // Author: Kyle Nicholson
