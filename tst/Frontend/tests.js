@@ -53,6 +53,25 @@ QUnit.test( "GenerateStatReferenceList Test", function( assert ) {
 	assert.deepEqual( GenerateStatReferenceList(descriptorTest), output );
 });
 
+
+QUnit.test( "ParseStatList Test", function( assert ) {
+	//generic test
+
+	g_StatList = ["Births", "Deaths", "Reported Cases", "Population", "MCV1-VACCL", "Estimated Mortality", "MCV2-VACCL",
+					"Estimated Cases - Upper Bound", "Estimated Cases", "Estimated Mortality - Upper Bound",
+	 				"Estimated Mortality - Lower Bound", "Estimated Cases - Lower Bound", "SIA-VACCB"];
+	
+	var output= [ 	[0,0,0,0,0,0,1],
+					[0,1,8,5,3,2,12],
+					[-1,-1,11,10,-1,-1,4],
+					[-1,-1,7,9,-1,-1,6] 
+				];
+					 
+	assert.deepEqual( ParseStatList(), output );
+});
+
+					 
+
 QUnit.log( function( details )  {
 	console.log( "Log: ", details.actual, details.message );
 });
