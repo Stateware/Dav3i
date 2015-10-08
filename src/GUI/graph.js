@@ -31,12 +31,12 @@
 
 // Author: Arun Kumar
 // Date Created: 4/14/2015
-// Last Modified: 4/23/2015 by Vanajam Soni
+// Last Modified: 10/8/2015 by Nicholas Denaro
 // Description: Creates switch case to determine which function to call
 // PRE: The divs for the graphs exist, and correct data is stored in g_DataList,
 //      g_GraphType and g_StatList 
 // POST: Calls the appropriate graphing functions depending on the g_GraphType and 
-//       whether the g_StatID selected is vaccination or not 
+//       whether the g_StatID selected is vaccination or not. FCTVAL == number of graphs generated, or -1 for failure.
 function GenerateGraphs()
 {
 	if(g_DataList != undefined && g_DataList.size != 0)
@@ -51,11 +51,13 @@ function GenerateGraphs()
 	                GraphVaccine("region-graphs-"+i, curr);
 	                curr=curr.next;
 	            }
+                return(g_DataList.size);
 	        }
 	        else
 	        {
 	            var sumNode = GenerateSumNode();
 	            GraphVaccine("region-graphs-"+1,sumNode);
+                return(1);
 	        }
 	    }
 	    else
@@ -73,17 +75,18 @@ function GenerateGraphs()
                         }
 	                    curr=curr.next;
 	                }
-	                break;
+	                return(g_DataList.size);
 	            case 1:
 	                GraphCombined("region-graphs-"+1);
-	                break;
+	                return(1);
 	            case 2:
 	                var sumNode = GenerateSumNode();
 	                GraphRegional("region-graphs-"+1, sumNode);
-	                break;
+	                return(1);
 	        }
 	    }
 	}
+    return(-1);
 }
 
 // Author: Arun Kumar, Berty Ruan, Vanajam Soni
@@ -92,7 +95,7 @@ function GenerateGraphs()
 // Description: Takes stat data and divID to generate a graph for a single country and stat
 // PRE: divID is a div in the graphing section, node is a valid t_AsdsNode containing data for a country or 
 //      a sum of countries, and maxVal is the max is maximum value of the selected stat for the entire list
-// POST: generates a single Google ComboChart for the given node on the divID
+// POST: generates a single Google ComboChart for the given node on the divID. FCTVAL == 0 on success, -1 on bad data
 function GraphRegional(divID, node, maxVal) {
     var data = GenerateSingleData(node.data);
     var options = {
@@ -130,11 +133,11 @@ function GraphRegional(divID, node, maxVal) {
 
 // Authors: Josh Crafts, Arun Kumar, Berty Ruan
 // Date Created: 3/27/2015
-// Last Modified: 4/25/2015 by Berty Ruan
+// Last Modified: 10/8/2015 by Nicholas Denaro
 // Description: Takes stat data from multiple countries and generates a graph
 // using data from multiple countries combined
 // PRE: divID is a div in the graphing section, GenerateCombinedData function is defined
-// POST: generates a single Google LineChart on divID for all regions on g_DataList
+// POST: generates a single Google LineChart on divID for all regions on g_DataList. FCTVAL == 0 on success, -1 on bad data
 function GraphCombined(divID) {
     var data = GenerateCombinedData();
     var options = {
@@ -151,28 +154,34 @@ function GraphCombined(divID) {
 	
 	var num = [];
 	
-	//console.log(num);
-	var formatter = new google.visualization.NumberFormat({pattern: '#,###.##'});
-	for(var i=1; i<data.getNumberOfColumns(); i++)
-	{
-		formatter.format(data, i);
-	}
-	
-	
-    // instantiate and draw chart using prepared data
-    var chart = new google.visualization.LineChart(document.getElementById(divID));
-    chart.draw(data, options);
+    if(data != null)
+    {
+    	//console.log(num);
+    	var formatter = new google.visualization.NumberFormat({pattern: '#,###.##'});
+    	for(var i=1; i<data.getNumberOfColumns(); i++)
+    	{
+    		formatter.format(data, i);
+    	}
+    	
+    	
+        // instantiate and draw chart using prepared data
+        var chart = new google.visualization.LineChart(document.getElementById(divID));
+        chart.draw(data, options);
+        return(0);
+    }
+    else
+        return(-1);
 }
 
 // Author: Arun Kumar, Berty Ruan
 // Date Created: 4/14/2015
-// Last Modified: 4/25/2015 by Berty Ruan
+// Last Modified: 10/8/2015 by Nicholas Denaro
 // Description: Takes stat data from multiple countries and generates a graph for vaccinations
 // creating bars with mass vaccinations and line graphs with periodic vaccinations
 // PRE: divID is a div in the graphing section, node is a valid t_AsdsNode containing data for a country or 
 //      a sum of countries, GenerateVaccineData function is defined
 // POST: generates a single Google ComboChart for the given node's vaccination data on the divID 
-//       SIA data is shown in bars, whereas MCV1 and MCV2 data is shown in lines.
+//       SIA data is shown in bars, whereas MCV1 and MCV2 data is shown in lines. FCTVAL == 0 on success, -1 on bad data
 function GraphVaccine(divID, node) {
     var data = GenerateVaccineData(node.data);
     var options = {
@@ -194,14 +203,20 @@ function GraphVaccine(divID, node) {
         tooltip: {trigger: 'both'}
     };
 	
-	var formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
-    for(var i=1; i<data.getNumberOfColumns(); i++)
+    if(data != null)
     {
-        formatter.format(data,i);
+    	var formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
+        for(var i=1; i<data.getNumberOfColumns(); i++)
+        {
+            formatter.format(data,i);
+        }
+    	
+        var chart = new google.visualization.ComboChart(document.getElementById(divID));
+        chart.draw(data, options);
+        return(0);
     }
-	
-    var chart = new google.visualization.ComboChart(document.getElementById(divID));
-    chart.draw(data, options);
+    else
+        return(-1);
 }
 
 // Author: Vanajam Soni, Berty Ruan
