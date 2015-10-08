@@ -25,9 +25,9 @@
  *                      year range, two character country code (cc2), and the stats
  * 
  * Date Created:        2/7/2015
- * Contributors:        Kyle Nicholson, Berty Ruan, Drew Lorpeiato, William Bittner
- * Date Last Modified:  5/1/2015
- * Last Modified By:    William Bittner
+ * Contributors:        Kyle Nicholson, Berty Ruan, Drew Lorpeiato, William Bittner, Brent Mosier
+ * Date Last Modified:  9/27/2015
+ * Last Modified By:    Brent Mosier
  * Dependencies:        api_library.php
  * PRE:               NONE
  * POST:              FCTVAL == Formatted JSON String containing the countryName,

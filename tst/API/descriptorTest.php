@@ -25,7 +25,7 @@
  * 
  * Date Created:        9/23/2015
  * Contributors:        Brent Mosier
- * Date Last Modified:  9/23/2015
+ * Date Last Modified:  10/1/2015
  * Last Modified By:    Brent Mosier
  * Dependencies:        api_library.php
  * PRE:               NONE
@@ -46,10 +46,6 @@ require_once '.\..\..\src\api\descriptor.php';
  		//$this->expectOutputString($expected);
  		$val = desc();
  		$this->assertTrue($val == NULL);
-
- 		//ERROR WITH CODE:
- 			//$descriptorJSON changes upon each call to it. The data remains unchanged, but there is an additional double quote every time the function is called
- 			//This seems to be an error in the code itself, so I think we should discuss it to figure out what needs to be done
  	}
  	
  	/*

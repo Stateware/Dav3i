@@ -25,7 +25,7 @@
  * 
  * Date Created:        9/11/2015
  * Contributors:        Brent Mosier
- * Date Last Modified:  9/11/2015
+ * Date Last Modified:  10/1/2015
  * Last Modified By:    Brent Mosier
  * Dependencies:        connect.php, Toolbox.php
  * Input:               NONE
@@ -35,141 +35,92 @@
  *                      while not actively being developed is NOT recommended.
  */
 
-
-/*
-    $databaseConnection = new mysqli("localhost", "root", "", "Dav3i");    
-    if ($databaseConnection->connect_error)
+class connectTest extends \PHPUnit_Framework_TestCase
+{
+    function testGetDatabaseConnection()
     {
-        ThrowFatalError("Could not connect to database.");
+        $host = "localhost";
+        $user = "root";
+        $password = "";
+        $database = "Dav3i";
+
+        $databaseConnection = new mysqli($host, $user, $password, $database);
+
+        $this->assertTrue($databaseConnection->connect_error == NULL);
     }
-    return $databaseConnection;
-*/
-    class connectTest extends \PHPUnit_Framework_TestCase
+
+    function testGetDatabaseConnectionErrorHost()
     {
+        $host = "x";
+        $user = "root";
+        $password = "";
+        $database = "Dav3i";
+        $expectedMessage = "No such host is known.";
 
-function testGetDatabaseConnection()
-{
-    //create stub database to connect to 
-    //test connection to server
-    //check if connection error occurred
-    //no error, return value
+        try{
+        $databaseConnection = new mysqli($host, $user, $password, $database);
+        $this->assertTrue(false);
 
-    //check return value
-
-    $host = "localhost";
-    $user = "root";
-    $password = "";
-    $database = "Dav3i";
-
-    $databaseConnection = new mysqli($host, $user, $password, $database);
-
-    $this->assertTrue($databaseConnection->connect_error == NULL);
-}
-
-function testGetDatabaseConnectionErrorHost()
-{
-	//create stub database to connect to
-    //test connection to server
-    //check if connection error occurred
-    //error occurred, throw error message
-    //return
-
-    //check return value and thrown message
-
-    $host = "x";
-    $user = "root";
-    $password = "";
-    $database = "Dav3i";
-    $expectedMessage = "No such host is known.";
-
-    try{
-    $databaseConnection = new mysqli($host, $user, $password, $database);
-    $this->assertTrue(false);
-
+        }
+        catch (Exception $e) {
+            $errorMessage = $e->getMessage();
+            $this->assertTrue(true);        
+        }
     }
-    catch (Exception $e) {
-        $errorMessage = $e->getMessage();
-        $this->assertTrue(true);        
+
+    function testGetDatabaseConnectionErrorUser()
+    {
+        $host = "localhost";
+        $user = "";
+        $password = "";
+        $database = "Dav3i";
+
+        try{
+        $databaseConnection = new mysqli($host, $user, $password, $database);
+        $this->assertTrue(false);
+
+        }
+        catch (Exception $e) {
+            $errorMessage = $e->getMessage();
+            $this->assertTrue(true);        
+        }
     }
-}
 
-function testGetDatabaseConnectionErrorUser()
-{
-    //create stub database to connect to
-    //test connection to server
-    //check if connection error occurred
-    //error occurred, throw error message
-    //return
+    function testGetDatabaseConnectionErrorPassword()
+    {
+        $host = "localhost";
+        $user = "root";
+        $password = "x";
+        $database = "Dav3i";
 
-    //check return value and thrown message
+        try{
+        $databaseConnection = new mysqli($host, $user, $password, $database);
+        $this->assertTrue(false);
 
-    $host = "localhost";
-    $user = "";
-    $password = "";
-    $database = "Dav3i";
-
-    try{
-    $databaseConnection = new mysqli($host, $user, $password, $database);
-    $this->assertTrue(false);
-
+        }
+        catch (Exception $e) {
+            $errorMessage = $e->getMessage();
+            $this->assertTrue(true);        
+        }
     }
-    catch (Exception $e) {
-        $errorMessage = $e->getMessage();
-        $this->assertTrue(true);        
+
+    function testGetDatabaseConnectionErrorDatabase()
+    {
+        $host = "localhost";
+        $user = "root";
+        $password = "";
+        $database = "x";
+
+        try{
+        $databaseConnection = new mysqli($host, $user, $password, $database);
+        $this->assertTrue(false);
+
+        }
+        catch (Exception $e) {
+            $errorMessage = $e->getMessage();
+            $this->assertTrue(true);        
+        }
     }
-}
-
-function testGetDatabaseConnectionErrorPassword()
-{
-    //create stub database to connect to
-    //test connection to server
-    //check if connection error occurred
-    //error occurred, throw error message
-    //return
-
-    //check return value and thrown message
-
-    $host = "localhost";
-    $user = "root";
-    $password = "x";
-    $database = "Dav3i";
-
-    try{
-    $databaseConnection = new mysqli($host, $user, $password, $database);
-    $this->assertTrue(false);
-
-    }
-    catch (Exception $e) {
-        $errorMessage = $e->getMessage();
-        $this->assertTrue(true);        
-    }
-}
-
-function testGetDatabaseConnectionErrorDatabase()
-{
-    //create stub database to connect to
-    //test connection to server
-    //check if connection error occurred
-    //error occurred, throw error message
-    //return
-
-    //check return value and thrown message
-
-    $host = "localhost";
-    $user = "root";
-    $password = "";
-    $database = "x";
-
-    try{
-    $databaseConnection = new mysqli($host, $user, $password, $database);
-    $this->assertTrue(false);
-
-    }
-    catch (Exception $e) {
-        $errorMessage = $e->getMessage();
-        $this->assertTrue(true);        
-    }
-}
 
 }
 

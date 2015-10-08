@@ -25,7 +25,7 @@
  * 
  * Date Created:        9/11/2015
  * Contributors:        Brent Mosier
- * Date Last Modified:  9/11/2015
+ * Date Last Modified:  10/1/2015
  * Last Modified By:    Brent Mosier
  * Dependencies:        connect.php, data_parser.php
  * Input:               NONE
@@ -49,12 +49,14 @@ require_once '.\..\..\src\api\data_parser.php';
 
 class data_parserTest extends \PHPUnit_Framework_TestCase
 {
+	/*
 	function testStandard()
 	{
 		//standard run through with no deviations
 		$test = parser();
 		$this->assertTrue($test == NULL);
 	}
+	*/
 	
 	/*
 	function testTableResultsFalse()
