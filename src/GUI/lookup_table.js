@@ -42,7 +42,8 @@ function ParseDescriptor(DescriptorJSON)
     var hmsData;
 
 	//Grab an object containing the first and last year 
-    var yearRangeObject = GetInitalYears(DescriptorJSON);
+    var yearRangeObject = GetInitialYears(DescriptorJSON);
+    
     
     //Set the globals for the year range and initial year values
     g_FirstYear = yearRangeObject.FirstYear;
@@ -104,7 +105,7 @@ function GetDescriptor()
 // Description: Returns an object corresponding to the year range defined in the descriptor			
 // PRE: DescriptorJSON is formatted as to the specifications in the documentation
 // POST: An object with the first and last year values defined
-function GetInitalYears(DescriptorJSON)
+function GetInitialYears(DescriptorJSON)
 {
 	var firstYear = Number(DescriptorJSON.yearRange[0]);
 	var lastYear = Number(DescriptorJSON.yearRange[1]);
