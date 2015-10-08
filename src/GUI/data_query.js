@@ -68,10 +68,11 @@ function GetData(cid)
 
 // Author: Vanajam Soni, Kyle Nicholson
 // Date Created: 3/24/15
-// Last Modified: 3/26/15 Vanajam Soni
+// Last Modified: 10/8/15 Nicholas Denaro
 // Description: adds or removes a node to the g_DataList to reflect the chosen regions on the map
 // PRE: selectedRegions is a string array of regions selected on the map
-// POST: modifies g_DataList if there is a mismatch between regions selected, and regions stored in the g_DataList
+// POST: modifies g_DataList if there is a mismatch between regions selected, and regions stored in the g_DataList. 
+// FCTVAL == linked list of currently selected countries on map.
 function ModifyData(selectedRegions) 
 {
     if(g_DataList == null)
@@ -133,6 +134,5 @@ function ModifyData(selectedRegions)
             currentNode = currentNode.next;
         }
     }
-    else
-        return;
+    return g_DataList;
 }
