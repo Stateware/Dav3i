@@ -30,11 +30,11 @@
 
 // Author: Paul Jang, Nicholas Denaro
 // Date Created: 3/26/2015
-// Last Modified: 4/14/2015 by Nicholas Denaro
+// Last Modified: 10/8/2015 by Nicholas Denaro
 // Description: Retrieve stat values from the lookup_table,
 //              Builds the tabs and inserts them into index.html
 // PRE: lookup_table is filled correctly, index.html exists
-// POST: index.html contains tabs of the correct stat data from the lookup_table
+// POST: index.html contains tabs of the correct stat data from the lookup_table. FCTVAL == Number of tabs created.
 function BuildTabs()
 {
     var i;
@@ -59,6 +59,7 @@ function BuildTabs()
             div.className="graph-tab selected-tab";
         }
     }
+    return(g_ParsedStatList[1].length);
 }
 
 // Author: Nicholas Denaro
@@ -89,10 +90,10 @@ function UpdateInputs()
 
 // Author: Paul Jang, Nicholas Denaro
 // Date Created: 3/26/2015
-// Last Modified: 3/26/2015 by Paul Jang
+// Last Modified: 10/8/2015 by Nicholas Denaro
 // Description: build divs where the graphs go in index.html
 // PRE: Called from BuildTabs
-// POST: appropriate divs are created
+// POST: appropriate divs are created. FCTVAL == The created div.
 function BuildDiv(stat)
 {
     var div=document.createElement("DIV");
@@ -102,6 +103,7 @@ function BuildDiv(stat)
     div.style.height="87%";
     div.className="graph";
     document.getElementById("graphs").appendChild(div);
+    return(div);
 }
 
 // Author: Paul Jang, Nicholas Denaro
@@ -109,7 +111,7 @@ function BuildDiv(stat)
 // Last Modified: 4/14/2015 by Nicholas Denaro
 // Description: build divs where the graphs go in index.html
 // PRE: Called from the onclick of a tab
-// POST: previous tab is switched out, and now tab is switched in
+// POST: previous tab is switched out, and now tab is switched in. FCTVAL == currently selected stat id.
 function ChooseTab(element)
 {
     // remove divs in previous tab
@@ -126,14 +128,15 @@ function ChooseTab(element)
 
     GenerateSubDivs();
     GenerateGraphs();
+    return(g_StatID);
 }
 
 // Author: Nicholas Denaro
 // Date Created: 4/18/2015
-// Last Modified: 4/18/2015 by Nicholas Denaro
+// Last Modified: 10/8/2015 by Nicholas Denaro
 // Description: Rotates the tabs left or right depending on the direction
 // PRE: direction!=0
-// POST: The first/last tab is moved to the last/first position
+// POST: The first/last tab is moved to the last/first position. FCTVAL == The first tab.
 function RotateTabs(direction)
 {
     var div;
@@ -151,6 +154,7 @@ function RotateTabs(direction)
         tabs.removeChild(div);
         tabs.insertBefore(div,children[0]);
     }
+    return(tabs.childNoes[0]);
 }
 
 // Author: Emma Roudabush
@@ -282,13 +286,13 @@ function Shrink()
 }
 
 
-// Author: Paul Jang
+// Author: Paul Jang, Kyle Nicholson
 // Date Created: 4/2/2015
-// Last Modified: 4/20/2015 by Kyle Nicholson
+// Last Modified: 10/8/2015 by Nicholas Denaro
 // Description: Calls CreateDiv to dynamically generate subgraph divs and generate graphs
 // PRE: CreateDiv functions correctly, g_DataList is properly full
 // POST: Divs are created based on how many countries are selected,
-//       Correct graphs are filled in the appropriate divs
+//       Correct graphs are filled in the appropriate divs. FCTVAL == number of sub divs generated, -1 if data list is undefined.
 function GenerateSubDivs()
 {
     // only if there are countries in the data list
@@ -314,23 +318,28 @@ function GenerateSubDivs()
                 document.getElementById("region-graphs-1").style["width"] = "100%";
                 document.getElementById("region-graphs-1").style["height"] = "100%";    
             }
+            return(1);
         }
         else
         {
             document.getElementById(parentTabDivName).innerHTML = "";
             for(var i = 1; i<=size; i++)
                 CreateSubDiv("region-graphs-"+i,parentTabDivName);
+            return(size);
         }
     }
+    else
+        return(-1);
+    return(0);
 }
 
 // Author: Paul Jang
 // Date Created: 4/2/2015
-// Last Modified: 4/20/2015 by Paul Jang
+// Last Modified: 10/8/2015 by Nicholas Denaro
 // Description: Creates a single div with an inputted id and
 //              appends it to the specified parent div
 // PRE: Parent div exists
-// POST: Single div is appended to the parent div
+// POST: Single div is appended to the parent div. FCTVAL == The sub div.
 function CreateSubDiv(id,parent)
 {
     var elem = document.createElement('div');
@@ -371,6 +380,7 @@ function CreateSubDiv(id,parent)
             GenerateGraphs();
         });
     }
+    return(elem);
 }
 
 // Author: Joshua Crafts
