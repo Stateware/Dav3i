@@ -7,10 +7,161 @@
 </head>
 <body>
   <div id="qunit"></div>
-  <div id="qunit-fixture"></div>
+  <div id="qunit-fixture">
+
+    <head>
+      <title>DAV3I</title>
+      <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name='viewport' />
+      <link rel="stylesheet" type="text/css" href="../../src/GUI/style.css">
+      <link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+      <link rel="stylesheet" href="../../src/GUI/jvectormap/jquery-jvectormap-2.0.1.css" type="text/css" media="screen"/>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+      <script type="text/javascript" src="../../src/GUI/wnumb-1.0.0/wNumb.js"></script>
+      <script src="../../src/GUI/data_query.js" data-cover></script>
+      <script src="../../src/GUI/data.js" data-cover></script>
+      <script src="../../src/GUI/dynamic_markup.js" data-cover></script>
+      <script src="../../src/GUI/graph.js" data-cover></script>
+      <script src="../../src/GUI/loading_script.js" data-cover></script>
+      <script src="../../src/GUI/lookup_table.js" data-cover></script>
+      <script src="../../src/GUI/map.js" data-cover></script>
+      <script src="../../src/GUI/settings.js" data-cover></script>
+      <script src="../../src/GUI/jvectormap/jquery.js"></script>
+      <script src="../../src/GUI/jvectormap/jquery-jvectormap-2.0.1.min.js"></script>
+      <script src="../../src/GUI/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+      <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+      <script type="text/javascript">
+        google.load('visualization', '1.0', {'packages':['corechart']});
+      </script>
+    </head>
+
+    <div class="loading-screen">
+      <body onload="initPage()"></body>
+      <center>
+        <img src="../../src/res/logo.png" alt="Logo"/>
+        <br>
+        <h1 class="open-sans">Disease and Virus Vaccination Visualization Interface</h1>
+        <br>
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+        <button onclick="SwitchToMain()" class="begin">Begin</button>
+      </center>
+    </div>
+    <div class="settings-black" onclick="ApplyAndClose()">
+    </div>
+    <div class="help-black" onclick="CloseHelp()">
+    </div>
+
+    <div class="settings-screen">
+      <h1 style="position: relative; top: 5%;">Settings</h1>
+      <div class="graph-choice">
+        <h3>Graph Type</h3>
+        <form action="">
+          <input id="graph-regional" type="radio" onclick="SetGraphType(0)" name="graphType" value="0">Regional</input><br>
+          <input id="graph-combined" type="radio" onclick="SetGraphType(1)" name="graphType" value="1">Combined</input><br>
+          <input id="graph-whole" type="radio" onclick="SetGraphType(2)" name="graphType" value="2">Whole Selection</input><br>
+        </form>
+      </div>
+      <div class="timespan">
+        <h3>Timespan Selection</h3>
+        <table class="settings-timespans-table">
+          <tr><td class="settings-timespans-text">Start Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-start" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-start-error" style="cursor: default;">&emsp;</td></tr>
+          <tr><td class="settings-timespans-text">End Year:&emsp;</td><td class="settings-timespans-boxes"><input id="year-range-end" class="year-selector" maxlength="4" size="4" required></input></td><td id="year-range-end-error" style="cursor: default;">&emsp;</td></tr>
+          <tr><td class="settings-timespans-text">Heatmap Year:&emsp;</td><td class="settings-timespans-boxes"><input id="heatmap-year" class="year-selector" maxlength="4" size="4" required></input></td><td id="heatmap-year-error" style="cursor: default;">&emsp;</td></tr>
+        </table>
+      </div>
+      <div class="vacc-choice">
+        <h3>Statistic for Vaccinations Heat Map</h3>
+        <form action="">
+          <input id="vacc-sia" type="radio" onclick="SetVaccHMS(0)" name="graphType" value="0">SIA</input>
+          <input id="vacc-mcv1" type="radio" onclick="SetVaccHMS(1)" name="graphType" value="1">MCV1</input>
+          <input id="vacc-mcv2" type="radio" onclick="SetVaccHMS(2)" name="graphType" value="2">MCV2</input>    
+        </form>
+      </div>
+      <div class="buttons">
+        <button id="apply-button" class="flat-button" onclick="ApplySettings()">Apply</button>
+        <button id="ok-button" class="flat-button" onclick="ApplyAndClose()">OK</button>
+        <button id="close-button" class="flat-button" onclick="CancelSettings()">Cancel</button>
+      </div>
+
+    </div>
+
+    <div class="help-screen">
+      <div class="scrollbar-hover" style="overflow-y: scroll; height: 85%;">
+        <h1>Help</h1>
+        <h3>Graphs</h3>
+        <p>Graph type may be switched by going to the settings </br> Clicking on a graph expands/shrinks it.</p>
+        <h4>Regional</h4>
+        <p>This displays graphs seperately per country.</p>
+        <h4>Combined</h4>
+        <p>This displays all countries on one graph.</p>
+        <h4>Whole Selection</h4>
+        <p>This displays a single graph with aggregate data.</p>
+        <h3>Heatmap</h3>
+        <p>The heatmap values can be changed by changing the current tab. </br> 
+         The heatmap can be cleared of selection by clicking the button in </br>
+         the bottom left corner of the map.</p>
+         <h4>Vaccinations heatmap</h4>
+         <p>When the vaccinations stat tab is selected, the stat that the heatmap </br>
+           shows can be changed via the "stat for vaccinations heat map" selection </br>
+           area in the settings menu. You can choose from SIA, MCV1, and MCV2 to be</br>
+           to be shown by clicking the radio buttion to the left of your choice.</p>
+
+         </div>
+         <button id="close-help" class="flat-button" style="position: relative; top: 0" onclick="CloseHelp()">Close</button>
+       </div>
+
+       <div class="main-screen">
+        <section class="spacer">
+        </section>
+
+        <div class="control-panel">
+          <section class="settings">
+            <img class="logo" src="../../src/res/logo.png" alt="Logo"/>
+            <h1 class="open-sans" style="margin: 0">Measles Data Visualization</h1>
+            <button id="settings" class="flat-button" onclick="OpenSettings()">Settings</button>
+            <button id="help" class="flat-button" onclick="OpenHelp()">Help</button>
+          </section>
+          <section class="graph" id="graph">
+            <div>
+              <img src="../../src/res/arrow_left.png" width="22" height="22" id="scroll-left" class="graph-tab" onclick="RotateTabs(-1);" style="cursor: pointer;"></img>
+              <div id="tabsDiv" class="tabWrapper"></div>
+              <img src="../../src/res/arrow_right.png" width="22" height="22" id="scroll-right" class="graph-tab" onclick="RotateTabs(1);" style="cursor: pointer;"></img>
+            </div>
+            <div id="graphs">
+            </div>
+          </section>
+
+          <section class="expand">
+            <img src="../../src/res/arrow_right.png" id="expand" onclick="Expand()"/>
+          </section>
+        </div>
+
+        <div class="expand-black">
+        </div>
+
+        <div id="map-container">
+          <div id="map">
+          </div>
+          <button id="clear" class="flat-button" onclick>Clear Selection</button>
+        </div>
+
+
+        <div class="footer">
+          <p class="footer-text">Copyright <span onclick="teamPopup()" onmouseover="this.style.cursor='pointer'"><strong>Stateware Team</strong></span>. Licensed under version 3 of the <strong><a href="http://www.gnu.org/licenses/">GNU General Public License</a></strong>. Built using <strong><a href="http://jvectormap.com/">jVectorMap</a></strong> and <strong><a href ="https://developers.google.com/chart/">Google Charts</a></strong>. <strong><a href ="http://stateware.wikia.com/">Learn more about Stateware</a></strong></p>
+          <p onclick="bugPopup()" onmouseover="this.style.cursor='pointer'" class="bug-report"><strong>Report an issue</strong></p>
+        </div>
+      </div>
+
+    </body>
+
+  </div>
   <script src="qunit-1.19.0.js"></script>
   <script src="blanket.js"></script>
-  
+
   <script src="../../src/GUI/data_query.js" data-cover></script>
   <script src="../../src/GUI/data.js" data-cover></script>
   <script src="../../src/GUI/dynamic_markup.js" data-cover></script>
@@ -19,6 +170,9 @@
   <script src="../../src/GUI/lookup_table.js" data-cover></script>
   <script src="../../src/GUI/map.js" data-cover></script>
   <script src="../../src/GUI/settings.js" data-cover></script>
+  <script src="../../src/GUI/jvectormap/jquery.js"></script>
+  <script src="../../src/GUI/jvectormap/jquery-jvectormap-2.0.1.min.js"></script>
+  <script src="../../src/GUI/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
   <script src="tests.js"></script>
 
 </body>

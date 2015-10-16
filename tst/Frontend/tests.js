@@ -1,4 +1,8 @@
-QUnit.module("Init Phase");
+QUnit.module("Init Phase Tests", {
+	beforeEach: function(assert) {
+		initPage();
+	}
+});
 QUnit.test( "GetInitialYears Test", function( assert ) {
 	//generic test
 	var descriptorTest = {
@@ -70,6 +74,11 @@ QUnit.test( "ParseStatList Test", function( assert ) {
 	assert.deepEqual( ParseStatList(), output );
 });
 
+
+QUnit.test( "Update Input test", function (assert) {
+	var tempSettings = [1980, 2012, 2012, 0, 1];
+	assert.deepEqual(UpdateInputs(),tempSettings);
+});
 					 
 
 QUnit.log( function( details )  {
