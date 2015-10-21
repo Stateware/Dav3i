@@ -43,8 +43,8 @@ if (EXTERNAL_ACCESS)
 //Checks if this is running from a request
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 {
-	//This checks to see if anything was passed into the parameter statID
-	if (!isset($countryIDs))
+	//This checks to see if anything was passed into the parameter countryIDs
+	if (!isset($_GET['countryIDs']))
 	{
 		ThrowFatalError("Input is not defined: countryIDs");
 	}
