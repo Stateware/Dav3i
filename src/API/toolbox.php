@@ -33,15 +33,18 @@
  */ 
      
 // ===================== Function Definitions =====================     
-
 function ThrowFatalError($message = "An error has occured - the program has been terminated.") 
 //PRE: string message - optional further description of error
 //POST: This function will cause the program to close itself after echoing an error message.
 {
-    echo "{\"error\" : \"" . $message . "\"}";
     if(!TESTING)
     {
+        echo "{\"error\" : \"" . $message . "\"}";
         die();
+    }
+    else
+    {
+        throw new Exception("{\"error\" : \"" . $message . "\"}");
     }
 } // END ThrowFatalError
 

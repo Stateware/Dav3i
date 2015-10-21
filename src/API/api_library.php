@@ -345,8 +345,8 @@ function IsValidCountryID($countryID, $numCountries)
 // POST: true if countryID falls between 0 and numCountries
 {
     //As countries are numbered starting at one, the count of the array is equal to the highest value country.
-    //Check > 0 and <= the number of countries as a country id can't be less than 1, or more than the number of
-    //countries
+    //Check >= 0 and < the number of countries as a country id can't be less than 0, or more than or equal
+    //the number of countries
     return($countryID < $numCountries && $countryID >= 0);
 } //END IsValidCountryID
 

@@ -34,24 +34,49 @@
  * POST:              FCTVAL = Formatted JSON string containing the data for the specified stat and year for 
  *								every country.
  */
+ 
+ 
 require_once("api_library.php");
-
 // enable foreign access in testing
 if (EXTERNAL_ACCESS)
 {
 	header("Access-Control-Allow-Origin: *");
 }
-//This checks to see if anything was passed into the parameter statID
-if(!isset($_GET['statID']))
+//Checks if this is running from a request
+if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 {
-	ThrowFatalError("Input is not defined: statID");
+	//This checks to see if anything was passed into the parameter statID
+	if(!isset($_GET['statID']))
+	{
+		ThrowFatalError("Input is not defined: statID");
+	}
+	$_stat_id = $_GET['statID'];
+	if(isset($_GET['year']))
+	{
+		$_year = $_GET['year'];
+	}
+	$_year = null;
+
+	stat_exe($_stat_id,$_year); 
 }
 
-//call ByStats function with first argument as statID and
-//second argument as ternary operator: if the year is not set, pass DEFAULT_STRING value
-$byStatsArray = ByStat($_GET['statID'], (isset($_GET['year'])) ? ($_GET['year']) : (DEFAULT_STRING));
+function stat_exe($stat_id, $year)
+{
 
-$byStatJSON = json_encode($byStatsArray);
+	//This checks to see if anything was passed into the parameter statID
+	if(!isset($stat_id))
+	{
+		ThrowFatalError("Input is not defined: statID");
+	}
 
-echo $byStatJSON;
+	//call ByStats function with first argument as statID and
+	//second argument as ternary operator: if the year is not set, pass DEFAULT_STRING value
+	$byStatsArray = ByStat($stat_id, (isset($year)) ? ($year) : (DEFAULT_STRING));
+
+	$byStatJSON = json_encode($byStatsArray);
+
+	echo $byStatJSON;
+
+}
+
 ?>

@@ -32,26 +32,42 @@
  * POST:              FCTVAL == Formatted JSON String containing the statistics of the countries
  */
 
+ 
+ 
 require_once("api_library.php");
-
 // enable foreign access in testing
 if (EXTERNAL_ACCESS)
 {
 	header("Access-Control-Allow-Origin: *");
 }
-
-//This checks to see if anything was passed in for the parameter countryID
-if (!isset($_GET['countryIDs']))
+//Checks if this is running from a request
+if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 {
-	ThrowFatalError("Input is not defined: countryIDs");
+	//This checks to see if anything was passed into the parameter statID
+	if (!isset($countryIDs))
+	{
+		ThrowFatalError("Input is not defined: countryIDs");
+	}
+	$_countryIDs=($_GET['countryIDs']);
+
+	country_exe($_countryIDs);
 }
 
-//Here we are calling our function ByCountry - which is in api_library.php - and assigning the output to an array
-$byCountryArray = ByCountry($_GET['countryIDs']);
+function country_exe($country_id)
+{
+	if (!isset($country_id))
+	{
+		ThrowFatalError("Input is not defined: countryIDs");
+	}
 
-//encode results of ByCountry into json
-$byCountryJSON = json_encode($byCountryArray);
+	//Here we are calling our function ByCountry - which is in api_library.php - and assigning the output to an array
+	$byCountryArray = ByCountry($country_id);
 
-// return byCountry json string
-echo $byCountryJSON;
+	//encode results of ByCountry into json
+	$byCountryJSON = json_encode($byCountryArray);
+
+	// return byCountry json string
+	echo $byCountryJSON;
+
+}
 ?>

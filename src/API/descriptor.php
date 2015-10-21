@@ -25,9 +25,9 @@
  *                      year range, two character country code (cc2), and the stats
  * 
  * Date Created:        2/7/2015
- * Contributors:        Kyle Nicholson, Berty Ruan, Drew Lorpeiato, William Bittner
- * Date Last Modified:  5/1/2015
- * Last Modified By:    William Bittner
+ * Contributors:        Kyle Nicholson, Berty Ruan, Drew Lorpeiato, William Bittner, Brent Mosier
+ * Date Last Modified:  9/27/2015
+ * Last Modified By:    Brent Mosier
  * Dependencies:        api_library.php
  * PRE:               NONE
  * POST:              FCTVAL == Formatted JSON String containing the countryName,
@@ -35,7 +35,6 @@
  * Additional Notes:    Before completion of this file we need a populated
  *                      database on the correct server
  */
-
 require_once("api_library.php");
 
 // enable foreign access in testing
@@ -44,12 +43,22 @@ if (EXTERNAL_ACCESS)
 	header("Access-Control-Allow-Origin: *");
 }
 
-$descriptorArray = Descriptor();
+//Checks if this is running from a request
+if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
+{
+	desc();
+}
 
-//encode results of Descriptor() into json
-$descriptorJSON = json_encode($descriptorArray);
+function desc()
+{	
+	$descriptorArray = Descriptor();
 
-// return descriptor json string
-echo $descriptorJSON;
+	//encode results of Descriptor() into json
+	$descriptorJSON = json_encode($descriptorArray);
+
+	// return descriptor json string
+	echo $descriptorJSON;
+}
+
 
 ?>

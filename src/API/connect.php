@@ -24,9 +24,9 @@
  * Description:         This file contains a function to create a mysqli connection.
  * 
  * Date Created:        2/7/2015
- * Contributors:        Kyle Nicholson, Berty Ruan, Drew Lopreiato, William Bittner
- * Date Last Modified:  5/1/2015
- * Last Modified By:    William Bittner
+ * Contributors:        Kyle Nicholson, Berty Ruan, Drew Lopreiato, William Bittner, Brent Mosier
+ * Date Last Modified:  9/27/2015
+ * Last Modified By:    Brent Mosier
  * Dependencies:        Toolbox.php
  * Input:               NONE
  * Output:              NONE
