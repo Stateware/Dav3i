@@ -38,7 +38,7 @@ require_once("toolbox.php");
 function GetDatabaseConnection()
 //Post: A database connection has been created and returned
 {
-    $databaseConnection = new mysqli("localhost", "root", "", "dav3iphpunittest");
+    $databaseConnection = new mysqli("localhost", "root", "", "dav3i");
     
     if ($databaseConnection->connect_error)
     {

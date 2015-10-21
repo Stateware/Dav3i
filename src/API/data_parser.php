@@ -38,18 +38,16 @@
 
 require_once("connect.php");
 
-$g_type = $_POST['data_type'];
-$g_tableName = $_POST['table_name'];
-$g_statisticName = $_POST['stat_name'];
-$g_fileTemporaryName = $_FILES['userfile']['tmp_name'];
-
-//if all are null, don't run parser
-//HOPE: check if parser is being called by an api call. if it is, run otherwise don't run. may not be possible to check.
-if(($g_type != NULL) && ($g_tableName != NULL) && ($g_statisticsName != NULL) && ($g_fileTemporaryName != NULL))
+//Checks if this is running from a request
+if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 {
-    parser($g_type, $g_tableName, $g_statisticsName, $g_fileTemporaryName);    
-}
+	$g_type = $_POST['data_type'];
+	$g_tableName = $_POST['table_name'];
+	$g_statisticName = $_POST['stat_name'];
+	$g_fileTemporaryName = $_FILES['userfile']['tmp_name'];
 
+	parser($g_type, $g_tableName, $g_statisticsName, $g_fileTemporaryName);   
+}
 
 function parser($type, $tableName, $statisticsName, $fileTemporaryName){
     $testData = "";

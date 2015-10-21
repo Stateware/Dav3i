@@ -84,7 +84,7 @@ define("DEFAULT_STRING", "");
 /*      EFFECTS OF TESTING == TRUE:
  * The ThrowFatalError doesn't kill the page
  */
-define("TESTING", TRUE);
+define("TESTING", FALSE);
 /*  EFFECTS OF EXTERNAL_ACCESS == TRUE:
  * All API calls are allowed to be accessed by non-server users
  */

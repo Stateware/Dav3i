@@ -37,14 +37,20 @@
  */
 require_once("api_library.php");
 
-desc();
-function desc(){	
-	// enable foreign access in testing
-	if (EXTERNAL_ACCESS)
-	{
-		header("Access-Control-Allow-Origin: *");
-	}
+// enable foreign access in testing
+if (EXTERNAL_ACCESS)
+{
+	header("Access-Control-Allow-Origin: *");
+}
 
+//Checks if this is running from a request
+if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
+{
+	desc();
+}
+
+function desc()
+{	
 	$descriptorArray = Descriptor();
 
 	//encode results of Descriptor() into json
@@ -53,4 +59,6 @@ function desc(){
 	// return descriptor json string
 	echo $descriptorJSON;
 }
+
+
 ?>
