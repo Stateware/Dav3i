@@ -46,16 +46,8 @@ if (EXTERNAL_ACCESS)
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 {
 	//This checks to see if anything was passed into the parameter statID
-	if(!isset($_GET['statID']))
-	{
-		ThrowFatalError("Input is not defined: statID");
-	}
-	$_stat_id = $_GET['statID'];
-	if(isset($_GET['year']))
-	{
-		$_year = $_GET['year'];
-	}
-	$_year = null;
+	$_stat_id = GetArgumentValue('statID', true);
+	$_year = GetArgumentValue('year', false);
 
 	stat_exe($_stat_id,$_year); 
 }

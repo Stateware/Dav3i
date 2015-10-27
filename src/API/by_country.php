@@ -44,11 +44,7 @@ if (EXTERNAL_ACCESS)
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 {
 	//This checks to see if anything was passed into the parameter countryIDs
-	if (!isset($_GET['countryIDs']))
-	{
-		ThrowFatalError("Input is not defined: countryIDs");
-	}
-	$_countryIDs=($_GET['countryIDs']);
+	$_countryIDs=GetArgumentValue('countryIDs', true);
 
 	country_exe($_countryIDs);
 }

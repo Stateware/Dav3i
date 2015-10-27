@@ -55,7 +55,22 @@ function ThrowInconvenientError($message = "An inconvenient error has occured - 
     echo "Error: " . $message;
 } // END ThrowInconvenientError
 
-
+function GetArgumentValue( $input, $required=true ) 
+//PRE: input is defined, required is optional, defaults to true
+//POST: This function will return the arguments passed in on the $input parameter, or null if it is not set and not required
+{
+    if( !isset($_GET[ $input ]) )
+	{
+		if( $required )
+			ThrowFatalError("Input is not defined: ".$input);
+		
+		return null;
+	}
+	else
+	{
+		return $_GET[ $input ];
+	}
+} // END GetArgumentValue
 
 
 function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = false)
