@@ -1,0 +1,27 @@
+
+<meta charset="UTF-8">
+<html>
+
+<head>
+    <title>Upload Utility</title>
+     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name='viewport' />
+    <!--
+    <link rel="stylesheet" type="text/css" href="GUI/style.css">
+    -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="dynamic_upload.js"></script>
+
+</head>
+
+<body>
+    <center>
+    <H1>Scenario...</H1>    
+    <form method="POST">
+        <div id="scenario_list">
+            <input type="text" placeholder="Scenario Name" name="myInputs[]">
+        </div>
+        <input type="button" value="Add another text input" onClick="addScenario('scenario_list');">
+    </form>
+    </center>
+</body>
+</html>
