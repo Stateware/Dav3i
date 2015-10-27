@@ -55,9 +55,9 @@ function ByStat($statID, $year)
     $numStats = count($descriptor['stats']);		//get the number of stats out of the descriptor
     $databaseConnection = GetDatabaseConnection();	//store connection to the database
     
-    //if year is set to default, there was no year entered and thus we give it the most recent year
+    //if year is null, there was no year entered and thus we give it the most recent year
     //this also means we don't need to check to see if the year is valid or sanitary 
-    if($year == DEFAULT_STRING)
+    if(is_null($year))
     {
         $year = $yearRange[1];
     }

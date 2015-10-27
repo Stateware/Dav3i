@@ -48,22 +48,32 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 	//This checks to see if anything was passed into the parameter statID
 	$_stat_id = GetArgumentValue('statID', true);
 	$_year = GetArgumentValue('year', false);
+	
+	$_instanceID=GetArgumentValue('instanceID', true);
+	$_sessionID=GetArgumentValue('sessionID', true);
 
-	stat_exe($_stat_id,$_year); 
+	stat_exe($_stat_id,$_year, $_sessionID, $_instanceID ); 
 }
 
-function stat_exe($stat_id, $year)
+function stat_exe($stat_id, $year, $session_id, $instance_id)
 {
 
 	//This checks to see if anything was passed into the parameter statID
-	if(!isset($stat_id))
+	if (is_null($stat_id))
 	{
 		ThrowFatalError("Input is not defined: statID");
 	}
+	if (is_null($session_id))
+	{
+		ThrowFatalError("Input is not defined: sessionID");
+	}
+	if (is_null($instance_id))
+	{
+		ThrowFatalError("Input is not defined: instanceID");
+	}
 
-	//call ByStats function with first argument as statID and
-	//second argument as ternary operator: if the year is not set, pass DEFAULT_STRING value
-	$byStatsArray = ByStat($stat_id, (isset($year)) ? ($year) : (DEFAULT_STRING));
+	//call ByStats function with first argument as statID and second argument as year
+	$byStatsArray = ByStat($stat_id, $year);
 
 	$byStatJSON = json_encode($byStatsArray);
 

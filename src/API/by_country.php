@@ -46,14 +46,25 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 	//This checks to see if anything was passed into the parameter countryIDs
 	$_countryIDs=GetArgumentValue('countryIDs', true);
 
-	country_exe($_countryIDs);
+	$_instanceID=GetArgumentValue('instanceID', true);
+	$_sessionID=GetArgumentValue('sessionID', true);
+	
+	country_exe($_countryIDs, $_sessionID, $_instanceID);
 }
 
-function country_exe($country_id)
+function country_exe($country_id, $session_id, $instance_id )
 {
-	if (!isset($country_id))
+	if (is_null($country_id))
 	{
 		ThrowFatalError("Input is not defined: countryIDs");
+	}
+	if (is_null($session_id))
+	{
+		ThrowFatalError("Input is not defined: sessionID");
+	}
+	if (is_null($instance_id))
+	{
+		ThrowFatalError("Input is not defined: instanceID");
 	}
 
 	//Here we are calling our function ByCountry - which is in api_library.php - and assigning the output to an array
