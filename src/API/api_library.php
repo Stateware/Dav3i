@@ -41,7 +41,7 @@ require_once("connect.php");
 // Date Created:  2/22/2015  
 // Last Modified: 5/1/2015 by William Bittner  
 // Description:   This function queries the database for one specific stat for one specific year for every country
-function ByStat($statID, $year)
+function ByStat($statID, $year, $sessionID, $instanceID)
 // PRE: statID is a valid ID of a stat in the database, and year is a valid year in the database
 // POST: FCTVAL == array of key value pairs whose index are:
 //			0: key: statID, value: an array containing each countries data for that stat in the index that corresponds
@@ -87,12 +87,22 @@ function ByStat($statID, $year)
        ThrowFatalError("Input is invalid: statID");
     }
     
+	//TODO: validate and sanitize session and instance ids
+	
     // The statID given to us is expected to be indexed by 0, however our database is indexed by 1, so we'll add 1
     $databaseIndexedStatID = $statID + 1;
     
     // Retrieve the table name of the inputted stat ID.
-    $tableName = GetFirstRowFromColumn($databaseConnection, "meta_stats", "table_name", "table_id = $databaseIndexedStatID");
-    $heatMapQuery = "SELECT `" . $year . "` FROM " . $tableName . " ORDER BY country_id ASC";
+    //$tableName = GetFirstRowFromColumn($databaseConnection, "meta_stats", "table_name", "table_id = $databaseIndexedStatID");
+    //$heatMapQuery = "SELECT `" . $year . "` FROM " . $tableName . " ORDER BY country_id ASC";
+    $heatMapQuery = "SELECT value, country_id ".
+						"FROM data ".
+						"WHERE session_id =".$sessionID." AND ".
+	  					"instance_id=".$instanceID." AND ". 
+						"year=".$year." AND ".
+						"stat_id=".$databaseIndexedStatID." ORDER BY country_id ASC;";
+						
+	return $heatMapQuery;
     $heatMapResults = $databaseConnection->query($heatMapQuery);
     if ($heatMapResults === FALSE)
     {
@@ -123,7 +133,7 @@ function ByStat($statID, $year)
 // Date Created:  2/22/2015  
 // Last Modified: 5/1/2015 by William Bittner    
 // Description:   This function queries the database for every stat for every year for any number of countries
-function ByCountry($countryIDs)
+function ByCountry($countryIDs, $sessionID, $instanceID)
 // PRE: countryIDs a string of valid countryIDs separated by a comma, or just one valid countryID
 // POST: an array containing all of the stats for each country ID input, with each stat in the index corresponding to its stat ID
 {
@@ -176,7 +186,7 @@ function ByCountry($countryIDs)
     }
 
     // put each stat table into an array, where its index is the id for that table
-    $statTablesQuery = "SELECT table_id, table_name FROM meta_stats";
+    /*$statTablesQuery = "SELECT table_id, table_name FROM meta_stats";
     $statTablesResults = $databaseConnection->query($statTablesQuery);
     while ($statTablesRow = $statTablesResults->fetch_assoc())
     {
@@ -185,7 +195,17 @@ function ByCountry($countryIDs)
     
     // get the queries for each country and stat
     $countryDataQueries = GetCountryQueries($statTables, $databaseIndexedCountryIDList);
+    */
     
+    //TODO: add functionality for multiple country ids?
+    $byCountryQuery = "SELECT value, stat_id, year ".
+						"FROM data ".
+						"WHERE session_id =".$sessionID." AND ".
+	  					"instance_id=".$instanceID." AND ". 
+						"country_id=".$countryIDs." ORDER BY country_id ASC;";
+						
+	return $byCountryQuery;
+	
     // query the database for each country then grab the returning database rows and put them into an array
     foreach($countryDataQueries as $statID => $query)
     {
@@ -238,9 +258,10 @@ function Descriptor()
     
     // This will iterate through the tables looking for the first one that exists,
     // and then pick the year range from that
-    $tableNames = GetTableNames($databaseConnection);
-    $i = 0;
-    $yearRange = GetYearRange($databaseConnection, $tableNames[$i]);
+    //$tableNames = GetTableNames($databaseConnection);
+    //$i = 0;
+    //TODO: add year range to session and get it here
+    /*$yearRange = GetYearRange($databaseConnection, $tableNames[$i]);
     while ($yearRange === false)
     {
         $i++;
@@ -252,7 +273,8 @@ function Descriptor()
         {
             ThrowFatalError("No tables with years exist");
         }
-    }
+    }*/
+    $yearRange=array("2000","2004");
     $stats = GetStatNames($databaseConnection);
     
     $countriesQuery = "SELECT cc2, cc3, common_name FROM meta_countries ORDER BY country_id";

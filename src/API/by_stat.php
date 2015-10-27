@@ -73,7 +73,7 @@ function stat_exe($stat_id, $year, $session_id, $instance_id)
 	}
 
 	//call ByStats function with first argument as statID and second argument as year
-	$byStatsArray = ByStat($stat_id, $year);
+	$byStatsArray = ByStat($stat_id, $year, $session_id, $instance_id);
 
 	$byStatJSON = json_encode($byStatsArray);
 

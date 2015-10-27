@@ -68,7 +68,7 @@ function country_exe($country_id, $session_id, $instance_id )
 	}
 
 	//Here we are calling our function ByCountry - which is in api_library.php - and assigning the output to an array
-	$byCountryArray = ByCountry($country_id);
+	$byCountryArray = ByCountry($country_id, $session_id, $instance_id);
 
 	//encode results of ByCountry into json
 	$byCountryJSON = json_encode($byCountryArray);
