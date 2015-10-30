@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 27, 2015 at 11:44 PM
+-- Generation Time: Oct 30, 2015 at 01:18 AM
 -- Server version: 5.6.26
 -- PHP Version: 5.6.12
 
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `dav3i_new`
+-- Database: `dav3i`
 --
 
 -- --------------------------------------------------------
@@ -42,9 +42,9 @@ CREATE TABLE IF NOT EXISTS `data` (
 INSERT INTO `data` (`session_id`, `instance_id`, `country_id`, `stat_id`, `year`, `value`) VALUES
 (1, 1, 1, 1, 2000, 1),
 (1, 1, 1, 1, 2001, 12),
-(1, 1, 1, 1, 2002, 123),
-(1, 1, 1, 1, 2003, 1234),
-(1, 1, 1, 1, 2004, 12345),
+(1, 1, 1, 2, 2002, 123),
+(1, 1, 1, 2, 2003, 1234),
+(1, 1, 1, 3, 2004, 12345),
 (1, 1, 2, 1, 2000, 1),
 (1, 1, 2, 1, 2001, 12),
 (1, 1, 2, 1, 2002, 123),
@@ -344,17 +344,19 @@ INSERT INTO `meta_instance` (`instance_id`, `instance_name`) VALUES
 
 CREATE TABLE IF NOT EXISTS `meta_session` (
   `session_id` int(10) NOT NULL,
-  `session_name` varchar(32) NOT NULL
+  `session_name` varchar(32) NOT NULL,
+  `startYear` int(4) NOT NULL,
+  `endYear` int(4) NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `meta_session`
 --
 
-INSERT INTO `meta_session` (`session_id`, `session_name`) VALUES
-(1, 'session1'),
-(2, 'session2'),
-(3, 'session3');
+INSERT INTO `meta_session` (`session_id`, `session_name`, `startYear`, `endYear`) VALUES
+(1, 'session1', 2000, 2004),
+(2, 'session2', 2000, 2004),
+(3, 'session3', 2000, 2004);
 
 -- --------------------------------------------------------
 
