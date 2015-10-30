@@ -33,6 +33,8 @@
  
 require_once("toolbox.php");
 require_once("connect.php");
+require_once("by_stat_packet.php");
+require_once("by_country_packet.php");
  
 // ======================== API Functions =========================
 
@@ -101,33 +103,30 @@ function ByStat($statID, $year, $sessionID, $instanceID)
 	  					"instance_id=".$instanceID." AND ". 
 						"year=".$year." AND ".
 						"stat_id=".$databaseIndexedStatID." ORDER BY country_id ASC;";
-						
-	return $heatMapQuery;
-    $heatMapResults = $databaseConnection->query($heatMapQuery);
-    if ($heatMapResults === FALSE)
-    {
-        ThrowFatalError("Database missing data.");
-    }
-    //fetch assoc grabs each row individually from the result of the query, so we take each row and turn the stat for 
-    //the year we are searching for and throw it into the returning array
-    while($heatMapRow = $heatMapResults->fetch_assoc())
-    {
-           array_push($heatMapArray, $heatMapRow[$year]);
-    }
+	
+	//TODO: heatmap to bystat names, comment, unit test
+	$heatMapResults = $databaseConnection->query($heatMapQuery);
+	$results = array();
+	while($heatMapRow = $heatMapResults->fetch_assoc())
+	{
+		array_push($results,$heatMapRow);
+	}
 
-    if (count($heatMapArray) != count($descriptor['cc2']))
-    {
-        ThrowFatalError("Database missing country data.");
-    }
-
-    // if we don't return an array with more than one element in it, it'll come out not as an object, but as an array
-    // this line of code forces the json_decode to output the data as an object.
-    $containingArray = array($statID => $heatMapArray, 'force' => "object");
-
-    return ($containingArray);    
+	return ParseIntoByStatPacket($sessionID, $instanceID, $databaseIndexedStatID, $results, $year);
 } //END ByStat
 
+//Date Created: 10/29/2015
+function ParseIntoByStatPacket($sessionID, $instanceID, $statID, $queryResults, $year)
+{
+	$packetData = array();
+	foreach($queryResults as $result)
+	{
+		$obj = array($result["country_id"] => $result["value"]);
+		array_push($packetData, $obj);
+	}
 
+	return new by_stat_packet($sessionID,$instanceID,$statID,$packetData,$year);
+}
 
 // Author:        William Bittner, Drew Lopreiato
 // Date Created:  2/22/2015  
@@ -185,58 +184,43 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
         array_push($databaseIndexedCountryIDList, $countryID + 1);
     }
 
-    // put each stat table into an array, where its index is the id for that table
-    /*$statTablesQuery = "SELECT table_id, table_name FROM meta_stats";
-    $statTablesResults = $databaseConnection->query($statTablesQuery);
-    while ($statTablesRow = $statTablesResults->fetch_assoc())
-    {
-        $statTables[$statTablesRow['table_id']] = $statTablesRow['table_name'];
-    }
-    
-    // get the queries for each country and stat
-    $countryDataQueries = GetCountryQueries($statTables, $databaseIndexedCountryIDList);
-    */
-    
-    //TODO: add functionality for multiple country ids?
+    //TODO: add functionality for multiple country ids or fix IDs?
     $byCountryQuery = "SELECT value, stat_id, year ".
 						"FROM data ".
 						"WHERE session_id =".$sessionID." AND ".
 	  					"instance_id=".$instanceID." AND ". 
-						"country_id=".$countryIDs." ORDER BY country_id ASC;";
+						"country_id=".($countryIDs + 1)." ORDER BY country_id ASC;";
 						
-	return $byCountryQuery;
 	
-    // query the database for each country then grab the returning database rows and put them into an array
-    foreach($countryDataQueries as $statID => $query)
-    {
-        $countryDataResults = $databaseConnection->query($query);
-        if ($countryDataResults === FALSE)
-        {
-            // do nothing - should probably throw an error when front end can catch them
-        }
-        else
-        {
-            while ($countryDataRow = $countryDataResults->fetch_array(MYSQLI_NUM))
-            {
-                $countryID = $countryDataRow[0];
-                // THIS IS INCORRECT BEHAVIOR. IN THE CASE OF A MISSING STATISTIC, WE SHOULD BE THROWING AN ERROR.
-                // This makes it so that if we're missing a column of data, we're going to replace that entire
-                // tables worth of data with a -1.
-                $dataSlice = array_slice($countryDataRow, 1);
-                if (count ($dataSlice) == $numberOfYears)
-                {
-                    $byCountryArray[$countryID - 1][$statID - 1] = $dataSlice;
-                }
-            }
-        }
-    }
+	$countryDataResults = $databaseConnection->query($byCountryQuery);
+	$results = array();
+	while($countryRow = $countryDataResults->fetch_assoc())
+	{
+		array_push($results,$countryRow);
+	}
 
-    // if we don't return an array with more than one element in it, it'll come out not as an object, but as an array
-    // this line of code forces the json_decode to output the data as an object.
-    $byCountryArray['force'] = "object";
-
-    return $byCountryArray;
+	return ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs + 1, $results);
 } //END ByCountry
+
+//Date Created: 10/29/2015
+function ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs, $queryResults)
+{
+	$packetData = array();
+	foreach($queryResults as $result)
+	{
+		$obj = array($result["year"] => $result["value"]);
+		if(!array_key_exists($result["stat_id"],$packetData))
+			$packetData[$result["stat_id"]] = array();
+		array_push($packetData[$result["stat_id"]], $obj);
+	}
+
+	$countryPackets = array();
+	foreach($packetData as $statID => $data)
+	{
+		array_push($countryPackets, new by_country_packet($sessionID, $instanceID, $statID, $data, $countryIDs));
+	}
+	return $countryPackets;
+}
 
 // Author:        Kyle Nicholson, Berty Ruan, William Bittner
 // Date Created:  2/7/2015

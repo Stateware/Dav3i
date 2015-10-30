@@ -68,13 +68,26 @@ function country_exe($country_id, $session_id, $instance_id )
 	}
 
 	//Here we are calling our function ByCountry - which is in api_library.php - and assigning the output to an array
-	$byCountryArray = ByCountry($country_id, $session_id, $instance_id);
+	$byCountryPacketArray = ByCountry($country_id, $session_id, $instance_id);
 
-	//encode results of ByCountry into json
-	$byCountryJSON = json_encode($byCountryArray);
+	$keys = array_keys($byCountryPacketArray);
 
-	// return byCountry json string
-	echo $byCountryJSON;
+	$i = 0;
 
+	echo "{";
+
+	if(count($keys) > 0)
+	{
+		echo ($i++).":";
+		$byCountryPacketArray[$keys[0]]->send();
+	}
+	for(; $i < count($keys) ;$i++)
+	{
+		echo ",".$i.":";
+		$byCountryPacketArray[$keys[$i]]->send();
+		
+	}
+
+	echo "}";
 }
 ?>
