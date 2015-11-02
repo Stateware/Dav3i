@@ -1,4 +1,4 @@
-// creates a div with the name divname and adds it to the parent div specified
+// creates a div with the name divname
 function addDiv( divName )
 {
     // create new div and assign it given id
@@ -50,6 +50,8 @@ function addInstance()
     // add the name field to the session div
     addNameField(placeholderText,instanceDiv.id);
     addButton("Upload Zip", instanceDiv.id);
+
+    return instanceDiv.id;
 }
 
 // adds a button with the given text to the div provided
