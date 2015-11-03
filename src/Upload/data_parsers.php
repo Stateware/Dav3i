@@ -3,6 +3,7 @@ require_once("../api/connect.php");
 
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 {
+	$time = time();
 	$g_sessionName = $_POST['session-name'];
 	$g_instanceCount = $_POST['instance-count'];
 
@@ -25,8 +26,8 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 		if($file['error'] != 0)
 		{
 			//TODO: error!!!
-			echo "error code " . $file['error'];
-			return;
+			echo "error code " . $file['error'] . "<br>";
+			continue;
 		}
 
 		$isZip = substr($file['name'], -4) === ".zip";
@@ -34,8 +35,8 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 		if(!$isZip)
 		{
 			//TODO: error!!!
-			echo "not a zip";
-			return;
+			echo "not a zip<br>";
+			continue;
 		}
 
 		$instanceInsertQuery = "INSERT INTO `meta_instance` (`instance_id`, `instance_name`) VALUES (NULL, '".$instanceName."');";
@@ -50,6 +51,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 
 		if(is_resource($zipFD))
 		{
+			$numRows = 0;
 			while($resourceID = zip_read($zipFD))
 			{
 				$datafileName = zip_entry_name($resourceID);
@@ -92,24 +94,37 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 					$sessionStartAndEndQuery = "UPDATE meta_session SET `start_year`='".$startYear."', `end_year`='".$endYear."' WHERE session_id='".$sessionID."'";
 					$databaseConnection->query($sessionStartAndEndQuery);
 
+					$statIDQuery = "SELECT stat_id FROM meta_stats WHERE stat_name='".getStatNameFromFileName($datafileName)."'";
+					$statID = $databaseConnection->query($statIDQuery)->fetch_assoc()['stat_id'];
+
+					if($output[0][0] != "")
+						array_unshift($output[0], "");
+					//echo $datafileName .  "<br>";
+					//echo " 0 ". json_encode(array_keys($output[0])) . "<br>";
 					for($country = 1; $country < sizeof($output); $country++)
 					{
+						$countryIDQuery = "SELECT country_id FROM meta_countries WHERE cc3='".$output[$country][0]."'";
+						$countryID = $databaseConnection->query($countryIDQuery)->fetch_assoc()['country_id'];
+
+						$dataInsertQuery = "INSERT INTO data (`session_id`, `instance_id`, `country_id`, `stat_id`, `year`, `value`) VALUES ";
+								//."VALUES ('".$sessionID."', '".$instanceID."', '".$countryID."', '".$statID."', '".$dataYear."', '".clean($output[$country][$year])."' )";
+						//echo json_encode(array_keys($output[$country])) . "<br>";
+
+
+
 						for($year = 1; $year < sizeof($output[$country]); $year++)
 						{
 							set_time_limit(30);
-							$countryIDQuery = "SELECT country_id FROM meta_countries WHERE cc3='".$output[$country][0]."'";
-							$countryID = $databaseConnection->query($countryIDQuery)->fetch_assoc()['country_id'];
-							$dataYear = $output[0][$year];
-
-							$statIDQuery = "SELECT stat_id FROM meta_stats WHERE stat_name='".getStatNameFromFileName($datafileName)."'";
-							//echo $statIDQuery . "<br>";
-							$statID = $databaseConnection->query($statIDQuery)->fetch_assoc()['stat_id'];;
-
-							$dataInsertQuery = "INSERT INTO data (`session_id`, `instance_id`, `country_id`, `stat_id`, `year`, `value`)"
-								."VALUES ('".$sessionID."', '".$instanceID."', '".$countryID."', '".$statID."', '".$dataYear."', '".clean($output[$country][$year])."' )";
-							//echo $dataInsertQuery . "<br>";
-							$databaseConnection->query($dataInsertQuery);
+							$dataYear = $output[0][$year];							
+							$dataInsertQuery.="('".$sessionID."', '".$instanceID."', '".$countryID."', '".$statID."', '".$dataYear."', '".clean($output[$country][$year])."'), ";
+							$numRows++;
 						}
+						$dataInsertQuery=substr($dataInsertQuery,0,-2);
+						$dataInsertQuery.=";";
+						//echo $dataInsertQuery . "<br>";
+						$databaseConnection->query($dataInsertQuery);
+						ob_flush();
+						flush();
 					}
 
 					//echo $datafileName . "<br>" . json_encode($output) . "<br>";
@@ -118,8 +133,10 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 		}
 	}
 
-	echo $g_sessionName;
-	echo $g_instanceCount;
+	//echo $g_sessionName;
+	//echo $g_instanceCount;
+	echo "There were " . $numRows . " inserted.";
+	echo "It took ". (time() - $time) . " seconds to upload.";
 }
 
 function getStatNameFromFileName($fname)
