@@ -17,22 +17,27 @@ function addDiv( divName )
 function addNameField(placeholderText,parentDivName)
 {
     // creating the session name field div
-    var nameFieldDiv = document.createElement('div');
+    //var nameFieldDiv = document.createElement('div');
 
     // creating the id that the name field with have
-    var nameFieldId = parentDivName + "-name-field";
-    nameFieldDiv.id = nameFieldId;
-    nameFieldDiv.name = "instance-name-"+instanceCount;
+    //var nameFieldId = parentDivName + "-name-field";
+    //nameFieldDiv.id = nameFieldId;
+    //nameFieldDiv.name = "instance-name-"+instanceCount;
 
     // creating the input text form
-    nameFieldDiv.innerHTML = "<input type='text' placeholder='"+ placeholderText +"'>";
+    //nameFieldDiv.innerHTML = "<input type='text' placeholder='"+ placeholderText +"'>";
+
+    var input = document.createElement("input");
+    input.type="text";
+    input.placeholder = placeholderText;
+    input.name = "instance-name-" + instanceCount;
 
     // append it to the session div
-    document.getElementsByTagName('body')[0].appendChild(nameFieldDiv);
-    document.getElementById(parentDivName).appendChild(nameFieldDiv);
+    //document.getElementsByTagName('body')[0].appendChild(nameFieldDiv);
+    document.getElementById(parentDivName).appendChild(input);
     
     // returns null if element was not created correctly
-    return document.getElementById(nameFieldId);
+    return input;
 }
 
 var instanceCount = 1;
@@ -40,16 +45,18 @@ var instanceCount = 1;
 function addInstance()
 {
     // creates the new div
-    var instanceDiv = addDiv("instance-"+instanceCount++);
+    var instanceDiv = addDiv("instance-"+instanceCount);
     var placeholderText = "Instance Name";
 
 	//update instance count
-	document.getElementById("numInstances").value= instanceCount-1;
-	document.getElementById("numInstancesLabel").innerHTML= "Number of Instances: " +(instanceCount-1);
+	document.getElementById("numInstances").value= instanceCount;
+	document.getElementById("numInstancesLabel").innerHTML= "Number of Instances: " + instanceCount;
 	
     // add the name field to the session div
     addNameField(placeholderText,instanceDiv.id);
     addButton("Upload Zip", instanceDiv.id);
+
+    instanceCount++;
 
     return instanceDiv.id;
 }
@@ -61,6 +68,7 @@ function addButton(text,parentDivName)
     var button = document.createElement('input');
     button.name = "instance-file-"+instanceCount;
     button.type = 'file';
+    button.accept = ".zip";
 
     // appends the div to the parent div given
     var parentDiv = document.getElementById(parentDivName);
