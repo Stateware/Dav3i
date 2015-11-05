@@ -227,13 +227,15 @@ function ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs, $queryRe
 // Last Modified: 5/1/2015 by William Bittner  
 // Description: Returns an array of the indecies that get turned into 
 // 				the Descriptor Table - See BackEndArchitecture.md for contents of Descriptor Table
-function Descriptor()
-// POST: FCTVAL = an array of key value pairs whose indecies are: 	
-//		0: year range of data in database
-//		1: cc2: the 2 digit country code for each country in the database
-//		2: cc3: the 3 digit country code for each country in the database
-//		3: common_name: the name for each country, in american english
-//		4: stats: an array of all the stats, where the index of the stat is its stat ID
+function Descriptor($sessionID = DEFAULT_SESSION)
+// POST: FCTVAL = an array of key value pairs whose indices are: 	
+//		0: year range of session as key pair values startYear: value, endYear:value
+//		1: cc2: the 2 digit country code for each country in the session
+//		2: cc3: the 3 digit country code for each country in the session
+//		3: common_name: the name for each country in the session, in american english
+//		4: stats: an array key-pair values of stat id: stat name for all the stats in the session
+//		5: array of instances in the session as key pair instance id: instance name.
+//		6: array of sessions as key pair values of session id: session name
 {
     $databaseConnection = GetDatabaseConnection();	//get the connection to the database
     $cc2 = array();									//initialize array for cc2
@@ -244,22 +246,14 @@ function Descriptor()
     // and then pick the year range from that
     //$tableNames = GetTableNames($databaseConnection);
     //$i = 0;
-    //TODO: add year range to session and get it here
-    /*$yearRange = GetYearRange($databaseConnection, $tableNames[$i]);
-    while ($yearRange === false)
+    $yearRange = GetYearRange($databaseConnection, $sessionID);
+    if ($yearRange === null)
     {
-        $i++;
-        if (isset($tableNames[$i]))
-        {
-            $yearRange = GetYearRange($databaseConnection, $tableNames[$i]);
-        }
-        else
-        {
-            ThrowFatalError("No tables with years exist");
-        }
-    }*/
-    $yearRange=array("2000","2004");
-    $stats = GetStatNames($databaseConnection);
+    	ThrowFatalError("SessionID does not exist");
+    }
+	
+
+    $stats = GetStatNames($databaseConnection, $sessionID);
     
     $countriesQuery = "SELECT cc2, cc3, common_name FROM meta_countries ORDER BY country_id";
     $countriesResult = $databaseConnection->query($countriesQuery);
@@ -360,14 +354,24 @@ function IsValidCountryID($countryID, $numCountries)
 // Date Created:  2/22/2015 
 // Last Modified: 2/22/2015 by William Bittner, Drew Lopreiato, Berty Ruan, Dylan Fetch  
 // Description:   This function returns an array containing every statistic that is in the database
-function GetStatNames($database)
+function GetStatMap($database)
 // PRE:  $database is a mysqli database connection
 // POST: FCTVAL == array of the human readable names of all statistics in the database
 {
     //returning array
     $statArray = array();
     
-    $statQuery = "SELECT stat_name FROM meta_stats";
+	$statListQuery = "SELECT DISTINCT stat_id FROM data WHERE session_id='".$sessionID."' ORDER BY stat_id ASC";
+	$statListResult = $database->query($statListQuery);
+	
+	while($statRow = $statListResult->fetch_assoc())
+	{
+		array_push($statArray, $statRow["year"]);
+	}
+	
+	if(empty($yearArray))
+		return null;
+    /*$statQuery = "SELECT stat_name FROM meta_stats";
     $statResult = $database->query($statQuery);
     
     //If the table is empty, statResults will have a value of false. If this happens something has deleted
@@ -383,7 +387,7 @@ function GetStatNames($database)
         array_push($statArray, $statRow['stat_name']);
     }
     
-    return $statArray;
+    return $statArray;*/
 } //END GetStatNames
 
 // Author:        William Bittner, Drew Lopreiato  
@@ -420,36 +424,27 @@ function GetTableNames($database)
 // Date Created:  2/19/2015 
 // Last Modified: 2/19/2015 by William Bittner, Drew Lopreiato  
 // Description:   This function returns the first and last year of a given table, which is the second and last columns header 
-function GetYearRange($database, $table)
-// PRE:  $database is a mysqli database connection, and table is a valid table in that connection
-// POST: return an array with exactly two indices: index 0 is the lowest year, index 1 is the highest year  
+function GetYearRange($database, $sessionID)
+// PRE:  $database is a mysqli database connection, and sessioID is a valid session 
+// POST: return an array with exactly two key value pairs: startYear is the lowest year, endYear is the highest year  
 {
-    $indexOfFirstYearColumn = 1;
-    $descriptionArray = array();
-    $yearRange = array();
-        
-    //Create the query and query the query
-    $descriptionQuery = "DESCRIBE " . $table;
-    $descriptionResult = $database->query($descriptionQuery);
-    
-    if($descriptionResult === false)
-    {
-        //ThrowFatalError("Invalid table name for year range.");
-        return false;
-    }
-    
-    //Throw each column's 'field' value into an array 
-    while($descriptionRow = $descriptionResult->fetch_assoc())
-    {
-        array_push($descriptionArray, $descriptionRow['Field']);
-    } 
-    
-    //Put the first and last year into the returning array
-    array_push($yearRange, $descriptionArray[$indexOfFirstYearColumn]);
-    array_push($yearRange, $descriptionArray[count($descriptionArray) - 1]);
-    
-    
-    return $yearRange;
+	$yearRangeQuery = "SELECT DISTINCT year FROM data WHERE session_id='".$sessionID."' ORDER BY year ASC";
+	$yearRangeResult = $database->query($yearRangeQuery);
+	
+	$yearArray = array();
+	
+	while($yearRow = $yearRangeResult->fetch_assoc())
+	{
+		array_push($yearArray, $yearRow["year"]);
+	}
+	
+	if(empty($yearArray))
+		return null;
+	
+	$yearRange = array("startYear"=>$yearArray[0], "endYear"=>$yearArray[count($yearArray)-1]);
+	
+	return $yearRange;
+	
 } //END GetYearRange
 
 // Author:        William Bittner, Drew Lopreiato  
