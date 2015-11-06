@@ -1,6 +1,50 @@
 <?php
-require_once("../api/connect.php");
+/*
+ * Copyright 2015 Stateware Team: William Bittner, Nicholas Denaro, 
+ * Dylan Fetch, Paul Jang, Brent Mosier, Zekun Yang
+ * 
+ * This file is part of Dav3i.
+ * 
+ * Dav3i is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Dav3i is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Dav3i.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
+/* File Name:           data_parsersTest.php
+ * Description:         This file tests the functions of connect.php using PHP Unit.
+ * 
+ * Date Created:        10/29/2015
+ * Contributors:        William Bittner, Nicholas Denaro
+ * Date Last Modified:  11/3/2015
+ * Last Modified By:    William Bittner
+ * Dependencies:        connect.php
+ * Input:               NONE
+ * Output:              NONE
+ * Additional Notes:    In its current iteration, this document has security vulnerabilities
+ *                      that could seriously damage the database. Keeping this file uploaded
+ *                      while not actively being developed is NOT recommended.
+ */
+require_once("../../src/api/connect.php");
+
+parse();
+
+// Author:        William Bittner, Nicholas Denaro, Brent Mosier 
+// Date Created:  11/1/2015  
+// Last Modified: 11/5/2015 by Brent Mosier  
+// Description:   
+function parse()
+// PRE: 
+// POST: 
+{
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 {
 	$time = time();
@@ -138,8 +182,15 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 	echo "There were " . $numRows . " inserted.";
 	echo "It took ". (time() - $time) . " seconds to upload.";
 }
+}//END parse
 
+// Author:        William Bittner, Nicholas Denaro, Brent Mosier 
+// Date Created:  11/1/2015  
+// Last Modified: 11/5/2015 by William Bittner   
+// Description: This function checks the name of the file being passed in to return the name of the stat that will be assigned to the data contained in the file
 function getStatNameFromFileName($fname)
+// PRE: fname is a name of a particular file found in a directory on the server
+// POST: a string containing the stat name for the designated file being checked
 {
 	$fname = substr($fname, stripos($fname, "/") + 1);
 	switch($fname)
@@ -173,13 +224,19 @@ function getStatNameFromFileName($fname)
 		default:
 			return "oops";
 	}
-}
+}//END getStatNameFromFileName
 
+// Author:        William Bittner, Nicholas Denaro, Brent Mosier 
+// Date Created:  11/1/2015  
+// Last Modified: 11/5/2015 by William Bittner 
+// Description: This function checks that the data is a number or a numerical string
 function clean($data)
+// PRE: data is a number or numerical string
+// POST: returns the data if it is numerical or a -1 if the data is not numeric
 {
 	if(is_numeric($data))
 		return($data);
 	return(-1);
-}
+}//END clean
 
 ?>
