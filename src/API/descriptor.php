@@ -47,6 +47,7 @@ if (EXTERNAL_ACCESS)
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 {
 	desc();
+	//TODO:add session param
 }
 
 function desc()
