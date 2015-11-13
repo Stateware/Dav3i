@@ -406,7 +406,6 @@ function GetInstanceMap($database, $sessionID)
 
     $instanceListQuery = "SELECT DISTINCT instance_id FROM data WHERE session_id='".$sessionID."' ORDER BY instance_id ASC";
     $instanceListResult = $database->query($instanceListQuery);
-    //echo $instanceListQuery . "<br>";
 
     while($instanceRow = $instanceListResult->fetch_assoc())
     {
@@ -418,7 +417,6 @@ function GetInstanceMap($database, $sessionID)
 
     $instanceNameQuery = "SELECT instance_id, instance_name FROM meta_instance WHERE instance_id IN (" . implode($instanceArray,",") . ");";
     $instanceNameResult = $database->query($instanceNameQuery);
-    //echo $instanceNameQuery . "<br>";
     
     $instanceMap = array();
 
@@ -435,7 +433,6 @@ function GetSessionMap($database)
 {
     $sessionNameQuery = "SELECT session_id, session_name FROM meta_session;";
     $sessionNameResult = $database->query($sessionNameQuery);
-    //echo $instanceNameQuery . "<br>";
     
     $sessionMap = array();
 
