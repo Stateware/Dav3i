@@ -73,11 +73,11 @@ function UpdateInputs()
     var startDiv=document.getElementById("year-range-start");
     var endDiv=document.getElementById("year-range-end");
     var heatmapYearDiv=document.getElementById("heatmap-year");
-	
-	// set min and max for the settings input boxes
+    
+    // set min and max for the settings input boxes
     startDiv.max=g_LastYear;
-    startDiv.min=g_FirstYear;	
-	
+    startDiv.min=g_FirstYear;   
+    
     endDiv.max=g_LastYear;
     endDiv.min=g_FirstYear;
 
@@ -176,8 +176,8 @@ function SwitchToMain ()
 // POST: Settings overlay is showing with black backing mask and all stat values are reset
 function OpenSettings()
 {
-	 ResetAllStatValues();
-	 
+     ResetAllStatValues();
+     
      $(".settings-screen, .settings-black").fadeIn(400);
      
 }
@@ -202,7 +202,7 @@ function CloseSettings()
        
     document.getElementById(startDiv.id+"-error").innerHTML="";
     document.getElementById(endDiv.id+"-error").innerHTML="";
-   	document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
+    document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
 }
 
 // Author: Emma Roudabush
@@ -245,17 +245,17 @@ function Expand()
     {
         if(g_DataList != undefined && g_DataList.size != 0)
         {
-	        GenerateSubDivs();
-	        // if single graph, graph is expanded to whole section
-	        if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
-	        {
-	            document.getElementById("region-graphs-1").style["width"] = "100%";
-	            document.getElementById("region-graphs-1").style["height"] = "100%";
-	        }
-	        g_Expanded = true;
-	        GenerateSubDivs();
-	        GenerateGraphs();
-	    }
+            GenerateSubDivs();
+            // if single graph, graph is expanded to whole section
+            if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
+            {
+                document.getElementById("region-graphs-1").style["width"] = "100%";
+                document.getElementById("region-graphs-1").style["height"] = "100%";
+            }
+            g_Expanded = true;
+            GenerateSubDivs();
+            GenerateGraphs();
+        }
     }, 500);
 }
 
@@ -309,8 +309,8 @@ function GenerateSubDivs()
             document.getElementById(parentTabDivName).innerHTML = "";
             if(size != 0)
             {
-            	CreateSubDiv("region-graphs-1",parentTabDivName);
-	        }
+                CreateSubDiv("region-graphs-1",parentTabDivName);
+            }
             // if the graph section is expanded
             if(g_Expanded)
             {
@@ -413,3 +413,68 @@ function bugPopup()
         + " operating system you experienced the bug on\n4. Any "
         + "additional relevant information.");
 }
+
+// TODO: replace client side data structure
+var dataJSON = {
+        "session1": ["A","B","C","D"],
+        "session2": ["E", "F","G","H"],
+        "session3": ["I", "J", "K", "L"],
+        "session4": ["M", "N", "O", "P"],
+        "session5": ["Q", "R", "S", "T"]
+}
+
+// Author: Paul Jang
+// Date Created: 11/12/2015
+// Last Modified: 11/13/2015 by Joshua Crafts
+// Description: Fills the dropdown menu that holds all sessions
+// PRE: dropdown entitled "sessionSelect" exists, json with data exists somewhere
+// POST: the dropdown menu on the graph menu is filled with all sessions currently in the database
+function fillSessionDropDown()
+{
+    // get session drop down select div and array of keys in data object
+    var sessionSelect = document.getElementById("sessionSelect");
+    var keys = Object.keys(dataJSON);
+
+    // clear the dropdown
+    sessionSelect.innerHTML = "";
+
+    // loop through the keys and add them to the dropdown
+    for(var i = 0; i<keys.length; i++)
+    {
+        var newOption = new Option(keys[i],i);
+        sessionSelect.appendChild(newOption);
+    }
+
+    // fill the instance drop down after changing the sessions
+    fillInstanceDropDown();
+
+    // returns the name of the new selected session
+    return $('#sessionSelect').find(":selected").text();
+}
+
+// Author: Paul Jang
+// Date Created: 11/12/2015
+// Last Modified: 11/13/2015 by Paul Jang
+// Description: fills the instance drop down menu with all the instances in the current session
+// PRE: "sessionSelect" and "instanceSelect" exists
+// POST: instance drop down menu on graph menu fills with all instances in selected session
+function fillInstanceDropDown()
+{   
+    // get the current selected session and the corresponding array of instances
+    var sessionName = $('#sessionSelect').find(":selected").text();
+    var value = dataJSON[sessionName];
+
+    // clear instance drop down
+    instanceSelect.innerHTML = "";
+
+    // loop through instance array and add them to drop down
+    for(var i = 0; i<value.length; i++)
+    {
+        var newOption = new Option(value[i],i);
+        instanceSelect.appendChild(newOption);
+    }
+
+    // returns the name of new selected instance
+    return $('#instanceSelect').find(":selected").text();
+}
+

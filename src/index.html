@@ -27,9 +27,9 @@
      Description:             Web interface for data visualization
      Date Created:            2/19/2015
      Contributors:            Emma Roudabush, Vanajam Soni, Paul Jang, Joshua Crafts, Nicholas Denaro, Arun Kumar
-     Date Last Modified:      4/23/2015
-     Last Modified By:        Kyle Nicholson
-     Dependencies:            style.css, loading_script.js, lookup_table.js, map.js, data.js
+     Date Last Modified:      11/23/2015
+     Last Modified By:        Paul Jang
+     Dependencies:            style.css, loading_script.js, lookup_table.js, map.js, data.js, dynamic_markup.js
      Additional Notes:        N/A
 -->
 <html>
@@ -42,7 +42,7 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="GUI/jvectormap/jquery-jvectormap-2.0.1.css" type="text/css" media="screen"/>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	<script type="text/javascript" src="GUI/wnumb-1.0.0/wNumb.js"></script>
+    <script type="text/javascript" src="GUI/wnumb-1.0.0/wNumb.js"></script>
     <script type="text/javascript" src="GUI/data_query.js"></script>
     <script type="text/javascript" src="GUI/loading_script.js"></script>
     <script type="text/javascript" src="GUI/map.js"></script>
@@ -62,7 +62,7 @@
 
 <body>
     <div class="loading-screen">
-    	<body onload="initPage()"></body>
+        <body onload="initPage()"></body>
         <center>
             <img src="res/logo.png" alt="Logo"/>
             <br>
@@ -80,7 +80,7 @@
     </div>
     <div class="help-black" onclick="CloseHelp()">
     </div>
-	
+    
     <div class="settings-screen">
         <h1 style="position: relative; top: 5%;">Settings</h1>
         <div class="graph-choice">
@@ -108,10 +108,10 @@
             </form>
         </div>
         <div class="buttons">
-	            <button id="apply-button" class="flat-button" onclick="ApplySettings()">Apply</button>
-		        <button id="ok-button" class="flat-button" onclick="ApplyAndClose()">OK</button>
-		        <button id="close-button" class="flat-button" onclick="CancelSettings()">Cancel</button>
-	    </div>
+                <button id="apply-button" class="flat-button" onclick="ApplySettings()">Apply</button>
+                <button id="ok-button" class="flat-button" onclick="ApplyAndClose()">OK</button>
+                <button id="close-button" class="flat-button" onclick="CancelSettings()">Cancel</button>
+        </div>
       
     </div>
 
@@ -139,7 +139,7 @@
         </div>
         <button id="close-help" class="flat-button" style="position: relative; top: 0" onclick="CloseHelp()">Close</button>
     </div>
-	
+    
     <div class="main-screen">
         <section class="spacer">
         </section>
@@ -150,6 +150,7 @@
                 <h1 class="open-sans" style="margin: 0">Measles Data Visualization</h1>
                 <button id="settings" class="flat-button" onclick="OpenSettings()">Settings</button>
                 <button id="help" class="flat-button" onclick="OpenHelp()">Help</button>
+                <button id="upload" class="flat-button" onclick="window.location = 'Upload/data_upload.html';">Upload</button>
             </section>
             <section class="graph" id="graph">
                 <div>
@@ -160,24 +161,28 @@
                 <div id="graphs">
                 </div>
             </section>
-			
+            
             <section class="expand">
                 <img src="res/arrow_right.png" id="expand" onclick="Expand()"/>
+                <select class="dropdown" id="sessionSelect" onchange="fillInstanceDropDown()">
+                </select>
+                <select class="dropdown" id="instanceSelect">
+                </select>
             </section>
         </div>
         
         <div class="expand-black">
         </div>
-		
+        
         <div id="map-container">
             <div id="map">
             </div>
             <button id="clear" class="flat-button" onclick>Clear Selection</button>
         </div>
 
-    	
+        
         <div class="footer">
-            <p class="footer-text">Copyright <span onclick="teamPopup()" onmouseover="this.style.cursor='pointer'"><strong>Stateware Team</strong></span>. Licensed under version 3 of the <strong><a href="http://www.gnu.org/licenses/">GNU General Public License</a></strong>. Built using <strong><a href="http://jvectormap.com/">jVectorMap</a></strong> and <strong><a href ="https://developers.google.com/chart/">Google Charts</a></strong>. <strong><a href ="http://stateware.wikia.com/">Learn more about Stateware</a></strong></p>
+            <p class="footer-text">Copyright <span onclick="teamPopup()" onmouseover="this.style.cursor='pointer'"><strong>Stateware Team</strong></span>. Licensed under the <strong><a target="_blank" href="http://opensource.org/licenses/MIT">MIT License</a></strong>. Built using <strong><a target="_blank" href="http://jvectormap.com/">jVectorMap</a></strong> and <strong><a target="_blank" href ="https://developers.google.com/chart/">Google Charts</a></strong>. <strong><a target="_blank" href ="http://stateware.org/">Learn more about Stateware</a></strong></p>
             <p onclick="bugPopup()" onmouseover="this.style.cursor='pointer'" class="bug-report"><strong>Report an issue</strong></p>
         </div>
     </div>

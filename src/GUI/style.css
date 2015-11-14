@@ -251,6 +251,12 @@
     display: none;
 }
 
+/* sets styling for the drop down menus for sessions and instances */
+.dropdown {
+    float: left;
+    width: 150px;
+}
+
 /* sets styling for overlay settings menu */
 .settings-screen,
 .help-screen{

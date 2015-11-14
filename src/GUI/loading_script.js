@@ -23,30 +23,32 @@
 // Description:             For loading screen
 // Date Created:            3/5/2015
 // Contributors:            Emma Roudabush, Joshua Crafts
-// Date Last Modified:      3/31/2015
-// Last Modified By:        Emma Roudabush
-// Dependencies:            descriptor.php, by_stat.php, lookup_table.js, map.js, data.js, index.html
+// Date Last Modified:      11/13/2015
+// Last Modified By:        Paul Jang
+// Dependencies:            descriptor.php, by_stat.php, lookup_table.js, map.js, data.js, dynamic_markup.js, index.html
 // Additional Notes:        N/A
 
 // Author: Emma Roudabush, William Bittner
 // Date Created: 3/5/2015
-// Last Modified: 9/24/2015 by William Bittner
+// Last Modified: 11/13/2015 by Paul Jang
 // Description: Generates lookup table and heat map while 
 //              displaying loading screen
 // PRE: divs with class "spinner" and "begin" exist, and the function GetDescriptor is defined somewhere
-// POST: lookup table is generated, generate map colored by default HMS
+// POST: lookup table is generated, generate map colored by default HMS, session and instance dropdowns are filled
 function initPage() 
 {
-	initMap();
-	// Generate lookup table and heat map
+    initMap();
+    // Generate lookup table and heat map
     GetDescriptor();
 
-	// Do below process when heat map is generated
-	// Check opacity in testing?
+    // Do below process when heat map is generated
+    // Check opacity in testing?
     $(".spinner").fadeOut(1250);
     setTimeout(function () {
         $(".begin").fadeIn(1500);
     }, 1250);
+
+    fillSessionDropDown();
 };
 
 
