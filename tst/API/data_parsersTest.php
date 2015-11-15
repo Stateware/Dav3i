@@ -36,19 +36,26 @@
 
 require_once '.\..\..\src\Upload\data_parsers.php';
 
-class data_parsersTest extends \PHPUnit_Framework_TestCase{
-
-	//echo "error code " . $file['error'] . "<br>";
-	/*
-	function testParse()
+class data_parsersTest extends \PHPUnit_Framework_TestCase{	
+	function testParseFailBadZipFD()
 	{
+		//$expected = 3;
+		$zipFD = 1;
+		$sessionName = "sesTest";
+		$instanceName = "instTest";
 
+		$results = parse($zipFD, $sessionName, $instanceName);
+		//$this->assertEquals($results, $expected);
 	}
-	*/
-	
-	//echo "not a zip<br>";
 
-	//end
+	//test cases for parse
+		//file lists error
+		//file is not a zip file
+		//$zipFD is not a resource
+		//$datafilename is not a csv
+		//$output[0][0] == ""
+		//$output[0][0] != ""
+
 	
 	function testGetStatNameFromFileNameInputBirths()
 	{

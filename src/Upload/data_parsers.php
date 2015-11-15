@@ -35,38 +35,24 @@
  */
 require_once("../../src/api/connect.php");
 
-parse();
 
-// Author:        William Bittner, Nicholas Denaro, Brent Mosier 
-// Date Created:  11/1/2015  
-// Last Modified: 11/5/2015 by Brent Mosier  
-// Description:   
-function parse()
-// PRE: 
-// POST: 
-{
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 {
-	$time = time();
-	$g_sessionName = $_POST['session-name'];
+	//create time value to keep track of runtime of function
+	//$time = time();
+	$_g_sessionName = $_POST['session-name'];
 	$g_instanceCount = $_POST['instance-count'];
 
-
-	$databaseConnection = GetDatabaseConnection();
-
-	$sessionInsertQuery = "INSERT INTO `meta_session` (`session_id`, `session_name`, `start_year`, `end_year`) VALUES (NULL, '".$g_sessionName."', '0', '0');";
-	$sessionInsertResult = $databaseConnection->query($sessionInsertQuery);
-
-	$sessionIDQuery = "SELECT session_id FROM meta_session WHERE session_name='".$g_sessionName."'";
-	$sessionID = $databaseConnection->query($sessionIDQuery)->fetch_assoc()['session_id'];
+	$databaseConnection = GetDatabaseConnection();	
 
 	//loop through $g_instanceCount and grab each 'instance-name-(number)' named file called 'instance-file-(number)
 	//	 and then extract/sanitize&validate/then send to db.
 	for($i = 1; $i <= $g_instanceCount; $i++)
 	{
-		$instanceName = $_POST['instance-name-'.$i];
+		$_instanceName = $_POST['instance-name-'.$i];
 		$file = $_FILES['instance-file-'.$i];
 
+		//check if file has an error
 		if($file['error'] != 0)
 		{
 			//TODO: error!!!
@@ -76,112 +62,134 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 
 		$isZip = substr($file['name'], -4) === ".zip";
 		
+		//check if file is a .zip file
 		if(!$isZip)
 		{
 			//TODO: error!!!
 			echo "not a zip<br>";
 			continue;
 		}
+	}
+	$_zipFD = zip_open($file['tmp_name']);
+	parse($_zipFD, $_g_sessionName, $_instanceName);
+}
 
-		$instanceInsertQuery = "INSERT INTO `meta_instance` (`instance_id`, `instance_name`) VALUES (NULL, '".$instanceName."');";
-		$instanceInsertResult = $databaseConnection->query($instanceInsertQuery);
 
-		$instanceIDQuery = "SELECT instance_id FROM meta_instance WHERE instance_name='".$instanceName."'";
-		$instanceID = $databaseConnection->query($instanceIDQuery)->fetch_assoc()['instance_id'];
+// Author:        William Bittner, Nicholas Denaro, Brent Mosier 
+// Date Created:  11/1/2015  
+// Last Modified: 11/5/2015 by Brent Mosier  
+// Description:   
+function parse($zipFD, $g_sessionName, $instanceName)
+// PRE: The request method is set with a value and the request method is 'POST'
+// POST: Checks the zip file being uploaded for accurate naming conventions. Then prepares and uploads data to the database
+{
+	$time = time();
 
-		//return;
+	$databaseConnection = GetDatabaseConnection();
 
-		$zipFD = zip_open($file['tmp_name']);
+	$sessionInsertQuery = "INSERT INTO `meta_session` (`session_id`, `session_name`, `start_year`, `end_year`) VALUES (NULL, '".$g_sessionName."', '0', '0');";
+	$sessionInsertResult = $databaseConnection->query($sessionInsertQuery);
 
-		if(is_resource($zipFD))
+	$sessionIDQuery = "SELECT session_id FROM meta_session WHERE session_name='".$g_sessionName."'";
+	$sessionID = $databaseConnection->query($sessionIDQuery)->fetch_assoc()['session_id'];
+
+	$instanceInsertQuery = "INSERT INTO `meta_instance` (`instance_id`, `instance_name`) VALUES (NULL, '".$instanceName."');";
+	$instanceInsertResult = $databaseConnection->query($instanceInsertQuery);
+
+	$instanceIDQuery = "SELECT instance_id FROM meta_instance WHERE instance_name='".$instanceName."'";
+	$instanceID = $databaseConnection->query($instanceIDQuery)->fetch_assoc()['instance_id'];
+
+	//check if the$zipFD variable is a resource variable
+	if(is_resource($zipFD))
+	{
+		$numRows = 0;
+		//while still a file in the zip
+		while($resourceID = zip_read($zipFD))
 		{
-			$numRows = 0;
-			while($resourceID = zip_read($zipFD))
+			$datafileName = zip_entry_name($resourceID);
+			$datafile = zip_entry_read($resourceID,zip_entry_filesize($resourceID));
+
+			//check if the file from the zip is a .csv file
+			if(substr($datafileName,-4) === ".csv")
 			{
-				$datafileName = zip_entry_name($resourceID);
-				$datafile = zip_entry_read($resourceID,zip_entry_filesize($resourceID));
+				//create a temp file to write the data to
+				$tempDatafile  = tmpfile();
+				fwrite($tempDatafile, $datafile);
+				fseek($tempDatafile, 0);
 
-				if(substr($datafileName,-4) === ".csv")
+				//Read in entire file
+				$testData = "";
+				while(!feof($tempDatafile))
+					$testData .= fread($tempDatafile, 1);
+
+				//replace bothersome quotes and new lines
+				$testData = preg_replace("/\"/", "", $testData);
+				$testData = trim(preg_replace('~\R~', "|", $testData));
+
+				//parse data into 2D array
+				$rows = explode( "|", $testData);
+				$output = array();
+				for($row = 0; $row < sizeof($rows); $row++)
 				{
-					$tempDatafile  = tmpfile();
-					fwrite($tempDatafile, $datafile);
-					fseek($tempDatafile, 0);
+					array_push($output, explode("," , $rows[$row]));
+				}
 
-					//Read in entire file
-					$testData = "";
-					while(!feof($tempDatafile))
-						$testData .= fread($tempDatafile, 1);
+				//close the temp file
+				fclose($tempDatafile);
 
-					//replace bothersome quotes and new lines
-					$testData = preg_replace("/\"/", "", $testData);
-					$testData = trim(preg_replace('~\R~', "|", $testData));
+				//Add data to database
+				$startYear = $output[0][1];
+				$endYear = $output[0][sizeof($output[0])-1];
 
-					//parse data into 2D array
-					$rows = explode( "|", $testData);
-					$output = array();
-					for($row = 0; $row < sizeof($rows); $row++)
+				//update database to set start and end
+				$sessionStartAndEndQuery = "UPDATE meta_session SET `start_year`='".$startYear."', `end_year`='".$endYear."' WHERE session_id='".$sessionID."'";
+				$databaseConnection->query($sessionStartAndEndQuery);
+
+				$statIDQuery = "SELECT stat_id FROM meta_stats WHERE stat_name='".getStatNameFromFileName($datafileName)."'";
+				$statID = $databaseConnection->query($statIDQuery)->fetch_assoc()['stat_id'];
+
+				//checks if the output array is empty, if it is not, add an empty space to the front of the array
+				if($output[0][0] != "")
+					array_unshift($output[0], "");
+
+					//run through every country in files
+				for($country = 1; $country < sizeof($output); $country++)
+				{
+					$countryIDQuery = "SELECT country_id FROM meta_countries WHERE cc3='".$output[$country][0]."'";
+					$countryID = $databaseConnection->query($countryIDQuery)->fetch_assoc()['country_id'];
+
+					$dataInsertQuery = "INSERT INTO data (`session_id`, `instance_id`, `country_id`, `stat_id`, `year`, `value`) VALUES ";
+
+					//for every year that country has data, add an insert query for the data
+					for($year = 1; $year < sizeof($output[$country]); $year++)
 					{
-						array_push($output, explode("," , $rows[$row]));
+						//limits execution time
+						set_time_limit(30);
+						$dataYear = $output[0][$year];							
+						$dataInsertQuery.="('".$sessionID."', '".$instanceID."', '".$countryID."', '".$statID."', '".$dataYear."', '".clean($output[$country][$year])."'), ";
+						$numRows++;
 					}
 
-					fclose($tempDatafile);
+					//replaces ' ' and ',' from end of $dataInsertQuery with a ';'
+					$dataInsertQuery=substr($dataInsertQuery,0,-2);
+					$dataInsertQuery.=";";
 
-					//echo json_encode($output) . "<br>";
-
-					//echo $datafileName . "<br>";
-
-					//Add data to database
-					$startYear = $output[0][1];
-					$endYear = $output[0][sizeof($output[0])-1];
-
-					//update database to set start and end
-					$sessionStartAndEndQuery = "UPDATE meta_session SET `start_year`='".$startYear."', `end_year`='".$endYear."' WHERE session_id='".$sessionID."'";
-					$databaseConnection->query($sessionStartAndEndQuery);
-
-					$statIDQuery = "SELECT stat_id FROM meta_stats WHERE stat_name='".getStatNameFromFileName($datafileName)."'";
-					$statID = $databaseConnection->query($statIDQuery)->fetch_assoc()['stat_id'];
-
-					if($output[0][0] != "")
-						array_unshift($output[0], "");
-					//echo $datafileName .  "<br>";
-					//echo " 0 ". json_encode(array_keys($output[0])) . "<br>";
-					for($country = 1; $country < sizeof($output); $country++)
-					{
-						$countryIDQuery = "SELECT country_id FROM meta_countries WHERE cc3='".$output[$country][0]."'";
-						$countryID = $databaseConnection->query($countryIDQuery)->fetch_assoc()['country_id'];
-
-						$dataInsertQuery = "INSERT INTO data (`session_id`, `instance_id`, `country_id`, `stat_id`, `year`, `value`) VALUES ";
-								//."VALUES ('".$sessionID."', '".$instanceID."', '".$countryID."', '".$statID."', '".$dataYear."', '".clean($output[$country][$year])."' )";
-						//echo json_encode(array_keys($output[$country])) . "<br>";
-
-
-
-						for($year = 1; $year < sizeof($output[$country]); $year++)
-						{
-							set_time_limit(30);
-							$dataYear = $output[0][$year];							
-							$dataInsertQuery.="('".$sessionID."', '".$instanceID."', '".$countryID."', '".$statID."', '".$dataYear."', '".clean($output[$country][$year])."'), ";
-							$numRows++;
-						}
-						$dataInsertQuery=substr($dataInsertQuery,0,-2);
-						$dataInsertQuery.=";";
-						//echo $dataInsertQuery . "<br>";
-						$databaseConnection->query($dataInsertQuery);
-						ob_flush();
-						flush();
-					}
-
-					//echo $datafileName . "<br>" . json_encode($output) . "<br>";
+					//add data to database
+					$databaseConnection->query($dataInsertQuery);
+					//send output buffer
+					ob_flush();
+					//flush system output buffer
+					flush();
 				}
 			}
 		}
-	}
 
-	//echo $g_sessionName;
-	//echo $g_instanceCount;
+	//Tells user how many pieces of data were uploaded and how long it took to upload them
 	echo "There were " . $numRows . " inserted.";
-	echo "It took ". (time() - $time) . " seconds to upload.";
-}
+	echo "It took ". (time() - $time) . " seconds to upload.";	
+	}
+	else
+		echo "error with selected file " . $zipFD;
 }//END parse
 
 // Author:        William Bittner, Nicholas Denaro, Brent Mosier 
