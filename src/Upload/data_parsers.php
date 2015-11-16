@@ -200,7 +200,9 @@ function getStatNameFromFileName($fname)
 // PRE: fname is a name of a particular file found in a directory on the server
 // POST: a string containing the stat name for the designated file being checked
 {
-	$fname = substr($fname, stripos($fname, "/") + 1);
+	$slashPos = stripos($fname, "/");
+	if($slashPos > 0 )
+		$fname = substr($fname, $slashPos + 1);
 	switch($fname)
 	{
 		case "input-births.csv":
