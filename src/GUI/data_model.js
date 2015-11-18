@@ -1,4 +1,4 @@
-
+//TODO: fix the coding standards things like setting vars near the top.
 function retrieveByCountryData(sessionID, instanceID, countryID)
 {
 	var have = checkCacheByCountry(sessionID, instanceID, countryID);
@@ -91,9 +91,48 @@ function getDataByCountry(sessionID, instanceID, countryID)
 function parseCountryPacket(packet)
 {
 	console.log(packet);
+	packet = JSON.parse(packet);
+	
+	for(var stat = 0; stat < Object.keys(packet).length; stat++)
+	{
+		var sessionID, instanceID, countryID, data;
+		sessionID = packet[stat]["session"];
+		instanceID = packet[stat]["instance"];
+		countryID = packet[stat]["country"];
+		data = packet[stat]["data"];
+		var countryCache = g_cache.get(sessionID).get(instanceID).get(countryID);
+
+		for(var i = 0; i < data.length; i++)
+		{
+			var pair = data[i];
+			var year = Object.keys(pair)[0]; // the first key is the only key =)
+			var value = pair[year];
+			countryCache.get(stat).set(year, value);
+		}
+	}
+
+	
 }
 
 function parseStatPacket(packet)
 {
+	var sessionID, instanceID, countryID, data;
 	console.log(packet);
+	packet = JSON.parse(packet);
+	var sessionID = packet["session"];
+	var instanceID = packet["instance"];
+	var statID = packet["stat_id"];
+	var year = packet["year"];
+	var data = packet["data"];
+	var instanceCache = g_cache.get(sessionID).get(instanceID);
+
+	var i;
+	for(i = 0; i < data.length; i++)
+	{
+		var pair = data[i];
+		var country = Object.keys(pair)[0]; // the first key is the only key =)
+		var value = pair[country];
+		instanceCache.get(country).get(statID).set(year,value);
+	}
+
 }
