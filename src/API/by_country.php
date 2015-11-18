@@ -78,12 +78,12 @@ function country_exe($country_id, $session_id, $instance_id )
 
 	if(count($keys) > 0)
 	{
-		echo ($i++).":";
+		echo "\"".($i++)."\":";
 		$byCountryPacketArray[$keys[0]]->send();
 	}
 	for(; $i < count($keys) ;$i++)
 	{
-		echo ",".$i.":";
+		echo ",\"".$i."\":";
 		$byCountryPacketArray[$keys[$i]]->send();
 		
 	}
