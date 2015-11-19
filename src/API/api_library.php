@@ -115,18 +115,27 @@ function ByStat($statID, $year, $sessionID, $instanceID)
 	return ParseIntoByStatPacket($sessionID, $instanceID, $databaseIndexedStatID, $results, $year);
 } //END ByStat
 
-//Date Created: 10/29/2015
+// Author:        William Bittner, Drew Lopreiato
+// Date Created:  10/29/2015  
+// Last Modified: 11/19/2015 by Paul Jang  
+// Description:   This function creates a data packet with results from a bystat call
 function ParseIntoByStatPacket($sessionID, $instanceID, $statID, $queryResults, $year)
+// PRE: all of the inputted id's and the year are valid, query results is successfully populated
+// POST: FCTVAL == packet with the correct stat data that will be passed to the front end
+//                 see "by_stat_packet.php"
 {
 	$packetData = array();
+    // loop through the results of the query and populate the array
 	foreach($queryResults as $result)
 	{
+        // push the data from the result array to the outbound packet data array
 		$obj = array($result["country_id"] => $result["value"]);
 		array_push($packetData, $obj);
 	}
 
+    // return the packet using the previously created array
 	return new by_stat_packet($sessionID,$instanceID,$statID,$packetData,$year);
-}
+}//END ParseIntoByStatPacket
 
 // Author:        William Bittner, Drew Lopreiato
 // Date Created:  2/22/2015  
@@ -134,7 +143,7 @@ function ParseIntoByStatPacket($sessionID, $instanceID, $statID, $queryResults, 
 // Description:   This function queries the database for every stat for every year for any number of countries
 function ByCountry($countryIDs, $sessionID, $instanceID)
 // PRE: countryIDs a string of valid countryIDs separated by a comma, or just one valid countryID
-// POST: an array containing all of the stats for each country ID input, with each stat in the index corresponding to its stat ID
+// POST: FCTVAL == an array containing all of the stats for each country ID input, with each stat in the index corresponding to its stat ID
 {
     $databaseConnection = GetDatabaseConnection();		//store connection to database
     $byCountryArray = array();							//initialize returning array
@@ -179,25 +188,36 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
 	return ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs + 1, $results);
 } //END ByCountry
 
-//Date Created: 10/29/2015
+
+// Author:        William Bittner, Drew Lopreiato
+// Date Created:  10/29/2015  
+// Last Modified: 11/19/2015 by Paul Jang    
+// Description:   This function creates a data packet with the results of a bycountry call
 function ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs, $queryResults)
+// PRE: all of the inputted ids are valid and query results contains the appropriate data that will be sent
+// POST: FCTVAL == an array all of the data from the by country query results in the form of packets
 {
 	$packetData = array();
 	foreach($queryResults as $result)
 	{
+        // loops through the query results and retrieves all the data values in the result array
 		$obj = array($result["year"] => $result["value"]);
-		if(!array_key_exists($result["stat_id"],$packetData))
+        // creates an entry in the array for the stat id if it doesn't already exist
+    	if(!array_key_exists($result["stat_id"],$packetData))
+        {
 			$packetData[$result["stat_id"]] = array();
-		array_push($packetData[$result["stat_id"]], $obj);
+		}
+        array_push($packetData[$result["stat_id"]], $obj);
 	}
 
 	$countryPackets = array();
 	foreach($packetData as $statID => $data)
 	{
+        // encapsulate all of the packets into an array that will be returned
 		array_push($countryPackets, new by_country_packet($sessionID, $instanceID, $statID, $data, $countryIDs));
 	}
 	return $countryPackets;
-}
+} //END ParseIntoByCountryPacket
 
 // Author:        Kyle Nicholson, Berty Ruan, William Bittner
 // Date Created:  2/7/2015
@@ -368,85 +388,115 @@ function GetStatMap($database,$sessionID)
     return $statMap;
 } //END GetStatNames
 
+// Author:        William Bittner, Nick Denaro
 // Date Created:  11/5/2015 
+// Last Modified: 11/19/2015 by Paul Jang  
+// Description:   This function, given a session, returns an array of all the countries in the session and all their corresponding info
 function GetCountryMap($database, $sessionID)
+// PRE:  $database is a mysqli database connection, sessionid points to a session that currently exists and has data
+// POST: FCTVAL == array of the country info of every country in the session, indexed by country id
 {
     //returning array
     $countryArray = array();
     
+    // queries the database for the country id's of the countries that have data in the current session
     $countryListQuery = "SELECT DISTINCT country_id FROM data WHERE session_id='".$sessionID."' ORDER BY country_id ASC";
     $countryListResult = $database->query($countryListQuery);
     
+    // populates an array indexed by country ids and containing the corresponding row from the database
     while($countryRow = $countryListResult->fetch_assoc())
     {
         array_push($countryArray, $countryRow["country_id"]);
     }
     
+    // returns null if nothing was successfully retrieved from the database
     if(empty($countryArray))
+    {
         return null;
+    }
 
+    // queries the database for all the country data from the meta_countries table of all the countries retrieved from the previous query
     $countryNameQuery = "SELECT country_id, cc2, cc3, common_name FROM meta_countries WHERE country_id IN (" . implode($countryArray,",") . ");";
     $countryNameResult = $database->query($countryNameQuery);
     
+    // create the actual country map structure
     $countryMap = array();
 
+    // iterate through all rows retrieved from the previous query
     while($countryRow = $countryNameResult->fetch_assoc())
     {
+        // map the cc2, cc3, and common name to the appropriate country_id index in the country map
         $countryMap[$countryRow["country_id"]]=array("cc2"=>$countryRow["cc2"], "cc3"=>$countryRow["cc3"], "common_name"=>$countryRow["common_name"]);
     }
 
     return $countryMap;
-}
+} //END GetCountryMap
 
-
+// Author:        William Bittner, Nick Denaro
 // Date Created:  11/5/2015 
+// Last Modified: 11/19/2015 by Paul Jang  
+// Description:   This function, given a session, returns an array of all the instances names in the session indexed by id
 function GetInstanceMap($database, $sessionID)
+// PRE:  $database is a mysqli database connection, sessionid points to a session that currently exists and has data
+// POST: FCTVAL == array of the instance names indexed by the instance id
 {
+    // array that will be returned
     $instanceArray = array();
 
+    // query the database for each instance id in the session given by session_id
     $instanceListQuery = "SELECT DISTINCT instance_id FROM data WHERE session_id='".$sessionID."' ORDER BY instance_id ASC";
     $instanceListResult = $database->query($instanceListQuery);
-    //echo $instanceListQuery . "<br>";
 
+    // iterates through all the instances and push them to the instance array, mapped by their id
     while($instanceRow = $instanceListResult->fetch_assoc())
     {
         array_push($instanceArray, $instanceRow["instance_id"]);
     }
     
+    // returns null if nothing was retrieved from the database
     if(empty($instanceArray))
+    {
         return null;
+    }
 
+    // query the database for the instance id and instance name for each instance in the array
     $instanceNameQuery = "SELECT instance_id, instance_name FROM meta_instance WHERE instance_id IN (" . implode($instanceArray,",") . ");";
     $instanceNameResult = $database->query($instanceNameQuery);
-    //echo $instanceNameQuery . "<br>";
     
+    // create the instance map structure
     $instanceMap = array();
 
+    // push each instance name into the array indexed by it's id
     while($instanceRow = $instanceNameResult->fetch_assoc())
     {
         $instanceMap[$instanceRow["instance_id"]]=$instanceRow["instance_name"];
     }
 
     return $instanceMap;
-}
+} //END GetInstanceMap
 
+// Author:        William Bittner, Nick Denaro
 // Date Created:  11/5/2015 
+// Last Modified: 11/19/2015 by Paul Jang  
+// Description:   This function, queries the database for each session that currently exists within
 function GetSessionMap($database)
+// PRE:  $database is a mysqli database connection
+// POST: FCTVAL == array of the session names in the database indexed by their session id
 {
+    // query the database for each session name and session id
     $sessionNameQuery = "SELECT session_id, session_name FROM meta_session;";
     $sessionNameResult = $database->query($sessionNameQuery);
-    //echo $instanceNameQuery . "<br>";
     
     $sessionMap = array();
 
+    // iterate through each session row and push it to the session map array
     while($sessionRow = $sessionNameResult->fetch_assoc())
     {
         $sessionMap[$sessionRow["session_id"]]=$sessionRow["session_name"];
     }
 
     return $sessionMap;
-
-}
+} //END GetSessionMap
 
 // Author:        William Bittner, Drew Lopreiato  
 // Date Created:  2/19/2015 
