@@ -86,7 +86,7 @@ function ModifyData(selectedRegions)
             }
     }
 
-    if(selectedRegions.length > g_DataList.size)
+    /*if(selectedRegions.length > g_DataList.size)
     {
         // look for cc2 to add
         var CC2Found = false;
@@ -96,8 +96,23 @@ function ModifyData(selectedRegions)
             {
                 CC2Found = true;
                 var cid = GetCID(selectedRegions[i]);
-                    var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
-                    $.when(GetData(cid)).done(function(data){
+                var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
+                var firstInstance = getFirstInstance();
+                var secondInstance = getSecondInstance();
+                var session = getSession();
+                var dataFirstInstance = retrieveByCountryData(session, firstInstance, cid);
+                var dataSecondInstance = retrieveByCountryData(session, secondInstance, cid);
+                var parsedData = ParseData(data);
+                
+                //create/add new node
+                newNode.data = parsedData;
+                g_DataList.add(newNode);
+                
+                // draw graph with new node
+                GenerateSubDivs();
+                GenerateGraphs();
+                    
+                    /*$.when(GetData(cid)).done(function(data){
                         var parsedData = ParseData(data);
                         newNode.data = parsedData;
                         //console.log(newNode);
@@ -133,6 +148,6 @@ function ModifyData(selectedRegions)
             }
             currentNode = currentNode.next;
         }
-    }
+    }*/
     return g_DataList;
 }

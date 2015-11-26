@@ -1,19 +1,55 @@
 //TODO: fix the coding standards things like setting vars near the top.
-function retrieveByCountryData(sessionID, instanceID, countryID)
+
+//if supplied a list with an added index with respect to g_mapSelectedRegionsToDivs,
+//	create a div and add that to the page, then add this 
+function updateCharts( selectedRegions )
+{
+	if( selectedRegions.length > Object.keys( g_mapSelectedRegionsToDivs ).length )
+	{
+		for( var i = 0; i < selectedRegions.length; i++)
+		{
+			if( g_mapSelectedRegionsToDivs[selectedRegions[i]] === undefined )
+			{
+				//make div
+				var div = makeChartDivs( selectedRegions[i] );
+				
+				g_mapSelectedRegionToDivs[selectedRegions[i]] = div;
+			}
+		}
+	}
+	else if( selectedRegions.length < Object.keys( g_mapSelectedRegionsToDivs ).length )
+	{
+		var keys = Object.keys( g_mapSelectedRegionsToDivs );
+		for( var i = 0; i < keys.length; i++ )
+		{
+			if( selectedRegions.indexOf( keys[i] ) == -1 )
+			{
+				var div = g_mapSelectedRegionToDivs[keys[i]];
+				div.parentNode.removeChild(div);
+				
+				delete g_mapSelectedRegionToDivs[keys[i]];
+			}
+		} 
+	}
+	else//same size, do nothing (hope nothing changed?)
+	{
+	}
+	
+	return g_mapSelectedRegionToDivs;
+}
+
+
+
+function retrieveByCountryData(sessionID, instanceID, countryID, options)
 {
 	var have = checkCacheByCountry(sessionID, instanceID, countryID);
 	
-	if(have)
+	if(!have)
 	{
-		alert( "Have!" );
-	}
-	else
-	{
-		alert( "Don't have!" );
 		getDataByCountry(sessionID, instanceID, countryID);
 	}
 	
-	alert("Data!");
+	return g_cache.get(sessionID).get(instanceID).get(countryID);
 	//return data
 	
 }

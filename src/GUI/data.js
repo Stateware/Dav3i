@@ -45,6 +45,9 @@ var g_Expanded = false; 			// variable used to determine whether or not the grap
 var g_VaccHMS = 1;					// variable used to determine which vaccination stat to use when heat mapping
 var g_TempSettings = new Array(5);  // indicies are "first year, last year, Heat map year, graph type, vacc heat map"
 var g_Map;
+
+//key:value as region:div
+var g_mapSelectedRegionsToDivs = {};
 var g_cache = new data_cache();
 
 
@@ -61,7 +64,20 @@ function data_cache()
 	};
 }
 
+function getFirstInstance()
+{
+	return 10;
+}
 
+function getSecondInstance()
+{
+	return 10;
+}
+
+function getSession()
+{
+	return 4;
+}
 
 
 // prototype for ASDS node
