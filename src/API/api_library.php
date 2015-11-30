@@ -44,13 +44,10 @@ require_once("by_country_packet.php");
 // Last Modified: 5/1/2015 by William Bittner  
 // Description:   This function queries the database for one specific stat for one specific year for every country
 function ByStat($statID, $year, $sessionID, $instanceID)
-// PRE: statID is a valid ID of a stat in the database, and year is a valid year in the database
-// POST: FCTVAL == array of key value pairs whose index are:
-//			0: key: statID, value: an array containing each countries data for that stat in the index that corresponds
-// 					to the countries ID
-//			1: key: "force", value: "object" - this is so that the json returned to the caller of this function 
-//					returns an object, not an array of one element.
-{
+// PRE: statID is a valid ID of a stat in the database, year is a valid year in the database, sessionID is a valid id that points to a session
+//      in the database, and instanceID is a valid id that points to an instance in the database
+// POST: FCTVAL == packet resulting from call to parse function with parameters determined in this function
+//                 see "ParseIntoByStatPacket" function
     $heatMapArray = array();						//initialize the array we will return as the heatmap
     $descriptor = Descriptor(); 					//call our desciptor function and assign it to a variable
     $yearRange = $descriptor['yearRange'];			//get the year range out of the descriptor 
@@ -121,8 +118,8 @@ function ByStat($statID, $year, $sessionID, $instanceID)
 // Description:   This function creates a data packet with results from a bystat call
 function ParseIntoByStatPacket($sessionID, $instanceID, $statID, $queryResults, $year)
 // PRE: all of the inputted id's and the year are valid, query results is successfully populated
-// POST: FCTVAL == packet with the correct stat data that will be passed to the front end
-//                 see "by_stat_packet.php"
+// POST: FCTVAL == packet with the correct stat data that will be passed to the front end,
+//                 reference "by_stat_packet.php" for packet structure
 {
 	$packetData = array();
     // loop through the results of the query and populate the array
@@ -143,7 +140,8 @@ function ParseIntoByStatPacket($sessionID, $instanceID, $statID, $queryResults, 
 // Description:   This function queries the database for every stat for every year for any number of countries
 function ByCountry($countryIDs, $sessionID, $instanceID)
 // PRE: countryIDs a string of valid countryIDs separated by a comma, or just one valid countryID
-// POST: FCTVAL == an array containing all of the stats for each country ID input, with each stat in the index corresponding to its stat ID
+// POST: FCTVAL == the result of calling the parse function with the country data determined in the function,
+//                 see "ParseIntoByCountryPacket" function
 {
     $databaseConnection = GetDatabaseConnection();		//store connection to database
     $byCountryArray = array();							//initialize returning array
@@ -195,7 +193,8 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
 // Description:   This function creates a data packet with the results of a bycountry call
 function ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs, $queryResults)
 // PRE: all of the inputted ids are valid and query results contains the appropriate data that will be sent
-// POST: FCTVAL == an array all of the data from the by country query results in the form of packets
+// POST: FCTVAL == an array all of the data from the by country query results in the form of packets,
+//                 reference "by_country_packet.php" for packet structure
 {
 	$packetData = array();
 	foreach($queryResults as $result)
