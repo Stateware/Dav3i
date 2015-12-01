@@ -187,3 +187,9 @@ In CSS, comment *every* style block with a note on where or to what elements the
 ####JavaScript
 
 For now, JavaScript conventions are mostly covered under the general guidelines. Anything JavaScript specific will be added as needed.
+
+####C Sharp
+For C# files, ignore the general guidelines for naming classes; other than that, follow the general guidelines.
+
+#####Private Variables
+When naming private variables, add '_' in front of the name (i.e. the private variable 'length' should be named '_length')
