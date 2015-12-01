@@ -92,7 +92,7 @@ function ByStat($statID, $year, $sessionID, $instanceID)
 	//TODO: validate and sanitize session and instance ids
 	
     // The statID given to us is expected to be indexed by 0, however our database is indexed by 1, so we'll add 1
-    $databaseIndexedStatID = $statID + 1;
+    $databaseIndexedStatID = $statID;
     
     // Retrieve the table name of the inputted stat ID.
     //$tableName = GetFirstRowFromColumn($databaseConnection, "meta_stats", "table_name", "table_id = $databaseIndexedStatID");

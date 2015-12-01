@@ -172,22 +172,23 @@ function ColorByHMS() {
 // Description: Finding and setting our min and max values for our heat map.
 // PRE:  hmsData is valid and hmsID is a valid year
 // POST: We have found the selected data from the lookup table and g_Map is populated with min and max values
-function ParseMapData(hmsData,hmsID) {
+function ParseMapData(hmsData,hmsID, year) {
     var data = {};
     var isFound = false;
     var min = Number.MAX_VALUE;
     var max = Number.MIN_VALUE;
 
-    var hms = SetHMS(hmsData[hmsID]);
-    for (var i = 0; i < g_LookupTable.length; i++)
+    var keys = Object.keys(hmsData);
+    var hms = SetHMS(hmsData, hmsID, year);
+    for (var i = 1; i < g_LookupTable.length; i++) // changed start to 1 because no more 0 index
     {
-        g_LookupTable[i][2] = Number(hms[i]);
+        g_LookupTable[i][2] = Number(hms[i - 1]); // minus 1 here becuase it's not 0 indexed
     }
 
     // iterate through regions by key
     for (key in g_Map.regions) {
         // iterate through lookup table by index
-        for (var i = 0; i < g_LookupTable.length && isFound == false; i++)
+        for (var i = 1; i < g_LookupTable.length && isFound == false; i++) // again no more 0 index
         {
             // set value by key if key is equal to cc2 in lookup table
             if (key === g_LookupTable[i][0] && g_LookupTable[i][2] != -1)
@@ -202,7 +203,7 @@ function ParseMapData(hmsData,hmsID) {
             }
             else
             {
-                //data[key] = -1;
+                //data[key] = -1;//I'm not sure why this was commented out, but I'm uncommenting it -Nick nvm, it does nothing?
             }
         }
         isFound = false;
@@ -237,7 +238,7 @@ function FindCountriesNoData() {
     {
         isFound = false;
         // iterate through lookup table by index
-        for (var i=0; i<g_LookupTable.length && !isFound; i++)
+        for (var i=1; i<g_LookupTable.length && !isFound; i++) // start at 1 because no more 0 index!
         {
             // set value by key if key is equal to cc2 in lookup table
             if (key == g_LookupTable[i][0])

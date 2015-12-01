@@ -107,8 +107,8 @@ function GetDescriptor()
 // POST: An object with the first and last year values defined
 function GetInitialYears(DescriptorJSON)
 {
-	var firstYear = Number(DescriptorJSON.yearRange[0]);
-	var lastYear = Number(DescriptorJSON.yearRange[1]);
+	var firstYear = Number(DescriptorJSON.yearRange.startYear);
+	var lastYear = Number(DescriptorJSON.yearRange.endYear);
 	var yearRangeObject = {
 						FirstYear : firstYear,
 						LastYear  : lastYear
@@ -126,15 +126,17 @@ function GetInitialYears(DescriptorJSON)
 // POST: A 2d array is returned that has the correct CC2, name, and HMS values zero'd for each country
 function InitializeLookupTable(DescriptorJSON)
 {
-    var lookupTable = new Array(DescriptorJSON.cc2.length);
-    
-    for (i = 0; i < DescriptorJSON.cc2.length; i++)
+    var countries = DescriptorJSON.countries;
+    var keys = Object.keys(countries);
+    var lookupTable = new Array(keys.length);
+
+    for(var i = 0; i < keys.length; i++)
     {
-    	//TODO: Get rid of magic numbers?
-        lookupTable[i] = new Array(3);
-        lookupTable[i][0] = DescriptorJSON.cc2[i];
-        lookupTable[i][1] = DescriptorJSON.common_name[i];
-        lookupTable[i][2] = 0;
+    	var key = keys[i];
+    	lookupTable[key] = new Array(3);
+        lookupTable[key][0] = countries[key].cc2;
+        lookupTable[key][1] = countries[key].common_name;
+        lookupTable[key][2] = 0;
     }
     
     return lookupTable;
@@ -148,11 +150,23 @@ function InitializeLookupTable(DescriptorJSON)
 // POST: returns an array containing the correct stat names
 function GenerateStatReferenceList(DescriptorJSON)
 {
-    var statList = new Array(DescriptorJSON.stats.length); 
+    /*var statList = new Array(DescriptorJSON.stats.length); 
     
     for (i = 0; i < DescriptorJSON.stats.length; i++)
     {
         statList[i] = DescriptorJSON.stats[i];
+    }
+    
+    return statList;*/
+
+    var stats = DescriptorJSON.stats;
+    var keys = Object.keys(stats);
+    var statList = {};//new Array(keys.length);
+    
+    for (var i = 0; i < keys.length; i++)
+    {
+    	var key = keys[i];
+        statList[key] = DescriptorJSON.stats[key];
     }
     
     return statList;
@@ -164,15 +178,21 @@ function GenerateStatReferenceList(DescriptorJSON)
 // Description:Replace HMS values in lookup table with new HMS data (will happen just after lookup table generation for default HMS)
 // PRE: hmsData contains valid heat map values and hmsData is of size g_LookupTable.length
 // POST: g_LookupTable has heat map values of hmsData
-function SetHMS(hmsData)
+function SetHMS(hmsData, stat, year)
 {
-	var heatMapValues = [];
-    for (var i = 0; i < g_LookupTable.length; i++)
+    var heatMapValues = [];
+
+    var countrykeys = Object.keys(hmsData);
+    for(var i = 0; i < countrykeys.length; i++)
     {
-    	heatMapValues[i] = hmsData[i]
+    	var key = countrykeys[i];
+    	if($.isNumeric(key))
+    	{
+    		heatMapValues[i] = hmsData[key][stat][year];
+    	}
     }
 
-    return heatMapValues
+    return heatMapValues;
 }
 
 // Author: Vanajam Soni, Kyle Nicholson, Joshua Crafts
@@ -183,14 +203,21 @@ function SetHMS(hmsData)
 // POST: FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
 function GetHMS(hmsID, year)
 {
-    $.ajax({        
-        url: 'http://localhost/dav3i/API/by_stat.php?statID='.concat(hmsID.toString()+"&year="+year.toString()),                                                     
-        dataType: 'JSON',
-        success: function(data){     
-        	ParseMapData(data,hmsID);
-            //console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));
-        } 
-    });
+	var data = retrieveByStatData(4, 7, hmsID, year);
+
+	function wait(){
+		var keys = Object.keys(data);
+		if(checkCacheByStat(4, 7, hmsID, year))
+		{
+			ParseMapData(data, hmsID, year);
+		}
+		else
+		{
+			setTimeout(wait, 100);
+		}
+	}
+
+	setTimeout(wait,100);
 }
 
 // Author: Emma Rouabush, Joshua Crafts
@@ -226,7 +253,14 @@ function GetCID(cc2)
 //		 associated data (2-3).
 function ParseStatList()
 {
-	var sortedStatList = g_StatList.slice();		// copy into a new array	
+	var statArray = new Array(Object.keys(g_StatList).length);
+	var keys = Object.keys(g_StatList);
+	for(var i = 0; i < keys.length; i++)
+	{
+		statArray[i] = g_StatList[keys[i]];
+	}
+
+	var sortedStatList = statArray.slice();//g_StatList.slice();		// copy into a new array	
 	sortedStatList.sort();
 	var parsedStatList = [];						// 2d array
 	parsedStatList[0] = [];
@@ -285,7 +319,15 @@ function ParseStatList()
 		// sets the head stats
 		if(!isAssociatedStat)
 		{
-			parsedStatList[headStat][index] = g_StatList.indexOf(currentStat);
+			//parsedStatList[headStat][index] = g_StatList.indexOf(currentStat);
+			for(var j = 0; j < keys.length; j++)
+			{
+				if(g_StatList[keys[j]] == currentStat)
+				{
+					parsedStatList[headStat][index] = keys[j];
+				}
+			}
+
 			// if the current stat doesn't contain vacc then set statType to 0
 			if(currentStat.indexOf('VACCB') < 0)
 			{

@@ -60,17 +60,17 @@ function retrieveByStatData(sessionID, instanceID, statID, year)
 	
 	if(have)
 	{
-		alert( "Have!" );
+		//alert( "Have!" );
 	}
 	else
 	{
-		alert( "Don't have!" );
+		//alert( "Don't have!" );
 		getDataByStat(sessionID, instanceID, statID, year);
 	}
 	
-	alert("Data!");
-	//return data
-	
+	//alert("Data!");
+	var data = g_cache.get(sessionID).get(instanceID);
+	return data
 }
 
 function checkCacheByStat(sessionID, instanceID, statID, year)
@@ -89,20 +89,26 @@ function checkCacheByCountry(sessionID, instanceID, countryID)
 
 function getDataByStat(sessionID, instanceID, statID, year)
 {
+	alert("data_model.js:statID"+statID);
 	//TODO: fix undefined year...?
 	var URL = "http://localhost/dav3i/API/by_stat.php?sessionID=" + sessionID +
 				"&instanceID=" + instanceID + "&statID=" + statID + "&year=" + year;
 	
+	alert(URL);
+
 	//get the data and send it to be parsed
 	$.ajax({
 	url: URL,
-	success: function(data){ parseStatPacket(data); },
+	success: function(data){
+		parseStatPacket(data);
+		g_cache.get(sessionID).get(instanceID).get("flags").get("statIDs").get(statID).set(year, true);
+	},
 	error: function(xhr, ajaxOptions, thrownError){
 			console.log("Error on stat ajax call...\n" + xhr.status + "\n" + thrownError + "\nURL: " + URL);
 			}
 	});
 	
-	g_cache.get(sessionID).get(instanceID).get("flags").get("statIDs").get(statID).set(year, true);
+	
 }
 
 function getDataByCountry(sessionID, instanceID, countryID)
@@ -126,7 +132,7 @@ function getDataByCountry(sessionID, instanceID, countryID)
 
 function parseCountryPacket(packet)
 {
-	console.log(packet);
+	//console.log(packet);
 	packet = JSON.parse(packet);
 	
 	for(var stat = 0; stat < Object.keys(packet).length; stat++)
@@ -153,7 +159,7 @@ function parseCountryPacket(packet)
 function parseStatPacket(packet)
 {
 	var sessionID, instanceID, countryID, data;
-	console.log(packet);
+	//console.log(packet);
 	packet = JSON.parse(packet);
 	var sessionID = packet["session"];
 	var instanceID = packet["instance"];
@@ -170,5 +176,4 @@ function parseStatPacket(packet)
 		var value = pair[country];
 		instanceCache.get(country).get(statID).set(year,value);
 	}
-
 }

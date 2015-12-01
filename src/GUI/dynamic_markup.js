@@ -43,7 +43,8 @@ function BuildTabs()
         var temp=g_StatList[g_ParsedStatList[1][i]];
         var div=document.createElement("DIV");
         div.id="id-"+temp;
-        div.setAttribute("stat",""+g_ParsedStatList[1][i]);
+        var stat = parseInt(g_ParsedStatList[1][i]); // non-0 indexing!
+        div.setAttribute("stat",""+stat);
         div.className="graph-tab";
         div.setAttribute("onclick","ChooseTab(this)");
         div.innerHTML=temp;
@@ -126,8 +127,8 @@ function ChooseTab(element)
     g_StatID=Number(element.getAttribute("stat"));
     ColorByHMS();
 
-    GenerateSubDivs();
-    GenerateGraphs();
+    //GenerateSubDivs();
+    //GenerateGraphs();
     return(g_StatID);
 }
 
@@ -154,7 +155,7 @@ function RotateTabs(direction)
         tabs.removeChild(div);
         tabs.insertBefore(div,children[0]);
     }
-    return(tabs.childNoes[0]);
+    return(tabs.childNodes[0]);
 }
 
 // Author: Emma Roudabush
