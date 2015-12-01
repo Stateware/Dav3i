@@ -80,6 +80,66 @@ QUnit.test( "Update Input test", function (assert) {
 	assert.deepEqual(UpdateInputs(),tempSettings);
 });
 					 
+QUnit.test("addDiv Test", function (assert) {
+    var divnameTest = "instance";
+    
+    var output= {   id : "instance"
+    
+    
+    };
+    
+    assert.deepEqual(addDiv(divnameTest), output);
+    
+    
+    
+});
+
+QUnit.test("addNameField", function (assert)  {
+  var placeholderTextTest ="enter the session name here";
+      
+      
+  var output={
+            
+                type :["text"] ;
+                
+                placeholder :["enter the session name here"];
+      
+                name :["instance-name-1"];
+      
+  }
+  
+  assert.deepEqual(addDiv(divnameTest,"instances"), output);
+
+
+
+
+    
+});             
+                     
+QUnit.test("addInstance",function (assert){
+    var output= "instance 1";
+    
+    
+    assert.deepEqual(addInstance(),output);
+    
+});                    
+                     
+QUnit.test("addButton",function(assert){
+    
+    var buttonTest={
+        name :[ "instance-file-1"];
+        type :['file'];
+        accept :[".zip"];
+    }
+
+
+    
+    
+    
+    assert.deepEqual(addButton(addButton,"instances"),buttonTest)
+});                     
+                     
+                     
 
 QUnit.log( function( details )  {
 	console.log( "Log: ", details.actual, details.message );
