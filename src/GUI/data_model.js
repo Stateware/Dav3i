@@ -38,7 +38,28 @@ function updateCharts( selectedRegions )
 	return g_mapSelectedRegionToDivs;
 }
 
+function generateChartData(sessionID, instanceID, countryID,statID)
+{
+	var data = new Array();
+	data[0] = new Array();
+	data[1] = new Array();
+	var country = retrieveByCountryData(sessionID,instanceID,countryID);
 
+	//.log(JSON.stringify(country,' ',' '));
+
+	var keys = Object.keys(country.get(statID));
+	for(var i = 0 ; i < keys.length; i++)
+	{
+		var year = keys[i];
+		if(!isNaN(year))
+		{
+			data[0].push(year);
+			data[1].push(country.get(statID).get(year));
+		}
+	}
+
+	alert(JSON.stringify(data,' ', ' '));
+}
 
 function retrieveByCountryData(sessionID, instanceID, countryID, options)
 {
@@ -50,7 +71,6 @@ function retrieveByCountryData(sessionID, instanceID, countryID, options)
 	}
 	
 	return g_cache.get(sessionID).get(instanceID).get(countryID);
-	//return data
 	
 }
 
@@ -58,19 +78,12 @@ function retrieveByStatData(sessionID, instanceID, statID, year)
 {
 	var have = checkCacheByStat(sessionID, instanceID, statID, year);
 	
-	if(have)
+	if(!have)
 	{
-		//alert( "Have!" );
-	}
-	else
-	{
-		//alert( "Don't have!" );
 		getDataByStat(sessionID, instanceID, statID, year);
 	}
 	
-	//alert("Data!");
-	var data = g_cache.get(sessionID).get(instanceID);
-	return data
+	return g_cache.get(sessionID).get(instanceID);
 }
 
 function checkCacheByStat(sessionID, instanceID, statID, year)
@@ -89,12 +102,9 @@ function checkCacheByCountry(sessionID, instanceID, countryID)
 
 function getDataByStat(sessionID, instanceID, statID, year)
 {
-	alert("data_model.js:statID"+statID);
 	//TODO: fix undefined year...?
 	var URL = "http://localhost/dav3i/API/by_stat.php?sessionID=" + sessionID +
 				"&instanceID=" + instanceID + "&statID=" + statID + "&year=" + year;
-	
-	alert(URL);
 
 	//get the data and send it to be parsed
 	$.ajax({
@@ -135,21 +145,22 @@ function parseCountryPacket(packet)
 	//console.log(packet);
 	packet = JSON.parse(packet);
 	
-	for(var stat = 0; stat < Object.keys(packet).length; stat++)
+	for(var j = 0; j < Object.keys(packet).length; j++)
 	{
 		var sessionID, instanceID, countryID, data;
-		sessionID = packet[stat]["session"];
-		instanceID = packet[stat]["instance"];
-		countryID = packet[stat]["country"];
-		data = packet[stat]["data"];
-		var countryCache = g_cache.get(sessionID).get(instanceID).get(countryID);
+		sessionID = packet[j]["session"];
+		instanceID = packet[j]["instance"];
+		countryID = packet[j]["country"];
+		stat = packet[j]["stat_id"];
+		data = packet[j]["data"];
+		//var countryCache = g_cache.get(sessionID).get(instanceID).get(countryID);
 
 		for(var i = 0; i < data.length; i++)
 		{
 			var pair = data[i];
 			var year = Object.keys(pair)[0]; // the first key is the only key =)
 			var value = pair[year];
-			countryCache.get(stat).set(year, value);
+			g_cache.get(sessionID).get(instanceID).get(countryID).get(stat).set(year, value);
 		}
 	}
 

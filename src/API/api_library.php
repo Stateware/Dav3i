@@ -166,7 +166,7 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
 						"FROM data ".
 						"WHERE session_id =".$sessionID." AND ".
 	  					"instance_id=".$instanceID." AND ". 
-						"country_id=".($countryIDs + 1)." ORDER BY country_id ASC;";
+						"country_id=".($countryIDs)." ORDER BY country_id ASC;";
 						
 	
 	$countryDataResults = $databaseConnection->query($byCountryQuery);
@@ -176,7 +176,7 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
 		array_push($results,$countryRow);
 	}
 
-	return ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs + 1, $results);
+	return ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs, $results);
 } //END ByCountry
 
 //Date Created: 10/29/2015
