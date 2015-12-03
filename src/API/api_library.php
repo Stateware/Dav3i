@@ -30,7 +30,8 @@
  * Input:               none                     
  * Output:              none
  */
- 
+
+// make sure to include all the necessary php files that are referenced in these functions
 require_once("toolbox.php");
 require_once("connect.php");
 require_once("by_stat_packet.php");
@@ -62,25 +63,25 @@ function ByStat($statID, $year, $sessionID, $instanceID)
     }
     else
     {
-        //check year is sanitary
+        //check year is sanitary, see IsSanitaryYear for details
         if (!IsSanitaryYear($year))
         {
             ThrowFatalError("Input is unsanitary: year");
         }
 
-        //Check inputs are valid
+        //Check inputs are validm see IsValidYear for details
         if (!IsValidYear($year, $yearRange))
         {
             ThrowFatalError("Input is invalid: year");
         }
     }
-    //check statID is sanitary
+    //check statID is sanitary, see IsSanitaryStatID for details
     if (!IsSanitaryStatID($statID))
     {
            ThrowFatalError("Input is unsanitary: statID");
     }
     
-    //Check inputs are valid
+    //Check inputs are valid, see IsValidStatID for details
     if (!IsValidStatID($statID,$numStats))
     {
        ThrowFatalError("Input is invalid: statID");
@@ -235,36 +236,46 @@ function Descriptor($sessionID = DEFAULT_SESSION)
 {
     $databaseConnection = GetDatabaseConnection();	//get the connection to the database
     
+    // retrieve the year range of the data that is currently in the database
     $yearRange = GetYearRange($databaseConnection, $sessionID);
+
+    // sanitize the year range, if it is not valid than the database is empty
     if ($yearRange === null)
     {
     	ThrowFatalError("SessionID does not have data");
     }
 	
-
+    // retrieve the stat map from the database, see GetStatMap for more details
     $stats = GetStatMap($databaseConnection, $sessionID);
 
+    // if the retrieved stat map is null, that means that the given session ID does not have any data
     if($stats === null)
     {
         ThrowFatalError("SessionID does not have data");
     }
-    
+
+    // retrieve the country map from the database, see GetCountryMap for more details
     $countries = GetCountryMap($databaseConnection, $sessionID);
 
+    // if the retrieved country map is null, that means that the given session ID does not have any data
     if ($countries === null)
     {
         ThrowFatalError("SessionID does not have data");
     }
 
+    // retrieve the instance map from the database, see GetInstanceMap for more details
     $instances = GetInstanceMap($databaseConnection, $sessionID);
 
+    // if the retrieved instance map is null, that means that the given session ID does not have any data
     if ($instances === null)
     {
         ThrowFatalError("SessionID does not have data");
     }
 
+    // retrieve the session map from the database, see GetSessionMap for more details
     $sessions = GetSessionMap($databaseConnection);
 
+    // if the retrieved session map is null, that means that there was some error in retrieving the sessions from the database
     if ($sessions === null)
     {
         ThrowFatalError("Error getting sessions");
@@ -287,6 +298,7 @@ function IsSanitaryYear($year)
 {
     return preg_match("/^\d{4}$/", $year) === 1;
 }
+
 // Author:        William Bittner, Andrew Lopreiato
 // Date Created:  2/22/2015
 // Last Modified: 4/7/2015 by Andrew Lopreiato
@@ -360,30 +372,45 @@ function GetStatMap($database,$sessionID)
 // PRE:  $database is a mysqli database connection
 // POST: FCTVAL == array of the human readable names of all statistics in the database
 {
-    //returning array
+    // stat storage array for later use
     $statArray = array();
     
+    // build the query that will retrieve the list of stats that are contained in the given session ID
 	$statListQuery = "SELECT DISTINCT stat_id FROM data WHERE session_id='".$sessionID."' ORDER BY stat_id ASC";
+    // execute the aforementioned query and store the resulting stat list into a variable
 	$statListResult = $database->query($statListQuery);
 	
+    // iterate through each of the elements (stats) in the retrieved stat list
+    // fetch_assoc() is a member of the return type of the query, which is the actual data value
 	while($statRow = $statListResult->fetch_assoc())
 	{
+        // push the retrieved data into the returning array, indexed in the "stat_id" row
 		array_push($statArray, $statRow["stat_id"]);
 	}
-	
-	if(empty($statArray))
-		return null;
 
+	// returns null if the returning array is null, meaning that nothing was retrieved from the stat list in the database 
+	if(empty($statArray))
+    {
+		return null;
+    }
+
+    // build the query that will retrieve the name of the stats that are in the (just build) stat array, from the meta_stats table
     $statNameQuery = "SELECT stat_id, stat_name FROM meta_stats WHERE stat_id IN (" . implode($statArray,",") . ");";
+    // execute the query that was just built
     $statNameResult = $database->query($statNameQuery);
     
+    // build the returning array
     $statMap = array();
 
+    // iterate through the rows of the result of the previous query, which will be stat names from meta_stats
+    // fetch_assoc() is a member that will be the actual data (stat name) from the query
     while($statRow = $statNameResult->fetch_assoc())
     {
+        // push each stat name in the query result into the returning stat map array
         $statMap[$statRow["stat_id"]]=$statRow["stat_name"];
     }
 
+    // return the map of all the stat names in the database
     return $statMap;
 } //END GetStatNames
 
@@ -428,6 +455,7 @@ function GetCountryMap($database, $sessionID)
         $countryMap[$countryRow["country_id"]]=array("cc2"=>$countryRow["cc2"], "cc3"=>$countryRow["cc3"], "common_name"=>$countryRow["common_name"]);
     }
 
+    // return an array of all the countries in the session that have data, as well as their info
     return $countryMap;
 } //END GetCountryMap
 
@@ -471,6 +499,7 @@ function GetInstanceMap($database, $sessionID)
         $instanceMap[$instanceRow["instance_id"]]=$instanceRow["instance_name"];
     }
 
+    // return an array of all the instance names in the current session
     return $instanceMap;
 } //END GetInstanceMap
 
@@ -486,14 +515,17 @@ function GetSessionMap($database)
     $sessionNameQuery = "SELECT session_id, session_name FROM meta_session;";
     $sessionNameResult = $database->query($sessionNameQuery);
     
+    // create the return session map array
     $sessionMap = array();
 
-    // iterate through each session row and push it to the session map array
+    // iterate through each session row
     while($sessionRow = $sessionNameResult->fetch_assoc())
     {
+        // map each session to it's id, in the returning session map array
         $sessionMap[$sessionRow["session_id"]]=$sessionRow["session_name"];
     }
 
+    // return an array of all the sessions in the database
     return $sessionMap;
 } //END GetSessionMap
 
@@ -505,21 +537,31 @@ function GetYearRange($database, $sessionID)
 // PRE:  $database is a mysqli database connection, and sessioID is a valid session 
 // POST: return an array with exactly two key value pairs: startYear is the lowest year, endYear is the highest year  
 {
+    // build the query that will retrieve each distinct year from the database in the current session
 	$yearRangeQuery = "SELECT DISTINCT year FROM data WHERE session_id='".$sessionID."' ORDER BY year ASC";
+    // execute the (just built) query
 	$yearRangeResult = $database->query($yearRangeQuery);
 	
+    // built an array to hold the years
 	$yearArray = array();
 	
+    // iterate through the result of the database query
 	while($yearRow = $yearRangeResult->fetch_assoc())
 	{
+        // push each resulting year from the query into the year array
 		array_push($yearArray, $yearRow["year"]);
 	}
 	
+    // return null if no years were retrieved
 	if(empty($yearArray))
+    {
 		return null;
-	
+	}
+
+    // create a new array that contains just the start and end years of the retrieved years
 	$yearRange = array("startYear"=>$yearArray[0], "endYear"=>$yearArray[count($yearArray)-1]);
 	
+    // return the (just built) year array
 	return $yearRange;
 	
 } //END GetYearRange
