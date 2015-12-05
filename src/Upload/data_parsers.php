@@ -184,14 +184,16 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 					}
 
 					flushedPrint("Finished file " . $datafileName . ": ");
-					flushedPrint( "Read " . $numRows . " rows from CSVs.");
-					flushedPrint( "Inserted " . $affectedRows . " rows.");
-					if($numRows != $affectedRows)
-					{
-						flushedPrint( "Error: failed to upload all data.");
-					}
 				}
 			}
+		}
+
+		flushedPrint("Finished instance: " . $instanceName);
+		flushedPrint( "Read " . $numRows . " rows from CSVs.");
+		flushedPrint( "Inserted " . $affectedRows . " rows.");
+		if($numRows != $affectedRows)
+		{
+			flushedPrint( "Error: failed to upload all data.");
 		}
 	}
 	flushedPrint( "It took ". (time() - $time) . " seconds to upload.");
