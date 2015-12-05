@@ -55,6 +55,7 @@ function ThrowInconvenientError($message = "An inconvenient error has occured - 
     echo "Error: " . $message;
 } // END ThrowInconvenientError
 
+
 function flushedPrint($message)
 //PRE: message is a valid string.
 //POST: The message is printed followed by a line break to the web page.
@@ -62,6 +63,24 @@ function flushedPrint($message)
     echo $message . "<br>";
     flush();
 }
+
+function GetArgumentValue( $input, $required=true ) 
+//PRE: input is defined, required is optional, defaults to true
+//POST: This function will return the arguments passed in on the $input parameter, or null if it is not set and not required
+{
+    if( !isset($_GET[ $input ]) )
+	{
+		if( $required )
+			ThrowFatalError("Input is not defined: ".$input);
+		
+		return null;
+	}
+	else
+	{
+		return $_GET[ $input ];
+	}
+} // END GetArgumentValue
+
 
 function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = false)
 //PRE:     database: the database to query tableName: the table in the database to get the data from
@@ -86,6 +105,7 @@ function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = fal
 // These are global variables that describe our default values for data of the given types
 define("DEFAULT_NUMBER", -1);
 define("DEFAULT_STRING", "");
+define("DEFAULT_SESSION", 1);
 /*      EFFECTS OF TESTING == TRUE:
  * The ThrowFatalError doesn't kill the page
  */

@@ -44,30 +44,50 @@ if (EXTERNAL_ACCESS)
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 {
 	//This checks to see if anything was passed into the parameter countryIDs
-	if (!isset($_GET['countryIDs']))
+	$_countryIDs=GetArgumentValue('countryIDs', true);
+
+	$_instanceID=GetArgumentValue('instanceID', true);
+	$_sessionID=GetArgumentValue('sessionID', true);
+	
+	country_exe($_countryIDs, $_sessionID, $_instanceID);
+}
+
+function country_exe($country_id, $session_id, $instance_id )
+{
+	if (is_null($country_id))
 	{
 		ThrowFatalError("Input is not defined: countryIDs");
 	}
-	$_countryIDs=($_GET['countryIDs']);
-
-	country_exe($_countryIDs);
-}
-
-function country_exe($country_id)
-{
-	if (!isset($country_id))
+	if (is_null($session_id))
 	{
-		ThrowFatalError("Input is not defined: countryIDs");
+		ThrowFatalError("Input is not defined: sessionID");
+	}
+	if (is_null($instance_id))
+	{
+		ThrowFatalError("Input is not defined: instanceID");
 	}
 
 	//Here we are calling our function ByCountry - which is in api_library.php - and assigning the output to an array
-	$byCountryArray = ByCountry($country_id);
+	$byCountryPacketArray = ByCountry($country_id, $session_id, $instance_id);
 
-	//encode results of ByCountry into json
-	$byCountryJSON = json_encode($byCountryArray);
+	$keys = array_keys($byCountryPacketArray);
 
-	// return byCountry json string
-	echo $byCountryJSON;
+	$i = 0;
 
+	echo "{";
+
+	if(count($keys) > 0)
+	{
+		echo ($i++).":";
+		$byCountryPacketArray[$keys[0]]->send();
+	}
+	for(; $i < count($keys) ;$i++)
+	{
+		echo ",".$i.":";
+		$byCountryPacketArray[$keys[$i]]->send();
+		
+	}
+
+	echo "}";
 }
 ?>
