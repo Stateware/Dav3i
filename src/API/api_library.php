@@ -102,7 +102,6 @@ function ByStat($statID, $year, $sessionID, $instanceID)
 						"year=".$year." AND ".
 						"stat_id=".$databaseIndexedStatID." ORDER BY country_id ASC;";
 	
-	//TODO: heatmap to bystat names, comment, unit test
 	$heatMapResults = $databaseConnection->query($heatMapQuery);
 	$results = array();
 	while($heatMapRow = $heatMapResults->fetch_assoc())
@@ -537,6 +536,8 @@ function GetYearRange($database, $sessionID)
 // PRE:  $database is a mysqli database connection, and sessioID is a valid session 
 // POST: return an array with exactly two key value pairs: startYear is the lowest year, endYear is the highest year  
 {
+    //TODO: Query the meta_session table for start and end year, rather than the data.
+
     // build the query that will retrieve each distinct year from the database in the current session
 	$yearRangeQuery = "SELECT DISTINCT year FROM data WHERE session_id='".$sessionID."' ORDER BY year ASC";
     // execute the (just built) query
