@@ -1,0 +1,31 @@
+<meta charset="UTF-8">
+<html>
+
+<head>
+    <title>Upload A Session</title>
+     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name='viewport' />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="dynamic_upload.js"></script>
+
+</head>
+
+<body onLoad="addInstance();addInstance();addInstance();">
+    <h1>Upload Utility</h1>
+    
+  	<form enctype="multipart/form-data" action="data_parsers.php" method="POST">
+	    
+	    <label>Session Name: </label>
+	    <input type="text" name="session-name"></input>
+	    
+	    <div id="instances" on>
+	    
+	    </div>
+	<label id="numInstancesLabel" >Number of Instances: 0</label>
+	<input hidden=true name="instance-count" id="numInstances" value="0"><br>
+    <input type="button" value="Add Instance" onClick=addInstance()>
+    <input type="submit" value="Submit Session">
+    <input type="button" value="Back" onClick="window.location = '../index.html';">
+    </form>
+    
+</body>
+</html>
