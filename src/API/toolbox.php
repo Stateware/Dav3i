@@ -55,8 +55,13 @@ function ThrowInconvenientError($message = "An inconvenient error has occured - 
     echo "Error: " . $message;
 } // END ThrowInconvenientError
 
-
-
+function flushedPrint($message)
+//PRE: message is a valid string.
+//POST: The message is printed followed by a line break to the web page.
+{
+    echo $message . "<br>";
+    flush();
+}
 
 function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = false)
 //PRE:     database: the database to query tableName: the table in the database to get the data from
