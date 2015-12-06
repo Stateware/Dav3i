@@ -82,7 +82,7 @@ function GetArgumentValue( $input, $required=true )
 } // END GetArgumentValue
 
 
-function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = false)
+/*function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = false)
 //PRE:     database: the database to query tableName: the table in the database to get the data from
 //            columnName: the column of the table from which to return the first row
 //            filter: when supplied, will add a filter to the query
@@ -98,18 +98,18 @@ function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = fal
     $row = $results->fetch_assoc();
     $results->free();
     return $row[$columnName];
-} // END GetFirstRowFromColumn
+} // END GetFirstRowFromColumn*/
 
 
 // ===================== Variable Declaration =====================
 // These are global variables that describe our default values for data of the given types
 define("DEFAULT_NUMBER", -1);
 define("DEFAULT_STRING", "");
-define("DEFAULT_SESSION", 1);
+define("DEFAULT_SESSION", 35);
 /*      EFFECTS OF TESTING == TRUE:
  * The ThrowFatalError doesn't kill the page
  */
-define("TESTING", FALSE);
+define("TESTING", TRUE);
 /*  EFFECTS OF EXTERNAL_ACCESS == TRUE:
  * All API calls are allowed to be accessed by non-server users
  */
