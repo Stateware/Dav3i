@@ -20,13 +20,12 @@
  * along with Dav3i.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* File Name:           descriptor.php
- * Description:         This file queries the database for the country names, 
- *                      year range, two character country code (cc2), and the stats
+/* File Name:           descriptorTest.php
+ * Description:          This file tests the functions of descriptor.php using PHP Unit.
  * 
- * Date Created:        2/7/2015
- * Contributors:        Kyle Nicholson, Berty Ruan, Drew Lorpeiato, William Bittner, Brent Mosier
- * Date Last Modified:  9/27/2015
+ * Date Created:        9/23/2015
+ * Contributors:        Brent Mosier
+ * Date Last Modified:  10/1/2015
  * Last Modified By:    Brent Mosier
  * Dependencies:        api_library.php
  * PRE:               NONE
@@ -35,34 +34,42 @@
  * Additional Notes:    Before completion of this file we need a populated
  *                      database on the correct server
  */
-require_once("api_library.php");
+require_once '.\..\..\src\api\packet.php';
 
-// enable foreign access in testing
-if (EXTERNAL_ACCESS)
-{
-	header("Access-Control-Allow-Origin: *");
-}
+ class packetTest extends \PHPUnit_Framework_TestCase
+ {
+ 	
+ 	function testPacketConstructor()
+ 	{
+ 		$sessionID = 35;
+ 		$instanceID = 46;
+ 		$statID = 1;
+ 		$data = "";
+ 		$packet = new Packet($sessionID,$instanceID,$statID,$data);
+ 		$expected = ""; // TODO: make this actually what it should be.
+ 		$this->assertTrue($packet == $expected);
+ 	}
 
-//Checks if this is running from a request
-if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
-{
-	$_sessionID=GetArgumentValue('sessionID', false);
-	desc($_sessionID);
-}
+ 	function testPacketSendReadable()
+ 	{
+ 		$sessionID = 35;
+ 		$instanceID = 46;
+ 		$statID = 1;
+ 		$data = "";
+ 		$packet = new Packet($sessionID,$instanceID,$statID,$data);
+ 		$packet->send(true);
+ 		$this->assertTrue(true);
+ 	}
 
-function desc($sessionID)
-{	
-	if(is_null($sessionID))
-		$descriptorArray = Descriptor();
-	else
-		$descriptorArray = Descriptor($sessionID);
-
-	//encode results of Descriptor() into json
-	$descriptorJSON = json_encode($descriptorArray);
-
-	// return descriptor json string
-	echo $descriptorJSON;
-}
-
-
+ 	function testPacketSendUnreadable()
+ 	{
+ 		$sessionID = 35;
+ 		$instanceID = 46;
+ 		$statID = 1;
+ 		$data = "";
+ 		$packet = new Packet($sessionID,$instanceID,$statID,$data);
+ 		$packet->send();
+ 		$this->assertTrue(true);
+ 	}
+ }
 ?>

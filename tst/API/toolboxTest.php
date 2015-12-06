@@ -9,7 +9,7 @@
  * Input:               none
  * Output:              none
  */ 
-//require_once(".\..\..\src\api\toolbox.php");
+require_once(".\..\..\src\api\\toolbox.php");
 
 class toolboxTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,23 +19,56 @@ class toolboxTest extends \PHPUnit_Framework_TestCase
 public function testFatalError(){
 	 $message="everything work properly";
 	 
-	 try{
+	 try
+	 {
 		 $ret=  ThrowInconvenientError($message);
 		 
 		 $this-> assertTrue(False); 
 		 
 		 
-	 }
-	 
+	 }	 
 	 catch(Exception $e)
-		{
-			$this->assertTrue("{\"error\" : \"" . $message . "\"}"== $e-> getMessage());
+	{
+		$this->assertTrue("{\"error\" : \"" . $message . "\"}"== $e-> getMessage());
 
-		}
-	
-
-	 
+	}	 
  }
+
+ public function testFlushedPrint()
+ {
+ 	flushedPrint("echo");
+ 	$this->assertTrue(true);
+ }
+
+ public function testGetArgumentValueIsset()
+ {
+ 	$_GET["test"] = true;
+ 	$ret = GetArgumentValue("test");
+
+ 	$this->assertTrue($ret);
+ }
+
+ public function testGetArgumentValueNotIssetRequired()
+ {
+ 	try
+ 	{
+	 	$ret = GetArgumentValue("test");
+
+	 	$this->assertTrue(false); // Function should throw an error.
+	 }
+	 catch(Exception $e)
+	 {
+	 	$this->assertTrue(true); // Error should be caught.
+	 }
+ }
+
+ public function testGetArgumentValueNotIssetNotRequired()
+ {
+ 	$ret = GetArgumentValue("test",false);
+
+ 	$this->assertTrue($ret == null);
+ }
+
 
 public function testInconvenientError(){
 	$message= "An inconvenient error has occured - program flow will continue.";
@@ -57,23 +90,6 @@ public function testInconvenientError(){
 		 
 	                   }
 }
-	
-	
-public function testGetFirstRowFromColumn(){
-     $tableName = "data_births";
-	
-	 $columnName=table_name ;
-	 $expected ="{\"1\":\"SELECT table_name  FROM data_births\"}";
-	 $ret=  GetFirstRowFromColumn(new mysqli("localhost","root","","dav3iphpunittest"), $tableNmae ,  $columnName, $filter = false );
-	 $this-> assertTrue($ret == $expected) ;
-	 
-	 
-	
-	
-	
-	
-	
-                                            }
 	
 }
  

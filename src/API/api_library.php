@@ -49,8 +49,9 @@ function ByStat($statID, $year, $sessionID, $instanceID)
 //      in the database, and instanceID is a valid id that points to an instance in the database
 // POST: FCTVAL == packet resulting from call to parse function with parameters determined in this function
 //                 see "ParseIntoByStatPacket" function
+{
     $heatMapArray = array();						//initialize the array we will return as the heatmap
-    $descriptor = Descriptor(); 					//call our desciptor function and assign it to a variable
+    $descriptor = Descriptor($sessionID); 					//call our desciptor function and assign it to a variable
     $yearRange = $descriptor['yearRange'];			//get the year range out of the descriptor 
     $numStats = count($descriptor['stats']);		//get the number of stats out of the descriptor
     $databaseConnection = GetDatabaseConnection();	//store connection to the database
@@ -145,7 +146,7 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
 {
     $databaseConnection = GetDatabaseConnection();		//store connection to database
     $byCountryArray = array();							//initialize returning array
-    $descriptor = Descriptor();							//grab descriptor
+    $descriptor = Descriptor($sessionID);							//grab descriptor
     $numCountries = count($descriptor['countries']);	//use descriptor to get the number of countries
     $statTables = array();								//initialize statTables array
     
@@ -241,7 +242,7 @@ function Descriptor($sessionID = DEFAULT_SESSION)
     // sanitize the year range, if it is not valid than the database is empty
     if ($yearRange === null)
     {
-    	ThrowFatalError("SessionID does not have data");
+    	ThrowFatalError("SessionID does not have data. Year Range is null.");
     }
 	
     // retrieve the stat map from the database, see GetStatMap for more details
@@ -250,7 +251,7 @@ function Descriptor($sessionID = DEFAULT_SESSION)
     // if the retrieved stat map is null, that means that the given session ID does not have any data
     if($stats === null)
     {
-        ThrowFatalError("SessionID does not have data");
+        ThrowFatalError("SessionID does not have data. Stats is null.");
     }
 
     // retrieve the country map from the database, see GetCountryMap for more details
@@ -259,7 +260,7 @@ function Descriptor($sessionID = DEFAULT_SESSION)
     // if the retrieved country map is null, that means that the given session ID does not have any data
     if ($countries === null)
     {
-        ThrowFatalError("SessionID does not have data");
+        ThrowFatalError("SessionID does not have data. Countries is null.");
     }
 
     // retrieve the instance map from the database, see GetInstanceMap for more details
@@ -268,7 +269,7 @@ function Descriptor($sessionID = DEFAULT_SESSION)
     // if the retrieved instance map is null, that means that the given session ID does not have any data
     if ($instances === null)
     {
-        ThrowFatalError("SessionID does not have data");
+        ThrowFatalError("SessionID does not have data. Instances is null.");
     }
 
     // retrieve the session map from the database, see GetSessionMap for more details
