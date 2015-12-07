@@ -1,8 +1,27 @@
+// File Name: tests.js 
+// Description: This file is the implementation of the testting functions,based on the Qunit 
+// prototyped in:testing.html
+// Dependencies: dynamic_upload.js , lookup_table.js, graph.js
+// Additional Notes: We only need to put all the functions related to the upload features 
+
+ 
+ 
+//Description: This function is a testing function for the function "initPage()" 
+//from the file loading_script.js 
+//PRE: The page is not initialized  
+//POST: The testing function is called and the page is initialized
 QUnit.module("Init Phase Tests", {
 	beforeEach: function(assert) {
 		initPage();
 	}
 });
+
+
+
+//Description: This function is a testing function for the function GetInitialYears(DescriptorJSON)
+//from the file lookup_table.js 
+//PRE: descriptorTest is a year range and the yearRange is combined with a "FirstYear" and a "LastYear" 
+//POST: We test the equality of the descriptorTest and the yearRange
 QUnit.test( "GetInitialYears Test", function( assert ) {
 	//generic test
 	var descriptorTest = {
@@ -16,6 +35,12 @@ QUnit.test( "GetInitialYears Test", function( assert ) {
 	assert.deepEqual( GetInitialYears(descriptorTest), yearRange );
 });
 
+
+
+//Description: This function is a testing function for the function SetGraphType(type)
+//from the file setting.js
+//PRE: The "type" is a graph type name , g_GraphType should be equal to the "type" 
+//POST: The type name is equal to the g_GraphType
 QUnit.test( "SetGraphType Test", function( assert ) {
 	//set global to input
 	var type = "heyo";		
@@ -23,6 +48,13 @@ QUnit.test( "SetGraphType Test", function( assert ) {
 	assert.equal( type, g_GraphType );
 });
 
+
+//Description: This function is a testing function for the function InitializeLookupTable(DescriptorJSON)
+//from the file lookup_table.js
+//PRE: The descriptorTest has two parts , the cc2 & common_name.The output is a collection of cc2 and common_name with 
+//specific foramt 
+//POST: The cc2&common_name hold by variable descriptorTest should be equal to the output , after processed 
+//by the function called InitializeLookupTable 
 QUnit.test( "InitializeLookupTable Test", function( assert ) {
 	//generic test
 	
@@ -45,6 +77,11 @@ QUnit.test( "InitializeLookupTable Test", function( assert ) {
 	assert.deepEqual( InitializeLookupTable(descriptorTest), output );
 });
 
+
+//Description: This function is a testing function for the function GenerateStatReferenceList(DescriptorJSON)
+//from the file lookup_table.js
+//PRE: The variable descriptorTest holds "stats" that has several numbers 
+//POST: The funtion  GenerateStatReferenceList creats the referrenceList by passing the "stats" in 
 QUnit.test( "GenerateStatReferenceList Test", function( assert ) {
 	//generic test
 
@@ -58,6 +95,10 @@ QUnit.test( "GenerateStatReferenceList Test", function( assert ) {
 });
 
 
+//Description: This function is a testing function for the function ParseStatList()
+//from the file lookup_table.js
+//PRE: The variable g_StatList is a collection of stats , the output is value corresponding to those stats
+//POST: The function ParseStatList() should return the value same as hte output by passing the g_StatList
 QUnit.test( "ParseStatList Test", function( assert ) {
 	//generic test
 
@@ -75,47 +116,73 @@ QUnit.test( "ParseStatList Test", function( assert ) {
 });
 
 
+//Description: This function is a testing function for the function Update_Inputs()
+//from the file lookup_table.js
+//PRE: The variable tempSettings is the setting with the years 
+//POST:The setting should be updated and equals to the input values/
+
 QUnit.test( "Update Input test", function (assert) {
 	var tempSettings = [1980, 2012, 2012, 0, 1];
 	assert.deepEqual(UpdateInputs(),tempSettings);
 });
 					 
+
+					 
+
+//Description: This function is a testing function for the function addDiv
+//from the file dynamic_upload.js
+//PRE: the name of a div is provided 
+//POST: The function shoul return the id of the div provided 					 
 QUnit.test("addDiv Test", function (assert) {
     var divnameTest = "instance";
     
-    var output= {   id : "instance"
+    var output= {   
+	                id : "instance"
     
-    
-    };
-    
+                };
+   
+	var secondOutput= "instance";
+    var lastChildTest=document.getElementById("instances").lastChild;
     assert.deepEqual(addDiv(divnameTest), output);
-    
+	assert.deepEqual(lastChildTest,secondOutput);
     
     
 });
 
+
+
+//Description: This function is a testing function for the function addNameField
+//from the function dynamic_upload.js
+//PRE: The the placeholderText is the text in the textfiled
+//POST:The addDiv function should a placeholdertext's type,palceholdertext, and its name. 
 QUnit.test("addNameField", function (assert)  {
   var placeholderTextTest ="enter the session name here";
       
       
   var output={
             
-                type :["text"] ;
+                type :["text"],
                 
-                placeholder :["enter the session name here"];
+                placeholder :["enter the session name here"],
       
-                name :["instance-name-1"];
+                name :["instance-name-1"]
       
-  }
+             }
   
-  assert.deepEqual(addDiv(divnameTest,"instances"), output);
+  assert.deepEqual(addDiv(placeholderTextTest,"instances"), output);
 
 
 
 
     
 });             
-                     
+
+
+
+//Description: This function is a testing function for the function addInstance
+//from the file dynamic_upload.js
+//PRE: the variable "instance " is the name of a instance and the variable instanCount is the counter of that instance
+//POST: with the providided instance and the instanceCount, the function should return the right output
 QUnit.test("addInstance",function (assert){
     var output= "instance 1";
     
@@ -124,13 +191,19 @@ QUnit.test("addInstance",function (assert){
     
 });                    
                      
+
+					 
+//Description: This function is a testing function for the function addButton
+//from the files dynamic_upload.js
+//PRE:The variable "text" is the text dispalyed on the button "parentDiv" is just the parent div of that button
+//POST: The function should return the name ,type and accept value of the button with specific text and parentdiv
 QUnit.test("addButton",function(assert){
     
     var buttonTest={
-        name :[ "instance-file-1"];
-        type :['file'];
-        accept :[".zip"];
-    }
+						name :[ "instance-file-1"],
+						type :['file'],
+						accept :[".zip"]
+                   }
 
 
     
