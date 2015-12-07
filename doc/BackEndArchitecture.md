@@ -14,56 +14,65 @@
 
 ###Introduction to the Back End
 
-The back end is a web server which will host the website for the Spring 2015 iteration of the Stateware Project and the database which contains all of the data that the website will be displaying. The server will send the HTML5 page when the domain is visited, and will send the data to be displayed when the front end requests it. The server will use the LAMP stack to accomplish all of this(see design decisions section).
+The back end is a web server which will host the website for the Fall 2015 iteration of the Stateware Project and the database which contains all of the data that the website will be displaying. The server will send the HTML5 page when the domain is visited, and will send the data to be displayed when the front end requests it. The server will use the LAMP stack to accomplish all of this(see design decisions section).
 
 ###Definitions
-1. **descriptor table** JSON object sent to the front end containing the list of countries in the database with their CC2 and CC3 country codes and assigned countryIDs
-2. **countryID** integer assigned in the descriptor table to identify a country for fast communication between the front and back end
-3. **statID** integer assigned in the descriptor table to identify a stat for fast communication between the front and back end
-4. **heatmap** the map displayed on the website will color code the countries according to the magnitude of one stat in one year
-5. **sanitary data** data that is in the correct format to be processed
-6. **valid data** data that is "correct", i.e. within the bounds with which processing will produce meaningful output
+1. **descriptor table** JSON object sent to the front end containing the list of sessions in the database along with the year range, list of countries(cc2, cc3, and common name), list of stats, and list of instances for a specific session
+2. **instance** a collection of data on various countries, there can be data on one or more statistics pertaining to one or more countries
+3. **session** a collection of instances
+4. **countryID** integer assigned in the descriptor table to identify a country for fast communication between the front and back end
+5. **statID** integer assigned in the descriptor table to identify a stat for fast communication between the front and back end
+6. **sessionID** integer assigned in the descriptor table to identify a session for fast communication between the front and back end
+7. **instanceID** integer assigned in the descriptor table to identify an instance for fast communication between the front and back end
+6. **heatmap** the map displayed on the website will color code the countries according to the magnitude of one stat in one year
+7. **sanitary data** data that is in the correct format to be processed
+8. **valid data** data that is "correct", i.e. within the bounds with which processing will produce meaningful output
+
 
 
 ###Requirements
 The server must
 * Display the website when the domain is visited
-* Upon connection, deliver a descriptor table of the contents of the database, along with the year range within the database
-* Upon receipt of a countryID  deliver all data for that country
-* Upon receipt of a statID with year, deliver all data for that stat in that year(if no year is provided, the current year is given)
+* Upon connection, deliver a descriptor table for the default session, containing the names of all sessions in the database, the list of instances contained in the default session, and the list of stats in each of those instances
+* Upon receipt of a countryID, sessionID, and instanceID deliver all data for that country in that instance of that session
+* Upon receipt of a statID, year, sessionID and instanceID, deliver data of all countries in that session and isntance for that stat in that year(if no year is provided, the current year is given)
 * Be able to receive updated database tables via a secure login
 
 ###PHP Files
 
 
-**descriptor.php:** API call to get descriptor table, year range, and list of stats, encodes data in arrays given by Descriptor library function into JSON, takes no arguments
+**descriptor.php:** API call to get descriptor table for a specific sesssion, takes data in arrays given by Descriptor library function and encodes them into JSON, takes a sessionID as an argument, if none provided default value is used
 
-**by_country.php:** API call to get all data for a country or several countries, takes a countryID or comma delimited list of countryIDs
+**by_country.php:** API call to get all data for a country in a specific instance and session, takes a countryID, instanceID, and sessionID
 
-**by_stat.php:** API call to get data for all countries for a stat and a year, takes a statID and a year as arguments, if no year argument is given it defaults to the current year
+**by_country_packet.php** class to hold the data an individual country being sent to the front end
+
+**by_stat.php:** API call to get data for all countries for a stat and a year in a given instance and session, takes a statID, year, instanceID, and sessionID as arguments, if no year argument is given it defaults to the current year
+
+**by_stat_packet.php** class to hold the data for the heatmap being sent to the front end
 
 **connect.php:** establishes a connection to the MySQL database, takes no arguments
 
 **toolbox.php:** library of functions and global variables that are useful in multiple places within the back end, when the global variable TESTING is set to TRUE ThrowFatalError doesn't kill the page and API calls can be made from foreign hosts
 
 **api_library.php:** library of functions that do the calculations for all of the API calls, includes:
-* **ByStat** takes a statID and a year as arguments and returns the data of the input stat for all countries in the input year, if no input year is given it defaults to the current year
-* **ByCountry** takes a countryID or comma delimited list of countryIDs and returns all data for the input countries
-* **Descriptor** takes no arguments and returns the year range, list of stats, list of cc2, cc3, and country names in the database currently
+* **ByStat** takes a statID, year, instanceID, and sessionID as arguments and returns the data of the input stat for all countries in the input year in the given session and instance, if no input year is given it defaults to the current year
+* **ByCountry** takes a countryID, instanceID, and sessionID and returns all data for the input country in the given session and instance
+* **Descriptor** takes a sessionID as argument and returns the list of sessions in the database along with the year range, list of countries(cc2, cc3, and common name), list of stats, and list of instances for the requested session
 
-**data_parser.php:** takes data from a .csv file and put it into a form that can be input into the database, currently unsuitable for use by the client
+**data_parser.php:** takes data from a zipped folder of .csv's and inputs it to the database as an instance in a session, multiple instances can be uploaded at once and sessions can be updated as well
 
-**data_uploader.php** html page to upload data output from the parser into the database, currently unsuitable for use by the client 
+**packet.php** parent class of both by_stat_packet.php and by_country_packet.php
 
 
 ###Syntax for API Calls
 **descriptor.php**  url/API/descriptor.php
 
-**by_stat.php**  url/API/by_stat.php?statID=x&year=y
-x must be a single valid statID, y must be a single valid year, if no year is given the current year is used as default
+**by_stat.php**  url/API/by_stat.php?statID=x&year=y&sessionID=z&instanceID=a
+x must be a single valid statID, y must be a single valid year, if no year is given the current year is used as default,z must be a single valid sessionID, and a must be a single valid instanceID that represents an instance in the given session z
 
-**by_country.php**  url/API/by_country.php?countryIDs=z
-z must be a single valid countryID or a comma delimited list of countryID's; the front end only sends single countryIDs
+**by_country.php**  url/API/by_country.php?countryID=x&sessionID=y&instanceID=z
+x must be a single valid countryID, y must be a single vaid sessionID, and z must be a single valid instanceID representing an instance in that session
 
 ###Error Handling
 The two error handling functions are ThrowFatalError and ThrowInconvenientError from toolbox.php
@@ -82,7 +91,7 @@ In the case where data is corrupted or lost, this is how each functions in api_l
 | *Meta Stat Table* | Throws Fatal Error | Throws Fatal Error | Throws Fatal Error |
 | *Meta Country Table* | Throws Fatal Error | Throws Fatal Error | Throws Fatal Error |
 
-**Lost Data Key**
+**What happens when something is missing**
 * **stat table** - all data for a specific stat is missing 
 * **stat table column** - all data for a specific year in a stat table is missing
 * **stat table row** - all data for a specific country in a stat table is missing
@@ -106,8 +115,6 @@ The program pixy(https://github.com/oliverklee/pixy) was used to scan for cross 
 New data and updates to data will be submitted via a secure login(not added yet).
 
 ###Database Setup
-
-All tables will be linked via country id (CID).
 
 **meta_stats:** This table provides an easy way to search our list of data tables. It has a columns: Stat table ID, Stat id Name, and SQL table name.
 
@@ -158,6 +165,16 @@ The data will be encoded in JSON(see design decisions section). This is how it w
         	"deaths",
         	"vaccinations"
     	}
+        "instances"
+        {
+        	"instance1",
+            "instance2"
+        },
+        "sessions"
+        {
+        	"session1",
+            "session2"
+        }
 	};
 
 
