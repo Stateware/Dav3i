@@ -32,7 +32,6 @@ The back end is a web server which will host the website for the Fall 2015 itera
 
 ###Requirements
 The server must
-* Display the website when the domain is visited
 * Upon connection, deliver a descriptor table for the default session, containing the names of all sessions in the database, the list of instances contained in the default session, and the list of stats in each of those instances
 * Upon receipt of a countryID, sessionID, and instanceID deliver all data for that country in that instance of that session
 * Upon receipt of a statID, year, sessionID and instanceID, deliver data of all countries in that session and isntance for that stat in that year(if no year is provided, the current year is given)
@@ -81,38 +80,11 @@ The two error handling functions are ThrowFatalError and ThrowInconvenientError 
 
 All functions within api_library.php will validate and sanitize their input data.  In the case of unsanitary or invalid data, ThrowFatalError is called.
 
-In the case where data is corrupted or lost, this is how each functions in api_library handles it. This is not how most of these errors should be handled. All should throw errors that the front end reads and relays the information to the user, but the front end has not implemented error handling yet, so some of these replace the missing data with a no data signifier. The problem is that that isn't necessarily true, there is data, it is just corrupted/lost and the user should know that.
-
-| Lost Data | Descripto | ByStat | ByCountry |
-|:---------|:--------------:|:-----------:|:--------------:|
-| *Stat Table* | Works Normally | Throws Fatal Error if that stat is called| Fills missing data with -1 |
-| *Stat Table Column* | Works Normally | Throws Fatal Error if that year is called | Fills missing data with -1 |
-| *Stat Table Row* | Works Normally | Throws Fatal Error if that stat is called| Fills missing data with -1 |
-| *Meta Stat Table* | Throws Fatal Error | Throws Fatal Error | Throws Fatal Error |
-| *Meta Country Table* | Throws Fatal Error | Throws Fatal Error | Throws Fatal Error |
-
-**What happens when something is missing**
-* **stat table** - all data for a specific stat is missing 
-* **stat table column** - all data for a specific year in a stat table is missing
-* **stat table row** - all data for a specific country in a stat table is missing
-* **meta stat table** - the table used to reference which stats are which tables is missing
-* **meta country table** - the table used to reference which countries are which rows is missing
-
-For all functions, a Fatal Error is thrown when either meta table is missing because there is no way to decipher the database.
-
-Descriptor still works if any stat information is missing because it only reads from the meta tables to make the descriptor table, and to get the year range it will cycle through each table until it finds a valid table to get year range from.
-
-ByStat Throws a fatal error if a stat table is missing only when that stat is called because it only relies on one stat table at a time. It will still work if a stat table is missing and it is not called on that stat table. If a stat table column is missing, ByStat will only throw a fatal error if that column is called because it only relies on one column at a time. It will work on all other columns. If a stat table row is missing, ByStat will throw a Fatal Error if that stat is called because the row will affect all columns in the table. It will still work on all other stat tables that do not have missing rows.
-
-ByCountry fills in missing data with -1 when there are missing stat tables, stat table columns, or stat table rows. This is misleading because there are some countried that do not have data and there should be differentiation between these countries and countries that are missing data because of a server problem. Once the front end implements error handling they will be able to tell the user that there is a server problem rather than displaying the countries as no data.
-
 
 ###Security
 Functions that receive input from the front end will sanitize and validate their data using regular expressions. This insures that no unforeseen data can be used to attack the system.
 
-The program pixy(https://github.com/oliverklee/pixy) was used to scan for cross site scripting(XSS) and SQL injection vulnerabilities. Pixy found several XSS vulnerabilities in the form of echoing a variable without first sanitizing the variable highlighted in the document NoteablePixyResults. These vulnerabilities were determined to be unimportant because no user input could make it to these vulnerabilities without being sanitized and validated beforehand.
-
-New data and updates to data will be submitted via a secure login(not added yet).
+The upload feature is only available on the developer version, which is password protected.
 
 ###Database Setup
 
