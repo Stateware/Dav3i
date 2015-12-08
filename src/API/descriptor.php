@@ -47,7 +47,13 @@ if (EXTERNAL_ACCESS)
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 {
 	$_sessionID=GetArgumentValue('sessionID', false);
-	desc($_sessionID);
+
+	$prettyprint = isset($_GET['prettyprint']) ? true : false;
+
+	if(!$prettyprint)
+		echo desc($_sessionID);
+	else
+		echo "<pre>".json_encode(json_decode(desc($_sessionID)), JSON_PRETTY_PRINT)."</pre>";
 }
 
 function desc($sessionID)
@@ -61,7 +67,7 @@ function desc($sessionID)
 	$descriptorJSON = json_encode($descriptorArray);
 
 	// return descriptor json string
-	echo $descriptorJSON;
+	return $descriptorJSON;
 }
 
 
