@@ -72,10 +72,12 @@ function stat_exe($stat_id, $year, $session_id, $instance_id)
 		ThrowFatalError("Input is not defined: instanceID");
 	}
 
+	$prettyprint = isset($_GET['prettyprint']) ? true : false;
+
 	//call ByStats function with first argument as statID and second argument as year
 	$byStatsPacket = ByStat($stat_id, $year, $session_id, $instance_id);
 
-	$byStatsPacket->send();
+	$byStatsPacket->send($prettyprint);
 
 }
 

@@ -74,17 +74,19 @@ function country_exe($country_id, $session_id, $instance_id )
 
 	$i = 0;
 
+	$prettyprint = isset($_GET['prettyprint']) ? true : false;
+
 	echo "{";
 
 	if(count($keys) > 0)
 	{
-		echo ($i++).":";
-		$byCountryPacketArray[$keys[0]]->send();
+		echo "\"".($i++)."\":";
+		$byCountryPacketArray[$keys[0]]->send($prettyprint);
 	}
 	for(; $i < count($keys) ;$i++)
 	{
-		echo ",".$i.":";
-		$byCountryPacketArray[$keys[$i]]->send();
+		echo ",\"".$i."\":";
+		$byCountryPacketArray[$keys[$i]]->send($prettyprint);
 		
 	}
 

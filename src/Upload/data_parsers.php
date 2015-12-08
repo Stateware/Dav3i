@@ -52,6 +52,8 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 	$g_sessionName = $_POST['session-name'];
 	$g_instanceCount = $_POST['instance-count'];
 
+	flushedPrint("Uploading session: " . $g_sessionName);
+
 	flushedPrint("Number of instances: " . $g_instanceCount);
 
 	$databaseConnection = GetDatabaseConnection();
