@@ -21,7 +21,12 @@
  &nbsp;&nbsp;&nbsp;&nbsp;5.1 : Specification Tests  
  &nbsp;&nbsp;&nbsp;&nbsp;5.2 : Combination Specification Tests  
  &nbsp;&nbsp;&nbsp;&nbsp;5.3 : Normal Operations Tests  
- &nbsp;&nbsp;&nbsp;&nbsp;5.4 : Pathological Tests   
+ &nbsp;&nbsp;&nbsp;&nbsp;5.4 : Pathological Tests  
+ * 6.0 : Uploading Data  
+ &nbsp;&nbsp;&nbsp;&nbsp;6.1 : Specification Tests  
+ &nbsp;&nbsp;&nbsp;&nbsp;6.2 : Combination Specification Tests  
+ &nbsp;&nbsp;&nbsp;&nbsp;6.3 : Normal Operations Tests  
+ &nbsp;&nbsp;&nbsp;&nbsp;6.4 : Pathological Tests    
  
 # 1.0 : Introduction  
  
@@ -260,3 +265,6 @@ When you open Dav3i, what is the default view?
 4. What happens to the screen if a user resizes their browser? What happens if a user tries to go to Extended View or enlarge graphs while resizing their browser window?  
 
 5. What happens when a user selects 10 or more countries in Regular View and goes to Extended View? How long does it take?   
+
+# 6.0 : Uploading Data 
+Refer to upload test plan document: [Test Plan](./UploadTests.xlsx)
