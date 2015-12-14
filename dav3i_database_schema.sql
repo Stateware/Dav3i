@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 30, 2015 at 01:18 AM
+-- Generation Time: Dec 14, 2015 at 10:33 PM
 -- Server version: 5.6.26
 -- PHP Version: 5.6.12
 
@@ -34,72 +34,6 @@ CREATE TABLE IF NOT EXISTS `data` (
   `year` int(5) NOT NULL,
   `value` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `data`
---
-
-INSERT INTO `data` (`session_id`, `instance_id`, `country_id`, `stat_id`, `year`, `value`) VALUES
-(1, 1, 1, 1, 2000, 1),
-(1, 1, 1, 1, 2001, 12),
-(1, 1, 1, 2, 2002, 123),
-(1, 1, 1, 2, 2003, 1234),
-(1, 1, 1, 3, 2004, 12345),
-(1, 1, 2, 1, 2000, 1),
-(1, 1, 2, 1, 2001, 12),
-(1, 1, 2, 1, 2002, 123),
-(1, 1, 2, 1, 2003, 1234),
-(1, 1, 2, 1, 2004, 12345),
-(1, 2, 1, 1, 2000, 10),
-(1, 2, 1, 1, 2001, 120),
-(1, 2, 1, 1, 2002, 1230),
-(1, 2, 1, 1, 2003, 12340),
-(1, 2, 1, 1, 2004, 123450),
-(1, 2, 2, 1, 2000, 10),
-(1, 2, 2, 1, 2001, 120),
-(1, 2, 2, 1, 2002, 1230),
-(1, 2, 2, 1, 2003, 12340),
-(1, 2, 2, 1, 2004, 123450),
-(1, 3, 1, 1, 2000, 100),
-(1, 3, 1, 1, 2001, 1200),
-(1, 3, 1, 1, 2002, 12300),
-(1, 3, 1, 1, 2003, 123400),
-(1, 3, 1, 1, 2004, 1234500),
-(1, 3, 2, 1, 2000, 1001),
-(1, 3, 2, 1, 2001, 12001),
-(1, 3, 2, 1, 2002, 123001),
-(1, 3, 2, 1, 2003, 1234000),
-(1, 3, 2, 1, 2004, 12345000),
-(2, 4, 1, 1, 2000, 1),
-(2, 4, 1, 1, 2001, 12),
-(2, 4, 1, 1, 2002, 123),
-(2, 4, 1, 1, 2003, 1234),
-(2, 4, 1, 1, 2004, 12345),
-(2, 4, 2, 1, 2000, 1),
-(2, 4, 2, 1, 2001, 12),
-(2, 4, 2, 1, 2002, 123),
-(2, 4, 2, 1, 2003, 1234),
-(2, 4, 2, 1, 2004, 12345),
-(2, 5, 1, 1, 2000, 10),
-(2, 5, 1, 1, 2001, 120),
-(2, 5, 1, 1, 2002, 1230),
-(2, 5, 1, 1, 2003, 12340),
-(2, 5, 1, 1, 2004, 123450),
-(2, 5, 2, 1, 2000, 10),
-(2, 5, 2, 1, 2001, 120),
-(2, 5, 2, 1, 2002, 1230),
-(2, 5, 2, 1, 2003, 12340),
-(2, 5, 2, 1, 2004, 123450),
-(2, 6, 1, 1, 2000, 100),
-(2, 6, 1, 1, 2001, 1200),
-(2, 6, 1, 1, 2002, 12300),
-(2, 6, 1, 1, 2003, 123400),
-(2, 6, 1, 1, 2004, 1234500),
-(2, 6, 2, 1, 2000, 1001),
-(2, 6, 2, 1, 2001, 12001),
-(2, 6, 2, 1, 2002, 123001),
-(2, 6, 2, 1, 2003, 1234000),
-(2, 6, 2, 1, 2004, 12345000);
 
 -- --------------------------------------------------------
 
@@ -322,19 +256,7 @@ INSERT INTO `meta_countries` (`country_id`, `cc2`, `cc3`, `common_name`) VALUES
 CREATE TABLE IF NOT EXISTS `meta_instance` (
   `instance_id` int(10) NOT NULL,
   `instance_name` varchar(32) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `meta_instance`
---
-
-INSERT INTO `meta_instance` (`instance_id`, `instance_name`) VALUES
-(1, 'Dav3iData'),
-(2, 'asdf'),
-(3, 'instance3'),
-(4, 'instance4'),
-(5, 'instance5'),
-(6, 'instance6');
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -345,18 +267,9 @@ INSERT INTO `meta_instance` (`instance_id`, `instance_name`) VALUES
 CREATE TABLE IF NOT EXISTS `meta_session` (
   `session_id` int(10) NOT NULL,
   `session_name` varchar(32) NOT NULL,
-  `startYear` int(4) NOT NULL,
-  `endYear` int(4) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `meta_session`
---
-
-INSERT INTO `meta_session` (`session_id`, `session_name`, `startYear`, `endYear`) VALUES
-(1, 'session1', 2000, 2004),
-(2, 'session2', 2000, 2004),
-(3, 'session3', 2000, 2004);
+  `start_year` int(4) NOT NULL,
+  `end_year` int(4) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -438,12 +351,12 @@ ALTER TABLE `meta_countries`
 -- AUTO_INCREMENT for table `meta_instance`
 --
 ALTER TABLE `meta_instance`
-  MODIFY `instance_id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
+  MODIFY `instance_id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=66;
 --
 -- AUTO_INCREMENT for table `meta_session`
 --
 ALTER TABLE `meta_session`
-  MODIFY `session_id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
+  MODIFY `session_id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=53;
 --
 -- AUTO_INCREMENT for table `meta_stats`
 --
