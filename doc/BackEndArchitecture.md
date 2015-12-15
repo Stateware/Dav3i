@@ -92,21 +92,15 @@ The upload feature is only available on the developer version, which is password
 
 **meta_countries:** This table provides a list of all countries identifiers, common name, 2-digit country code, and 3-digit country code. This will be called when a call to "descriptor" is made, and when new data is being uploaded.
 
-**data_?:** There is an individual table for each different data statistic 
-* births = data_births
-* reported cases =  data_cases
-* deaths = data_deaths
-* estimated cases = data_estcases
-* estimated mortality rate = data_estmortal
-* lower bound for estimated cases = data_lbecases
-* lower bound for estimated mortality = data_lbemortal
-* MCV1(first dose of measles containing vaccine) = data_mcv1
-* MCV2(second dose of measles containing vaccine) = data_mcv2
-* population = data_popula
-* upper bound for estimated cases = data_ubecases
-* upper bound for estimated mortality = data_ubemortal
+**meta_session:** This table provides a list of all the sessions and their corresponding id's that currently have data stored in the database. It also contains the start and end year for the data that that particular session contains.
 
-The tables have columns: CID and as many years columns as needed. This format was chosen to make it more efficient to grab all years of data from a single country by just grabbing a row of data. The other way of doing this would be to have three columns: CID, Year, and Value. This way would be considered the “correct” way, however would take a significantly longer time to query for mass quantities of yearly data. The "correct" way has the advantage of having a much greater amount of years, however, the chosen way of creating this table allows for a maximum of 1024 columns, hence 1023 years and it is inconceivable that this program will be used for longer than that span of time. 
+**meta_instance:** This table provides a list of all the instances and their corresponding id's that currently have data stored in the database.
+
+**data:** This table contains all of the data for all of the instances and sessions in the database.
+
+The data in the data table can be accessed through the following foreign keys: session_id, instance_id, country_id, stat_id, year.
+
+We chose this format over dynamically creating tables for each stat in each session because this resulted in one table, where as if we created a table for each stat of each session, the tables would grow disorderly and out of control very quickly. 
 
 ###Format of Data Sent to Front End
 The data will be encoded in JSON(see design decisions section). This is how it will be formatted:
@@ -137,12 +131,12 @@ The data will be encoded in JSON(see design decisions section). This is how it w
         	"deaths",
         	"vaccinations"
     	}
-        "instances"
+        "instances" :
         {
         	"instance1",
             "instance2"
         },
-        "sessions"
+        "sessions" :
         {
         	"session1",
             "session2"
