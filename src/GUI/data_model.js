@@ -1,5 +1,9 @@
 //TODO: fix the coding standards things like setting vars near the top.
 
+
+var SESSION = 1;
+var INSTANCE = 1;
+
 //if supplied a list with an added index with respect to g_mapSelectedRegionsToDivs,
 //	create a div and add that to the page, then add this 
 function updateCharts( selectedRegions )

@@ -203,11 +203,11 @@ function SetHMS(hmsData, stat, year)
 // POST: FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
 function GetHMS(hmsID, year)
 {
-	var data = retrieveByStatData(4, 7, hmsID, year);
+	var data = retrieveByStatData(SESSION, INSTANCE, hmsID, year);
 
 	function wait(){
 		var keys = Object.keys(data);
-		if(checkCacheByStat(4, 7, hmsID, year))
+		if(checkCacheByStat(SESSION, INSTANCE, hmsID, year))
 		{
 			ParseMapData(data, hmsID, year);
 		}
