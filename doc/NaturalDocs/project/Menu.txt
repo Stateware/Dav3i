@@ -46,3 +46,18 @@ Format: 1.52
 # --------------------------------------------------------------------------
 
 
+Group: Index  {
+
+   Index: Everything
+   Class Index: Classes
+   File Index: Files
+   Function Index: Functions
+
+   Group: GUI  {
+
+      File: data_query.js  (GUI\data_query.js)
+      File: t_AsdsNode  (GUI\data.js)
+      }  # Group: GUI
+
+   }  # Group: Index
+
