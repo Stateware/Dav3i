@@ -36,6 +36,31 @@
 // Description:     Parses the object that is passed in and returns data array.
 // PRE: json is valid JSON with data for only one country, assumed to be in the proper format
 // POST: FCTVAL == a 2d array containing stat, year in the form [stat][year]
+/*
+ * Function: ParseData
+ * Find and return the data corresponding to a specific country
+ * 
+ * Parameters: 
+ * session, instance, country ids
+ * 
+ * Pre: 
+ * the global cache holds valid data for the given country ids
+ * 
+ * Post: 
+ * FCTVAL == a 2d array containing [stat][year]
+ * 
+ * Returns: 
+ * 2d array [stat][year]
+ * 
+ * Authors: 
+ * Kyle Yost, John Martin
+ * 
+ * Date Created: 
+ * 2/12/15
+ * 
+ * Last Modified: 
+ * 2/1/16 by Kyle Yost, John Martin
+ */
 function ParseData(json)
 {
     var data = new Array(); // Creates the array for the data to be returned
