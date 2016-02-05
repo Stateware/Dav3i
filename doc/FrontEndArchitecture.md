@@ -26,6 +26,7 @@ Section 2
 &nbsp;&nbsp;&nbsp;&nbsp;2.4.0 : ASDS  
 &nbsp;&nbsp;&nbsp;&nbsp;2.4.1 : Lookup Table Structure  
 &nbsp;&nbsp;&nbsp;&nbsp;2.4.2 : Parsed Stat List  
+&nbsp;&nbsp;&nbsp;&nbsp;2.4.3 : Cache Structure  
 
 Section 3  
  * 3.0 : Use cases
@@ -42,6 +43,7 @@ Section 4
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.1 : Lookup Table Structure  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.2 : Stat Reference List  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.3 : Parsed Stat List  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.4 : Cache  
 &nbsp;&nbsp;&nbsp;&nbsp;4.0.2 : UX  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.2.0 : Control Panel  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.2.1 : Map  
@@ -418,6 +420,14 @@ Stat type 0 represents a regular time series, either bounded or unbounded. If it
 
 Stat type 1 represents vaccinations. Its head stat is MCV1, and its associated data is MCV2 and SIA.
 
+###2.4.3 : Cache Structure
+
+The cache itself doesn't have an actual structure, but must be created in such a way that it does. 
+
+The cache should be structured in a hierarchical manner as:
+
+SessionID > InstanceID > CountryID > StatID > Year,Value
+
 #Section 3
 
 ##3.0 : Use cases
@@ -530,6 +540,10 @@ The stat reference list's setup as a 1D array is ideal as it is easily used to e
 ####4.0.1.3 : Parsed Stat List:
 
 The Parsed Stat List Structure was chosen because it allowed an easy way for us to interpret which graphing function is appropriate to call based on the type of data to be graphed. The graph type enumeration was put first because the number of enumerated values is constant, regardless of stat, while the number of values for vaccinations may vary. By putting the enumeration first, there is a constant index into the head stat across all stats.
+
+####4.0.1.4 : Cache:
+
+The cache is a heavily structured object which holds all of the data received from the API calls. The cache was created in order to store the increased amount of data received from the server for handling sessions and instances. It is used as a temporary cache, which clears upon refreshing the page.
 
 ### 4.0.2 : UX  
 
