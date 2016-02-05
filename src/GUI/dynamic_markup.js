@@ -423,12 +423,113 @@ var dataJSON = {
         "session5": ["Q", "R", "S", "T"]
 }
 
-// Author: Paul Jang
-// Date Created: 11/12/2015
-// Last Modified: 11/13/2015 by Joshua Crafts
-// Description: Fills the dropdown menu that holds all sessions
-// PRE: dropdown entitled "sessionSelect" exists, json with data exists somewhere
-// POST: the dropdown menu on the graph menu is filled with all sessions currently in the database
+/* 
+ * Function: loadAllSessions()
+ *
+ *      Loads all sessions from the descriptor
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre:
+ *
+ *      the descriptor correctly retrieves all of the sessions that have data in the database
+ *
+ * Post:
+ *
+ *      none
+ *
+ * Returns:
+ *
+ *      an array of all the sessions in the database
+ *
+ * Authors:
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      2/4/2016
+ *
+ * Last Modified:
+ *
+ *      2/4/2016 by Paul Jang
+ */
+function loadAllSessions()
+{
+}
+
+/* 
+ * Function: loadInstances()
+ *
+ *      Loads all instances in a given session
+ *
+ * Parameters: 
+ *
+ *      session ID
+ *
+ * Pre:
+ *
+ *      The given session ID is valid and points to a session that has data in the database
+ *
+ * Post:
+ *
+ *      none
+ *
+ * Returns:
+ *
+ *      an array of the instances contained in the given session 
+ *
+ * Authors:
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      2/4/2016
+ *
+ * Last Modified:
+ *
+ *      2/4/2016 by Paul Jang
+ */
+function loadInstances(sessionID)
+{
+}
+
+/* 
+ * Function: fillSessionDropDown()
+ *
+ *      Fills the session drop down menu with the sessions that currently have data in the database.
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre: 
+ *
+ *      dropdown entitled "sessionSelect" exists, json with data exists somewhere
+ *
+ * Post:
+ *
+ *      the dropdown menu on the graph menu is filled with all sessions currently in the database
+ *
+ * Returns: 
+ *
+ *      the name of the new selected session
+ *
+ * Authors: 
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      11/12/2015
+ *
+ * Last Modified:
+ *
+ *      11/13/2015 by Joshua Crafts
+ */
 function fillSessionDropDown()
 {
     // get session drop down select div and array of keys in data object
@@ -452,12 +553,39 @@ function fillSessionDropDown()
     return $('#sessionSelect').find(":selected").text();
 }
 
-// Author: Paul Jang
-// Date Created: 11/12/2015
-// Last Modified: 11/13/2015 by Paul Jang
-// Description: fills the instance drop down menu with all the instances in the current session
-// PRE: "sessionSelect" and "instanceSelect" exists
-// POST: instance drop down menu on graph menu fills with all instances in selected session
+/* 
+ * Function: fillInstanceDropDown()
+ *
+ *      Fills the instance drop down menu with the instances from the current session.
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre:
+ *
+ *      "sessionSelect" and "instanceSelect" exists
+ *
+ * Post:
+ *
+ *      instance drop down menu on graph menu fills with all instances in selected session
+ *
+ * Returns:
+ *
+ *      the name of the new selected instance
+ *
+ * Authors:
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      11/12/2015
+ *
+ * Last Modified:
+ *
+ *      11/13/2015 by Paul Jang
+ */
 function fillInstanceDropDown()
 {   
     // get the current selected session and the corresponding array of instances
@@ -478,3 +606,78 @@ function fillInstanceDropDown()
     return $('#instanceSelect').find(":selected").text();
 }
 
+/* 
+ * Function: getSelectedSession()
+ *
+ *      Retrieves the session that is currently selected in the dropdown menu of all sessions.
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre:
+ *
+ *      A dropdown of sessions exist and one of the sessions is chosen.
+ *
+ * Post:
+ *
+ *      none
+ *
+ * Returns:
+ *
+ *      the id of the currently selected session
+ *
+ * Authors:
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      2/4/2016
+ *
+ * Last Modified:
+ *
+ *      2/4/2016 by Paul Jang
+ */
+function getSelectedSession()
+{
+}
+
+/* 
+ * Function: getSelectedInstance()
+ *
+ *      Retrieves the instance that is currently selected in the dropdown menu of instances.
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre:
+ *
+ *      A dropdown of instances exist and one of the instances is chosen.
+ *
+ * Post:
+ *
+ *      none
+ *
+ * Returns:
+ *
+ *      the id of the currently selected instance
+ *
+ * Authors:
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      2/4/2016
+ *
+ * Last Modified:
+ *
+ *      2/4/2016 by Paul Jang
+ */
+ function getSelectedInstance()
+ {
+ }
+
+ 
