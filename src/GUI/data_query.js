@@ -30,14 +30,8 @@
 // Additional Notes:        N/A
 
 
-// Author:          Nicholas Denaro
-// Date Created:    2/12/15
-// Last Modified:   3/19/15 by Nicholas Denaro
-// Description:     Parses the object that is passed in and returns data array.
-// PRE: json is valid JSON with data for only one country, assumed to be in the proper format
-// POST: FCTVAL == a 2d array containing stat, year in the form [stat][year]
 /*
- * Function: ParseData
+ * Function: GetCountryDataArray
  * Find and return the data corresponding to a specific country
  * 
  * Parameters: 
@@ -56,12 +50,12 @@
  * Kyle Yost, John Martin
  * 
  * Date Created: 
- * 2/12/15
+ * 2/08/16
  * 
  * Last Modified: 
- * 2/1/16 by Kyle Yost, John Martin
+ * 2/8/16 by Kyle Yost, John Martin
  */
-function ParseData(json)
+function GetCountryDataArray(json)
 {
     var data = new Array(); // Creates the array for the data to be returned
     data = json[Object.keys(json)[0]];// Since there will only be one country in each json,
