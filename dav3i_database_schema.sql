@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 23, 2015 at 01:18 AM
+-- Generation Time: Dec 14, 2015 at 10:33 PM
 -- Server version: 5.6.26
 -- PHP Version: 5.6.12
 
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `dav3i_new_schema`
+-- Database: `dav3i`
 --
 
 -- --------------------------------------------------------
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `data` (
   `country_id` int(3) NOT NULL,
   `stat_id` int(10) NOT NULL,
   `year` int(5) NOT NULL,
-  `data` float NOT NULL
+  `value` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -256,7 +256,7 @@ INSERT INTO `meta_countries` (`country_id`, `cc2`, `cc3`, `common_name`) VALUES
 CREATE TABLE IF NOT EXISTS `meta_instance` (
   `instance_id` int(10) NOT NULL,
   `instance_name` varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -266,8 +266,10 @@ CREATE TABLE IF NOT EXISTS `meta_instance` (
 
 CREATE TABLE IF NOT EXISTS `meta_session` (
   `session_id` int(10) NOT NULL,
-  `session_name` varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `session_name` varchar(32) NOT NULL,
+  `start_year` int(4) NOT NULL,
+  `end_year` int(4) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -349,12 +351,12 @@ ALTER TABLE `meta_countries`
 -- AUTO_INCREMENT for table `meta_instance`
 --
 ALTER TABLE `meta_instance`
-  MODIFY `instance_id` int(10) NOT NULL AUTO_INCREMENT;
+  MODIFY `instance_id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=66;
 --
 -- AUTO_INCREMENT for table `meta_session`
 --
 ALTER TABLE `meta_session`
-  MODIFY `session_id` int(10) NOT NULL AUTO_INCREMENT;
+  MODIFY `session_id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=53;
 --
 -- AUTO_INCREMENT for table `meta_stats`
 --
