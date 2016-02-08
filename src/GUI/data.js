@@ -46,6 +46,39 @@ var g_VaccHMS = 1;					// variable used to determine which vaccination stat to u
 var g_TempSettings = new Array(5);  // indicies are "first year, last year, Heat map year, graph type, vacc heat map"
 var g_Map;
 
+//key:value as region:div
+var g_mapSelectedRegionsToDivs = {};
+var g_cache = new data_cache();
+
+
+//Object to store the cache
+function data_cache()
+{
+    this.get = function(prop) {
+        this[prop] = this[prop] || new data_cache();
+        return this[prop];
+    };
+    
+    this.set = function(prop, value) {
+        this[prop] = value;
+    };
+}
+
+function getFirstInstance()
+{
+    return 10;
+}
+
+function getSecondInstance()
+{
+    return 10;
+}
+
+function getSession()
+{
+    return 4;
+}
+
 /*
  *  Class: t_AsdsNode
  *      prototype for ASDS node
