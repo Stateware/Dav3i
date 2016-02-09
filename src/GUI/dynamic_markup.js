@@ -414,87 +414,10 @@ function bugPopup()
         + "additional relevant information.");
 }
 
-// TODO: replace client side data structure
+// sample json in the format of the descriptor
 var dataJSON = {
-        "session1": ["A","B","C","D"],
-        "session2": ["E", "F","G","H"],
-        "session3": ["I", "J", "K", "L"],
-        "session4": ["M", "N", "O", "P"],
-        "session5": ["Q", "R", "S", "T"]
-}
-
-/* 
- * Function: loadAllSessions()
- *
- *      Loads all sessions from the descriptor
- *
- * Parameters: 
- *
- *      none
- *
- * Pre:
- *
- *      the descriptor correctly retrieves all of the sessions that have data in the database
- *
- * Post:
- *
- *      none
- *
- * Returns:
- *
- *      an array of all the sessions in the database
- *
- * Authors:
- *
- *      Paul Jang
- *
- * Date Created:
- *
- *      2/4/2016
- *
- * Last Modified:
- *
- *      2/4/2016 by Paul Jang
- */
-function loadAllSessions()
-{
-}
-
-/* 
- * Function: loadInstances()
- *
- *      Loads all instances in a given session
- *
- * Parameters: 
- *
- *      session ID
- *
- * Pre:
- *
- *      The given session ID is valid and points to a session that has data in the database
- *
- * Post:
- *
- *      none
- *
- * Returns:
- *
- *      an array of the instances contained in the given session 
- *
- * Authors:
- *
- *      Paul Jang
- *
- * Date Created:
- *
- *      2/4/2016
- *
- * Last Modified:
- *
- *      2/4/2016 by Paul Jang
- */
-function loadInstances(sessionID)
-{
+        "instances": {"1": "instance1", "3": "instance2", "4": "instance3", "7": "instance4"},
+        "sessions": {"1": "session1", "2": "session2", "3": "session3"}
 }
 
 /* 
@@ -528,13 +451,15 @@ function loadInstances(sessionID)
  *
  * Last Modified:
  *
- *      11/13/2015 by Joshua Crafts
+ *      2/8/2016 by Paul Jang
  */
-function fillSessionDropDown()
+function fillSessionDropDown(descriptor)
 {
-    // get session drop down select div and array of keys in data object
-    var sessionSelect = document.getElementById("sessionSelect");
-    var keys = Object.keys(dataJSON);
+    // retrieve the list of sessions from the descriptor
+    var sessions = dataJSON["sessions"];
+
+    // retrieve the keys from the sessions object
+    var keys = Object.keys(sessions);
 
     // clear the dropdown
     sessionSelect.innerHTML = "";
@@ -542,7 +467,8 @@ function fillSessionDropDown()
     // loop through the keys and add them to the dropdown
     for(var i = 0; i<keys.length; i++)
     {
-        var newOption = new Option(keys[i],i);
+        var curr = keys[i];
+        var newOption = new Option(sessions[curr],curr);
         sessionSelect.appendChild(newOption);
     }
 
@@ -586,19 +512,22 @@ function fillSessionDropDown()
  *
  *      11/13/2015 by Paul Jang
  */
-function fillInstanceDropDown()
-{   
-    // get the current selected session and the corresponding array of instances
-    var sessionName = $('#sessionSelect').find(":selected").text();
-    var value = dataJSON[sessionName];
-
+function fillInstanceDropDown(descriptor)
+{
     // clear instance drop down
     instanceSelect.innerHTML = "";
+    
+    // retrieve the instances object from the descriptor
+    var instances = dataJSON["instances"];
 
-    // loop through instance array and add them to drop down
-    for(var i = 0; i<value.length; i++)
+    // retrieve the keys from the instances object
+    var keys = Object.keys(instances);
+
+    // loop through the keys and add the options to the instance dropdown
+    for(var i = 0; i<keys.length; i++)
     {
-        var newOption = new Option(value[i],i);
+        var curr = keys[i];
+        var newOption = new Option(instances[curr],curr);
         instanceSelect.appendChild(newOption);
     }
 
@@ -637,10 +566,13 @@ function fillInstanceDropDown()
  *
  * Last Modified:
  *
- *      2/4/2016 by Paul Jang
+ *      2/8/2016 by Paul Jang
  */
 function getSelectedSession()
 {
+    // get the value by getting the selected index, and then using that index to get the selected session, and then getting the value
+    var value = document.getElementById("sessionSelect")[document.getElementById("sessionSelect").selectedIndex].value;
+    return value;
 }
 
 /* 
@@ -674,10 +606,13 @@ function getSelectedSession()
  *
  * Last Modified:
  *
- *      2/4/2016 by Paul Jang
+ *      2/8/2016 by Paul Jang
  */
- function getSelectedInstance()
- {
- }
+function getSelectedInstance()
+{
+    // get the value by getting the selected index, and then using that index to get the selected instance, and then getting the value
+    var value = document.getElementById("instanceSelect")[document.getElementById("instanceSelect").selectedIndex].value;
+    return value;
+}
 
  
