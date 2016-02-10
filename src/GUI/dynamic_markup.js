@@ -421,13 +421,98 @@ var dataJSON = {
 }
 
 /* 
+ * Function: onSessionChange()
+ *
+ *      Called when a session is changed in the dropdown menu
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre: 
+ *
+ *      dropdown entitled "sessionSelect" exists, helper functions work correctly
+ *
+ * Post:
+ *
+ *      the selected session will show in the dropdown, the instances dropdown will be filled with the instances from that session, and the dataset is changed to the new session's data
+ *
+ * Returns: 
+ *
+ *      the id of the new selected session
+ *
+ * Authors: 
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      2/10/2016
+ *
+ * Last Modified:
+ *
+ *      2/10/2016 by Paul Jang
+ */
+function onSessionChange()
+{
+    // for now, only call the fill session dropdown function
+    // TODO: add functionality to change data set when session is changed
+    var newSession = $('#sessionSelect').find(":selected").text(); 
+    alert("Session has been changed to " + newSession + ".");
+    fillInstanceDropdown(dataJSON);
+    return newSession;
+}
+
+/* 
+ * Function: onInstanceChange()
+ *
+ *      Called when an instance is changed in the dropdown menu
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre: 
+ *
+ *      none
+ *
+ * Post:
+ *
+ *      the dataset is changed to the new instance's data
+ *
+ * Returns: 
+ *
+ *      the id of the new selected instance
+ *
+ * Authors: 
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      2/10/2016
+ *
+ * Last Modified:
+ *
+ *      2/10/2016 by Paul Jang
+ */
+function onInstanceChange()
+{
+    // for now, alert the user that the instance has been changed, and that this function has been called
+    // TODO: add functionality to change instance data set when instance is changed
+    var newInstance = $('#instanceSelect').find(":selected").text();
+    alert("Instance has been changed to " + newInstance + ".");
+    return newInstance;
+}
+
+/* 
  * Function: fillSessionDropDown()
  *
  *      Fills the session drop down menu with the sessions that currently have data in the database.
  *
  * Parameters: 
  *
- *      none
+ *      a JSON that is pulled from the descriptor
  *
  * Pre: 
  *
