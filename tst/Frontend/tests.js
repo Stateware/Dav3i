@@ -79,7 +79,31 @@ QUnit.test( "Update Input test", function (assert) {
 	var tempSettings = [1980, 2012, 2012, 0, 1];
 	assert.deepEqual(UpdateInputs(),tempSettings);
 });
-					 
+				
+QUnit.test( "Fill Session Drop Down Menu test", function (assert) {
+	// sample json in the format of the descriptor
+	var dataJSON = {
+        "instances": {"1": "instance_A", "3": "instance_B", "4": "instance_C", "7": "instance_D"},
+        "sessions": {"1": "session1", "2": "session2", "3": "session3"}
+	};
+
+	var output = "session1";
+
+	assert.deepEqual( fillSessionDropDown(dataJSON) , output);
+});
+
+QUnit.test( "Fill Instance Drop Down Menu test", function (assert) {
+	// sample json in the format of the descriptor
+	var dataJSON = {
+        "instances": {"1": "instance4", "3": "instance6", "4": "instance7", "7": "instance8"},
+        "sessions": {"1": "session1", "2": "session2", "3": "session3"}
+	};
+
+	var output = "instance4";
+
+	assert.deepEqual( fillSessionDropDown(dataJSON) , output);
+});
+
 
 QUnit.log( function( details )  {
 	console.log( "Log: ", details.actual, details.message );

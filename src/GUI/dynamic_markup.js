@@ -418,7 +418,7 @@ function bugPopup()
 var dataJSON = {
         "instances": {"1": "instance1", "3": "instance2", "4": "instance3", "7": "instance4"},
         "sessions": {"1": "session1", "2": "session2", "3": "session3"}
-}
+};
 
 /* 
  * Function: onSessionChange()
