@@ -31,14 +31,16 @@
 
 
 /*
- * Function: GetCountryDataArray
- * Find and return the data corresponding to a specific country
+ * Function: FormatStatData
+ * Takes a cache stats object for a particular country and returns a
+ * 2D array of the values
  * 
  * Parameters: 
- * session, instance, country ids
+ * statData
  * 
  * Pre: 
- * the global cache holds valid data for the given country ids
+ * statData contains valid stat data for a particular country in the
+ * cache storage format
  * 
  * Post: 
  * FCTVAL == a 2d array containing [stat][year]
@@ -50,19 +52,27 @@
  * Kyle Yost, John Martin
  * 
  * Date Created: 
- * 2/08/16
+ * 2/8/16 
  * 
  * Last Modified: 
- * 2/8/16 by Kyle Yost, John Martin
+ * 2/12/16 by Kyle Yost, John Martin
  */
-function GetCountryDataArray(json)
+function FormatStatData(statData)
 {
-    var data = new Array(); // Creates the array for the data to be returned
-    data = json[Object.keys(json)[0]];// Since there will only be one country in each json,
-                                      // we can simply get the first key, and use that to
-                                      // get the value for the data.
+    var arr = [][];
+    var statKeys = statData.keys; 
 
-    return (data);
+    for(var i = 0; i < statKeys.length; i++)
+    {
+        var yearKeys = statData.get(statKeys[i]).keys;
+
+        for(var j = 0; j < yearKeys.length; j++)
+        {
+            arr[i][j] = statData.get(statKeys[i]).get(yearKeys[j]);
+        }
+    }
+
+    return arr;
 }
 
 
