@@ -54,13 +54,19 @@ var g_cache = new data_cache();
 //Object to store the cache
 function data_cache()
 {
+	this.keys = [];
+	
     this.get = function(prop) {
         this[prop] = this[prop] || new data_cache();
+        if( this.keys.indexOf(prop) === -1 )
+        	this.keys.push(prop);
         return this[prop];
     };
     
     this.set = function(prop, value) {
         this[prop] = value;
+        if( this.keys.indexOf(prop) === -1 )
+        	this.keys.push(prop);
     };
 }
 
@@ -92,8 +98,10 @@ function getSession()
  *  Members:
  *      next - The pointer to the next node in the list
  */
-function t_AsdsNode(cid, cc2, name, data)
+function t_AsdsNode(sessionid, instanceid, cid, cc2, name, data)
 {
+	this.sessionid = sessionid;
+	this.instanceid = instanceid;
     this.cid = cid;
     this.cc2 = cc2;
     this.name = name;
