@@ -61,8 +61,6 @@ function generateChartData(sessionID, instanceID, countryID,statID)
 			data[1].push(country.get(statID).get(year));
 		}
 	}
-
-	alert(JSON.stringify(data,' ', ' '));
 }
 
 function retrieveByCountryData(sessionID, instanceID, countryID, options)
@@ -104,7 +102,7 @@ function checkCacheByCountry(sessionID, instanceID, countryID)
 	return countryIDs[countryID] === undefined ? false : countryIDs[countryID];//handle undefined
 }
 
-function getDataByStat(sessionID, instanceID, statID, year)
+function getDataByStat(sessionID, instanceID, statID, year, callback)
 {
 	//TODO: fix undefined year...?
 	var URL = "http://localhost/dav3i/API/by_stat.php?sessionID=" + sessionID +
@@ -116,6 +114,10 @@ function getDataByStat(sessionID, instanceID, statID, year)
 	success: function(data){
 		parseStatPacket(data);
 		g_cache.get(sessionID).get(instanceID).get("flags").get("statIDs").get(statID).set(year, true);
+		if(typeof(callback) == 'function')
+		{
+			callback(g_cache.get(sessionID).get(instanceID), statID, year);
+		}
 	},
 	error: function(xhr, ajaxOptions, thrownError){
 			console.log("Error on stat ajax call...\n" + xhr.status + "\n" + thrownError + "\nURL: " + URL);

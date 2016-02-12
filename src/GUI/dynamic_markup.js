@@ -154,7 +154,7 @@ function RotateTabs(direction)
         tabs.removeChild(div);
         tabs.insertBefore(div,children[0]);
     }
-    return(tabs.childNoes[0]);
+    return(tabs.childNodes[0]);
 }
 
 // Author: Emma Roudabush

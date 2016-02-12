@@ -163,7 +163,9 @@ function ColorByHMS() {
         }
     }
 
-    GetHMS(hmsID, g_HMSYear);
+    //GetHMS(getSession(), getFirstInstance(), hmsID, g_HMSYear);
+    //retrieveByStatData(getSession(), getFirstInstance(), hmsID, g_HMSYear);
+    getDataByStat(getSession(), getFirstInstance(), hmsID, g_HMSYear, SuccessfulByStat);
 };
 
 // Author: Murlin Wei, William Bittner
@@ -178,7 +180,8 @@ function ParseMapData(hmsData,hmsID) {
     var min = Number.MAX_VALUE;
     var max = Number.MIN_VALUE;
 
-    var hms = SetHMS(hmsData[hmsID]);
+    //console.log(JSON.stringify(hmsData,' ',' '));
+    var hms = SetHMS(hmsData);
     for (var i = 0; i < g_LookupTable.length; i++)
     {
         g_LookupTable[i][2] = Number(hms[i]);
@@ -212,6 +215,7 @@ function ParseMapData(hmsData,hmsID) {
     g_Map.series.regions[0].params.max = max;
     g_Map.reset();
     g_Map.series.regions[0].setValues(data);
+    //g_Map.series.regions[0].values = data;
 
     var dataArray = {
         Data : data,
@@ -250,7 +254,7 @@ function FindCountriesNoData() {
             g_CountriesNoData.push(key);
         }
     }
-    }, 1000);
+    }, 10000);
     //console.log(g_CountriesNoData);
 
 };

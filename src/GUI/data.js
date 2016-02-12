@@ -72,17 +72,17 @@ function data_cache()
 
 function getFirstInstance()
 {
-    return 10;
+    return 60;
 }
 
 function getSecondInstance()
 {
-    return 10;
+    return 60;
 }
 
 function getSession()
 {
-    return 4;
+    return 40;
 }
 
 /*
