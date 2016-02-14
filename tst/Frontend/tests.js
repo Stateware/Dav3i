@@ -108,3 +108,57 @@ QUnit.test( "Fill Instance Drop Down Menu test", function (assert) {
 QUnit.log( function( details )  {
 	console.log( "Log: ", details.actual, details.message );
 });
+
+
+/*-------------------------------------------------------------------------------------*/
+
+QUnit.module("Controller: Populate Session and Instance Dropdown Menu Test", {
+	beforeEach: function() {
+		this.controller = C_SessionInstanceDropDownMenu;
+		this.dataJSON = {
+	        "instances": {"session1": ["instance1", "instance2"]},
+	        "sessions": {"1": "session1", "2": "session2", "3": "session3"}
+		};
+		
+	}
+});
+
+QUnit.test("object should retrieve the proper JSON object", function(assert){
+	assert.deepEqual(this.controller.getJSON(), this.dataJSON);
+});
+
+QUnit.test("object should return all session names", function(assert){
+	assert.deepEqual(this.controller.getSessionNames(), this.dataJSON["sessions"]);
+});
+
+QUnit.test("object should get all instance names under one session", function(assert){
+	var session = this.dataJSON['sessions']['1'];
+	var instances = this.dataJSON['instances'][session];
+	assert.deepEqual(this.controller.getInstanceNames(session), instances);
+});
+
+/*-------------------------------------------------------------------------------------*/
+
+QUnit.module("View: Dropdown Menu DOM test", {
+	beforeEach: function() {
+		this.controller = C_SessionInstanceDropDownMenu;
+		this.view = V_SessionInstanceDropDownMenu;
+	}
+});
+
+QUnit.test("object should take in a css id and string array as input, and populates a dropdown menu", function(assert){
+	var cssID = this.view.sessionCSSID;
+	var sessionNames = this.controller.getSessionNames();
+	assert.ok(this.view.populateDropdownMenu(cssID, sessionNames));
+});
+
+QUnit.test("object should print out all the instances", function(assert){
+	var cssID = this.view.instanceCSSID;
+	var session = this.controller.getJSON()["sessions"];
+	assert.ok(this.view.populateInstances(cssID, this.controller.getInstanceNames(session)));
+});
+
+QUnit.test("object should get the session name that is submitted", function(assert){
+	var cssID = this.view.sessionCSSID;
+	assert.ok(this.view.getSessionName(cssID));
+});

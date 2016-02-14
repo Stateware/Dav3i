@@ -700,4 +700,96 @@ function getSelectedInstance()
     return value;
 }
 
- 
+/*
+//prototype classes
+var Car = function(loc) {
+    var obj = Object.create(Car.prototype)
+    obj.loc = loc;
+    return obj;
+};
+
+Car.prototype.move = {
+    this.loc++;
+}
+
+-------------------------------------------------------------
+//pseudoclasses with subclasses
+var Car = function(loc) {
+    this.loc = loc;
+}
+Car.prototype.move = fucntion() {
+    this.loc++;
+}
+
+var Van = function(loc) {
+    Car.call(this, loc);
+}
+Van.prototype = Object.create(acr.prototype);
+Van.prototype.constructor = Van;
+Van.prototype.grab = fucntion(){...};
+*/
+
+var C_SessionInstanceDropDownMenu = {
+    /* public */
+    getSessionNames: function() {
+        return this.getJSON()["sessions"];
+    },
+
+    getInstanceNames: function(sessionName) {
+        return this.getJSON()["instances"][sessionName];
+    },
+
+    /* private */ 
+    getJSON: function() {
+        return {
+            "instances": {"session1": ["instance1", "instance2"]},
+            "sessions": {"1": "session1", "2": "session2", "3": "session3"}
+        };
+    }    
+};
+
+var V_SessionInstanceDropDownMenu = {
+    /* public */
+    "sessionCSSID": "",
+    "instanceCSSID": "",
+
+    populateDropdownMenu: function(cssID, arr) {
+        theDOM.populateDropdownMenu(cssID, arr);
+        return true;
+    },
+
+    populateInstances: function() {    
+        var sessionName = this.getSessionName();
+        var instanceNames = C_SessionInstanceDropDownMenu.getInstanceNames(sessionName);
+        this.populateDropdownMenu(this.instanceCSSID, instanceNames); 
+        return true;
+    },
+
+    /* private */
+    getSessionName: function(cssID) {
+        var sessionName = theDOM.grabSelectedDropdownMenuItem(this.sessionCSSID);
+        return true;
+    }
+};
+
+var theDOM = {
+    /* public */
+    populateDropdownMenu : function(cssID, arr) {
+        // clear the dropdown
+/*        $('#'+cssID).innerHTML = "";
+
+        // loop through the keys and add them to the dropdown
+        var keys = Object.keys(arr);
+        for(var i = 0; i<keys.length; i++)
+        {
+            var curr = keys[i];
+            var newOption = new Option(sessions[curr],curr);
+            $('#'+cssID).appendChild(newOption);
+        }*/
+    },
+
+    grabSelectedDropdownMenuItem: function(cssID) {
+      // $('#'+cssID).find(":selected").text();
+    }
+
+};
