@@ -184,13 +184,39 @@ function SetHMS(hmsData)
     return heatMapValues
 }
 
+
 /*
  * Function: ReformatByStatData
- *
+ * Takes a cache instance object for a particular session and returns an
+ * array of the values
+ * 
+ * Parameters: 
+ * cache
+ * statID
+ * year
+ * 
+ * Pre: 
+ * instanceCache contains valid instance data for the stat and all countries in the
+ * cache storage format
+ * 
+ * Post: 
+ * FCTVAL == array containing [country] = value at year
+ * 
+ * Returns: 
+ * array [country]
+ * 
+ * Authors: 
+ * Nicholas Denaro
+ * 
+ * Date Created: 
+ * 2/12/16 
+ * 
+ * Last Modified: 
+ * 2/15/16 by Nicholas Denaro
  */
-function ReformatByStatData(cache, statID, year)
+function ReformatByStatData(instanceCache, statID, year)
 {
-	var data = {};
+	var data = array();
 	var keys = cache.keys;
 
 	for(var country = 0; country < keys.length; country++)
@@ -203,6 +229,28 @@ function ReformatByStatData(cache, statID, year)
 }
 
 /*
+ * Function: SuccessfulByStat
+ * Connects the formatting of the data from the server and the updating of the heatmap
+ * 
+ * Parameters: 
+ * data
+ * statID
+ * year
+ * 
+ * Pre: 
+ * data is valid and does not contain an error
+ * 
+ * Post: 
+ * Heatmap is updated
+ * 
+ * Authors: 
+ * Nicholas Denaro
+ * 
+ * Date Created: 
+ * 2/12/16 
+ * 
+ * Last Modified: 
+ * 2/15/16 by Nicholas Denaro
  */
 function SuccessfulByStat(data, statID, year)
 {

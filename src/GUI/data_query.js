@@ -59,13 +59,13 @@
  */
 function FormatStatData(statData)
 {
-    var arr = [][];
+    var arr = array();
     var statKeys = statData.keys; 
 
     for(var i = 0; i < statKeys.length; i++)
     {
         var yearKeys = statData.get(statKeys[i]).keys;
-
+        arr[statKeys[i]] = array();
         for(var j = 0; j < yearKeys.length; j++)
         {
             arr[i][j] = statData.get(statKeys[i]).get(yearKeys[j]);
