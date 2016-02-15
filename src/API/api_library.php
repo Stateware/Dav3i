@@ -184,7 +184,7 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
 		array_push($results,$countryRow);
 	}
 
-	return ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs + 1, $results);
+	return ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs, $results);
 } //END ByCountry
 
 
