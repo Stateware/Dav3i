@@ -39,7 +39,7 @@ function initPage()
 {
 	initMap();
 	// Generate lookup table and heat map
-    GetDescriptor(40);
+    GetDescriptor(getSession());
 
 	// Do below process when heat map is generated
 	// Check opacity in testing?

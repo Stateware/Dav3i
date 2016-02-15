@@ -59,13 +59,13 @@
  */
 function FormatStatData(statData)
 {
-    var arr = array();
+    var arr = [];
     var statKeys = statData.keys; 
 
     for(var i = 0; i < statKeys.length; i++)
     {
         var yearKeys = statData.get(statKeys[i]).keys;
-        arr[statKeys[i]] = array();
+        arr[i] = [];
         for(var j = 0; j < yearKeys.length; j++)
         {
             arr[i][j] = statData.get(statKeys[i]).get(yearKeys[j]);
@@ -79,39 +79,73 @@ function FormatStatData(statData)
 /*
  *  Function: GetData
  *  
- *  Makes Ajax call to get country data from server
+ *  Grabs country data from the cache then passes GenerateCountryCharts as a callback to be called once
+ * 			the cache is filled 
  *
  *  Parameters:
- *      cid - The country to get the data from
+ * 		sessionid - The session to get the data from
+ * 		instanceid - The instance to get the data from
+ *      countryid - The country to get the data from
+ *
+ *  Pre:
+ *      sessionid is a valid session id
+ * 		instanceid is a valid instance id
+ * 		countryid is a valid country id
+ *
+ *  Post:
+ *      FCTVAL == the cache object rooted at the countryid is returned (all objects inside the country id)
+ *
+ *  Authors:
+ *      William Bittner
+ *
+ *  Date Created:
+ *      2/8/2016
+ *
+ *  Last Modified:
+ *      2/8/2016 by William Bittner
+ */
+function GetData( sessionid, instanceid, countryid )
+{
+    getDataByCountry( sessionid, instanceid, countryid, GenerateCountryCharts );
+} 
+
+/*
+ *  Function: GenerateCountryCharts
+ *  
+ *  Makes a new node for the given countryid with the given data
+ * 		then adds that node to the list nodes and calls the functions to generate subdivs and charts for that node
+ *
+ *  Parameters:
+ * 		data - The cache data for the country
+ * 		cid - The country id
  *
  *  Pre:
  *      cid is a valid country-id
+ * 		data is valid cache data
  *
  *  Post:
- *      FCTVAL == Ajax object that makes the API call with the given cid
- *
- *  Returns:
- *      Ajax object that makes the API call with the given cid
+ *      A new node will be created for the country with the proper fields and added to the global list of nodes
+ * 			The charts will be properly formatted and generated.
  *
  *  Authors:
- *      Vanajam Soni, Paul Jang
+ *      Vanajam Soni, Kyle Nicholson, William Bittner
  *
  *  Date Created:
- *      3/5/15
+ *      2/8/2016 
  *
  *  Last Modified:
- *      3/26/15 by Vanajam Soni
+ *      2/8/2016 by William Bittner
  */
-function GetData(cid)
+function GenerateCountryCharts( data, cid )
 {
-    return $.ajax({                                      
-        url: 'http://localhost/dav3i/API/by_country.php?countryIDs='.concat(cid.toString()),                                                    
-        dataType: 'JSON',
-        //success: function(data){     
-        //    console.log("Successfully received by_country.php?countryIDs=".concat(cid.toString()));
-        //} 
-    });
-
+	var newNode = new t_AsdsNode(getSession(), getInstance(), cid, g_LookupTable[cid][0], g_LookupTable[cid][1], null);
+	var parsedData = FormatStatData(data);
+    newNode.data = parsedData;
+    //console.log(newNode);
+    g_DataList.add(newNode);
+    // draw graph with new node
+    GenerateSubDivs();
+    GenerateGraphs();
 }
 
 
@@ -133,13 +167,13 @@ function GetData(cid)
  *      linked list of currently selected countries on map.
  *
  *  Authors:
- *      Vanajam Soni, Kyle Nicholson
+ *      Vanajam Soni, Kyle Nicholson, Nicholas Denaro
  *
  *  Date Created:
  *      3/24/15
  *
  *  Last Modified:
- *      10/8/15 Nicholas Denaro
+ *      2/8/2016 by William Bittner
  */
 function ModifyData(selectedRegions) 
 {
@@ -164,17 +198,17 @@ function ModifyData(selectedRegions)
             {
                 CC2Found = true;
                 var cid = GetCID(selectedRegions[i]);
-                    var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
-                    $.when(GetData(cid)).done(function(data){
-                        var parsedData = ParseData(data);
-                        newNode.data = parsedData;
-                        //console.log(newNode);
-                        g_DataList.add(newNode);
-                        // draw graph with new node
-                        GenerateSubDivs();
-                        GenerateGraphs();
-                    });
-                
+                GetData( getSession(), getInstance(), cid );
+                 /*var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
+               $.when(GetData(cid)).done(function(data){
+                    var parsedData = ParseData(data);
+                    newNode.data = parsedData;
+                    //console.log(newNode);
+                    g_DataList.add(newNode);
+                    // draw graph with new node
+                    GenerateSubDivs();
+                    GenerateGraphs();
+                });*/
             }
         }
     }
@@ -204,3 +238,4 @@ function ModifyData(selectedRegions)
     }
     return g_DataList;
 }
+

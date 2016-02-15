@@ -163,9 +163,7 @@ function ColorByHMS() {
         }
     }
 
-    //GetHMS(getSession(), getFirstInstance(), hmsID, g_HMSYear);
-    //retrieveByStatData(getSession(), getFirstInstance(), hmsID, g_HMSYear);
-    getDataByStat(getSession(), getFirstInstance(), hmsID, g_HMSYear, SuccessfulByStat);
+    getDataByStat(getSession(), getInstance(), hmsID, g_HMSYear, SuccessfulByStat);
 };
 
 // Author: Murlin Wei, William Bittner

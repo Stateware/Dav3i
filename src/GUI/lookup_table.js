@@ -100,6 +100,7 @@ function GetDescriptor(sessionID)
         },
         error: function(xhr, textStatus, errorThrown){
        		console.log('Descriptor could not be fetched. The error is as follows: ' + errorThrown);
+       		console.log(URL);
     	}
     });
 }
@@ -216,13 +217,13 @@ function SetHMS(hmsData)
  */
 function ReformatByStatData(instanceCache, statID, year)
 {
-	var data = array();
-	var keys = cache.keys;
+	var data = [];
+	var keys = instanceCache.keys;
 
 	for(var country = 0; country < keys.length; country++)
 	{
 		//console.log(cache.get(keys[country]));
-		data[country] = cache.get(keys[country]).get(statID).get(year);
+		data[country] = instanceCache.get(keys[country]).get(statID).get(year);
 	}
 
 	return data;

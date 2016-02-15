@@ -1,8 +1,14 @@
-//TODO: fix the coding standards things like setting vars near the top.
+/*TEMP FUNCTIONS FOR GET INSTANCE AND SESSION*/
 
+function getInstance()
+{
+	return 10;
+}
 
-var SESSION = 1;
-var INSTANCE = 1;
+function getSession()
+{
+	return 4;
+}
 
 //if supplied a list with an added index with respect to g_mapSelectedRegionsToDivs,
 //	create a div and add that to the page, then add this 
@@ -127,7 +133,7 @@ function getDataByStat(sessionID, instanceID, statID, year, callback)
 	
 }
 
-function getDataByCountry(sessionID, instanceID, countryID)
+function getDataByCountry(sessionID, instanceID, countryID, callback)
 {
 	
 	var URL = "http://localhost/dav3i/API/by_country.php?sessionID=" + sessionID +
@@ -136,13 +142,17 @@ function getDataByCountry(sessionID, instanceID, countryID)
 	//get the data and send it to be parsed
 	$.ajax({
 	url:URL,
-	success: function(data){ parseCountryPacket(data); },
+	success: function(data){ 
+		parseCountryPacket(data); 
+		g_cache.get(sessionID).get(instanceID).get("flags").get("countryIDs").set(countryID, true);
+		if( typeof callback === "function" )
+			callback( g_cache.get(sessionID).get(instanceID).get(countryID), countryID );
+	},
 	error: function(xhr, ajaxOptions, thrownError){
 			console.log("Error on country ajax call...\n" + xhr.status + "\n" + thrownError + "\nURL: " + URL);
 			}
 	});
 	
-	g_cache.get(sessionID).get(instanceID).get("flags").get("countryIDs").set(countryID, true);
 }
 
 
