@@ -70,20 +70,6 @@ function data_cache()
     };
 }
 
-function getFirstInstance()
-{
-    return 60;
-}
-
-function getSecondInstance()
-{
-    return 60;
-}
-
-function getSession()
-{
-    return 40;
-}
 
 /*
  *  Class: t_AsdsNode
