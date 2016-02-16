@@ -460,7 +460,7 @@ function GenerateSumNode(){
         }
     }
     
-    var newNode = new t_AsdsNode(-1, "SUM", names, data);
+    var newNode = new t_AsdsNode(getSession(), getInstance(), -1, "SUM", names, data);
 
     return newNode;
 }
