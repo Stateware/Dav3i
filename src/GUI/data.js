@@ -46,7 +46,19 @@ var g_VaccHMS = 1;					// variable used to determine which vaccination stat to u
 var g_TempSettings = new Array(5);  // indicies are "first year, last year, Heat map year, graph type, vacc heat map"
 var g_Map;
 
-// prototype for ASDS node
+/*
+ *  Class: t_AsdsNode
+ *      prototype for ASDS node
+ *
+ *  Parameters:
+ *      cid - The cid of the country
+ *      cc2 - The cc2 of the corresponding country
+ *      name - The countries name corresponding to the country
+ *      data - The data for the corresponding country
+ *
+ *  Members:
+ *      next - The pointer to the next node in the list
+ */
 function t_AsdsNode(cid, cc2, name, data)
 {
     this.cid = cid;
