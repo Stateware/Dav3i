@@ -3,6 +3,55 @@ QUnit.module("Init Phase Tests", {
 		initPage();
 	}
 });
+
+QUnit.test( "Test GetCountryDataArray", function (assert) {
+	test_cache = new data_cache();
+
+	testData = new Array(2);
+	testData[0] = new Array(8);
+	testData[0][0] = 55;
+	testData[0][1] = 58;
+	testData[0][2] = 60;
+	testData[0][3] = 62;
+	testData[0][4] = 57;
+	testData[0][5] = 56;
+	testData[0][6] = 55;
+	testData[0][7] = 52;
+	testData[1] = new Array(8);
+	testData[1][0] = 25;
+	testData[1][1] = 28;
+	testData[1][2] = 30;
+	testData[1][3] = 32;
+	testData[1][4] = 27;
+	testData[1][5] = 26;
+	testData[1][6] = 25;
+	testData[1][7] = 22;`
+
+	//Stat 0, Year 1990-1997
+	test_cache.get(0).get(0).get(0).get(0).get(1990) = testData[0][0];
+	test_cache.get(0).get(0).get(0).get(0).get(1991) = testData[0][1];
+	test_cache.get(0).get(0).get(0).get(0).get(1992) = testData[0][2];
+	test_cache.get(0).get(0).get(0).get(0).get(1993) = testData[0][3];
+	test_cache.get(0).get(0).get(0).get(0).get(1994) = testData[0][4];
+	test_cache.get(0).get(0).get(0).get(0).get(1995) = testData[0][5];
+	test_cache.get(0).get(0).get(0).get(0).get(1996) = testData[0][6];
+	test_cache.get(0).get(0).get(0).get(0).get(1997) = testData[0][7];
+
+	//Stat 1, Year 1990-1997
+	test_cache.get(0).get(0).get(0).get(1).get(1990) = testData[1][0];
+	test_cache.get(0).get(0).get(0).get(1).get(1991) = testData[1][1];
+	test_cache.get(0).get(0).get(0).get(1).get(1992) = testData[1][2];
+	test_cache.get(0).get(0).get(0).get(1).get(1993) = testData[1][3];
+	test_cache.get(0).get(0).get(0).get(1).get(1994) = testData[1][4];
+	test_cache.get(0).get(0).get(0).get(1).get(1995) = testData[1][5];
+	test_cache.get(0).get(0).get(0).get(1).get(1996) = testData[1][6];
+	test_cache.get(0).get(0).get(0).get(1).get(1997) = testData[1][7];
+
+	var result = FormatStatData(test_cache.get(0).get(0).get(0));
+	assert.deepEqual(result, testData);
+});
+
+
 QUnit.test( "GetInitialYears Test", function( assert ) {
 	//generic test
 	var descriptorTest = {
@@ -79,7 +128,7 @@ QUnit.test( "Update Input test", function (assert) {
 	var tempSettings = [1980, 2012, 2012, 0, 1];
 	assert.deepEqual(UpdateInputs(),tempSettings);
 });
-					 
+				 
 
 QUnit.log( function( details )  {
 	console.log( "Log: ", details.actual, details.message );

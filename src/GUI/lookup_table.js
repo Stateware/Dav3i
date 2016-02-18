@@ -80,35 +80,41 @@ function ParseDescriptor(DescriptorJSON)
 
 // Author: Emma Roudabush, William Bittner
 // Date Created: 3/5/2015
-// Last Modified: 9/24/2015 by William Bittner
+// Last Modified: 2/8/2016 by Nicholas Denaro
 // Description: Retrieves descriptor.php from the server                
 // PRE: descriptor.php exists on the server.
 // POST: If retrieval is successful, call the function to parse the descriptor
 //			if retrieval is not, error is logged.
-function GetDescriptor()
+function GetDescriptor(sessionID)
 {
+	var URL = 'http://localhost/dav3i/API/descriptor.php';
+	if(sessionID != undefined)
+	{
+		URL += '?sessionID=' + sessionID;
+	}
     return $.ajax({                                      
-        url: 'http://localhost/dav3i/API/descriptor.php',                                                     
+        url: URL,                                                     
         dataType: 'JSON',                 
         success: function(data){
         	ParseDescriptor(data);
         },
         error: function(xhr, textStatus, errorThrown){
        		console.log('Descriptor could not be fetched. The error is as follows: ' + errorThrown);
+       		console.log(URL);
     	}
     });
 }
 
 // Author: Emma Roudabush, William Bittner
 // Date Created: 4/7/2015
-// Last Modified: 9/24/2015 by William Bittner
+// Last Modified: 2/8/2016 by Nicholas Denaro
 // Description: Returns an object corresponding to the year range defined in the descriptor			
 // PRE: DescriptorJSON is formatted as to the specifications in the documentation
 // POST: An object with the first and last year values defined
 function GetInitialYears(DescriptorJSON)
 {
-	var firstYear = Number(DescriptorJSON.yearRange[0]);
-	var lastYear = Number(DescriptorJSON.yearRange[1]);
+	var firstYear = Number(DescriptorJSON.yearRange["startYear"]);
+	var lastYear = Number(DescriptorJSON.yearRange["endYear"]);
 	var yearRangeObject = {
 						FirstYear : firstYear,
 						LastYear  : lastYear
@@ -119,21 +125,23 @@ function GetInitialYears(DescriptorJSON)
 
 // Author: Emma Roudabush, William Bittner
 // Date Created: 3/5/2015
-// Last Modified: 9/24/2015 by William Bittner
+// Last Modified: 2/8/2016 by Nicholas Denaro
 // Description: Returns a table of Countries CC2 codes, the country
 //              names, and HMS values are set to 0.
 // PRE: DescriptorJSON exists with the correct data from descriptor.php,
 // POST: A 2d array is returned that has the correct CC2, name, and HMS values zero'd for each country
 function InitializeLookupTable(DescriptorJSON)
 {
-    var lookupTable = new Array(DescriptorJSON.cc2.length);
-    
-    for (i = 0; i < DescriptorJSON.cc2.length; i++)
+	var countryKeys = Object.keys(DescriptorJSON.countries)
+
+    var lookupTable = new Array(countryKeys.length);
+
+    for (i = 0; i < countryKeys.length; i++)
     {
     	//TODO: Get rid of magic numbers?
         lookupTable[i] = new Array(3);
-        lookupTable[i][0] = DescriptorJSON.cc2[i];
-        lookupTable[i][1] = DescriptorJSON.common_name[i];
+        lookupTable[i][0] = DescriptorJSON.countries[countryKeys[i]].cc2;
+        lookupTable[i][1] = DescriptorJSON.countries[countryKeys[i]].common_name;
         lookupTable[i][2] = 0;
     }
     
@@ -148,11 +156,13 @@ function InitializeLookupTable(DescriptorJSON)
 // POST: returns an array containing the correct stat names
 function GenerateStatReferenceList(DescriptorJSON)
 {
-    var statList = new Array(DescriptorJSON.stats.length); 
+	var statKeys = Object.keys(DescriptorJSON.stats);
+
+    var statList = new Array(statKeys.length); 
     
-    for (i = 0; i < DescriptorJSON.stats.length; i++)
+    for (i = 0; i < statKeys.length; i++)
     {
-        statList[i] = DescriptorJSON.stats[i];
+        statList[i] = DescriptorJSON.stats[statKeys[i]];
     }
     
     return statList;
@@ -175,21 +185,102 @@ function SetHMS(hmsData)
     return heatMapValues
 }
 
+
+/*
+ * Function: ReformatByStatData
+ * Takes a cache instance object for a particular session and returns an
+ * array of the values
+ * 
+ * Parameters: 
+ * cache
+ * statID
+ * year
+ * 
+ * Pre: 
+ * instanceCache contains valid instance data for the stat and all countries in the
+ * cache storage format
+ * 
+ * Post: 
+ * FCTVAL == array containing [country] = value at year
+ * 
+ * Returns: 
+ * array [country]
+ * 
+ * Authors: 
+ * Nicholas Denaro
+ * 
+ * Date Created: 
+ * 2/12/16 
+ * 
+ * Last Modified: 
+ * 2/15/16 by Nicholas Denaro
+ */
+function ReformatByStatData(instanceCache, statID, year)
+{
+	var data = [];
+	var keys = instanceCache.keys;
+
+	for(var country = 0; country < keys.length; country++)
+	{
+		//console.log(cache.get(keys[country]));
+		data[country] = instanceCache.get(keys[country]).get(statID).get(year);
+	}
+
+	return data;
+}
+
+/*
+ * Function: SuccessfulByStat
+ * Connects the formatting of the data from the server and the updating of the heatmap
+ * 
+ * Parameters: 
+ * data
+ * statID
+ * year
+ * 
+ * Pre: 
+ * data is valid and does not contain an error
+ * 
+ * Post: 
+ * Heatmap is updated
+ * 
+ * Authors: 
+ * Nicholas Denaro
+ * 
+ * Date Created: 
+ * 2/12/16 
+ * 
+ * Last Modified: 
+ * 2/15/16 by Nicholas Denaro
+ */
+function SuccessfulByStat(data, statID, year)
+{
+	data = ReformatByStatData(data, statID, year);
+   	ParseMapData(data,statID);
+}
+
 // Author: Vanajam Soni, Kyle Nicholson, Joshua Crafts
 // Date Created: 3/19/2015
-// Last Modified: 3/23/2015 by Joshua Crafts
+// Last Modified: 2/8/2016 by Nicholas Denaro
 // Description: Returns HMS data based on hmsID
 // PRE: hmsID is an integer and a valid heat map stat id, year is an integer and within the valid range
 // POST: FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
-function GetHMS(hmsID, year)
+function GetHMS(sessionID, instanceID, hmsID, year)
 {
+	var URL = 'http://localhost/dav3i/API/by_stat.php?sessionID='.concat(sessionID.toString()+"&instanceID="+instanceID.toString()+"&statID="+hmsID.toString()+"&year="+year.toString());
+
     $.ajax({        
-        url: 'http://localhost/dav3i/API/by_stat.php?statID='.concat(hmsID.toString()+"&year="+year.toString()),                                                     
+        url: URL,                                                     
         dataType: 'JSON',
         success: function(data){     
+        	data = ReformatByStatData(data);
         	ParseMapData(data,hmsID);
             //console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));
-        } 
+        },
+        error: function(xhr, textStatus, errorThrown){
+       		console.log('HMS could not be fetched. The error is as follows: ' + errorThrown);
+       		console.log('HMS could not be fetched. URL: ' + URL);
+    	}
     });
 }
 

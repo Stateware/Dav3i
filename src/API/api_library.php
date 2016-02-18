@@ -132,7 +132,7 @@ function ParseIntoByStatPacket($sessionID, $instanceID, $statID, $queryResults, 
 	}
 
     // return the packet using the previously created array
-	return new by_stat_packet($sessionID,$instanceID,$statID,$packetData,$year);
+	return new by_stat_packet($sessionID,$instanceID,$statID - 1,$packetData,$year);
 }//END ParseIntoByStatPacket
 
 // Author:        William Bittner, Drew Lopreiato
@@ -184,7 +184,7 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
 		array_push($results,$countryRow);
 	}
 
-	return ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs + 1, $results);
+	return ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs, $results);
 } //END ByCountry
 
 
