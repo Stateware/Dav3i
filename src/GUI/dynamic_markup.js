@@ -205,6 +205,131 @@ function CloseSettings()
    	document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
 }
 
+/* Function OpenNewTabMenu()
+/*
+/*      Causes the menu for creating new custom tabs to appear on the client
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      the html elements of the menu exists
+/*
+/* Post:
+/*
+/*      a popup menu with options to create a custom tab appears on the client
+/*
+/* Returns:
+/*
+/*      none
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/19/2016
+/*
+/* Last Modified:
+/*
+/*      2/19/2016 by Paul Jang
+ */
+function OpenNewTabMenu()
+{
+    $(".new-custom-tab-menu, .settings-black").fadeIn(400);
+}
+
+/* Function OpenNewTabMenu()
+/*
+/*      Closes the new custom tab creation menu
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      the custom tab menu is open
+/*
+/* Post:
+/*
+/*      the client goes back to the main page
+/*
+/* Returns:
+/*
+/*      none
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/19/2016
+/*
+/* Last Modified:
+/*
+/*      2/19/2016 by Paul Jang
+ */
+function CloseNewTabMenu()
+{
+    $(".new-custom-tab-menu, .settings-black").fadeOut(400);
+} 
+
+/* Function SetNewTabMenu()
+/*
+/*      Causes the menu for creating new custom tabs to appear on the client
+/*
+/* Parameters: 
+/*
+/*      type of tab (either stat or instance)
+/*
+/* Pre:
+/*
+/*      the html elements of the menu exists
+/*
+/* Post:
+/*
+/*      the menu changes to accomodate the type of tab the user wants
+/*
+/* Returns:
+/*
+/*      none
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/19/2016
+/*
+/* Last Modified:
+/*
+/*      2/19/2016 by Paul Jang
+ */
+function SetNewTabMenu(type)
+{
+    if(type == 0)
+    {
+        alert("stat");
+        $(".stat-custom-tab").fadeIn(400);        
+    }
+    else if(type == 1)
+    {
+        alert("instance");
+        $(".instance-custom-tab").fadeIn(400);        
+    }
+    else
+    {
+
+    }
+}
+
+
 // Author: Emma Roudabush
 // Date Created: 3/30/2015
 // Last Modified: 3/31/2015 by Emma Roudabush
