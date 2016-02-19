@@ -116,6 +116,28 @@
       
     </div>
 
+    <div class="new-custom-tab-menu">
+        <h1 style="position: relative; top: 5%;">New Custom Tab</h1>
+        <div class="new-tab-choice">
+            <form action="">
+                <input id="stat" type="radio" onclick="SetNewTabMenu(0)" name="newTabType" value="0">Stat</input>
+                <input id="instance" type="radio" onclick="SetNewTabMenu(1)" name="newTabType" value="1">Instance</input>
+            </form>
+        </div>    
+
+        <div class="stat-custom-tab">
+            <h1="STATSTATSTATSTATSTAT"></h1>
+        </div>
+        <div class="instance-custom-tab">
+            <h1-"INSTANCEINSTANCEINSTANCE"></h1>
+        </div>
+
+        <div class="buttons">
+            <button id="close-button" class="flat-button" onclick="CloseNewTabMenu()">Cancel</button>
+        </div>
+    </div>
+
+
     <div class="help-screen">
         <div class="scrollbar-hover" style="overflow-y: scroll; height: 85%;">
             <h1>Help</h1>
@@ -152,6 +174,7 @@
                 <button id="settings" class="flat-button" onclick="OpenSettings()">Settings</button>
                 <button id="help" class="flat-button" onclick="OpenHelp()">Help</button>
                 <button id="upload" class="flat-button" onclick="window.location = 'Upload/data_upload.html';">Upload</button>
+                <button id="newcustomtab" class="flat-button" onclick="OpenNewTabMenu()">+</button>
             </section>
             <section class="graph" id="graph">
                 <div>
