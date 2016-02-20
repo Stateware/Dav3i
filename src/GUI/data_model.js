@@ -69,29 +69,36 @@ function generateChartData(sessionID, instanceID, countryID,statID)
 	}
 }
 
-function retrieveByCountryData(sessionID, instanceID, countryID, options)
+function retrieveByCountryData(sessionID, instanceID, countryID, callback)
 {
 	var have = checkCacheByCountry(sessionID, instanceID, countryID);
 	
+	
 	if(!have)
 	{
-		getDataByCountry(sessionID, instanceID, countryID);
+		getDataByCountry(sessionID, instanceID, countryID, callback);
+	}
+	else
+	{
+		callback( g_cache.get(sessionID).get(instanceID).get(countryID), countryID );
 	}
 	
-	return g_cache.get(sessionID).get(instanceID).get(countryID);
+	
 	
 }
 
-function retrieveByStatData(sessionID, instanceID, statID, year)
+function retrieveByStatData(sessionID, instanceID, statID, year, callback)
 {
 	var have = checkCacheByStat(sessionID, instanceID, statID, year);
 	
 	if(!have)
 	{
-		getDataByStat(sessionID, instanceID, statID, year);
+		getDataByStat(sessionID, instanceID, statID, year, callback);
 	}
-	
-	return g_cache.get(sessionID).get(instanceID);
+	else
+	{
+		callback(g_cache.get(sessionID).get(instanceID), statID, year);
+	}
 }
 
 function checkCacheByStat(sessionID, instanceID, statID, year)

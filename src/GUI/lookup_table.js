@@ -223,7 +223,10 @@ function ReformatByStatData(instanceCache, statID, year)
 	for(var country = 0; country < keys.length; country++)
 	{
 		//console.log(cache.get(keys[country]));
-		data[country] = instanceCache.get(keys[country]).get(statID).get(year);
+		if( !isNaN( keys[country] ) )
+		{
+			data[ keys[country]-1 ] = instanceCache.get(keys[country]).get(statID).get(year);
+		}
 	}
 
 	return data;
