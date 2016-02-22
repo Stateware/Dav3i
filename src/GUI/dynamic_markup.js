@@ -73,11 +73,11 @@ function UpdateInputs()
     var startDiv=document.getElementById("year-range-start");
     var endDiv=document.getElementById("year-range-end");
     var heatmapYearDiv=document.getElementById("heatmap-year");
-	
-	// set min and max for the settings input boxes
+    
+    // set min and max for the settings input boxes
     startDiv.max=g_LastYear;
-    startDiv.min=g_FirstYear;	
-	
+    startDiv.min=g_FirstYear;   
+    
     endDiv.max=g_LastYear;
     endDiv.min=g_FirstYear;
 
@@ -176,8 +176,8 @@ function SwitchToMain ()
 // POST: Settings overlay is showing with black backing mask and all stat values are reset
 function OpenSettings()
 {
-	 ResetAllStatValues();
-	 
+     ResetAllStatValues();
+     
      $(".settings-screen, .settings-black").fadeIn(400);
      
 }
@@ -202,7 +202,7 @@ function CloseSettings()
        
     document.getElementById(startDiv.id+"-error").innerHTML="";
     document.getElementById(endDiv.id+"-error").innerHTML="";
-   	document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
+    document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
 }
 
 // Author: Emma Roudabush
@@ -245,17 +245,17 @@ function Expand()
     {
         if(g_DataList != undefined && g_DataList.size != 0)
         {
-	        GenerateSubDivs();
-	        // if single graph, graph is expanded to whole section
-	        if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
-	        {
-	            document.getElementById("region-graphs-1").style["width"] = "100%";
-	            document.getElementById("region-graphs-1").style["height"] = "100%";
-	        }
-	        g_Expanded = true;
-	        GenerateSubDivs();
-	        GenerateGraphs();
-	    }
+            GenerateSubDivs();
+            // if single graph, graph is expanded to whole section
+            if(((g_GraphType == 1) && (g_StatList[g_StatID].indexOf("VACC") == -1)) || (g_GraphType == 2))
+            {
+                document.getElementById("region-graphs-1").style["width"] = "100%";
+                document.getElementById("region-graphs-1").style["height"] = "100%";
+            }
+            g_Expanded = true;
+            GenerateSubDivs();
+            GenerateGraphs();
+        }
     }, 500);
 }
 
@@ -309,8 +309,8 @@ function GenerateSubDivs()
             document.getElementById(parentTabDivName).innerHTML = "";
             if(size != 0)
             {
-            	CreateSubDiv("region-graphs-1",parentTabDivName);
-	        }
+                CreateSubDiv("region-graphs-1",parentTabDivName);
+            }
             // if the graph section is expanded
             if(g_Expanded)
             {
@@ -413,3 +413,291 @@ function bugPopup()
         + " operating system you experienced the bug on\n4. Any "
         + "additional relevant information.");
 }
+
+// sample json in the format of the descriptor
+var dataJSON = {
+        "instances": {"1": "instance1", "3": "instance2", "4": "instance3", "7": "instance4"},
+        "sessions": {"1": "session1", "2": "session2", "3": "session3"}
+};
+
+/* 
+ * Function: onSessionChange()
+ *
+ *      Called when a session is changed in the dropdown menu
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre: 
+ *
+ *      dropdown entitled "sessionSelect" exists, helper functions work correctly
+ *
+ * Post:
+ *
+ *      the selected session will show in the dropdown, the instances dropdown will be filled with the instances from that session, and the dataset is changed to the new session's data
+ *
+ * Returns: 
+ *
+ *      the id of the new selected session
+ *
+ * Authors: 
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      2/10/2016
+ *
+ * Last Modified:
+ *
+ *      2/10/2016 by Paul Jang
+ */
+function onSessionChange()
+{
+    // for now, only call the fill session dropdown function
+    // TODO: add functionality to change data set when session is changed
+    var newSession = $('#sessionSelect').find(":selected").text(); 
+    alert("Session has been changed to " + newSession + ".");
+    fillInstanceDropdown(dataJSON);
+    return newSession;
+}
+
+/* 
+ * Function: onInstanceChange()
+ *
+ *      Called when an instance is changed in the dropdown menu
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre: 
+ *
+ *      none
+ *
+ * Post:
+ *
+ *      the dataset is changed to the new instance's data
+ *
+ * Returns: 
+ *
+ *      the id of the new selected instance
+ *
+ * Authors: 
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      2/10/2016
+ *
+ * Last Modified:
+ *
+ *      2/10/2016 by Paul Jang
+ */
+function onInstanceChange()
+{
+    // for now, alert the user that the instance has been changed, and that this function has been called
+    // TODO: add functionality to change instance data set when instance is changed
+    var newInstance = $('#instanceSelect').find(":selected").text();
+    alert("Instance has been changed to " + newInstance + ".");
+    return newInstance;
+}
+
+/* 
+ * Function: fillSessionDropDown()
+ *
+ *      Fills the session drop down menu with the sessions that currently have data in the database.
+ *
+ * Parameters: 
+ *
+ *      a JSON that is pulled from the descriptor
+ *
+ * Pre: 
+ *
+ *      dropdown entitled "sessionSelect" exists, json with data exists somewhere
+ *
+ * Post:
+ *
+ *      the dropdown menu on the graph menu is filled with all sessions currently in the database
+ *
+ * Returns: 
+ *
+ *      the name of the new selected session
+ *
+ * Authors: 
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      11/12/2015
+ *
+ * Last Modified:
+ *
+ *      2/8/2016 by Paul Jang
+ */
+function fillSessionDropDown(descriptor)
+{
+    // retrieve the list of sessions from the descriptor
+    var sessions = dataJSON["sessions"];
+
+    // retrieve the keys from the sessions object
+    var keys = Object.keys(sessions);
+
+    // clear the dropdown
+    sessionSelect.innerHTML = "";
+
+    // loop through the keys and add them to the dropdown
+    for(var i = 0; i<keys.length; i++)
+    {
+        var curr = keys[i];
+        var newOption = new Option(sessions[curr],curr);
+        sessionSelect.appendChild(newOption);
+    }
+
+    // fill the instance drop down after changing the sessions
+    fillInstanceDropDown();
+
+    // returns the name of the new selected session
+    return $('#sessionSelect').find(":selected").text();
+}
+
+/* 
+ * Function: fillInstanceDropDown()
+ *
+ *      Fills the instance drop down menu with the instances from the current session.
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre:
+ *
+ *      "sessionSelect" and "instanceSelect" exists
+ *
+ * Post:
+ *
+ *      instance drop down menu on graph menu fills with all instances in selected session
+ *
+ * Returns:
+ *
+ *      the name of the new selected instance
+ *
+ * Authors:
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      11/12/2015
+ *
+ * Last Modified:
+ *
+ *      11/13/2015 by Paul Jang
+ */
+function fillInstanceDropDown(descriptor)
+{
+    // clear instance drop down
+    instanceSelect.innerHTML = "";
+    
+    // retrieve the instances object from the descriptor
+    var instances = dataJSON["instances"];
+
+    // retrieve the keys from the instances object
+    var keys = Object.keys(instances);
+
+    // loop through the keys and add the options to the instance dropdown
+    for(var i = 0; i<keys.length; i++)
+    {
+        var curr = keys[i];
+        var newOption = new Option(instances[curr],curr);
+        instanceSelect.appendChild(newOption);
+    }
+
+    // returns the name of new selected instance
+    return $('#instanceSelect').find(":selected").text();
+}
+
+/* 
+ * Function: getSelectedSession()
+ *
+ *      Retrieves the session that is currently selected in the dropdown menu of all sessions.
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre:
+ *
+ *      A dropdown of sessions exist and one of the sessions is chosen.
+ *
+ * Post:
+ *
+ *      none
+ *
+ * Returns:
+ *
+ *      the id of the currently selected session
+ *
+ * Authors:
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      2/4/2016
+ *
+ * Last Modified:
+ *
+ *      2/8/2016 by Paul Jang
+ */
+function getSelectedSession()
+{
+    // get the value by getting the selected index, and then using that index to get the selected session, and then getting the value
+    var value = document.getElementById("sessionSelect")[document.getElementById("sessionSelect").selectedIndex].value;
+    return value;
+}
+
+/* 
+ * Function: getSelectedInstance()
+ *
+ *      Retrieves the instance that is currently selected in the dropdown menu of instances.
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre:
+ *
+ *      A dropdown of instances exist and one of the instances is chosen.
+ *
+ * Post:
+ *
+ *      none
+ *
+ * Returns:
+ *
+ *      the id of the currently selected instance
+ *
+ * Authors:
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      2/4/2016
+ *
+ * Last Modified:
+ *
+ *      2/8/2016 by Paul Jang
+ */
+function getSelectedInstance()
+{
+    // get the value by getting the selected index, and then using that index to get the selected instance, and then getting the value
+    var value = document.getElementById("instanceSelect")[document.getElementById("instanceSelect").selectedIndex].value;
+    return value;
+}
+
+ 
