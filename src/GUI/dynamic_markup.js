@@ -240,6 +240,8 @@ function CloseSettings()
 function OpenNewTabMenu()
 {
     $(".new-custom-tab-menu, .settings-black").fadeIn(400);
+    // default to stat on radio buttons
+    SetNewTabMenu(0);
 }
 
 /* Function OpenNewTabMenu()
@@ -313,22 +315,25 @@ function CloseNewTabMenu()
  */
 function SetNewTabMenu(type)
 {
+    // type 0 relates to stat
     if(type == 0)
     {
-        alert("stat");
-        $(".stat-custom-tab").fadeIn(400);        
+        $(".stat-custom-tab").fadeIn(0);
+        $(".instance-custom-tab").fadeOut(0);
     }
+    // type 1 relates to instance
     else if(type == 1)
     {
-        alert("instance");
-        $(".instance-custom-tab").fadeIn(400);        
+        document.getElementById("currentInstance").innerHTML = "Instance 1 : "; //+ getSelectedInstance();
+        $(".instance-custom-tab").fadeIn(0);
+        $(".stat-custom-tab").fadeOut(0);
     }
+    // weird other case
     else
     {
-
+        alert("Something went wrong with the new tab type selection.");
     }
 }
-
 
 // Author: Emma Roudabush
 // Date Created: 3/30/2015
