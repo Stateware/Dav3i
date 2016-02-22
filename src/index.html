@@ -120,22 +120,22 @@
         <h1 style="position: relative; top: 5%;">New Custom Tab</h1>
         <div class="new-tab-choice">
             <form action="">
-                <input id="stat" type="radio" selected="selected" onclick="SetNewTabMenu(0)" name="newTabType" value="0">Stat</input>
-                <input id="instance" type="radio" onclick="SetNewTabMenu(1)" name="newTabType" value="1">Instance</input>
+                <input id="stat" type="radio" selected="selected" onclick="SetNewTabMenu(0,dataJSON)" name="newTabType" value="0">Stat</input>
+                <input id="instance" type="radio" onclick="SetNewTabMenu(1,dataJSON)" name="newTabType" value="1">Instance</input>
             </form>
         </div>    
 
         <div class="stat-custom-tab" id="stat">
             <div class="custom-Tab-Dropdowns" id="StatDropdowns">
-                <span>Stat 1<select class="dropdown" id="stat1"></select></span>
-                <span>Stat 2<select class="dropdown" id="stat2"></select></span>
+                <span>Stat 1<select class="dropdown" id="stat_stat1"></select></span>
+                <span>Stat 2<select class="dropdown" id="stat_stat2"></select></span>
             </div>
         </div>
         <div class="instance-custom-tab" id="instance">
             <div id="currentInstance"></div>
             <div class="custom-Tab-Dropdowns" id="InstanceDropdowns">
-                <label>Instance 2<select class="dropdown" id="stat1"></select></label>
-                <label>Stat<select class="dropdown" id="stat2"></select></label>
+                <label>Instance 2<select class="dropdown" id="instance_instance2"></select></label>
+                <label>Stat<select class="dropdown" id="instance_stat1"></select></label>
             </div>
         </div>
 

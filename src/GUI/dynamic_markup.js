@@ -205,6 +205,13 @@ function CloseSettings()
     document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
 }
 
+// sample json in the format of the descriptor
+var dataJSON = {
+        "instances": {"1": "instance1", "3": "instance2", "4": "instance3", "7": "instance4"},
+        "sessions": {"1": "session1", "2": "session2", "3": "session3"},
+        "stats": {"1":"births","2":"deaths","3":"cases","4":"mcv1","5":"mcv2","6":"populations","7":"sia","8":"lbe_cases","9":"lbe_mortality","10":"ube_cases","11":"ube_mortality","12":"e_cases","13":"e_mortality"}
+};
+
 /* Function OpenNewTabMenu()
 /*
 /*      Causes the menu for creating new custom tabs to appear on the client
@@ -241,7 +248,7 @@ function OpenNewTabMenu()
 {
     $(".new-custom-tab-menu, .settings-black").fadeIn(400);
     // default to stat on radio buttons
-    SetNewTabMenu(0);
+    SetNewTabMenu(0,dataJSON);
 }
 
 /* Function OpenNewTabMenu()
@@ -287,7 +294,7 @@ function CloseNewTabMenu()
 /*
 /* Parameters: 
 /*
-/*      type of tab (either stat or instance)
+/*      type of tab (either stat or instance), descriptor to fill the stat/instance dropdowns
 /*
 /* Pre:
 /*
@@ -313,18 +320,80 @@ function CloseNewTabMenu()
 /*
 /*      2/19/2016 by Paul Jang
  */
-function SetNewTabMenu(type)
+function SetNewTabMenu(type, descriptor)
 {
     // type 0 relates to stat
     if(type == 0)
-    {
+    {   
+        // grab corresponding dropdown elements
+        var stat1 = document.getElementById("stat_stat1");
+        var stat2 = document.getElementById("stat_stat2");
+
+        // clear stat menu dropdowns
+        stat1.innerHTML = "";
+        stat2.innerHTML = "";
+
+        // retrieve the stats object from the descriptor
+        var stats = descriptor["stats"];
+
+        // retrieve the keys from the stats object
+        var keys = Object.keys(stats);
+
+        // loop through the keys and add the options to both the stat dropdowns
+        for(var i = 0; i<keys.length; i++)
+        {
+            var curr = keys[i];
+            var newOption = new Option(stats[curr],curr);
+            stat1.appendChild(newOption);
+        }
+
+        // loop through the keys and add the options to both the stat dropdowns
+        for(var i = 0; i<keys.length; i++)
+        {
+            var curr = keys[i];
+            var newOption = new Option(stats[curr],curr);
+            stat2.appendChild(newOption);
+        }
+
         $(".stat-custom-tab").fadeIn(0);
         $(".instance-custom-tab").fadeOut(0);
     }
     // type 1 relates to instance
     else if(type == 1)
     {
-        document.getElementById("currentInstance").innerHTML = "Instance 1 : "; //+ getSelectedInstance();
+        // grab corresponding dropdown elements
+        var instance = document.getElementById("instance_instance2");
+        var stat = document.getElementById("instance_stat1");
+
+        // clear instance menu dropdowns
+        instance.innerHTML = "";
+        stat.innerHTML = "";
+
+        // retrieve the stats and instances objects from the descriptor
+        var stats = descriptor["stats"];
+        var instances = descriptor["instances"];
+
+        // retrieve the keys from the stats and instances objects
+        var statKeys = Object.keys(stats);
+        var instanceKeys = Object.keys(instances);
+
+        // loop through the keys of the stats and add them to the stat dropdown
+        for(var i = 0; i<statKeys.length; i++)
+        {
+            var curr = statKeys[i];
+            var newOption = new Option(stats[curr],curr);
+            stat.appendChild(newOption);
+        }
+
+        // loop through the keys of the instances and add them to the instance dropdown
+        for(var i = 0; i<instanceKeys.length; i++)
+        {
+            var curr = instanceKeys[i];
+            var newOption = new Option(instances[curr],curr);
+            instance.appendChild(newOption);
+        }
+
+        document.getElementById("currentInstance").innerHTML = "Instance 1 : " + getSelectedInstance("text");
         $(".instance-custom-tab").fadeIn(0);
         $(".stat-custom-tab").fadeOut(0);
     }
@@ -544,12 +613,6 @@ function bugPopup()
         + "additional relevant information.");
 }
 
-// sample json in the format of the descriptor
-var dataJSON = {
-        "instances": {"1": "instance1", "3": "instance2", "4": "instance3", "7": "instance4"},
-        "sessions": {"1": "session1", "2": "session2", "3": "session3"}
-};
-
 /* 
  * Function: onSessionChange()
  *
@@ -587,8 +650,7 @@ function onSessionChange()
 {
     // for now, only call the fill session dropdown function
     // TODO: add functionality to change data set when session is changed
-    var newSession = $('#sessionSelect').find(":selected").text(); 
-    alert("Session has been changed to " + newSession + ".");
+    var newSession = $('#sessionSelect').find(":selected").text();
     fillInstanceDropdown(dataJSON);
     return newSession;
 }
@@ -631,7 +693,6 @@ function onInstanceChange()
     // for now, alert the user that the instance has been changed, and that this function has been called
     // TODO: add functionality to change instance data set when instance is changed
     var newInstance = $('#instanceSelect').find(":selected").text();
-    alert("Instance has been changed to " + newInstance + ".");
     return newInstance;
 }
 
@@ -757,7 +818,7 @@ function fillInstanceDropDown(descriptor)
  *
  * Parameters: 
  *
- *      none
+ *      type: "id" if id should be returned, "text" if text value should be returned
  *
  * Pre:
  *
@@ -781,12 +842,24 @@ function fillInstanceDropDown(descriptor)
  *
  * Last Modified:
  *
- *      2/8/2016 by Paul Jang
+ *      2/22/2016 by Paul Jang
  */
-function getSelectedSession()
+function getSelectedSession(type)
 {
-    // get the value by getting the selected index, and then using that index to get the selected session, and then getting the value
-    var value = document.getElementById("sessionSelect")[document.getElementById("sessionSelect").selectedIndex].value;
+    var value;
+    if(type == 'id') // return the id of the selected session
+    {
+        // get the value by getting the selected index, and then using that index to get the selected session, and then getting the value
+        value = document.getElementById("sessionSelect")[document.getElementById("sessionSelect").selectedIndex].value;
+    }
+    else if(type = 'text') // return the text of the selected session
+    {
+        value = $('#sessionSelect').find(":selected").text();
+    }
+    else
+    {
+        alert("Something went wrong in getting the selected session.")
+    }
     return value;
 }
 
@@ -823,10 +896,22 @@ function getSelectedSession()
  *
  *      2/8/2016 by Paul Jang
  */
-function getSelectedInstance()
+function getSelectedInstance(type)
 {
-    // get the value by getting the selected index, and then using that index to get the selected instance, and then getting the value
-    var value = document.getElementById("instanceSelect")[document.getElementById("instanceSelect").selectedIndex].value;
+    if(type == 'id') // return the id of the selected instance
+    {
+        // get the value by getting the selected index, and then using that index to get the selected session, and then getting the value
+        value = document.getElementById("instanceSelect")[document.getElementById("instanceSelect").selectedIndex].value;
+    }
+    else if(type == 'text') // return the text of the selected instance
+    {
+        value = $('#instanceSelect').find(":selected").text();
+    }
+    else
+    {
+        alert("Something went wrong in getting the selected session.")
+        value = 0;
+    }
     return value;
 }
 
