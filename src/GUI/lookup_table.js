@@ -44,6 +44,10 @@ function ParseDescriptor(DescriptorJSON)
 	//Grab an object containing the first and last year 
     var yearRangeObject = GetInitialYears(DescriptorJSON);
     
+    // fill the dropdown menus and the new tab popup elements
+    fillSessionDropDown(DescriptorJSON,($("#sessionSelect").length == 0));
+    fillInstanceDropDown(DescriptorJSON);
+   	PopulateNewTabMenu(DescriptorJSON);
     
     //Set the globals for the year range and initial year values
     g_FirstYear = yearRangeObject.FirstYear;
@@ -75,7 +79,6 @@ function ParseDescriptor(DescriptorJSON)
     BuildTabs();
 
     g_TempSettings = UpdateInputs();
-        
 }
 
 // Author: Emma Roudabush, William Bittner
