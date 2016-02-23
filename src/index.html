@@ -120,8 +120,8 @@
         <h1 style="position: relative; top: 5%;">New Custom Tab</h1>
         <div class="new-tab-choice">
             <form action="">
-                <input id="stat" type="radio" selected="selected" onclick="SetNewTabMenu(0,dataJSON)" name="newTabType" value="0">Stat</input>
-                <input id="instance" type="radio" onclick="SetNewTabMenu(1,dataJSON)" name="newTabType" value="1">Instance</input>
+                <input id="stat" type="radio" selected="selected" onclick="switchNewTabMenu("stat")" name="newTabType" value="0">Stat</input>
+                <input id="instance" type="radio" onclick="switchNewTabMenu("instance")" name="newTabType" value="1">Instance</input>
             </form>
         </div>    
 
