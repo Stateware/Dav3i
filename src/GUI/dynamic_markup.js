@@ -247,8 +247,6 @@ var dataJSON = {
 function OpenNewTabMenu()
 {
     $(".new-custom-tab-menu, .settings-black").fadeIn(400);
-    // default to stat on radio buttons
-    SetNewTabMenu(0,dataJSON);
 }
 
 /* Function OpenNewTabMenu()
@@ -288,6 +286,56 @@ function CloseNewTabMenu()
     $(".new-custom-tab-menu, .settings-black").fadeOut(400);
 } 
 
+/* Function switchNewTabMenu()
+/*
+/*      Switches the new tab popup menu to either the stat menu or the instance menu
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      the elements of the new tab popup menu exist
+/*
+/* Post:
+/*
+/*      the new tab menu switches to the specified type
+/*
+/* Returns:
+/*
+/*      none
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/22/2016
+/*
+/* Last Modified:
+/*
+/*      2/22/2016 by Paul Jang
+ */
+function switchNewTabMenu(type)
+{
+    if(type == "stat")
+    {
+        $(".stat-custom-tab").fadeIn(0);
+        $(".instance-custom-tab").fadeOut(0);
+    }
+    else if(type == "instance")
+    {
+        $(".instance-custom-tab").fadeIn(0);
+        $(".stat-custom-tab").fadeOut(0);
+    }
+    else
+    {
+        alert("Something went wrong in the switching of the new tab menu");
+    }
+}
+
 /* Function SetNewTabMenu()
 /*
 /*      Causes the menu for creating new custom tabs to appear on the client
@@ -320,87 +368,68 @@ function CloseNewTabMenu()
 /*
 /*      2/19/2016 by Paul Jang
  */
-function SetNewTabMenu(type, descriptor)
+function PopulateNewTabMenu(descriptor)
 {
-    // type 0 relates to stat
-    if(type == 0)
-    {   
-        // grab corresponding dropdown elements
-        var stat1 = document.getElementById("stat_stat1");
-        var stat2 = document.getElementById("stat_stat2");
+    // STAT MENU POPULATION
+    // grab corresponding dropdown elements
+    var stat1 = document.getElementById("stat_stat1");
+    var stat2 = document.getElementById("stat_stat2");
 
-        // clear stat menu dropdowns
-        stat1.innerHTML = "";
-        stat2.innerHTML = "";
+    // clear stat menu dropdowns
+    stat1.innerHTML = "";
+    stat2.innerHTML = "";
 
-        // retrieve the stats object from the descriptor
-        var stats = descriptor["stats"];
+    // retrieve the stat list from the global
+    var statList = g_ParsedStatList;
 
-        // retrieve the keys from the stats object
-        var keys = Object.keys(stats);
-
-        // loop through the keys and add the options to both the stat dropdowns
-        for(var i = 0; i<keys.length; i++)
-        {
-            var curr = keys[i];
-            var newOption = new Option(stats[curr],curr);
-            stat1.appendChild(newOption);
-        }
-
-        // loop through the keys and add the options to both the stat dropdowns
-        for(var i = 0; i<keys.length; i++)
-        {
-            var curr = keys[i];
-            var newOption = new Option(stats[curr],curr);
-            stat2.appendChild(newOption);
-        }
-
-        $(".stat-custom-tab").fadeIn(0);
-        $(".instance-custom-tab").fadeOut(0);
-    }
-    // type 1 relates to instance
-    else if(type == 1)
+    // loop through the keys and add the options to both the stat dropdowns
+    for(var i = 0; i<statList.length; i++)
     {
-        // grab corresponding dropdown elements
-        var instance = document.getElementById("instance_instance2");
-        var stat = document.getElementById("instance_stat1");
-
-        // clear instance menu dropdowns
-        instance.innerHTML = "";
-        stat.innerHTML = "";
-
-        // retrieve the stats and instances objects from the descriptor
-        var stats = descriptor["stats"];
-        var instances = descriptor["instances"];
-
-        // retrieve the keys from the stats and instances objects
-        var statKeys = Object.keys(stats);
-        var instanceKeys = Object.keys(instances);
-
-        // loop through the keys of the stats and add them to the stat dropdown
-        for(var i = 0; i<statKeys.length; i++)
-        {
-            var curr = statKeys[i];
-            var newOption = new Option(stats[curr],curr);
-            stat.appendChild(newOption);
-        }
-
-        // loop through the keys of the instances and add them to the instance dropdown
-        for(var i = 0; i<instanceKeys.length; i++)
-        {
-            var curr = instanceKeys[i];
-            var newOption = new Option(instances[curr],curr);
-            instance.appendChild(newOption);
-        }
-
-        document.getElementById("currentInstance").innerHTML = "Instance 1 : " + getSelectedInstance("text");
-        $(".instance-custom-tab").fadeIn(0);
-        $(".stat-custom-tab").fadeOut(0);
+        var curr = statList[i];
+        var newOption = new Option(i,curr);
+        stat1.appendChild(newOption);
     }
-    // weird other case
-    else
+
+    // loop through the keys and add the options to both the stat dropdowns
+    for(var i = 0; i<statList.length; i++)
     {
-        alert("Something went wrong with the new tab type selection.");
+        var curr = statList[i];
+        var newOption = new Option(i,curr);
+        stat2.appendChild(newOption);
+    }
+    
+    // INSTANCE MENU POPULATION
+    // grab corresponding dropdown elements
+    var instance = document.getElementById("instance_instance2");
+    var stat = document.getElementById("instance_stat1");
+
+    // clear instance menu dropdowns
+    instance.innerHTML = "";
+    stat.innerHTML = "";
+
+    // retrieve the stat list from the global
+    var statList = descriptor["stats"];//g_ParsedStatList;
+
+    // retrieve the instance object from the descriptor
+    var instances = descriptor["instances"];
+
+    // retrieve the keys from the instance object
+    var instanceKeys = Object.keys(instances);
+
+    // loop through the keys of the stats and add them to the stat dropdown
+    for(var i = 0; i<statList.length; i++)
+    {
+        var curr = statList[i];
+        var newOption = new Option(i,curr);
+        stat.appendChild(newOption);
+    }
+
+    // loop through the keys of the instances and add them to the instance dropdown
+    for(var i = 0; i<instanceKeys.length; i++)
+    {
+        var curr = instanceKeys[i];
+        var newOption = new Option(instances[curr],curr);
+        instance.appendChild(newOption);
     }
 }
 
@@ -648,11 +677,11 @@ function bugPopup()
  */
 function onSessionChange()
 {
-    // for now, only call the fill session dropdown function
-    // TODO: add functionality to change data set when session is changed
-    var newSession = $('#sessionSelect').find(":selected").text();
-    fillInstanceDropdown(dataJSON);
-    return newSession;
+    // grab the id of the current session
+    var currentSession = getSelectedSession("id");
+
+    // recall the descriptor, which repopulates the dropdowns
+    GetDescriptor(currentSession);
 }
 
 /* 
@@ -729,10 +758,17 @@ function onInstanceChange()
  *
  *      2/8/2016 by Paul Jang
  */
-function fillSessionDropDown(descriptor)
+function fillSessionDropDown(descriptor, init)
 {
+    var selected;
+    // if it's the initial filling of the dropdown menus
+    if(!init)
+    {
+        selected = getSelectedSession("text");
+    }
+
     // retrieve the list of sessions from the descriptor
-    var sessions = dataJSON["sessions"];
+    var sessions = descriptor["sessions"];
 
     // retrieve the keys from the sessions object
     var keys = Object.keys(sessions);
@@ -746,13 +782,18 @@ function fillSessionDropDown(descriptor)
         var curr = keys[i];
         var newOption = new Option(sessions[curr],curr);
         sessionSelect.appendChild(newOption);
+        if(!init)
+        {
+            // check if the current element is selected, if so, select it
+            if(sessions[curr] == selected)
+            {
+                $(newOption).attr("selected","selected");
+            }
+        }
     }
 
-    // fill the instance drop down after changing the sessions
-    fillInstanceDropDown();
-
     // returns the name of the new selected session
-    return $('#sessionSelect').find(":selected").text();
+    return getSelectedSession("text");
 }
 
 /* 
@@ -794,7 +835,7 @@ function fillInstanceDropDown(descriptor)
     instanceSelect.innerHTML = "";
     
     // retrieve the instances object from the descriptor
-    var instances = dataJSON["instances"];
+    var instances = descriptor["instances"];
 
     // retrieve the keys from the instances object
     var keys = Object.keys(instances);
