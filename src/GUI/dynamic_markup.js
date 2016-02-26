@@ -286,63 +286,13 @@ function CloseNewTabMenu()
     $(".new-custom-tab-menu, .settings-black").fadeOut(400);
 } 
 
-/* Function switchNewTabMenu()
+/* Function PopulateNewTabMenu()
 /*
-/*      Switches the new tab popup menu to either the stat menu or the instance menu
-/*
-/* Parameters: 
-/*
-/*      none
-/*
-/* Pre:
-/*
-/*      the elements of the new tab popup menu exist
-/*
-/* Post:
-/*
-/*      the new tab menu switches to the specified type
-/*
-/* Returns:
-/*
-/*      none
-/*
-/* Authors:
-/*
-/*      Paul Jang
-/*
-/* Date Created:
-/*
-/*      2/22/2016
-/*
-/* Last Modified:
-/*
-/*      2/22/2016 by Paul Jang
- */
-function switchNewTabMenu(type)
-{
-    if(type == "stat")
-    {
-        $(".stat-custom-tab").fadeIn(0);
-        $(".instance-custom-tab").fadeOut(0);
-    }
-    else if(type == "instance")
-    {
-        $(".instance-custom-tab").fadeIn(0);
-        $(".stat-custom-tab").fadeOut(0);
-    }
-    else
-    {
-        alert("Something went wrong in the switching of the new tab menu");
-    }
-}
-
-/* Function SetNewTabMenu()
-/*
-/*      Causes the menu for creating new custom tabs to appear on the client
+/*      Fills the elements of the new tab menu popup
 /*
 /* Parameters: 
 /*
-/*      type of tab (either stat or instance), descriptor to fill the stat/instance dropdowns
+/*      descriptor to fill the stat dropdowns exists
 /*
 /* Pre:
 /*
@@ -366,11 +316,10 @@ function switchNewTabMenu(type)
 /*
 /* Last Modified:
 /*
-/*      2/19/2016 by Paul Jang
+/*      2/26/2016 by Paul Jang
  */
 function PopulateNewTabMenu(descriptor)
 {
-    // STAT MENU POPULATION
     // grab corresponding dropdown elements
     var stat1 = document.getElementById("stat_stat1");
     var stat2 = document.getElementById("stat_stat2");
@@ -380,13 +329,13 @@ function PopulateNewTabMenu(descriptor)
     stat2.innerHTML = "";
 
     // retrieve the stat list from the global
-    var statList = g_ParsedStatList;
+    var statList = GetHeadStatList();
 
     // loop through the keys and add the options to both the stat dropdowns
     for(var i = 0; i<statList.length; i++)
     {
         var curr = statList[i];
-        var newOption = new Option(i,curr);
+        var newOption = new Option(curr,i);
         stat1.appendChild(newOption);
     }
 
@@ -394,43 +343,10 @@ function PopulateNewTabMenu(descriptor)
     for(var i = 0; i<statList.length; i++)
     {
         var curr = statList[i];
-        var newOption = new Option(i,curr);
+        var newOption = new Option(curr,i);
         stat2.appendChild(newOption);
     }
     
-    // INSTANCE MENU POPULATION
-    // grab corresponding dropdown elements
-    var instance = document.getElementById("instance_instance2");
-    var stat = document.getElementById("instance_stat1");
-
-    // clear instance menu dropdowns
-    instance.innerHTML = "";
-    stat.innerHTML = "";
-
-    // retrieve the stat list from the global
-    var statList = descriptor["stats"];//g_ParsedStatList;
-
-    // retrieve the instance object from the descriptor
-    var instances = descriptor["instances"];
-
-    // retrieve the keys from the instance object
-    var instanceKeys = Object.keys(instances);
-
-    // loop through the keys of the stats and add them to the stat dropdown
-    for(var i = 0; i<statList.length; i++)
-    {
-        var curr = statList[i];
-        var newOption = new Option(i,curr);
-        stat.appendChild(newOption);
-    }
-
-    // loop through the keys of the instances and add them to the instance dropdown
-    for(var i = 0; i<instanceKeys.length; i++)
-    {
-        var curr = instanceKeys[i];
-        var newOption = new Option(instances[curr],curr);
-        instance.appendChild(newOption);
-    }
 }
 
 // Author: Emma Roudabush
@@ -643,7 +559,7 @@ function bugPopup()
 }
 
 /* 
- * Function: onSessionChange()
+ * Function: OnSessionChange()
  *
  *      Called when a session is changed in the dropdown menu
  *
@@ -675,7 +591,7 @@ function bugPopup()
  *
  *      2/10/2016 by Paul Jang
  */
-function onSessionChange()
+function OnSessionChange()
 {
     // grab the id of the current session
     var currentSession = getSelectedSession("id");
@@ -685,7 +601,7 @@ function onSessionChange()
 }
 
 /* 
- * Function: onInstanceChange()
+ * Function: OnInstanceChange()
  *
  *      Called when an instance is changed in the dropdown menu
  *
@@ -717,7 +633,7 @@ function onSessionChange()
  *
  *      2/10/2016 by Paul Jang
  */
-function onInstanceChange()
+function OnInstanceChange()
 {
     // for now, alert the user that the instance has been changed, and that this function has been called
     // TODO: add functionality to change instance data set when instance is changed
@@ -726,7 +642,7 @@ function onInstanceChange()
 }
 
 /* 
- * Function: fillSessionDropDown()
+ * Function: FillSessionDropDown()
  *
  *      Fills the session drop down menu with the sessions that currently have data in the database.
  *
@@ -758,7 +674,7 @@ function onInstanceChange()
  *
  *      2/8/2016 by Paul Jang
  */
-function fillSessionDropDown(descriptor, init)
+function FillSessionDropDown(descriptor, init)
 {
     var selected;
     // if it's the initial filling of the dropdown menus
@@ -797,7 +713,7 @@ function fillSessionDropDown(descriptor, init)
 }
 
 /* 
- * Function: fillInstanceDropDown()
+ * Function: FillInstanceDropDown()
  *
  *      Fills the instance drop down menu with the instances from the current session.
  *
@@ -829,7 +745,7 @@ function fillSessionDropDown(descriptor, init)
  *
  *      11/13/2015 by Paul Jang
  */
-function fillInstanceDropDown(descriptor)
+function FillInstanceDropDown(descriptor)
 {
     // clear instance drop down
     instanceSelect.innerHTML = "";
@@ -853,7 +769,7 @@ function fillInstanceDropDown(descriptor)
 }
 
 /* 
- * Function: getSelectedSession()
+ * Function: GetSelectedSession()
  *
  *      Retrieves the session that is currently selected in the dropdown menu of all sessions.
  *
@@ -885,7 +801,7 @@ function fillInstanceDropDown(descriptor)
  *
  *      2/22/2016 by Paul Jang
  */
-function getSelectedSession(type)
+function GetSelectedSession(type)
 {
     var value;
     if(type == 'id') // return the id of the selected session
@@ -905,7 +821,7 @@ function getSelectedSession(type)
 }
 
 /* 
- * Function: getSelectedInstance()
+ * Function: GetSelectedInstance()
  *
  *      Retrieves the instance that is currently selected in the dropdown menu of instances.
  *
@@ -937,7 +853,7 @@ function getSelectedSession(type)
  *
  *      2/8/2016 by Paul Jang
  */
-function getSelectedInstance(type)
+function GetSelectedInstance(type)
 {
     if(type == 'id') // return the id of the selected instance
     {
