@@ -2,12 +2,12 @@
 
 function getInstance()
 {
-	return getSelectedInstance("id");
+	return GetSelectedInstance("id");
 }
 
 function getSession()
 {
-	return getSelectedSession("id");
+	return GetSelectedSession("id");
 }
 
 //if supplied a list with an added index with respect to g_mapSelectedRegionsToDivs,
