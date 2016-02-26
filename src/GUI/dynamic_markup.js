@@ -594,7 +594,7 @@ function bugPopup()
 function OnSessionChange()
 {
     // grab the id of the current session
-    var currentSession = getSelectedSession("id");
+    var currentSession = GetSelectedSession("id");
 
     // recall the descriptor, which repopulates the dropdowns
     GetDescriptor(currentSession);
@@ -680,7 +680,7 @@ function FillSessionDropDown(descriptor, init)
     // if it's the initial filling of the dropdown menus
     if(!init)
     {
-        selected = getSelectedSession("text");
+        selected = GetSelectedSession("text");
     }
 
     // retrieve the list of sessions from the descriptor
@@ -709,7 +709,7 @@ function FillSessionDropDown(descriptor, init)
     }
 
     // returns the name of the new selected session
-    return getSelectedSession("text");
+    return GetSelectedSession("text");
 }
 
 /* 
