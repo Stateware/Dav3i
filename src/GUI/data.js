@@ -95,6 +95,75 @@ function t_AsdsNode(sessionid, instanceid, cid, cc2, name, data)
     this.next = null;
 }
 
+
+/*
+ * Enum: axisTypeEnum
+ * Enumerated type for the axis type of a stat when graphing
+ * 
+ * Parameters: 
+ * 
+ * Authors: 
+ * Kyle Yost, John Martin
+ * 
+ * Date Created: 
+ * 2/26/16 
+ * 
+ * Last Modified: 
+ * 2/26/16 by Kyle Yost, John Martin
+ */
+axisTypeEnum = {
+    ZeroToMax : 0,
+    ZeroToOneHundred : 1,
+    ZeroToOne 2
+}
+
+/*
+ * Class: t_graphStat
+ * Creates an object for a stat data that is used in graphing.
+ * 
+ * 
+ * Parameters: 
+ * statData - stat data for a particular stat in the cache format
+ * axisType - type of the axis when graphing. Value from axisTypeEnum
+ * 
+ * Authors: 
+ * Kyle Yost, John Martin
+ * 
+ * Date Created: 
+ * 2/26/16 
+ * 
+ * Last Modified: 
+ * 2/26/16 by Kyle Yost, John Martin
+ */
+function t_graphStat(statData, axisType)
+{
+    this.axisType = axisType;       //set axisTpe to enumerated value
+    this.data = [];                 //year data for this stat
+    this.min;                       //min year in data
+    this.max;                       //max year in data
+
+    var yearKeys = statData.keys;
+    this.min = statData.get(yearKeys[0]);
+    this.max = statData.get(yearKeys[0]);
+
+    //find min and max years and set data member array
+    for(var i = 0; i < yearKeys.length; i++)
+    {
+        //put data into member array
+        data[i] = statData.get(yearKeys[i]);
+
+        //keep track of max and min 
+        if(data[i] > this.max)
+        {
+            this.max = data[i];
+        }
+        if(data[i] < this.min)
+        {
+            this.min = data[i];
+        }
+    }
+}
+
 // prototype for variable containing list of nodes
 function c_List() 
 {
