@@ -118,12 +118,12 @@
 
     <div class="new-custom-tab-menu">
         <h1 style="position: relative; top: 5%;">New Custom Tab</h1>
-        <div class="new-tab-choice">
-            <form action="">
-                <input id="stat" type="radio" selected="selected" onclick="switchNewTabMenu("stat")" name="newTabType" value="0">Stat</input>
-                <input id="instance" type="radio" onclick="switchNewTabMenu("instance")" name="newTabType" value="1">Instance</input>
+
+        <div class="new-tab-name-input" id="name-input">
+            <form>
+                <span>Name:<input type="text" name="new-tab-name"></span>
             </form>
-        </div>    
+        </div>
 
         <div class="stat-custom-tab" id="stat">
             <div class="custom-Tab-Dropdowns" id="StatDropdowns">
@@ -131,16 +131,9 @@
                 <span>Stat 2<select class="dropdown" id="stat_stat2"></select></span>
             </div>
         </div>
-        <div class="instance-custom-tab" id="instance">
-            <div id="currentInstance"></div>
-            <div class="custom-Tab-Dropdowns" id="InstanceDropdowns">
-                <label>Instance 2<select class="dropdown" id="instance_instance2"></select></label>
-                <label>Stat<select class="dropdown" id="instance_stat1"></select></label>
-            </div>
-        </div>
 
         <div class="buttons">
-            <button id="close-button" class="flat-button" onclick="CloseNewTabMenu()">Cancel</button>
+            <button id="new-tab-close-button" class="flat-button" onclick="CloseNewTabMenu()">Cancel</button>
         </div>
     </div>
 
@@ -195,9 +188,9 @@
             
             <section class="expand">
                 <img src="res/arrow_right.png" id="expand" onclick="Expand()"/>
-                <select class="dropdown" id="sessionSelect" onchange="onSessionChange()">
+                <select class="dropdown" id="sessionSelect" onchange="OnSessionChange()">
                 </select>
-                <select class="dropdown" id="instanceSelect" onchange="onInstanceChange()">
+                <select class="dropdown" id="instanceSelect" onchange="OnInstanceChange()">
                 </select>
             </section>
         </div>
