@@ -349,6 +349,54 @@ function PopulateNewTabMenu(descriptor)
     
 }
 
+/* Function OKNewTabMenu()
+/*
+/*      When user clicks ok from new tab menu, do appropriate actions
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      user clicks the ok button in new tab menu
+/*
+/* Post:
+/*
+/*      the new tab menu closes and a new tab is created in the tabs menu
+/*
+/* Returns:
+/*
+/*      none
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/27/2016
+/*
+/* Last Modified:
+/*
+/*      2/27/2016 by Paul Jang
+ */
+function OkNewTabMenu()
+{
+    // grab stats and name from new tab menu
+    var stat1 = $("#stat_stat1").find(":selected").text();
+    var stat2 = $("#stat_stat2").find(":selected").text();
+    var name = document.getElementById("new-tab-name").value;
+
+    // make function call to handle new tab generation
+
+    // for now, alert retrieved values
+    alert("Stat 1: " + stat1 + ", Stat 2: " + stat2 + ", Name: " + name);
+
+    // return back to main page
+    CloseNewTabMenu();
+}
+
 // Author: Emma Roudabush
 // Date Created: 3/30/2015
 // Last Modified: 3/31/2015 by Emma Roudabush
