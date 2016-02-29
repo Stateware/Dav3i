@@ -115,7 +115,7 @@ var axisTypeEnum = {
     ZeroToMax: 0,
     ZeroToOneHundred: 1,
     ZeroToOne: 2
-}
+};
 
 /*
  * Class: t_graphStat
