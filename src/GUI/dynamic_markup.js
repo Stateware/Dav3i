@@ -439,12 +439,19 @@ function OkNewTabMenu()
     var stat2 = $("#stat_stat2").find(":selected").text();
     var name = document.getElementById("new-tab-name").value;
 
-    // add option to dropdown
-    var newOption = new Option(name, 1);
-    document.getElementById("tabDropdown").appendChild(newOption);
-
-    // return back to main page
-    CloseNewTabMenu();
+    if(name == "")
+    {
+        alert("Name cannot be blank.");
+    }
+    else
+    {
+        // add option to dropdown
+        var newOption = new Option(name, 1);
+        document.getElementById("tabDropdown").appendChild(newOption);
+        
+        // return back to main page
+        CloseNewTabMenu();
+    }
 }
 
 // Author: Emma Roudabush
