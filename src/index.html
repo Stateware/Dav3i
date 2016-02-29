@@ -183,9 +183,9 @@
             </section>
             <section class="graph" id="graph">
                 <div>
-                    <img src="res/arrow_left.png" width="22" height="22" id="scroll-left" class="graph-tab" onclick="RotateTabs(-1);" style="cursor: pointer;"></img>
-                    <div id="tabsDiv" class="tabWrapper"></div>
-                    <img src="res/arrow_right.png" width="22" height="22" id="scroll-right" class="graph-tab" onclick="RotateTabs(1);" style="cursor: pointer;"></img>
+                    <div id="tabs" class="tabWrapper">
+                        <select class="tab-dropdown" id="tabDropdown" onChange="ChooseTab(GetSelectedDropdown('tabDropdown', 'elem'))"></select>
+                    </div>
                 </div>
                 <div id="graphs">
                 </div>

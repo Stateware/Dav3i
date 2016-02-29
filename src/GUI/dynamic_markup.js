@@ -23,42 +23,67 @@
 // Description:             This module contains the code needed to dynamically create modules on the client
 // Date Created:            3/26/2015
 // Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
-// Date Last Modified:      4/20/2015
+// Date Last Modified:      2/29/2016
 // Last Modified By:        Paul Jang
 // Dependencies:            index.html, lookup_table.js, data.js
 // Additional Notes:        N/A
 
-// Author: Paul Jang, Nicholas Denaro
-// Date Created: 3/26/2015
-// Last Modified: 10/8/2015 by Nicholas Denaro
-// Description: Retrieve stat values from the lookup_table,
-//              Builds the tabs and inserts them into index.html
-// PRE: lookup_table is filled correctly, index.html exists
-// POST: index.html contains tabs of the correct stat data from the lookup_table. FCTVAL == Number of tabs created.
+
+/* Function BuildTabs()
+/*
+/*      Fills in the tab selection dropdown menu
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      lookup_table is filled correctly, index.html exists, tabDropdown element exists
+/*
+/* Post:
+/*
+/*      the tab selection dropdown is populated with the correct stats
+/*
+/* Returns:
+/*
+/*      the number of stats that populated the dropdown menu
+/*
+/* Authors:
+/*
+/*      Paul Jang, Nicholas Denaro
+/*
+/* Date Created:
+/*
+/*      3/26/2015
+/*
+/* Last Modified:
+/*
+/*      2/29/2016 by Paul Jang
+ */
 function BuildTabs()
 {
     var i;
+    var tabDropdown = document.getElementById("tabDropdown");
+    tabDropdown.innerHTML = "";
+
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
         var temp=g_StatList[g_ParsedStatList[1][i]];
-        var div=document.createElement("DIV");
-        div.id="id-"+temp;
-        div.setAttribute("stat",""+g_ParsedStatList[1][i]);
-        div.className="graph-tab";
-        div.setAttribute("onclick","ChooseTab(this)");
-        div.innerHTML=temp;
+        var newOption = new Option(temp,g_ParsedStatList[1][i]);
+
+        newOption.id="id-"+temp;
+
         if (temp.indexOf("VACC") > -1)
-            div.innerHTML="Vaccinations";
-        document.getElementById("tabsDiv").appendChild(div);
+        {
+            newOption.text="Vaccinations";
+        }
+        
+        tabDropdown.appendChild(newOption);
 
         BuildDiv(temp);
-
-        if(g_ParsedStatList[1][i]==g_StatID)
-        {
-            document.getElementById("id-"+temp+"-graphs").style.display="block";
-            div.className="graph-tab selected-tab";
-        }
     }
+
     return(g_ParsedStatList[1].length);
 }
 
@@ -106,12 +131,38 @@ function BuildDiv(stat)
     return(div);
 }
 
-// Author: Paul Jang, Nicholas Denaro
-// Date Created: 3/26/2015
-// Last Modified: 4/14/2015 by Nicholas Denaro
-// Description: build divs where the graphs go in index.html
-// PRE: Called from the onclick of a tab
-// POST: previous tab is switched out, and now tab is switched in. FCTVAL == currently selected stat id.
+/* Function ChooseTab()
+/*
+/*      Build divs where the graphs go in index.html
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      called from the changing of the selected option in the tab dropdown menu
+/*
+/* Post:
+/*
+/*      previous tab is switched out, and now tab is switched in
+/*
+/* Returns:
+/*
+/*      the number of stats that populated the dropdown menu
+/*
+/* Authors:
+/*
+/*      Paul Jang, Nicholas Denaro
+/*
+/* Date Created:
+/*
+/*      3/26/2015
+/*
+/* Last Modified:
+/*
+/*      2/29/2016 by Paul Jang
+ */
 function ChooseTab(element)
 {
     // remove divs in previous tab
@@ -123,7 +174,7 @@ function ChooseTab(element)
     element.className="graph-tab selected-tab";
     document.getElementById("id-"+g_StatList[g_StatID]+"-graphs").style.display="none";
     document.getElementById(element.id+"-graphs").style.display="block";
-    g_StatID=Number(element.getAttribute("stat"));
+    g_StatID=GetSelectedDropdown("tabDropdown", "id");
     ColorByHMS();
 
     GenerateSubDivs();
@@ -642,7 +693,7 @@ function bugPopup()
 function OnSessionChange()
 {
     // grab the id of the current session
-    var currentSession = GetSelectedSession("id");
+    var currentSession = GetSelectedDropdown("sessionSelect","id");
 
     // recall the descriptor, which repopulates the dropdowns
     GetDescriptor(currentSession);
@@ -725,10 +776,10 @@ function OnInstanceChange()
 function FillSessionDropDown(descriptor, init)
 {
     var selected;
-    // if it's the initial filling of the dropdown menus
+    // if it isn't the initial filling of the dropdown menus
     if(!init)
     {
-        selected = GetSelectedSession("text");
+        selected = GetSelectedDropdown("sessionSelect", "text");
     }
 
     // retrieve the list of sessions from the descriptor
@@ -757,7 +808,7 @@ function FillSessionDropDown(descriptor, init)
     }
 
     // returns the name of the new selected session
-    return GetSelectedSession("text");
+    return GetSelectedDropdown("selectSession", "text");
 }
 
 /* 
@@ -817,17 +868,18 @@ function FillInstanceDropDown(descriptor)
 }
 
 /* 
- * Function: GetSelectedSession()
+ * Function: GetSelectedDropdown()
  *
- *      Retrieves the session that is currently selected in the dropdown menu of all sessions.
+ *      Retrieves the id or value of the currently selected option in a dropdown menu
  *
  * Parameters: 
  *
- *      type: "id" if id should be returned, "text" if text value should be returned
+ *      name - name of the dropdown element
+ *      type - either "value" or "id" of the selected option
  *
  * Pre:
  *
- *      A dropdown of sessions exist and one of the sessions is chosen.
+ *      The specified dropdown exists in the page
  *
  * Post:
  *
@@ -835,7 +887,7 @@ function FillInstanceDropDown(descriptor)
  *
  * Returns:
  *
- *      the id of the currently selected session
+ *      the id/value of the currently selected option
  *
  * Authors:
  *
@@ -843,81 +895,36 @@ function FillInstanceDropDown(descriptor)
  *
  * Date Created:
  *
- *      2/4/2016
+ *      2/29/2016
  *
  * Last Modified:
  *
- *      2/22/2016 by Paul Jang
+ *      2/29/2016 by Paul Jang
  */
-function GetSelectedSession(type)
+function GetSelectedDropdown(name,type)
 {
+    var elem = document.getElementById(name);
     var value;
-    if(type == 'id') // return the id of the selected session
-    {
-        // get the value by getting the selected index, and then using that index to get the selected session, and then getting the value
-        value = document.getElementById("sessionSelect")[document.getElementById("sessionSelect").selectedIndex].value;
-    }
-    else if(type = 'text') // return the text of the selected session
-    {
-        value = $('#sessionSelect').find(":selected").text();
-    }
-    else
-    {
-        alert("Something went wrong in getting the selected session.")
-    }
-    return value;
-}
 
-/* 
- * Function: GetSelectedInstance()
- *
- *      Retrieves the instance that is currently selected in the dropdown menu of instances.
- *
- * Parameters: 
- *
- *      none
- *
- * Pre:
- *
- *      A dropdown of instances exist and one of the instances is chosen.
- *
- * Post:
- *
- *      none
- *
- * Returns:
- *
- *      the id of the currently selected instance
- *
- * Authors:
- *
- *      Paul Jang
- *
- * Date Created:
- *
- *      2/4/2016
- *
- * Last Modified:
- *
- *      2/8/2016 by Paul Jang
- */
-function GetSelectedInstance(type)
-{
-    if(type == 'id') // return the id of the selected instance
+    if(type == 'id')
     {
-        // get the value by getting the selected index, and then using that index to get the selected session, and then getting the value
-        value = document.getElementById("instanceSelect")[document.getElementById("instanceSelect").selectedIndex].value;
+        // get the value by getting the selected index, and then using that index to get the selected option, and then getting the value
+        value = elem[elem.selectedIndex].value;
     }
-    else if(type == 'text') // return the text of the selected instance
+    else if(type == 'text')
     {
-        value = $('#instanceSelect').find(":selected").text();
+        value = $(elem).find(":selected").text();
+    }
+    else if(type == 'elem')
+    {
+        value = elem[elem.selectedIndex];
     }
     else
     {
-        alert("Something went wrong in getting the selected session.")
+        alert("Something went wrong in getting the selected option in " + name + ".");
         value = 0;
     }
+
     return value;
 }
-
  

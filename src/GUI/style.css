@@ -244,29 +244,6 @@
     font-size: 13pt; 
 }
 
-/* sets styling for the tabs for the graph section */
-.graph-tab {
-    display: inline-block;
-    font-family: 'Open Sans Condensed', sans-serif;
-    padding: 0.2% 2% 0.2% 2%;
-    border-radius: 2px 2px 0 0;
-    border: 1px solid #bbb89b;
-    box-shadow: 1px 1px 5px #888888;
-    font-size: 16px;
-    font-weight: normal;
-    text-align: center;
-    text-transform: uppercase;
-    background-color: #EAE7C2;
-    top: 4px;
-    cursor: default;
-    -webkit-transition: all 0.5s linear;
-       -moz-transition: all 0.5s linear;
-        -ms-transition: all 0.5s linear;
-         -o-transition: all 0.5s linear;
-            transition: all 0.5s linear;
-    pointer-events: all;
-}
-
 /* darkens the tabs as you hover over them*/
 .graph-tab:hover{
     background-color: #d2cfae;
@@ -548,6 +525,10 @@
     overflow: hidden; 
     overflow-y: hidden;
     white-space: nowrap;
+}
+
+.tab-dropdown{
+    width: 100%;
 }
 
 /* allows for the showing of the tooltip*/
