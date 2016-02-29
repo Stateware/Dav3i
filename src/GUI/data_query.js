@@ -68,7 +68,9 @@ function FormatStatData(statData)
         arr[i] = [];
         for(var j = 0; j < yearKeys.length; j++)
         {
-            arr[i][j] = statData.get(statKeys[i]).get(yearKeys[j]);
+        	//subtract first year from year value to make sure our data is in order
+        	//	even if the yearKeys array is not sorted
+            arr[i][yearKeys[j]-g_FirstYear] = statData.get(statKeys[i]).get(yearKeys[j]);
         }
     }
 
