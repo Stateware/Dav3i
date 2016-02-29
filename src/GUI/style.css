@@ -375,12 +375,23 @@
     margin-left: auto;
     margin-right: auto;
     margin-top: auto;
-    height: 500px;
+    height: 300px;
     width: 500px;
     background-color: #EAE7C2;
     display: none;
     text-align: center;
     font-family: 'Open Sans Condensed', sans-serif;
+}
+
+/* sets styling for buttons in new tab popup */
+.new-tab-buttons {
+    padding-bottom: 1px;
+    padding-top: 60px;
+}
+
+/* sets styling for name text box input in new tab popup */
+.new-tab-name-input {
+    padding-top: 10px;
 }
 
 /* sets open sans font styling */
@@ -518,6 +529,12 @@
 .spinner .bounce2 {
     -webkit-animation-delay: -0.16s;
     animation-delay: -0.16s;
+}
+
+/* sets styling for stat dropdowns in new tab popup */
+.stat_dropdown {
+    padding-left: 175px;
+    padding-top: 35px;
 }
 
 /* sets styling for subgraph section */
