@@ -78,14 +78,26 @@ function initMap() {
             }]
         },
         // runs when a region is selected
-        onRegionSelected: function(a,b,c,d)
-        {
-        	console.log(a);
-        	console.log(b);
-        	console.log(c);
-        	console.log(d);
-            if (g_Clear != true)
-                ModifyData(g_Map.getSelectedRegions());
+        onRegionSelected: function(jvectorMapEvent, regionCC2, regionSelected, selectedRegionsList)
+        {        	
+        	//make sure we have data for the country before attempting to fetch
+        	if( g_CountriesNoData.indexOf( regionCC2 ) === -1)
+        	{
+	            if( regionSelected )
+	            {
+	            	AddRegion( GetCID( regionCC2 ) );
+	            }
+	            else //region deselected
+	            {
+	            	RemoveRegion( regionCC2 );
+	            }
+	        }
+	        else //no data for region
+	        {
+	        	//kind of ugly - just set it to not selected 
+	        	// I don't think there is a way to make a region not selectable - this has similar effect. 
+	        	g_Map.regions[regionCC2].element.setSelected( false );
+	        }
         },
         // runs when region is hovered over
         onRegionTipShow: function(e, label, key){
@@ -131,10 +143,9 @@ function initMap() {
         }
     });
 
-    FindCountriesNoData();
+    g_Map = localMap;
     SetClearButtonOnClick();
 
-    g_Map = localMap;
     return localMap;
 };
 
@@ -236,7 +247,6 @@ function ParseMapData(hmsData,hmsID) {
 // PRE:  g_Map regions countains a list of countries
 // POST: g_CountriesNoData is populated with countries with no data
 function FindCountriesNoData() {
-  setTimeout(function(){
     var isFound = false;
     g_CountriesNoData = [];
     for (var key in g_Map.regions) 
@@ -256,9 +266,6 @@ function FindCountriesNoData() {
             g_CountriesNoData.push(key);
         }
     }
-    }, 10000);
-    //console.log(g_CountriesNoData);
-
 };
 
 // Author: Murlin Wei, William Bittner
@@ -283,9 +290,7 @@ function SetClearButtonOnClick() {
             g_DataList.start = null;
             g_DataList.end = null;
 
-            g_Clear = true;
             g_Map.clearSelectedRegions();
-            g_Clear = false;
         };
         return 0;
     }

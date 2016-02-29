@@ -37,7 +37,6 @@
 // POST: lookup table is generated, generate map colored by default HMS
 function initPage() 
 {
-	initMap();
 	// Generate lookup table and heat map
     GetDescriptor(getSession());
 

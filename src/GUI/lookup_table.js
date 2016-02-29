@@ -72,7 +72,6 @@ function ParseDescriptor(DescriptorJSON)
     //Set the initial year displayed to the most current year for which we have data
     g_HMSYear = g_LastYear;
     
-    FindCountriesNoData();
     ColorByHMS();
     BuildTabs();
 
@@ -99,6 +98,8 @@ function GetDescriptor(sessionID)
         dataType: 'JSON',                 
         success: function(data){
         	ParseDescriptor(data);
+        	initMap();
+    		FindCountriesNoData();
         },
         error: function(xhr, textStatus, errorThrown){
        		console.log('Descriptor could not be fetched. The error is as follows: ' + errorThrown);
@@ -417,6 +418,6 @@ function ParseStatList()
 			parsedStatList[parsedStatIndexes.ASSOCIATED2][i] = upperIndex;
 		}
 	}
-
 	return parsedStatList;
+	
 }
