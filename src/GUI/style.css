@@ -527,8 +527,28 @@
     white-space: nowrap;
 }
 
+
 .tab-dropdown{
-    width: 100%;
+    width: 90%;
+}
+
+
+.tab-addition-button {
+    border: 0 none;
+    border-radius: 2px 2px 2px 2px;
+    color: #7FDBFF;
+    cursor: pointer;
+    display: inline-block;
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-size: 100%;
+    line-height: 20px;
+    text-transform: none;
+    transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -webkit-transition: all 0.3s ease 0s;
+    width: auto;
+    height: 23px;
+    background: none repeat scroll 0 0 #001f3f;
 }
 
 /* allows for the showing of the tooltip*/

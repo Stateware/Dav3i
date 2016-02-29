@@ -402,7 +402,7 @@ function PopulateNewTabMenu(descriptor)
 
 /* Function OKNewTabMenu()
 /*
-/*      When user clicks ok from new tab menu, do appropriate actions
+/*      When user clicks ok from new tab menu, create new custom tab
 /*
 /* Parameters: 
 /*
@@ -430,7 +430,7 @@ function PopulateNewTabMenu(descriptor)
 /*
 /* Last Modified:
 /*
-/*      2/27/2016 by Paul Jang
+/*      2/29/2016 by Paul Jang
  */
 function OkNewTabMenu()
 {
@@ -439,10 +439,9 @@ function OkNewTabMenu()
     var stat2 = $("#stat_stat2").find(":selected").text();
     var name = document.getElementById("new-tab-name").value;
 
-    // make function call to handle new tab generation
-
-    // for now, alert retrieved values
-    alert("Stat 1: " + stat1 + ", Stat 2: " + stat2 + ", Name: " + name);
+    // add option to dropdown
+    var newOption = new Option(name, 1);
+    document.getElementById("tabDropdown").appendChild(newOption);
 
     // return back to main page
     CloseNewTabMenu();

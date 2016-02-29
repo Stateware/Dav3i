@@ -179,12 +179,12 @@
                 <button id="settings" class="flat-button" onclick="OpenSettings()">Settings</button>
                 <button id="help" class="flat-button" onclick="OpenHelp()">Help</button>
                 <button id="upload" class="flat-button" onclick="window.location = 'Upload/data_upload.html';">Upload</button>
-                <button id="newcustomtab" class="flat-button" onclick="OpenNewTabMenu()">+</button>
             </section>
             <section class="graph" id="graph">
                 <div>
                     <div id="tabs" class="tabWrapper">
                         <select class="tab-dropdown" id="tabDropdown" onChange="ChooseTab(GetSelectedDropdown('tabDropdown', 'elem'))"></select>
+                        <button id="new-custom-tab" class="tab-addition-button" onclick="OpenNewTabMenu()">+</button>
                     </div>
                 </div>
                 <div id="graphs">
