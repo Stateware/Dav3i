@@ -28,15 +28,25 @@
 // Dependencies:        descriptor.php, by_stat.php, data.js
 // Additional Notes:    N/A
 
-// Author: Emma Roudabush, Joshua Crafts, William Bittner
-// Date Created: 3/5/2015
-// Last Modified: 9/24/2015 by William Bittner
-// Description: Fills g_DescriptorJSON with the contents of descriptor.php,
-//              fills g_LookupTable and g_StatList with their corresponding data
-//              and logs the resulting variables to the console.
-// PRE: DescriptorJSON is not null, g_StatList and g_LookupTable exist,
-//      GenerateLookupTable and GenerateStatReferenceList function correctly
-// POST: DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
+/*
+ * Function: ParseDescriptor
+ * Fills g_DescriptorJSON with the contents of descriptor.php, fills g_LookupTable and g_StatList with their corresponding data and logs the resulting variables to the console.
+ *
+ * Pre: 
+ * DescriptorJSON is not null, g_StatList and g_LookupTable exist, GenerateLookupTable and GenerateStatReferenceList function correctly
+ *
+ * Post: 
+ * DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
+ *
+ * Authors: 
+ * Emma Roudabush, Joshua Crafts, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 9/24/2015 by William Bittner
+ */
 function ParseDescriptor(DescriptorJSON)
 {
     var hmsData;
@@ -79,13 +89,25 @@ function ParseDescriptor(DescriptorJSON)
         
 }
 
-// Author: Emma Roudabush, William Bittner
-// Date Created: 3/5/2015
-// Last Modified: 2/8/2016 by Nicholas Denaro
-// Description: Retrieves descriptor.php from the server                
-// PRE: descriptor.php exists on the server.
-// POST: If retrieval is successful, call the function to parse the descriptor
-//			if retrieval is not, error is logged.
+/*
+ * Function: GetDescriptor
+ * Retrieves descriptor.php from the server  
+ *
+ * Pre: 
+ * descriptor.php exists on the server.
+ *
+ * Post: I
+ * f retrieval is successful, call the function to parse the descriptor if retrieval is not, error is logged.
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
 function GetDescriptor(sessionID)
 {
 	var URL = 'http://localhost/dav3i/API/descriptor.php';
@@ -108,12 +130,25 @@ function GetDescriptor(sessionID)
     });
 }
 
-// Author: Emma Roudabush, William Bittner
-// Date Created: 4/7/2015
-// Last Modified: 2/8/2016 by Nicholas Denaro
-// Description: Returns an object corresponding to the year range defined in the descriptor			
-// PRE: DescriptorJSON is formatted as to the specifications in the documentation
-// POST: An object with the first and last year values defined
+/*
+ * Function: GetInitialYears
+ * Returns an object corresponding to the year range defined in the descriptor	
+ *
+ * Pre: 
+ * DescriptorJSON is formatted as to the specifications in the documentation
+ *
+ * Post: 
+ * An object with the first and last year values defined
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 4/7/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
 function GetInitialYears(DescriptorJSON)
 {
 	var firstYear = Number(DescriptorJSON.yearRange["startYear"]);
@@ -126,13 +161,25 @@ function GetInitialYears(DescriptorJSON)
 	return yearRangeObject;
 }
 
-// Author: Emma Roudabush, William Bittner
-// Date Created: 3/5/2015
-// Last Modified: 2/8/2016 by Nicholas Denaro
-// Description: Returns a table of Countries CC2 codes, the country
-//              names, and HMS values are set to 0.
-// PRE: DescriptorJSON exists with the correct data from descriptor.php,
-// POST: A 2d array is returned that has the correct CC2, name, and HMS values zero'd for each country
+/*
+ * Function: 
+ * Returns a table of Countries CC2 codes, the country names, and HMS values are set to 0.
+ *
+ * Pre: 
+ * DescriptorJSON exists with the correct data from descriptor.php,
+ *
+ * Post: 
+ * A 2d array is returned that has the correct CC2, name, and HMS values zero'd for each country
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
 function InitializeLookupTable(DescriptorJSON)
 {
 	var countryKeys = Object.keys(DescriptorJSON.countries)
@@ -151,12 +198,25 @@ function InitializeLookupTable(DescriptorJSON)
     return lookupTable;
 }
 
-// Author: Emma Roudabush, William Bittner
-// Date Created: 3/5/2015
-// Last Modified: 9/24/2015 by William Bittner
-// Description: Returns an array of stat names gathered from DescriptorJSON            
-// PRE: DescriptorJSON exists with the correct data from descriptor.php
-// POST: returns an array containing the correct stat names
+/*
+ * Function: GenerateStatReferenceList
+ * Returns an array of stat names gathered from DescriptorJSON
+ *
+ * Pre: 
+ * DescriptorJSON exists with the correct data from descriptor.php
+ *
+ * Post: 
+ * returns an array containing the correct stat names
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 9/24/2015 by William Bittner
+ */
 function GenerateStatReferenceList(DescriptorJSON)
 {
 	var statKeys = Object.keys(DescriptorJSON.stats);
@@ -171,12 +231,25 @@ function GenerateStatReferenceList(DescriptorJSON)
     return statList;
 }
 
-// Author: Emma Roudabush, Joshua Crafts
-// Date Created: 3/17/2015
-// Last Modified: 9/28/2015 by Murlin Wei
-// Description:Replace HMS values in lookup table with new HMS data (will happen just after lookup table generation for default HMS)
-// PRE: hmsData contains valid heat map values and hmsData is of size g_LookupTable.length
-// POST: g_LookupTable has heat map values of hmsData
+/*
+ * Function: SetHMS
+ * Replace HMS values in lookup table with new HMS data (will happen just after lookup table generation for default HMS)
+ *
+ * Pre: 
+ * hmsData contains valid heat map values and hmsData is of size g_LookupTable.length
+ *
+ * Post: 
+ * g_LookupTable has heat map values of hmsData
+ *
+ * Authors: 
+ * Emma Roudabush, Joshua Crafts
+ *
+ * Date Created: 
+ * 3/17/2015
+ *
+ * Last Modified: 
+ * 9/28/2015 by Murlin Wei
+ */
 function SetHMS(hmsData)
 {
 	var heatMapValues = [];
@@ -195,9 +268,9 @@ function SetHMS(hmsData)
  * array of the values
  * 
  * Parameters: 
- * cache
- * statID
- * year
+ * cache - 
+ * statID - 
+ * year - 
  * 
  * Pre: 
  * instanceCache contains valid instance data for the stat and all countries in the
@@ -240,9 +313,9 @@ function ReformatByStatData(instanceCache, statID, year)
  * Connects the formatting of the data from the server and the updating of the heatmap
  * 
  * Parameters: 
- * data
- * statID
- * year
+ * data - The data received from the server
+ * statID - The stat id for the call
+ * year - the year for the call
  * 
  * Pre: 
  * data is valid and does not contain an error
@@ -265,12 +338,25 @@ function SuccessfulByStat(data, statID, year)
    	ParseMapData(data,statID);
 }
 
-// Author: Vanajam Soni, Kyle Nicholson, Joshua Crafts
-// Date Created: 3/19/2015
-// Last Modified: 2/8/2016 by Nicholas Denaro
-// Description: Returns HMS data based on hmsID
-// PRE: hmsID is an integer and a valid heat map stat id, year is an integer and within the valid range
-// POST: FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
+/*
+ * Function: 
+ * Returns HMS data based on hmsID
+ *
+ * Pre: 
+ * hmsID is an integer and a valid heat map stat id, year is an integer and within the valid range
+ *
+ * Post: 
+ * FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
+ *
+ * Authors: 
+ * Vanajam Soni, Kyle Nicholson, Joshua Crafts
+ *
+ * Date Created: 
+ * 3/19/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
 function GetHMS(sessionID, instanceID, hmsID, year)
 {
 	var URL = 'http://localhost/dav3i/API/by_stat.php?sessionID='.concat(sessionID.toString()+"&instanceID="+instanceID.toString()+"&statID="+hmsID.toString()+"&year="+year.toString());
@@ -290,13 +376,25 @@ function GetHMS(sessionID, instanceID, hmsID, year)
     });
 }
 
-// Author: Emma Rouabush, Joshua Crafts
-// Date Created: 3/17/2015
-// Last Modified: 3/22/2015 by Joshua Crafts
-// Description: Translate CC2 to CID using g_LookupTable
-// PRE: cc2 is a string that is a valid CC2 code corresponding to a country/region in the lookup table,
-//		g_LookupTable exists and has the correct data
-// POST: FCTVAL = cid (CID corresponding to the input CC2 in the lookup table), -1 if cc2 not found
+/*
+ * Function: 
+ * Translate CC2 to CID using g_LookupTable
+ *
+ * Pre: 
+ * cc2 is a string that is a valid CC2 code corresponding to a country/region in the lookup table, g_LookupTable exists and has the correct data
+ *
+ * Post: 
+ * FCTVAL = cid (CID corresponding to the input CC2 in the lookup table), -1 if cc2 not found
+ *
+ * Authors: 
+ * Emma Rouabush, Joshua Crafts
+ *
+ * Date Created: 
+ * 3/17/2015
+ *
+ * Last Modified: 
+ * 3/22/2015 by Joshua Crafts
+ */
 function GetCID(cc2)
 {
     var length = g_LookupTable.length;
@@ -315,13 +413,23 @@ function GetCID(cc2)
 
 /*
  * Function: CleanStatNames
+ * Take the stat list and give them nicer names to display.
+ *
+ * Pre: 
+ * g_StatList exist
+ *
+ * Post: 
+ * g_StatList has friendlier names
+ *
+ * Authors: 
+ * Nicholas Denaro, William Bittner
+ *
+ * Date Created: 
+ * 2/22/2016
+ *
+ * Last Modified: 
+ * 2/22/2016 by Nicholas Denaro
  */
-// Author: Nicholas Denaro, William Bittner
-// Date Created: 2/22/2016
-// Last Modified: 2/22/2016 by Nicholas Denaro
-// Description: Take the stat list and give them nicer names to display.
-// PRE: g_StatList exist
-// POST: g_StatList has friendlier names
 function CleanStatNames()
 {
 	g_StatList[g_StatList.indexOf("births")] = "Births";
@@ -335,15 +443,23 @@ function CleanStatNames()
 
 /*
  * Function: ParseStatList
+ * Take the stat list and populate a parsed data 2d array for use in creating graphs
+ *
+ * Pre: 
+ * g_StatList exist
+ *
+ * Post: 
+ * return a 2D array A[x][y], in which each x value represents a selectable stat, and each y value either represents stat type (0), indicates head stat (1), or indicates associated data (2-3).
+ *
+ * Authors: 
+ * Nicholas Denaro, William Bittner
+ *
+ * Date Created: 
+ * 4/2/2015
+ *
+ * Last Modified: 
+ * 2/22/2016 by Nicholas Denaro
  */
-// Author: Nicholas Denaro, William Bittner
-// Date Created: 4/2/2015
-// Last Modified: 2/22/2016 by Nicholas Denaro
-// Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
-// PRE: g_StatList exist
-// POST: return a 2D array A[x][y], in which each x value represents a selectable 
-// 		 stat, and each y value either represents stat type (0), indicates head stat (1), or indicates 
-//		 associated data (2-3).
 function ParseStatList()
 {
 	var statList = g_StatList.slice();

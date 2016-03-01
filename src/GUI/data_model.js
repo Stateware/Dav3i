@@ -2,77 +2,36 @@
 
 function getInstance()
 {
-	return 10;
+	return 60;
 }
 
 function getSession()
 {
-	return 4;
+	return 40;
 }
 
-//if supplied a list with an added index with respect to g_mapSelectedRegionsToDivs,
-//	create a div and add that to the page, then add this 
-function updateCharts( selectedRegions )
-{
-	if( selectedRegions.length > Object.keys( g_mapSelectedRegionsToDivs ).length )
-	{
-		for( var i = 0; i < selectedRegions.length; i++)
-		{
-			if( g_mapSelectedRegionsToDivs[selectedRegions[i]] === undefined )
-			{
-				//make div
-				var div = makeChartDivs( selectedRegions[i] );
-				
-				g_mapSelectedRegionToDivs[selectedRegions[i]] = div;
-			}
-		}
-	}
-	else if( selectedRegions.length < Object.keys( g_mapSelectedRegionsToDivs ).length )
-	{
-		var keys = Object.keys( g_mapSelectedRegionsToDivs );
-		for( var i = 0; i < keys.length; i++ )
-		{
-			if( selectedRegions.indexOf( keys[i] ) == -1 )
-			{
-				var div = g_mapSelectedRegionToDivs[keys[i]];
-				div.parentNode.removeChild(div);
-				
-				delete g_mapSelectedRegionToDivs[keys[i]];
-			}
-		} 
-	}
-	else//same size, do nothing (hope nothing changed?)
-	{
-	}
-	
-	return g_mapSelectedRegionToDivs;
-}
-
-function generateChartData(sessionID, instanceID, countryID,statID)
-{
-	var data = new Array();
-	data[0] = new Array();
-	data[1] = new Array();
-	var country = retrieveByCountryData(sessionID,instanceID,countryID);
-
-	//.log(JSON.stringify(country,' ',' '));
-
-	var keys = Object.keys(country.get(statID));
-	for(var i = 0 ; i < keys.length; i++)
-	{
-		var year = keys[i];
-		if(!isNaN(year))
-		{
-			data[0].push(year);
-			data[1].push(country.get(statID).get(year));
-		}
-	}
-}
-
+/*
+ * Function: 
+ * 
+ *
+ * Pre: 
+ * 
+ *
+ * Post: 
+ * 
+ *
+ * Authors: 
+ * 
+ *
+ * Date Created: 
+ * 
+ *
+ * Last Modified: 
+ * 
+ */
 function retrieveByCountryData(sessionID, instanceID, countryID, callback)
 {
 	var have = checkCacheByCountry(sessionID, instanceID, countryID);
-	
 	
 	if(!have)
 	{
@@ -82,11 +41,27 @@ function retrieveByCountryData(sessionID, instanceID, countryID, callback)
 	{
 		callback( g_cache.get(sessionID).get(instanceID).get(countryID), countryID );
 	}
-	
-	
-	
 }
 
+/*
+ * Function: 
+ * 
+ *
+ * Pre: 
+ * 
+ *
+ * Post: 
+ * 
+ *
+ * Authors: 
+ * 
+ *
+ * Date Created: 
+ * 
+ *
+ * Last Modified: 
+ * 
+ */
 function retrieveByStatData(sessionID, instanceID, statID, year, callback)
 {
 	var have = checkCacheByStat(sessionID, instanceID, statID, year);
@@ -101,6 +76,25 @@ function retrieveByStatData(sessionID, instanceID, statID, year, callback)
 	}
 }
 
+/*
+ * Function: 
+ * 
+ *
+ * Pre: 
+ * 
+ *
+ * Post: 
+ * 
+ *
+ * Authors: 
+ * 
+ *
+ * Date Created: 
+ * 
+ *
+ * Last Modified: 
+ * 
+ */
 function checkCacheByStat(sessionID, instanceID, statID, year)
 {
 	var stat = g_cache.get(sessionID).get(instanceID).get("flags").get("statIDs").get(statID);
@@ -108,6 +102,25 @@ function checkCacheByStat(sessionID, instanceID, statID, year)
 	return stat[year] === undefined ? false : stat[year];//handle undefined
 }
 
+/*
+ * Function: 
+ * 
+ *
+ * Pre: 
+ * 
+ *
+ * Post: 
+ * 
+ *
+ * Authors: 
+ * 
+ *
+ * Date Created: 
+ * 
+ *
+ * Last Modified: 
+ * 
+ */
 function checkCacheByCountry(sessionID, instanceID, countryID)
 {
 	var countryIDs = g_cache.get(sessionID).get(instanceID).get("flags").get("countryIDs");
@@ -115,6 +128,25 @@ function checkCacheByCountry(sessionID, instanceID, countryID)
 	return countryIDs[countryID] === undefined ? false : countryIDs[countryID];//handle undefined
 }
 
+/*
+ * Function: 
+ * 
+ *
+ * Pre: 
+ * 
+ *
+ * Post: 
+ * 
+ *
+ * Authors: 
+ * 
+ *
+ * Date Created: 
+ * 
+ *
+ * Last Modified: 
+ * 
+ */
 function getDataByStat(sessionID, instanceID, statID, year, callback)
 {
 	//TODO: fix undefined year...?
@@ -140,6 +172,25 @@ function getDataByStat(sessionID, instanceID, statID, year, callback)
 	
 }
 
+/*
+ * Function: 
+ * 
+ *
+ * Pre: 
+ * 
+ *
+ * Post: 
+ * 
+ *
+ * Authors: 
+ * 
+ *
+ * Date Created: 
+ * 
+ *
+ * Last Modified: 
+ * 
+ */
 function getDataByCountry(sessionID, instanceID, countryID, callback)
 {
 	
@@ -162,7 +213,25 @@ function getDataByCountry(sessionID, instanceID, countryID, callback)
 	
 }
 
-
+/*
+ * Function: 
+ * 
+ *
+ * Pre: 
+ * 
+ *
+ * Post: 
+ * 
+ *
+ * Authors: 
+ * 
+ *
+ * Date Created: 
+ * 
+ *
+ * Last Modified: 
+ * 
+ */
 function parseCountryPacket(packet)
 {
 	//console.log(packet);
@@ -190,6 +259,25 @@ function parseCountryPacket(packet)
 	
 }
 
+/*
+ * Function: 
+ * 
+ *
+ * Pre: 
+ * 
+ *
+ * Post: 
+ * 
+ *
+ * Authors: 
+ * 
+ *
+ * Date Created: 
+ * 
+ *
+ * Last Modified: 
+ * 
+ */
 function parseStatPacket(packet)
 {
 	var sessionID, instanceID, countryID, data;
