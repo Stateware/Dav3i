@@ -533,10 +533,6 @@ function Shrink()
     setTimeout(function()
     {
         g_Expanded = false;
-        while(document.getElementById("tabsDiv").childNodes[0]!=document.getElementById("id-"+g_StatList[g_StatID]))
-        {
-            RotateTabs(-1);
-        }
         GenerateSubDivs();
         GenerateGraphs();
     }, 500);  
