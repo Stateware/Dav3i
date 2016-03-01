@@ -70,18 +70,36 @@ function BuildTabs()
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
         var temp=g_StatList[g_ParsedStatList[1][i]];
-        var newOption = new Option(temp,g_ParsedStatList[1][i]);
+        var statOnly = new Option(temp,g_ParsedStatList[1][i]);
 
-        newOption.id="id-"+temp;
+        statOnly.id="id-"+temp;
+        statOnly.setAttribute("multi-instance", false);
+        statOnly.setAttribute("stat1_id", g_ParsedStatList[1][i]);
+        statOnly.setAttribute("stat2_id", null);
 
         if (temp.indexOf("VACC") > -1)
         {
-            newOption.text="Vaccinations";
+            statOnly.text="Vaccinations";
         }
         
-        tabDropdown.appendChild(newOption);
+        tabDropdown.appendChild(statOnly);
 
         BuildDiv(temp);
+
+        var statAllInstances = new Option(temp + " (all instances)", g_ParsedStatList[1][i]);
+        statAllInstances.id="id-"+temp;
+        statAllInstances.setAttribute("multi-instance", true);
+        statAllInstances.setAttribute("stat1_id", g_ParsedStatList[1][i]);
+        statAllInstances.setAttribute("stat2_id", null);
+
+        if (temp.indexOf("VACC") > -1)
+        {
+            statAllInstances.text="Vaccinations (all instances)";
+        }
+
+        tabDropdown.appendChild(statAllInstances);
+
+        BuildDiv(temp+" (all instances)");
     }
 
     return(g_ParsedStatList[1].length);
@@ -256,13 +274,6 @@ function CloseSettings()
     document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
 }
 
-// sample json in the format of the descriptor
-var dataJSON = {
-        "instances": {"1": "instance1", "3": "instance2", "4": "instance3", "7": "instance4"},
-        "sessions": {"1": "session1", "2": "session2", "3": "session3"},
-        "stats": {"1":"births","2":"deaths","3":"cases","4":"mcv1","5":"mcv2","6":"populations","7":"sia","8":"lbe_cases","9":"lbe_mortality","10":"ube_cases","11":"ube_mortality","12":"e_cases","13":"e_mortality"}
-};
-
 /* Function OpenNewTabMenu()
 /*
 /*      Causes the menu for creating new custom tabs to appear on the client
@@ -372,32 +383,22 @@ function CloseNewTabMenu()
 function PopulateNewTabMenu(descriptor)
 {
     // grab corresponding dropdown elements
-    var stat1 = document.getElementById("stat_stat1");
-    var stat2 = document.getElementById("stat_stat2");
+    var stat1 = document.getElementById('stat_stat1');
+    var stat2 = document.getElementById('stat_stat2');
 
     // clear stat menu dropdowns
     stat1.innerHTML = "";
     stat2.innerHTML = "";
 
-    // retrieve the stat list from the global
-    var statList = GetHeadStatList();
-
     // loop through the keys and add the options to both the stat dropdowns
-    for(var i = 0; i<statList.length; i++)
+    for(var i = 0; i<g_ParsedStatList[1].length; i++)
     {
-        var curr = statList[i];
-        var newOption = new Option(curr,i);
-        stat1.appendChild(newOption);
+        var temp=g_StatList[g_ParsedStatList[1][i]];
+        var newOption1 = new Option(temp,g_ParsedStatList[1][i]);
+        var newOption2 = new Option(temp,g_ParsedStatList[1][i]);
+        stat1.appendChild(newOption1);
+        stat2.appendChild(newOption2);
     }
-
-    // loop through the keys and add the options to both the stat dropdowns
-    for(var i = 0; i<statList.length; i++)
-    {
-        var curr = statList[i];
-        var newOption = new Option(curr,i);
-        stat2.appendChild(newOption);
-    }
-    
 }
 
 /* Function OKNewTabMenu()
@@ -435,18 +436,25 @@ function PopulateNewTabMenu(descriptor)
 function OkNewTabMenu()
 {
     // grab stats and name from new tab menu
-    var stat1 = $("#stat_stat1").find(":selected").text();
-    var stat2 = $("#stat_stat2").find(":selected").text();
+    var stat1 = GetSelectedDropdown("stat_stat1", "text");
+    var stat2 = GetSelectedDropdown("stat_stat2", "text");
     var name = document.getElementById("new-tab-name").value;
 
     if(name == "")
     {
         alert("Name cannot be blank.");
     }
+    else if(stat1 == stat2)
+    {
+        alert("Stat 1 and Stat 2 cannot be the same.");
+    }
     else
     {
         // add option to dropdown
         var newOption = new Option(name, 1);
+        newOption.setAttribute("stat1_id", GetSelectedDropdown("stat_stat1", "id"));
+        newOption.setAttribute("stat2_id", GetSelectedDropdown("stat_stat2", "id"));
+        //newOption.setAttribute("multi-instance", )
         document.getElementById("tabDropdown").appendChild(newOption);
         
         // return back to main page
