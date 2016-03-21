@@ -78,8 +78,12 @@ function initMap() {
             }]
         },
         // runs when a region is selected
-        onRegionSelected: function()
+        onRegionSelected: function(a,b,c,d)
         {
+        	console.log(a);
+        	console.log(b);
+        	console.log(c);
+        	console.log(d);
             if (g_Clear != true)
                 ModifyData(g_Map.getSelectedRegions());
         },
@@ -163,7 +167,7 @@ function ColorByHMS() {
         }
     }
 
-    getDataByStat(getSession(), getInstance(), hmsID, g_HMSYear, SuccessfulByStat);
+    retrieveByStatData(getSession(), getInstance(), hmsID, g_HMSYear, SuccessfulByStat);
 };
 
 // Author: Murlin Wei, William Bittner

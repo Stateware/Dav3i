@@ -23,42 +23,87 @@
 // Description:             This module contains the code needed to dynamically create modules on the client
 // Date Created:            3/26/2015
 // Contributors:            Paul Jang, Nicholas Denaro, Emma Roudabush
-// Date Last Modified:      4/20/2015
+// Date Last Modified:      2/29/2016
 // Last Modified By:        Paul Jang
 // Dependencies:            index.html, lookup_table.js, data.js
 // Additional Notes:        N/A
 
-// Author: Paul Jang, Nicholas Denaro
-// Date Created: 3/26/2015
-// Last Modified: 10/8/2015 by Nicholas Denaro
-// Description: Retrieve stat values from the lookup_table,
-//              Builds the tabs and inserts them into index.html
-// PRE: lookup_table is filled correctly, index.html exists
-// POST: index.html contains tabs of the correct stat data from the lookup_table. FCTVAL == Number of tabs created.
+
+/* Function BuildTabs()
+/*
+/*      Fills in the tab selection dropdown menu
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      lookup_table is filled correctly, index.html exists, tabDropdown element exists
+/*
+/* Post:
+/*
+/*      the tab selection dropdown is populated with the correct stats
+/*
+/* Returns:
+/*
+/*      the number of stats that populated the dropdown menu
+/*
+/* Authors:
+/*
+/*      Paul Jang, Nicholas Denaro
+/*
+/* Date Created:
+/*
+/*      3/26/2015
+/*
+/* Last Modified:
+/*
+/*      2/29/2016 by Paul Jang
+ */
 function BuildTabs()
 {
     var i;
+    var tabDropdown = document.getElementById("tabDropdown");
+    tabDropdown.innerHTML = "";
+
     for(i=0;i<g_ParsedStatList[1].length;i++)
     {
         var temp=g_StatList[g_ParsedStatList[1][i]];
-        var div=document.createElement("DIV");
-        div.id="id-"+temp;
-        div.setAttribute("stat",""+g_ParsedStatList[1][i]);
-        div.className="graph-tab";
-        div.setAttribute("onclick","ChooseTab(this)");
-        div.innerHTML=temp;
+        var statOnly = new Option(temp,g_ParsedStatList[1][i]);
+
+        statOnly.id="id-"+temp;
+        statOnly.setAttribute("shrink-map", false);
+        statOnly.setAttribute("multi-instance", false);
+        statOnly.setAttribute("stat1_id", g_ParsedStatList[1][i]);
+        statOnly.setAttribute("stat2_id", null);
+
         if (temp.indexOf("VACC") > -1)
-            div.innerHTML="Vaccinations";
-        document.getElementById("tabsDiv").appendChild(div);
+        {
+            statOnly.text="Vaccinations";
+        }
+        
+        tabDropdown.appendChild(statOnly);
 
         BuildDiv(temp);
 
-        if(g_ParsedStatList[1][i]==g_StatID)
+        var statAllInstances = new Option(temp + " (all instances)", g_ParsedStatList[1][i]);
+        statAllInstances.id="id-"+temp;
+        statAllInstances.setAttribute("shrink-map", true);
+        statAllInstances.setAttribute("multi-instance", true);
+        statAllInstances.setAttribute("stat1_id", g_ParsedStatList[1][i]);
+        statAllInstances.setAttribute("stat2_id", null);
+
+        if (temp.indexOf("VACC") > -1)
         {
-            document.getElementById("id-"+temp+"-graphs").style.display="block";
-            div.className="graph-tab selected-tab";
+            statAllInstances.text="Vaccinations (all instances)";
         }
+
+        tabDropdown.appendChild(statAllInstances);
+
+        BuildDiv(temp+" (all instances)");
     }
+
     return(g_ParsedStatList[1].length);
 }
 
@@ -106,12 +151,38 @@ function BuildDiv(stat)
     return(div);
 }
 
-// Author: Paul Jang, Nicholas Denaro
-// Date Created: 3/26/2015
-// Last Modified: 4/14/2015 by Nicholas Denaro
-// Description: build divs where the graphs go in index.html
-// PRE: Called from the onclick of a tab
-// POST: previous tab is switched out, and now tab is switched in. FCTVAL == currently selected stat id.
+/* Function ChooseTab()
+/*
+/*      Build divs where the graphs go in index.html
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      called from the changing of the selected option in the tab dropdown menu
+/*
+/* Post:
+/*
+/*      previous tab is switched out, and now tab is switched in
+/*
+/* Returns:
+/*
+/*      the number of stats that populated the dropdown menu
+/*
+/* Authors:
+/*
+/*      Paul Jang, Nicholas Denaro
+/*
+/* Date Created:
+/*
+/*      3/26/2015
+/*
+/* Last Modified:
+/*
+/*      2/29/2016 by Paul Jang
+ */
 function ChooseTab(element)
 {
     // remove divs in previous tab
@@ -123,11 +194,22 @@ function ChooseTab(element)
     element.className="graph-tab selected-tab";
     document.getElementById("id-"+g_StatList[g_StatID]+"-graphs").style.display="none";
     document.getElementById(element.id+"-graphs").style.display="block";
-    g_StatID=Number(element.getAttribute("stat"));
+    g_StatID=GetSelectedDropdown("tabDropdown", "id");
     ColorByHMS();
 
     GenerateSubDivs();
     GenerateGraphs();
+
+    // expands the graph section if the currently selected stat is multi instance
+    if(GetSelectedDropdown("tabDropdown","elem").getAttribute("shrink-map") == "true")
+    {
+        ScaleContext("multi-instance");
+    }
+    else
+    {
+        ScaleContext("single-instance");
+    }
+
     return(g_StatID);
 }
 
@@ -205,6 +287,195 @@ function CloseSettings()
     document.getElementById(heatmapYearDiv.id+"-error").innerHTML="";
 }
 
+/* Function OpenNewTabMenu()
+/*
+/*      Causes the menu for creating new custom tabs to appear on the client
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      the html elements of the menu exists
+/*
+/* Post:
+/*
+/*      a popup menu with options to create a custom tab appears on the client
+/*
+/* Returns:
+/*
+/*      none
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/19/2016
+/*
+/* Last Modified:
+/*
+/*      2/19/2016 by Paul Jang
+ */
+function OpenNewTabMenu()
+{
+    $(".new-custom-tab-menu, .settings-black").fadeIn(400);
+}
+
+/* Function OpenNewTabMenu()
+/*
+/*      Closes the new custom tab creation menu
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      the custom tab menu is open
+/*
+/* Post:
+/*
+/*      the client goes back to the main page
+/*
+/* Returns:
+/*
+/*      none
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/19/2016
+/*
+/* Last Modified:
+/*
+/*      2/19/2016 by Paul Jang
+ */
+function CloseNewTabMenu()
+{
+    $(".new-custom-tab-menu, .settings-black").fadeOut(400);
+} 
+
+/* Function PopulateNewTabMenu()
+/*
+/*      Fills the elements of the new tab menu popup
+/*
+/* Parameters: 
+/*
+/*      descriptor to fill the stat dropdowns exists
+/*
+/* Pre:
+/*
+/*      the html elements of the menu exists
+/*
+/* Post:
+/*
+/*      the menu changes to accomodate the type of tab the user wants
+/*
+/* Returns:
+/*
+/*      none
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/19/2016
+/*
+/* Last Modified:
+/*
+/*      2/26/2016 by Paul Jang
+ */
+function PopulateNewTabMenu(descriptor)
+{
+    // grab corresponding dropdown elements
+    var stat1 = document.getElementById('stat_stat1');
+    var stat2 = document.getElementById('stat_stat2');
+
+    // clear stat menu dropdowns
+    stat1.innerHTML = "";
+    stat2.innerHTML = "";
+
+    // loop through the keys and add the options to both the stat dropdowns
+    for(var i = 0; i<g_ParsedStatList[1].length; i++)
+    {
+        var temp=g_StatList[g_ParsedStatList[1][i]];
+        var newOption1 = new Option(temp,g_ParsedStatList[1][i]);
+        var newOption2 = new Option(temp,g_ParsedStatList[1][i]);
+        stat1.appendChild(newOption1);
+        stat2.appendChild(newOption2);
+    }
+}
+
+/* Function OKNewTabMenu()
+/*
+/*      When user clicks ok from new tab menu, create new custom tab
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      user clicks the ok button in new tab menu
+/*
+/* Post:
+/*
+/*      the new tab menu closes and a new tab is created in the tabs menu
+/*
+/* Returns:
+/*
+/*      none
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/27/2016
+/*
+/* Last Modified:
+/*
+/*      2/29/2016 by Paul Jang
+ */
+function OkNewTabMenu()
+{
+    // grab stats and name from new tab menu
+    var stat1 = GetSelectedDropdown("stat_stat1", "text");
+    var stat2 = GetSelectedDropdown("stat_stat2", "text");
+    var name = document.getElementById("new-tab-name").value;
+
+    if(name == "")
+    {
+        alert("Name cannot be blank.");
+    }
+    else if(stat1 == stat2)
+    {
+        alert("Stat 1 and Stat 2 cannot be the same.");
+    }
+    else
+    {
+        // add option to dropdown
+        var newOption = new Option(name, 1);
+        newOption.setAttribute("shrink-map", true);
+        newOption.setAttribute("multi-instance", false);
+        newOption.setAttribute("stat1_id", GetSelectedDropdown("stat_stat1", "id"));
+        newOption.setAttribute("stat2_id", GetSelectedDropdown("stat_stat2", "id"));
+        document.getElementById("tabDropdown").appendChild(newOption);
+        
+        // return back to main page
+        CloseNewTabMenu();
+    }
+}
+
 // Author: Emma Roudabush
 // Date Created: 3/30/2015
 // Last Modified: 3/31/2015 by Emma Roudabush
@@ -233,9 +504,9 @@ function CloseHelp()
 // Description: Expands the c ontrol panel
 // PRE: N/A
 // POST: Control panel is expanded and black mask is in place behind
-function Expand()
+function Expand(newWidth)
 {
-    $(".control-panel").animate({width:"97.5%"}, 500);
+    $(".control-panel").animate({width:newWidth}, 500);
     $("#expand").attr("onclick","Shrink()");
     $("#expand").attr("src","res/arrow_left.png");
     $("#scroll-left").fadeOut(400);
@@ -267,8 +538,8 @@ function Expand()
 // POST: Control panel shrinks back to original size and black mask is gone
 function Shrink()
 {
-    $(".control-panel").animate({width:"25%"}, 500);
-    $("#expand").attr("onclick","Expand()");
+    //$(".control-panel").animate({width:"25%"}, 500);
+    $("#expand").attr("onclick","Expand('97.5%')");
     $("#expand").attr("src","res/arrow_right.png");
     $("#scroll-left").fadeIn(400);
     $("#scroll-right").fadeIn(400);
@@ -276,13 +547,17 @@ function Shrink()
     setTimeout(function()
     {
         g_Expanded = false;
-        while(document.getElementById("tabsDiv").childNodes[0]!=document.getElementById("id-"+g_StatList[g_StatID]))
-        {
-            RotateTabs(-1);
-        }
         GenerateSubDivs();
         GenerateGraphs();
-    }, 500);  
+    }, 500);
+    if(GetSelectedDropdown("tabDropdown","elem").getAttribute("multi-instance") == "true")
+    {
+        ScaleContext("multi-instance");
+    }  
+    else
+    {
+        ScaleContext("single-instance");
+    }
 }
 
 
@@ -414,14 +689,8 @@ function bugPopup()
         + "additional relevant information.");
 }
 
-// sample json in the format of the descriptor
-var dataJSON = {
-        "instances": {"1": "instance1", "3": "instance2", "4": "instance3", "7": "instance4"},
-        "sessions": {"1": "session1", "2": "session2", "3": "session3"}
-};
-
 /* 
- * Function: onSessionChange()
+ * Function: OnSessionChange()
  *
  *      Called when a session is changed in the dropdown menu
  *
@@ -453,18 +722,17 @@ var dataJSON = {
  *
  *      2/10/2016 by Paul Jang
  */
-function onSessionChange()
+function OnSessionChange()
 {
-    // for now, only call the fill session dropdown function
-    // TODO: add functionality to change data set when session is changed
-    var newSession = $('#sessionSelect').find(":selected").text(); 
-    alert("Session has been changed to " + newSession + ".");
-    fillInstanceDropdown(dataJSON);
-    return newSession;
+    // grab the id of the current session
+    var currentSession = GetSelectedDropdown("sessionSelect","id");
+
+    // recall the descriptor, which repopulates the dropdowns
+    GetDescriptor(currentSession);
 }
 
 /* 
- * Function: onInstanceChange()
+ * Function: OnInstanceChange()
  *
  *      Called when an instance is changed in the dropdown menu
  *
@@ -496,17 +764,16 @@ function onSessionChange()
  *
  *      2/10/2016 by Paul Jang
  */
-function onInstanceChange()
+function OnInstanceChange()
 {
     // for now, alert the user that the instance has been changed, and that this function has been called
     // TODO: add functionality to change instance data set when instance is changed
     var newInstance = $('#instanceSelect').find(":selected").text();
-    alert("Instance has been changed to " + newInstance + ".");
     return newInstance;
 }
 
 /* 
- * Function: fillSessionDropDown()
+ * Function: FillSessionDropDown()
  *
  *      Fills the session drop down menu with the sessions that currently have data in the database.
  *
@@ -538,10 +805,17 @@ function onInstanceChange()
  *
  *      2/8/2016 by Paul Jang
  */
-function fillSessionDropDown(descriptor)
+function FillSessionDropDown(descriptor, init)
 {
+    var selected;
+    // if it isn't the initial filling of the dropdown menus
+    if(!init)
+    {
+        selected = GetSelectedDropdown("sessionSelect", "text");
+    }
+
     // retrieve the list of sessions from the descriptor
-    var sessions = dataJSON["sessions"];
+    var sessions = descriptor["sessions"];
 
     // retrieve the keys from the sessions object
     var keys = Object.keys(sessions);
@@ -555,17 +829,22 @@ function fillSessionDropDown(descriptor)
         var curr = keys[i];
         var newOption = new Option(sessions[curr],curr);
         sessionSelect.appendChild(newOption);
+        if(!init)
+        {
+            // check if the current element is selected, if so, select it
+            if(sessions[curr] == selected)
+            {
+                $(newOption).attr("selected","selected");
+            }
+        }
     }
 
-    // fill the instance drop down after changing the sessions
-    fillInstanceDropDown();
-
     // returns the name of the new selected session
-    return $('#sessionSelect').find(":selected").text();
+    return GetSelectedDropdown("selectSession", "text");
 }
 
 /* 
- * Function: fillInstanceDropDown()
+ * Function: FillInstanceDropDown()
  *
  *      Fills the instance drop down menu with the instances from the current session.
  *
@@ -597,13 +876,13 @@ function fillSessionDropDown(descriptor)
  *
  *      11/13/2015 by Paul Jang
  */
-function fillInstanceDropDown(descriptor)
+function FillInstanceDropDown(descriptor)
 {
     // clear instance drop down
     instanceSelect.innerHTML = "";
     
     // retrieve the instances object from the descriptor
-    var instances = dataJSON["instances"];
+    var instances = descriptor["instances"];
 
     // retrieve the keys from the instances object
     var keys = Object.keys(instances);
@@ -621,17 +900,18 @@ function fillInstanceDropDown(descriptor)
 }
 
 /* 
- * Function: getSelectedSession()
+ * Function: GetSelectedDropdown()
  *
- *      Retrieves the session that is currently selected in the dropdown menu of all sessions.
+ *      Retrieves the id or value of the currently selected option in a dropdown menu
  *
  * Parameters: 
  *
- *      none
+ *      name - name of the dropdown element
+ *      type - either "value" or "id" of the selected option
  *
  * Pre:
  *
- *      A dropdown of sessions exist and one of the sessions is chosen.
+ *      The specified dropdown exists in the page
  *
  * Post:
  *
@@ -639,7 +919,7 @@ function fillInstanceDropDown(descriptor)
  *
  * Returns:
  *
- *      the id of the currently selected session
+ *      the id/value of the currently selected option
  *
  * Authors:
  *
@@ -647,23 +927,43 @@ function fillInstanceDropDown(descriptor)
  *
  * Date Created:
  *
- *      2/4/2016
+ *      2/29/2016
  *
  * Last Modified:
  *
- *      2/8/2016 by Paul Jang
+ *      2/29/2016 by Paul Jang
  */
-function getSelectedSession()
+function GetSelectedDropdown(name,type)
 {
-    // get the value by getting the selected index, and then using that index to get the selected session, and then getting the value
-    var value = document.getElementById("sessionSelect")[document.getElementById("sessionSelect").selectedIndex].value;
+    var elem = document.getElementById(name);
+    var value;
+
+    if(type == 'id')
+    {
+        // get the value by getting the selected index, and then using that index to get the selected option, and then getting the value
+        value = elem[elem.selectedIndex].value;
+    }
+    else if(type == 'text')
+    {
+        value = $(elem).find(":selected").text();
+    }
+    else if(type == 'elem')
+    {
+        value = elem[elem.selectedIndex];
+    }
+    else
+    {
+        alert("Something went wrong in getting the selected option in " + name + ".");
+        value = 0;
+    }
+
     return value;
 }
 
 /* 
- * Function: getSelectedInstance()
+ * Function: GetSelectedTabInfo()
  *
- *      Retrieves the instance that is currently selected in the dropdown menu of instances.
+ *      Retrives the ids of the stats in the currently selected tab, as well as whether or not it is multi instance
  *
  * Parameters: 
  *
@@ -671,7 +971,7 @@ function getSelectedSession()
  *
  * Pre:
  *
- *      A dropdown of instances exist and one of the instances is chosen.
+ *      The tab dropdown is filled with elements, one of which is selected
  *
  * Post:
  *
@@ -679,7 +979,7 @@ function getSelectedSession()
  *
  * Returns:
  *
- *      the id of the currently selected instance
+ *      an object with keys of stat 1 id, stat 2 id, and multi-instance, and their corresponding values
  *
  * Authors:
  *
@@ -687,17 +987,82 @@ function getSelectedSession()
  *
  * Date Created:
  *
- *      2/4/2016
+ *      3/18/2016
  *
  * Last Modified:
  *
- *      2/8/2016 by Paul Jang
+ *      3/18/2016 by Paul Jang
  */
-function getSelectedInstance()
+function GetSelectedTabInfo()
 {
-    // get the value by getting the selected index, and then using that index to get the selected instance, and then getting the value
-    var value = document.getElementById("instanceSelect")[document.getElementById("instanceSelect").selectedIndex].value;
-    return value;
+    // retrieve the currently selected tab
+    var curr = GetSelectedDropdown("tabDropdown","elem");
+
+    // create JSON that will be returned
+    var retval = {};
+
+    // set values
+    retval["multi-instance"] = curr.getAttribute("multi-instance");
+    retval["stat1_id"] = curr.getAttribute("stat1_id");
+    retval["stat2_id"] = curr.getAttribute("stat2_id");
+
+    return retval;
 }
 
- 
+/* 
+ * Function: ScaleMap()
+ *
+ *      Scales the size of the map and the control panel depending on the context (multi-instance/single instance)
+ *
+ * Parameters: 
+ *
+ *      input - true : shrinks map
+ *              false: shrinks control panel (original setup)
+ *
+ * Pre:
+ *
+ *      control panel and map elements exist
+ *
+ * Post:
+ *
+ *      the elements are scaled to the correct context
+ *
+ * Returns:
+ *
+ *      none
+ *
+ * Authors:
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      3/18/2016
+ *
+ * Last Modified:
+ *
+ *      3/21/2016 by Paul Jang
+ */
+function ScaleContext(input)
+{
+    $(".expand-black").fadeOut(400);
+    // set the map to float to the right, if not so already
+    $(".map-container").css("float","right");
+
+    // if the stat is multi instance, make the control panel the focus
+    if(input == 'multi-instance')
+    {
+        $(".control-panel").animate({width:"72%"}, 500);
+        // resize the map when the function is done
+        $(".map-container").animate({width:"25%"}, 500, function() { $(".map-container").resize();});
+    }
+    // if the stat is single instance, make the map the focus
+    else
+    {
+        $("#expand").attr("onclick","Expand('97.5%')");
+        $("#expand").attr("src","res/arrow_right.png");
+        $(".control-panel").animate({width:"25%"}, 500);
+        // resize the map when the function is done
+        $(".map-container").animate({width:"72%"}, 500, function() { $(".map-container").resize();});
+    }
+}

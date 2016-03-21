@@ -283,7 +283,7 @@ function GenerateSingleData(data)
         //format numbers 
         var statIDNum = FixMissingData(Number(data[g_StatID][i])); // FixMissingData(parseFloat((data[g_StatID][i]).toString));//FixMissingData(parseFloat(Math.ceil())); //null or int
 
-        console.log(statIDNum);
+        
         switch(type) 
         {
             case 0: // unbounded

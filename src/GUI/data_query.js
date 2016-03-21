@@ -106,7 +106,7 @@ function FormatStatData(statData)
  */
 function GetData( sessionid, instanceid, countryid )
 {
-    getDataByCountry( sessionid, instanceid, countryid, GenerateCountryCharts );
+    retrieveByCountryData( sessionid, instanceid, countryid, GenerateCountryCharts );
 } 
 
 /*
@@ -198,6 +198,7 @@ function ModifyData(selectedRegions)
             {
                 CC2Found = true;
                 var cid = GetCID(selectedRegions[i]);
+
                 GetData( getSession(), getInstance(), cid );
                  /*var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
                $.when(GetData(cid)).done(function(data){

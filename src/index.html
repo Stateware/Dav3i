@@ -121,6 +121,33 @@
       
     </div>
 
+    <div class="new-custom-tab-menu">
+        <h1 style="position: relative; top: 5%;">New Custom Tab</h1>
+
+        <div class="new-tab-name-input" id="name-input">
+            <form>
+                <span>Name: <input type="text" id="new-tab-name"></span>
+            </form>
+        </div>
+
+        <div class="stat-custom-tab" id="stat">
+            <div class="custom-Tab-Dropdowns" id="StatDropdowns">
+                <div class="stat_dropdown" id="stat1dropdown">
+                    <select class="dropdown" id="stat_stat1"></select>
+                </div>
+                <div class="stat_dropdown" id ="stat2dropdown">
+                    <select class="dropdown" id="stat_stat2"></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="new-tab-buttons">
+            <button id="new-tab-ok-button" class="flat-button" onclick="OkNewTabMenu()">OK</button>
+            <button id="new-tab-close-button" class="flat-button" onclick="CloseNewTabMenu()">Cancel</button>
+        </div>
+    </div>
+
+
     <div class="help-screen">
         <div class="scrollbar-hover" style="overflow-y: scroll; height: 85%;">
             <h1>Help</h1>
@@ -150,7 +177,7 @@
         <section class="spacer">
         </section>
 
-        <div class="control-panel">
+        <div class="control-panel" id="control">
             <section class="settings">
                 <img class="logo" src="res/logo.png" alt="Logo"/>
                 <h1 class="open-sans" style="margin: 0">Measles Data Visualization</h1>
@@ -161,19 +188,20 @@
             </section>
             <section class="graph" id="graph">
                 <div>
-                    <img src="res/arrow_left.png" width="22" height="22" id="scroll-left" class="graph-tab" onclick="RotateTabs(-1);" style="cursor: pointer;"></img>
-                    <div id="tabsDiv" class="tabWrapper"></div>
-                    <img src="res/arrow_right.png" width="22" height="22" id="scroll-right" class="graph-tab" onclick="RotateTabs(1);" style="cursor: pointer;"></img>
+                    <div id="tabs" class="tabWrapper">
+                        <select class="tab-dropdown" id="tabDropdown" onChange="ChooseTab(GetSelectedDropdown('tabDropdown', 'elem'))"></select>
+                        <button id="new-custom-tab" class="tab-addition-button" onclick="OpenNewTabMenu()">+</button>
+                    </div>
                 </div>
                 <div id="graphs">
                 </div>
             </section>
             
             <section class="expand">
-                <img src="res/arrow_right.png" id="expand" onclick="Expand()"/>
-                <select class="dropdown" id="sessionSelect" onchange="onSessionChange()">
+                <img src="res/arrow_right.png" id="expand" onclick="Expand('97.5%')"/>
+                <select class="dropdown" id="sessionSelect" onchange="OnSessionChange()">
                 </select>
-                <select class="dropdown" id="instanceSelect" onchange="onInstanceChange()">
+                <select class="dropdown" id="instanceSelect" onchange="OnInstanceChange()">
                 </select>
             </section>
         </div>
@@ -181,10 +209,10 @@
         <div class="expand-black">
         </div>
         
-        <div id="map-container">
-            <div id="map">
+        <div id="map-container" class="map-container">
+            <div id="map" class="map">
+                <button id="clear" class="flat-button" onclick>Clear Selection</button>
             </div>
-            <button id="clear" class="flat-button" onclick>Clear Selection</button>
         </div>
 
         
