@@ -557,3 +557,42 @@ function FindMax()
     return max;   
 }
 
+var GeneratePDF = (function() {
+    var graphURIs = [];
+
+    var addGraphURI = function(URI) {
+        if(!graphURIs.includes(URI))
+            graphURIs.push(URI);
+
+        return true;
+    };
+
+    var deleteGraphURI = function(URI) {
+        uriIndex = graphURIs.indexOf(URI);
+        if(uriIndex != -1)
+        {
+            graphURIs = graphURIs.splice(uriIndex, 1);
+            return true;
+        }
+
+        return false;
+    }
+
+    var execute = function() {
+        var doc = new jsPDF(),
+            itr = 0;
+        
+        for(itr; itr < graphURIs.length; itr++)
+        {
+          doc.addImage(graphURIs[itr], 10, 40, 180, 180);
+        }
+
+        doc.output('dataurlnewwindow');
+    };    
+
+    return {
+        addGraphURI: addGraphURI,
+        deleteGraphURI: deleteGraphURI,
+        execute: execute
+    };
+})();

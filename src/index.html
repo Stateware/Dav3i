@@ -43,6 +43,11 @@
     <link rel="stylesheet" href="GUI/jvectormap/jquery-jvectormap-2.0.1.css" type="text/css" media="screen"/>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="GUI/jvectormap/jquery.js"></script>
+    <script type="text/javascript" src="GUI/jsPDF-1.2.60/dist/jspdf.min.js"></script>
+    <script type="text/javascript" src="GUI/jsPDF-1.2.60/libs/png_support/zlib.js"></script>
+    <script type="text/javascript" src="GUI/jsPDF-1.2.60/libs/png_support/png.js"></script>
+    <script type="text/javascript" src="GUI/jsPDF-1.2.60/plugins/addimage.js"></script>
+    <script type="text/javascript" src="GUI/jsPDF-1.2.60/plugins/png_support.js"></script>
 	<script type="text/javascript" src="GUI/wnumb-1.0.0/wNumb.js"></script>
     <script type="text/javascript" src="GUI/data_model.js"></script>
     <script type="text/javascript" src="GUI/data_query.js"></script>
@@ -152,6 +157,7 @@
                 <button id="settings" class="flat-button" onclick="OpenSettings()">Settings</button>
                 <button id="help" class="flat-button" onclick="OpenHelp()">Help</button>
                 <button id="upload" class="flat-button" onclick="window.location = 'Upload/data_upload.html';">Upload</button>
+                <button id="export-graphs-to-pdf" onclick="GeneratePDF.execute()" target="_blank">Export Graphs to PDF</button>
             </section>
             <section class="graph" id="graph">
                 <div>
