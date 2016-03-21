@@ -172,7 +172,7 @@
         <section class="spacer">
         </section>
 
-        <div class="control-panel">
+        <div class="control-panel" id="control">
             <section class="settings">
                 <img class="logo" src="res/logo.png" alt="Logo"/>
                 <h1 class="open-sans" style="margin: 0">Measles Data Visualization</h1>
@@ -192,7 +192,7 @@
             </section>
             
             <section class="expand">
-                <img src="res/arrow_right.png" id="expand" onclick="Expand()"/>
+                <img src="res/arrow_right.png" id="expand" onclick="Expand('97.5%')"/>
                 <select class="dropdown" id="sessionSelect" onchange="OnSessionChange()">
                 </select>
                 <select class="dropdown" id="instanceSelect" onchange="OnInstanceChange()">

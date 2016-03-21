@@ -73,6 +73,7 @@ function BuildTabs()
         var statOnly = new Option(temp,g_ParsedStatList[1][i]);
 
         statOnly.id="id-"+temp;
+        statOnly.setAttribute("shrink-map", false);
         statOnly.setAttribute("multi-instance", false);
         statOnly.setAttribute("stat1_id", g_ParsedStatList[1][i]);
         statOnly.setAttribute("stat2_id", null);
@@ -88,6 +89,7 @@ function BuildTabs()
 
         var statAllInstances = new Option(temp + " (all instances)", g_ParsedStatList[1][i]);
         statAllInstances.id="id-"+temp;
+        statAllInstances.setAttribute("shrink-map", true);
         statAllInstances.setAttribute("multi-instance", true);
         statAllInstances.setAttribute("stat1_id", g_ParsedStatList[1][i]);
         statAllInstances.setAttribute("stat2_id", null);
@@ -197,6 +199,15 @@ function ChooseTab(element)
 
     GenerateSubDivs();
     GenerateGraphs();
+    // expands the graph section if the currently selected stat is multi instance
+    if(GetSelectedDropdown("tabDropdown","elem").getAttribute("shrink-map") == "true")
+    {
+        ScaleMap(true);
+    }
+    else
+    {
+        ScaleMap(false);
+    }
     return(g_StatID);
 }
 
@@ -452,9 +463,10 @@ function OkNewTabMenu()
     {
         // add option to dropdown
         var newOption = new Option(name, 1);
+        newOption.setAttribute("shrink-map", true);
+        newOption.setAttribute("multi-instance", false);
         newOption.setAttribute("stat1_id", GetSelectedDropdown("stat_stat1", "id"));
         newOption.setAttribute("stat2_id", GetSelectedDropdown("stat_stat2", "id"));
-        //newOption.setAttribute("multi-instance", )
         document.getElementById("tabDropdown").appendChild(newOption);
         
         // return back to main page
@@ -490,9 +502,9 @@ function CloseHelp()
 // Description: Expands the c ontrol panel
 // PRE: N/A
 // POST: Control panel is expanded and black mask is in place behind
-function Expand()
+function Expand(newWidth)
 {
-    $(".control-panel").animate({width:"97.5%"}, 500);
+    $(".control-panel").animate({width:newWidth}, 500);
     $("#expand").attr("onclick","Shrink()");
     $("#expand").attr("src","res/arrow_left.png");
     $("#scroll-left").fadeOut(400);
@@ -525,7 +537,7 @@ function Expand()
 function Shrink()
 {
     $(".control-panel").animate({width:"25%"}, 500);
-    $("#expand").attr("onclick","Expand()");
+    $("#expand").attr("onclick","Expand('97.5%')");
     $("#expand").attr("src","res/arrow_right.png");
     $("#scroll-left").fadeIn(400);
     $("#scroll-right").fadeIn(400);
@@ -937,4 +949,72 @@ function GetSelectedDropdown(name,type)
 
     return value;
 }
- 
+
+/* 
+ * Function: GetSelectedTabInfo()
+ *
+ *      Retrives the ids of the stats in the currently selected tab, as well as whether or not it is multi instance
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre:
+ *
+ *      The tab dropdown is filled with elements, one of which is selected
+ *
+ * Post:
+ *
+ *      none
+ *
+ * Returns:
+ *
+ *      an object with keys of stat 1 id, stat 2 id, and multi-instance, and their corresponding values
+ *
+ * Authors:
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      3/18/2016
+ *
+ * Last Modified:
+ *
+ *      3/18/2016 by Paul Jang
+ */
+function GetSelectedTabInfo()
+{
+    // retrieve the currently selected tab
+    var curr = GetSelectedDropdown("tabDropdown","elem");
+
+    // create JSON that will be returned
+    var retval = {};
+
+    // set values
+    retval["multi-instance"] = curr.getAttribute("multi-instance");
+    retval["stat1_id"] = curr.getAttribute("stat1_id");
+    retval["stat2_id"] = curr.getAttribute("stat2_id");
+
+    return retval;
+}
+
+function ScaleMap(input)
+{
+    var mapDiv = document.getElementById("map");
+    var controlPanel = document.getElementById("control");
+    $(".map").css("float","right");
+
+    if(input == true)
+    {
+        mapDiv.width = "25%";
+        $(".control-panel").animate({width:"75%"}, 10);
+        //$(".jvectormap-container").animate({width:"25%"}, 10);
+    }
+    else
+    {
+        mapDiv.width = "75%";
+        $(".control-panel").animate({width:"25%"}, 10);
+        //$(".jvectormap-container").animate({width:"75%"}, 10);
+    }
+}
