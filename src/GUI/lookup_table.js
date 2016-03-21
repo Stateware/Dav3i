@@ -64,23 +64,24 @@ function ParseDescriptor(DescriptorJSON)
     g_ParsedStatList = ParseStatList();
 
     CleanStatNames();
-    
-    //Set initial stat displayed to deaths
-    g_StatID = 1;
 
     // fill the dropdown menus and the new tab popup elements
     FillSessionDropDown(DescriptorJSON,(document.getElementById("sessionSelect").options.length == 0));
     FillInstanceDropDown(DescriptorJSON);
    	PopulateNewTabMenu(DescriptorJSON);
-    
+   	BuildTabs();
+
+    g_StatID = GetSelectedTabInfo()["stat1_id"];
+
     //Set the initial year displayed to the most current year for which we have data
     g_HMSYear = g_LastYear;
     
     FindCountriesNoData();
-    ColorByHMS();
-    BuildTabs();
 
     g_TempSettings = UpdateInputs();
+
+    g_StatID = GetSelectedTabInfo()["stat1_id"];
+    ColorByHMS();
 }
 
 // Author: Emma Roudabush, William Bittner

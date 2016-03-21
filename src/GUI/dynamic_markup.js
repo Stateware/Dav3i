@@ -199,15 +199,17 @@ function ChooseTab(element)
 
     GenerateSubDivs();
     GenerateGraphs();
+
     // expands the graph section if the currently selected stat is multi instance
     if(GetSelectedDropdown("tabDropdown","elem").getAttribute("shrink-map") == "true")
     {
-        ScaleMap(true);
+        ScaleContext("multi-instance");
     }
     else
     {
-        ScaleMap(false);
+        ScaleContext("single-instance");
     }
+
     return(g_StatID);
 }
 
@@ -536,7 +538,7 @@ function Expand(newWidth)
 // POST: Control panel shrinks back to original size and black mask is gone
 function Shrink()
 {
-    $(".control-panel").animate({width:"25%"}, 500);
+    //$(".control-panel").animate({width:"25%"}, 500);
     $("#expand").attr("onclick","Expand('97.5%')");
     $("#expand").attr("src","res/arrow_right.png");
     $("#scroll-left").fadeIn(400);
@@ -547,7 +549,15 @@ function Shrink()
         g_Expanded = false;
         GenerateSubDivs();
         GenerateGraphs();
-    }, 500);  
+    }, 500);
+    if(GetSelectedDropdown("tabDropdown","elem").getAttribute("multi-instance") == "true")
+    {
+        ScaleContext("multi-instance");
+    }  
+    else
+    {
+        ScaleContext("single-instance");
+    }
 }
 
 
@@ -999,22 +1009,60 @@ function GetSelectedTabInfo()
     return retval;
 }
 
-function ScaleMap(input)
+/* 
+ * Function: ScaleMap()
+ *
+ *      Scales the size of the map and the control panel depending on the context (multi-instance/single instance)
+ *
+ * Parameters: 
+ *
+ *      input - true : shrinks map
+ *              false: shrinks control panel (original setup)
+ *
+ * Pre:
+ *
+ *      control panel and map elements exist
+ *
+ * Post:
+ *
+ *      the elements are scaled to the correct context
+ *
+ * Returns:
+ *
+ *      none
+ *
+ * Authors:
+ *
+ *      Paul Jang
+ *
+ * Date Created:
+ *
+ *      3/18/2016
+ *
+ * Last Modified:
+ *
+ *      3/21/2016 by Paul Jang
+ */
+function ScaleContext(input)
 {
-    var mapDiv = document.getElementById("map");
-    var controlPanel = document.getElementById("control");
-    $(".map").css("float","right");
+    $(".expand-black").fadeOut(400);
+    // set the map to float to the right, if not so already
+    $(".map-container").css("float","right");
 
-    if(input == true)
+    // if the stat is multi instance, make the control panel the focus
+    if(input == 'multi-instance')
     {
-        mapDiv.width = "25%";
-        $(".control-panel").animate({width:"75%"}, 10);
-        //$(".jvectormap-container").animate({width:"25%"}, 10);
+        $(".control-panel").animate({width:"72%"}, 500);
+        // resize the map when the function is done
+        $(".map-container").animate({width:"25%"}, 500, function() { $(".map-container").resize();});
     }
+    // if the stat is single instance, make the map the focus
     else
     {
-        mapDiv.width = "75%";
-        $(".control-panel").animate({width:"25%"}, 10);
-        //$(".jvectormap-container").animate({width:"75%"}, 10);
+        $("#expand").attr("onclick","Expand('97.5%')");
+        $("#expand").attr("src","res/arrow_right.png");
+        $(".control-panel").animate({width:"25%"}, 500);
+        // resize the map when the function is done
+        $(".map-container").animate({width:"72%"}, 500, function() { $(".map-container").resize();});
     }
 }
