@@ -54,7 +54,6 @@ function ParseDescriptor(DescriptorJSON)
 	//Grab an object containing the first and last year 
     var yearRangeObject = GetInitialYears(DescriptorJSON);
     
-    
     //Set the globals for the year range and initial year values
     g_FirstYear = yearRangeObject.FirstYear;
 	g_YearStart = yearRangeObject.FirstYear;
@@ -75,18 +74,21 @@ function ParseDescriptor(DescriptorJSON)
     g_ParsedStatList = ParseStatList();
 
     CleanStatNames();
-    
-    //Set initial stat displayed to deaths
+
+    // fill the dropdown menus and the new tab popup elements
+    FillSessionDropDown(DescriptorJSON,(document.getElementById("sessionSelect").options.length == 0));
+    FillInstanceDropDown(DescriptorJSON);
+   	PopulateNewTabMenu(DescriptorJSON);
+   	BuildTabs();
+
     g_StatID = 1;
-    
+
     //Set the initial year displayed to the most current year for which we have data
     g_HMSYear = g_LastYear;
-    
-    ColorByHMS();
-    BuildTabs();
 
     g_TempSettings = UpdateInputs();
-        
+
+    ColorByHMS();
 }
 
 /*
@@ -535,5 +537,57 @@ function ParseStatList()
 		}
 	}
 	return parsedStatList;
+<<<<<<< HEAD
 	
+=======
+}
+
+/* Function GetHeadStatList()
+/*
+/*      Retrieves the list of head stats from the global parsed stat list
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      g_ParsedStatList is correctly filled
+/*
+/* Post:
+/*
+/*      an array of head stats is returned
+/*
+/* Returns:
+/*
+/*      an array of head stats
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/26/2016
+/*
+/* Last Modified:
+/*
+/*      2/26/2016 by Paul Jang
+ */
+function GetHeadStatList()
+{
+	// retrieve the array from the parsed stat list that correlates with the head stats
+    var headStats = g_ParsedStatList[1];
+
+    // the array to be returned
+    var headStatArray = new Array();
+
+    // iterate through the array and add values to the return array
+    for(var i=0; i<headStats.length; i++)
+    {
+        headStatArray.push(g_StatList[headStats[i]]);
+    }
+
+    return headStatArray;
+>>>>>>> new_tab_popup
 }

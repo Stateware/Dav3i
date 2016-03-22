@@ -91,6 +91,11 @@
     box-shadow: 1px 1px 5px #888888;
 }
 
+.custom-Tab-Dropdowns {
+    text-align: center;
+    vertical-align: middle;
+}
+
 /* sets dropdown menus for session and instance to float left */
 .dropdown {
     float: left;
@@ -120,6 +125,28 @@
     filter: alpha(opacity=60);
     z-index: 1;
     display: none;
+}
+
+/* sets styling for the drop down menus for sessions and instances */
+.dropdown {
+    float: left;
+    width: 150px;
+}
+
+/* sets styling for overlay settings menu */
+.settings-screen,
+.help-screen{
+    position: relative;
+    z-index: 5;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    height: 500px;
+    width: 500px;
+    background-color: #EAE7C2;
+    display: none;
+    text-align: center;
+    font-family: 'Open Sans Condensed', sans-serif;
 }
 
 /* sets font for expand section */
@@ -215,29 +242,6 @@
     width:50%;
     height:30%;
     font-size: 13pt; 
-}
-
-/* sets styling for the tabs for the graph section */
-.graph-tab {
-    display: inline-block;
-    font-family: 'Open Sans Condensed', sans-serif;
-    padding: 0.2% 2% 0.2% 2%;
-    border-radius: 2px 2px 0 0;
-    border: 1px solid #bbb89b;
-    box-shadow: 1px 1px 5px #888888;
-    font-size: 16px;
-    font-weight: normal;
-    text-align: center;
-    text-transform: uppercase;
-    background-color: #EAE7C2;
-    top: 4px;
-    cursor: default;
-    -webkit-transition: all 0.5s linear;
-       -moz-transition: all 0.5s linear;
-        -ms-transition: all 0.5s linear;
-         -o-transition: all 0.5s linear;
-            transition: all 0.5s linear;
-    pointer-events: all;
 }
 
 /* darkens the tabs as you hover over them*/
@@ -339,6 +343,32 @@
     width: 72%;
     float: right;
     z-index: 1;
+}
+
+/* sets styling for new tab menu */
+.new-custom-tab-menu {
+    position: relative;
+    z-index: 5;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    height: 300px;
+    width: 500px;
+    background-color: #EAE7C2;
+    display: none;
+    text-align: center;
+    font-family: 'Open Sans Condensed', sans-serif;
+}
+
+/* sets styling for buttons in new tab popup */
+.new-tab-buttons {
+    padding-bottom: 1px;
+    padding-top: 60px;
+}
+
+/* sets styling for name text box input in new tab popup */
+.new-tab-name-input {
+    padding-top: 10px;
 }
 
 /* sets open sans font styling */
@@ -478,6 +508,12 @@
     animation-delay: -0.16s;
 }
 
+/* sets styling for stat dropdowns in new tab popup */
+.stat_dropdown {
+    padding-left: 175px;
+    padding-top: 35px;
+}
+
 /* sets styling for subgraph section */
 .subgraph {
     position: relative;
@@ -489,6 +525,30 @@
     overflow: hidden; 
     overflow-y: hidden;
     white-space: nowrap;
+}
+
+
+.tab-dropdown{
+    width: 90%;
+}
+
+
+.tab-addition-button {
+    border: 0 none;
+    border-radius: 2px 2px 2px 2px;
+    color: #7FDBFF;
+    cursor: pointer;
+    display: inline-block;
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-size: 100%;
+    line-height: 20px;
+    text-transform: none;
+    transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -webkit-transition: all 0.3s ease 0s;
+    width: auto;
+    height: 23px;
+    background: none repeat scroll 0 0 #001f3f;
 }
 
 /* allows for the showing of the tooltip*/
@@ -541,6 +601,7 @@
     width:100%;
     height:30%;
 }
+
 
 @-webkit-keyframes bouncedelay {
     0%, 80%, 100% {

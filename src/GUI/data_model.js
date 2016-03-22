@@ -2,12 +2,12 @@
 
 function getInstance()
 {
-	return 60;
+	return GetSelectedDropdown("instanceSelect","id");
 }
 
 function getSession()
 {
-	return 40;
+	return GetSelectedDropdown("sessionSelect","id");
 }
 
 /*
