@@ -157,35 +157,46 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 					//If for some reason the first row is shifted by 1 to the left, add and empty cell.
 					if($output[0][0] != "")
 						array_unshift($output[0], "");
-
+					$fileRows = 0;
 					//Add data for each country
 					for($country = 1; $country < sizeof($output); $country++)
 					{
-						$countryIDQuery = "SELECT country_id FROM meta_countries WHERE cc3='".$output[$country][0]."'";
-						$countryID = $databaseConnection->query($countryIDQuery)->fetch_assoc()['country_id'];
-
-						//Base query, add values in later loop
-						$dataInsertQuery = "INSERT INTO data (`session_id`, `instance_id`, `country_id`, `stat_id`, `year`, `value`) VALUES ";
-
-						//Add all of the years data for a country to the query						
-						for($year = 1; $year < sizeof($output[$country]); $year++)
+						
+						$countryRows = 0;
+						if(sizeof($output[$country]) > 1)//found empty row for some reason
 						{
-							set_time_limit(30);
-							$dataYear = $output[0][$year];							
-							$dataInsertQuery.="('".$sessionID."', '".$instanceID."', '".$countryID."', '".$statID."', '".$dataYear."', '".clean($output[$country][$year])."'), ";
-							$numRows++;
+							$countryIDQuery = "SELECT country_id FROM meta_countries WHERE cc3='".$output[$country][0]."'";
+							$countryID = $databaseConnection->query($countryIDQuery)->fetch_assoc()['country_id'];
+	
+							//Base query, add values in later loop
+							$dataInsertQuery = "INSERT INTO data (`session_id`, `instance_id`, `country_id`, `stat_id`, `year`, `value`) VALUES ";
+	
+							//Add all of the years data for a country to the query						
+							for($year = 1; $year < sizeof($output[$country]); $year++)
+							{
+								set_time_limit(30);
+								$dataYear = $output[0][$year];							
+								$dataInsertQuery.="('".$sessionID."', '".$instanceID."', '".$countryID."', '".$statID."', '".$dataYear."', '".clean($output[$country][$year])."'), ";
+								$numRows++;
+							}
+							$dataInsertQuery=substr($dataInsertQuery,0,-2); // We have a trailing comma, remove it.
+							$dataInsertQuery.=";";//Add the semi-colon to the end of the query
+							$databaseConnection->query($dataInsertQuery);
+	
+							if($databaseConnection->affected_rows != -1)
+								$countryRows += $databaseConnection->affected_rows;
+							else
+								{
+									echo("<br>Error - query: ".$dataInsertQuery."<br>Response: ".$databaseConnection->error."<br>");
+								}
+	
+							ob_flush();
+							flush();
 						}
-						$dataInsertQuery=substr($dataInsertQuery,0,-2); // We have a trailing comma, remove it.
-						$dataInsertQuery.=";";//Add the semi-colon to the end of the query
-						$databaseConnection->query($dataInsertQuery);
-
-						$affectedRows += $databaseConnection->affected_rows;
-
-						ob_flush();
-						flush();
+						$fileRows += $countryRows;
 					}
-
-					flushedPrint("Finished file " . $datafileName . ": ");
+					$affectedRows += $fileRows;
+					flushedPrint("Finished file " . $datafileName . ": ".$fileRows);
 				}
 			}
 		}
