@@ -26,6 +26,7 @@ Section 2
 &nbsp;&nbsp;&nbsp;&nbsp;2.4.0 : ASDS  
 &nbsp;&nbsp;&nbsp;&nbsp;2.4.1 : Lookup Table Structure  
 &nbsp;&nbsp;&nbsp;&nbsp;2.4.2 : Parsed Stat List  
+&nbsp;&nbsp;&nbsp;&nbsp;2.4.3 : Cache Structure  
 
 Section 3  
  * 3.0 : Use cases
@@ -42,6 +43,7 @@ Section 4
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.1 : Lookup Table Structure  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.2 : Stat Reference List  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.3 : Parsed Stat List  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.1.4 : Cache  
 &nbsp;&nbsp;&nbsp;&nbsp;4.0.2 : UX  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.2.0 : Control Panel  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.2.1 : Map  
@@ -233,7 +235,6 @@ data.js is a JavaScript data module that contains all global variables needed ac
  * `g_statID` : stat ID representing selected stat
  * `g_HMSYear` : variable representing the year for which HMS data is stored
  * `g_GraphType` : variable representing the graph type, enumerated 0 to 2 (same as order defined in section 0.1.3)
- * `g_Clear` : boolean variable that allows clear selection function to run in constant time by bypassing normal single node deletion.
  * `g_Expanded` : boolean variable that is true in expanded view, false in compact view.
  * `g_VaccHMS` : variable representing which stat is heat mapped when vaccinations is selected.
 
@@ -418,6 +419,14 @@ Stat type 0 represents a regular time series, either bounded or unbounded. If it
 
 Stat type 1 represents vaccinations. Its head stat is MCV1, and its associated data is MCV2 and SIA.
 
+###2.4.3 : Cache Structure
+
+The cache itself doesn't have an actual structure, but must be created in such a way that it does. 
+
+The cache should be structured in a hierarchical manner as:
+
+SessionID > InstanceID > CountryID > StatID > Year,Value
+
 #Section 3
 
 ##3.0 : Use cases
@@ -531,6 +540,10 @@ The stat reference list's setup as a 1D array is ideal as it is easily used to e
 
 The Parsed Stat List Structure was chosen because it allowed an easy way for us to interpret which graphing function is appropriate to call based on the type of data to be graphed. The graph type enumeration was put first because the number of enumerated values is constant, regardless of stat, while the number of values for vaccinations may vary. By putting the enumeration first, there is a constant index into the head stat across all stats.
 
+####4.0.1.4 : Cache:
+
+The cache is a heavily structured object which holds all of the data received from the API calls. The cache was created in order to store the increased amount of data received from the server for handling sessions and instances. It is used as a temporary cache, which clears upon refreshing the page.
+
 ### 4.0.2 : UX  
 
 ####4.0.2.0 : Control Panel
@@ -567,6 +580,7 @@ Description: When more than ~5 countries are selected, clear causes massive slow
 Reason for bug: Because map.clearSelectedRegions removes each region one by one, and therefore triggers onRegionSelected each time, the n^2 algorithm which is used to add or remove a node becomes n^3, and because of an implementation bug in the deletion, it was actually n^4!
 Description of fix: Fixed implementation bug in region removal, then set clear to simply clear data list and only call the modify list function in onRegionSelected if it was called from something other than clearSelectedRegions.
 Additional Notes: Had to add an additional global variable to handle this fix, g_Clear. A fix without an additional global would be nice, but jVectorMap is difficult to manage in this case without it.
+Additional Notes: Correct use of the JVectorMap API allows for grabbing the country that is selected or cleared, thus removing the loops that caused the n^3 holdup. This allows for the removal of the g_Clear global variable.
 
  * \#5: HMS data is set in lookup table incorrectly  
 First Reported: April 5, 2015  

@@ -28,15 +28,25 @@
 // Dependencies:        descriptor.php, by_stat.php, data.js
 // Additional Notes:    N/A
 
-// Author: Emma Roudabush, Joshua Crafts, William Bittner
-// Date Created: 3/5/2015
-// Last Modified: 9/24/2015 by William Bittner
-// Description: Fills g_DescriptorJSON with the contents of descriptor.php,
-//              fills g_LookupTable and g_StatList with their corresponding data
-//              and logs the resulting variables to the console.
-// PRE: DescriptorJSON is not null, g_StatList and g_LookupTable exist,
-//      GenerateLookupTable and GenerateStatReferenceList function correctly
-// POST: DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
+/*
+ * Function: ParseDescriptor
+ * Fills g_DescriptorJSON with the contents of descriptor.php, fills g_LookupTable and g_StatList with their corresponding data and logs the resulting variables to the console.
+ *
+ * Pre: 
+ * DescriptorJSON is not null, g_StatList and g_LookupTable exist, GenerateLookupTable and GenerateStatReferenceList function correctly
+ *
+ * Post: 
+ * DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
+ *
+ * Authors: 
+ * Emma Roudabush, Joshua Crafts, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 9/24/2015 by William Bittner
+ */
 function ParseDescriptor(DescriptorJSON)
 {
     var hmsData;
@@ -63,6 +73,8 @@ function ParseDescriptor(DescriptorJSON)
     //Generate a parsed stat list
     //TODO: Figure out what this is doing and why
     g_ParsedStatList = ParseStatList();
+
+    CleanStatNames();
     
     //Set initial stat displayed to deaths
     g_StatID = 1;
@@ -70,7 +82,6 @@ function ParseDescriptor(DescriptorJSON)
     //Set the initial year displayed to the most current year for which we have data
     g_HMSYear = g_LastYear;
     
-    FindCountriesNoData();
     ColorByHMS();
     BuildTabs();
 
@@ -78,13 +89,25 @@ function ParseDescriptor(DescriptorJSON)
         
 }
 
-// Author: Emma Roudabush, William Bittner
-// Date Created: 3/5/2015
-// Last Modified: 2/8/2016 by Nicholas Denaro
-// Description: Retrieves descriptor.php from the server                
-// PRE: descriptor.php exists on the server.
-// POST: If retrieval is successful, call the function to parse the descriptor
-//			if retrieval is not, error is logged.
+/*
+ * Function: GetDescriptor
+ * Retrieves descriptor.php from the server  
+ *
+ * Pre: 
+ * descriptor.php exists on the server.
+ *
+ * Post: I
+ * f retrieval is successful, call the function to parse the descriptor if retrieval is not, error is logged.
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
 function GetDescriptor(sessionID)
 {
 	var URL = 'http://localhost/dav3i/API/descriptor.php';
@@ -97,6 +120,8 @@ function GetDescriptor(sessionID)
         dataType: 'JSON',                 
         success: function(data){
         	ParseDescriptor(data);
+        	initMap();
+    		FindCountriesNoData();
         },
         error: function(xhr, textStatus, errorThrown){
        		console.log('Descriptor could not be fetched. The error is as follows: ' + errorThrown);
@@ -105,12 +130,25 @@ function GetDescriptor(sessionID)
     });
 }
 
-// Author: Emma Roudabush, William Bittner
-// Date Created: 4/7/2015
-// Last Modified: 2/8/2016 by Nicholas Denaro
-// Description: Returns an object corresponding to the year range defined in the descriptor			
-// PRE: DescriptorJSON is formatted as to the specifications in the documentation
-// POST: An object with the first and last year values defined
+/*
+ * Function: GetInitialYears
+ * Returns an object corresponding to the year range defined in the descriptor	
+ *
+ * Pre: 
+ * DescriptorJSON is formatted as to the specifications in the documentation
+ *
+ * Post: 
+ * An object with the first and last year values defined
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 4/7/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
 function GetInitialYears(DescriptorJSON)
 {
 	var firstYear = Number(DescriptorJSON.yearRange["startYear"]);
@@ -123,13 +161,25 @@ function GetInitialYears(DescriptorJSON)
 	return yearRangeObject;
 }
 
-// Author: Emma Roudabush, William Bittner
-// Date Created: 3/5/2015
-// Last Modified: 2/8/2016 by Nicholas Denaro
-// Description: Returns a table of Countries CC2 codes, the country
-//              names, and HMS values are set to 0.
-// PRE: DescriptorJSON exists with the correct data from descriptor.php,
-// POST: A 2d array is returned that has the correct CC2, name, and HMS values zero'd for each country
+/*
+ * Function: 
+ * Returns a table of Countries CC2 codes, the country names, and HMS values are set to 0.
+ *
+ * Pre: 
+ * DescriptorJSON exists with the correct data from descriptor.php,
+ *
+ * Post: 
+ * A 2d array is returned that has the correct CC2, name, and HMS values zero'd for each country
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
 function InitializeLookupTable(DescriptorJSON)
 {
 	var countryKeys = Object.keys(DescriptorJSON.countries)
@@ -148,12 +198,25 @@ function InitializeLookupTable(DescriptorJSON)
     return lookupTable;
 }
 
-// Author: Emma Roudabush, William Bittner
-// Date Created: 3/5/2015
-// Last Modified: 9/24/2015 by William Bittner
-// Description: Returns an array of stat names gathered from DescriptorJSON            
-// PRE: DescriptorJSON exists with the correct data from descriptor.php
-// POST: returns an array containing the correct stat names
+/*
+ * Function: GenerateStatReferenceList
+ * Returns an array of stat names gathered from DescriptorJSON
+ *
+ * Pre: 
+ * DescriptorJSON exists with the correct data from descriptor.php
+ *
+ * Post: 
+ * returns an array containing the correct stat names
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 9/24/2015 by William Bittner
+ */
 function GenerateStatReferenceList(DescriptorJSON)
 {
 	var statKeys = Object.keys(DescriptorJSON.stats);
@@ -168,12 +231,25 @@ function GenerateStatReferenceList(DescriptorJSON)
     return statList;
 }
 
-// Author: Emma Roudabush, Joshua Crafts
-// Date Created: 3/17/2015
-// Last Modified: 9/28/2015 by Murlin Wei
-// Description:Replace HMS values in lookup table with new HMS data (will happen just after lookup table generation for default HMS)
-// PRE: hmsData contains valid heat map values and hmsData is of size g_LookupTable.length
-// POST: g_LookupTable has heat map values of hmsData
+/*
+ * Function: SetHMS
+ * Replace HMS values in lookup table with new HMS data (will happen just after lookup table generation for default HMS)
+ *
+ * Pre: 
+ * hmsData contains valid heat map values and hmsData is of size g_LookupTable.length
+ *
+ * Post: 
+ * g_LookupTable has heat map values of hmsData
+ *
+ * Authors: 
+ * Emma Roudabush, Joshua Crafts
+ *
+ * Date Created: 
+ * 3/17/2015
+ *
+ * Last Modified: 
+ * 9/28/2015 by Murlin Wei
+ */
 function SetHMS(hmsData)
 {
 	var heatMapValues = [];
@@ -192,9 +268,9 @@ function SetHMS(hmsData)
  * array of the values
  * 
  * Parameters: 
- * cache
- * statID
- * year
+ * cache - 
+ * statID - 
+ * year - 
  * 
  * Pre: 
  * instanceCache contains valid instance data for the stat and all countries in the
@@ -223,7 +299,10 @@ function ReformatByStatData(instanceCache, statID, year)
 	for(var country = 0; country < keys.length; country++)
 	{
 		//console.log(cache.get(keys[country]));
-		data[country] = instanceCache.get(keys[country]).get(statID).get(year);
+		if( !isNaN( keys[country] ) )
+		{
+			data[ keys[country]-1 ] = instanceCache.get(keys[country]).get(statID).get(year);
+		}
 	}
 
 	return data;
@@ -234,9 +313,9 @@ function ReformatByStatData(instanceCache, statID, year)
  * Connects the formatting of the data from the server and the updating of the heatmap
  * 
  * Parameters: 
- * data
- * statID
- * year
+ * data - The data received from the server
+ * statID - The stat id for the call
+ * year - the year for the call
  * 
  * Pre: 
  * data is valid and does not contain an error
@@ -259,12 +338,25 @@ function SuccessfulByStat(data, statID, year)
    	ParseMapData(data,statID);
 }
 
-// Author: Vanajam Soni, Kyle Nicholson, Joshua Crafts
-// Date Created: 3/19/2015
-// Last Modified: 2/8/2016 by Nicholas Denaro
-// Description: Returns HMS data based on hmsID
-// PRE: hmsID is an integer and a valid heat map stat id, year is an integer and within the valid range
-// POST: FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
+/*
+ * Function: 
+ * Returns HMS data based on hmsID
+ *
+ * Pre: 
+ * hmsID is an integer and a valid heat map stat id, year is an integer and within the valid range
+ *
+ * Post: 
+ * FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
+ *
+ * Authors: 
+ * Vanajam Soni, Kyle Nicholson, Joshua Crafts
+ *
+ * Date Created: 
+ * 3/19/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
 function GetHMS(sessionID, instanceID, hmsID, year)
 {
 	var URL = 'http://localhost/dav3i/API/by_stat.php?sessionID='.concat(sessionID.toString()+"&instanceID="+instanceID.toString()+"&statID="+hmsID.toString()+"&year="+year.toString());
@@ -284,13 +376,25 @@ function GetHMS(sessionID, instanceID, hmsID, year)
     });
 }
 
-// Author: Emma Rouabush, Joshua Crafts
-// Date Created: 3/17/2015
-// Last Modified: 3/22/2015 by Joshua Crafts
-// Description: Translate CC2 to CID using g_LookupTable
-// PRE: cc2 is a string that is a valid CC2 code corresponding to a country/region in the lookup table,
-//		g_LookupTable exists and has the correct data
-// POST: FCTVAL = cid (CID corresponding to the input CC2 in the lookup table), -1 if cc2 not found
+/*
+ * Function: 
+ * Translate CC2 to CID using g_LookupTable
+ *
+ * Pre: 
+ * cc2 is a string that is a valid CC2 code corresponding to a country/region in the lookup table, g_LookupTable exists and has the correct data
+ *
+ * Post: 
+ * FCTVAL = cid (CID corresponding to the input CC2 in the lookup table), -1 if cc2 not found
+ *
+ * Authors: 
+ * Emma Rouabush, Joshua Crafts
+ *
+ * Date Created: 
+ * 3/17/2015
+ *
+ * Last Modified: 
+ * 3/22/2015 by Joshua Crafts
+ */
 function GetCID(cc2)
 {
     var length = g_LookupTable.length;
@@ -307,108 +411,129 @@ function GetCID(cc2)
     return cid; 
 }
 
-// Author: Kyle Nicholson, William Bittner
-// Date Created: 4/2/2015
-// Last Modified: 9/24/2015 by William Bittner
-// Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
-// PRE: g_StatList exist
-// POST: return a 2D array A[x][y], in which each x value represents a selectable 
-// 		 stat, and each y value either represents stat type (0), indicates head stat (1), or indicates 
-//		 associated data (2-3).
+/*
+ * Function: CleanStatNames
+ * Take the stat list and give them nicer names to display.
+ *
+ * Pre: 
+ * g_StatList exist
+ *
+ * Post: 
+ * g_StatList has friendlier names
+ *
+ * Authors: 
+ * Nicholas Denaro, William Bittner
+ *
+ * Date Created: 
+ * 2/22/2016
+ *
+ * Last Modified: 
+ * 2/22/2016 by Nicholas Denaro
+ */
+function CleanStatNames()
+{
+	g_StatList[g_StatList.indexOf("births")] = "Births";
+	g_StatList[g_StatList.indexOf("cases")] = "Reported Cases";
+	g_StatList[g_StatList.indexOf("deaths")] = "Deaths";
+	g_StatList[g_StatList.indexOf("e_cases")] = "Estimated Cases";
+	g_StatList[g_StatList.indexOf("e_mortality")] = "Estimated Mortality";
+	g_StatList[g_StatList.indexOf("populations")] = "Population";
+	g_StatList[g_StatList.indexOf("sia")] = "sia-VACCB";
+}
+
+/*
+ * Function: ParseStatList
+ * Take the stat list and populate a parsed data 2d array for use in creating graphs
+ *
+ * Pre: 
+ * g_StatList exist
+ *
+ * Post: 
+ * return a 2D array A[x][y], in which each x value represents a selectable stat, and each y value either represents stat type (0), indicates head stat (1), or indicates associated data (2-3).
+ *
+ * Authors: 
+ * Nicholas Denaro, William Bittner
+ *
+ * Date Created: 
+ * 4/2/2015
+ *
+ * Last Modified: 
+ * 2/22/2016 by Nicholas Denaro
+ */
 function ParseStatList()
 {
-	var sortedStatList = g_StatList.slice();		// copy into a new array	
-	sortedStatList.sort();
+	var statList = g_StatList.slice();
 	var parsedStatList = [];						// 2d array
 	parsedStatList[0] = [];
 	parsedStatList[1] = [];
 	parsedStatList[2] = [];
 	parsedStatList[3] = [];
-	
-	var index = 0;
-	
-	// 'global' variables for index locations
-	var statType = 0;
-	var headStat = 1;
-	var assocStat1 = 2;
-	var assocStat2 = 3;
-	
+
 	// index variables for the vaccination stats
 	var vaccL1 = -1;
 	var vaccL2 = -1;
 	var vaccSIAHead = -1;
 	
-	// this loop searches through the g_statList and places only single stats
-	// in the parsedStatList in the appropriate slot
-	for(var i = 0; i<sortedStatList.length; i++)
+	var statType = {
+		NOT_VACCINE : 0,
+		VACCINE : 1
+	};
+
+	// 'global' variables for index locations
+	var parsedStatIndexes = { 
+		GRAPH_TYPE : 0,
+		HEAD_STAT : 1,
+		ASSOCIATED1 : 2,
+		ASSOCIATED2 : 3
+	};
+
+	var mcvRegex = new RegExp("^mcv(1|2)$");
+	var siaRegex = new RegExp("^sia$");
+	var estimatedRegex = new RegExp("^e_");
+	var estimatedBoundRegex = new RegExp("^(ube_|lbe_)");
+
+	var index = 0;
+
+	// Vaccines
+	var siaIndex = statList.indexOf("sia");
+	parsedStatList[parsedStatIndexes.GRAPH_TYPE][index] = statType.VACCINE;
+	parsedStatList[parsedStatIndexes.HEAD_STAT][index] = siaIndex;
+	var svaccSIAHead = index;
+	var mcv1Index = statList.indexOf("mcv1");
+	var mcv2Index = statList.indexOf("mcv2");
+	parsedStatList[parsedStatIndexes.ASSOCIATED1][index] = mcv1Index;
+	parsedStatList[parsedStatIndexes.ASSOCIATED2][index] = mcv2Index;
+
+	index++;
+
+	for(var i = statList.length - 1; i >= 0; i--)
 	{
-		var currentStat = sortedStatList[i];
-		var isAssociatedStat = false;
-		var isVacc = false;
-		
-		if(currentStat.indexOf('VACCL') >= 0)
+		var currentStat = statList[i];
+
+		if(estimatedRegex.test(currentStat) || (!estimatedBoundRegex.test(currentStat) && !mcvRegex.test(currentStat) && currentStat != "sia"))
 		{
-			// prevent any vaccination bounds from being put as a head stat and mark vaccl indexes
-			// also sets location of associated vaccination stats
-			isAssociatedStat = true;
-			if(vaccL1 == -1)
-			{
-				vaccL1 = g_StatList.indexOf(currentStat);
-			}
-			else if(vaccL2 == -1)
-			{
-				vaccL2 = g_StatList.indexOf(currentStat); 
-			}
-		}
-		
-		// sets the assocaited stat indexes
-		if(i > 0 && currentStat.indexOf(sortedStatList[i-1]) == 0)
-		{
-			isAssociatedStat = true;
-			parsedStatList[assocStat1][index-1] = g_StatList.indexOf(currentStat);
-		}
-		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) == 0)
-		{
-			isAssociatedStat = true;
-			parsedStatList[assocStat2][index-1] = g_StatList.indexOf(currentStat);
-		}
-		
-		// sets the head stats
-		if(!isAssociatedStat)
-		{
-			parsedStatList[headStat][index] = g_StatList.indexOf(currentStat);
-			// if the current stat doesn't contain vacc then set statType to 0
-			if(currentStat.indexOf('VACCB') < 0)
-			{
-				parsedStatList[statType][index] = 0;
-			}
-			else
-			{
-				parsedStatList[statType][index] = 1;
-				isSIAInList = true; 
-				vaccSIAHead = index;
-			}
+			parsedStatList[parsedStatIndexes.GRAPH_TYPE][index] = statType.NOT_VACCINE;
+			parsedStatList[parsedStatIndexes.HEAD_STAT][index] = i;
+			parsedStatList[parsedStatIndexes.ASSOCIATED1][index] = -1;
+			parsedStatList[parsedStatIndexes.ASSOCIATED2][index] = -1;
 			index++;
 		}
 	}
-	
-	// set the associated stats for the SIA vaccination stat
-	parsedStatList[assocStat1][vaccSIAHead] = vaccL1;
-	parsedStatList[assocStat2][vaccSIAHead] = vaccL2;
-	
-	
-	// hacky way of filling in nulls with -1 TODO: figure out how to do this better
-	for(var i=0;i<index;i++)
+
+	for(var i = parsedStatList.length - 1; i >= 0; i--)
 	{
-		for(var j=0;j<4;j++)
+		var statName = statList[parsedStatList[parsedStatIndexes.HEAD_STAT][i]];
+		var normalizedStatName = statName.replace("e_","");
+
+		if(estimatedRegex.test(statName))
 		{
-			if(parsedStatList[j][i] == null)
-			{
-				parsedStatList[j][i] = -1;
-			}
+			var lowerIndex = statList.indexOf("lbe_"+normalizedStatName);
+			var upperIndex = statList.indexOf("ube_"+normalizedStatName);
+
+			parsedStatList[parsedStatIndexes.ASSOCIATED1][i] = lowerIndex;
+			parsedStatList[parsedStatIndexes.ASSOCIATED2][i] = upperIndex;
 		}
 	}
 	return parsedStatList;
+	
 }
-
-

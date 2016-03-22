@@ -68,13 +68,14 @@ function FormatStatData(statData)
         arr[i] = [];
         for(var j = 0; j < yearKeys.length; j++)
         {
-            arr[i][j] = statData.get(statKeys[i]).get(yearKeys[j]);
+        	//subtract first year from year value to make sure our data is in order
+        	//	even if the yearKeys array is not sorted
+            arr[i][yearKeys[j]-g_FirstYear] = statData.get(statKeys[i]).get(yearKeys[j]);
         }
     }
 
     return arr;
 }
-
 
 /*
  *  Function: GetData
@@ -106,7 +107,7 @@ function FormatStatData(statData)
  */
 function GetData( sessionid, instanceid, countryid )
 {
-    getDataByCountry( sessionid, instanceid, countryid, GenerateCountryCharts );
+    retrieveByCountryData( sessionid, instanceid, countryid, GenerateCountryCharts );
 } 
 
 /*
@@ -141,101 +142,67 @@ function GenerateCountryCharts( data, cid )
 	var newNode = new t_AsdsNode(getSession(), getInstance(), cid, g_LookupTable[cid][0], g_LookupTable[cid][1], null);
 	var parsedData = FormatStatData(data);
     newNode.data = parsedData;
-    //console.log(newNode);
     g_DataList.add(newNode);
     // draw graph with new node
     GenerateSubDivs();
     GenerateGraphs();
 }
 
-
 /*
- *  Function: ModifyData
+ *  Function: AddRegion
  *  
- *  Adds or removes a node to the g_DataList to reflect the chosen regions on the map
+ *  This function is called when a region is selected on the map
  *
  *  Parameters:
- *      selectedRegions - The regions selected from the JVectorMap
+ *      cid - The country id of the region selected from the JVectorMap
  *
  *  Pre:
- *      selectedRegions is a string array of regions selected on the map
+ *      getSession and getInstance functions are defined
  *
  *  Post:
- *      modifies g_DataList if there is a mismatch between regions selected, and regions stored in the g_DataList.
- *
- *  Returns:
- *      linked list of currently selected countries on map.
+ *      Makes a call to GetData to grab the data and graph it
  *
  *  Authors:
- *      Vanajam Soni, Kyle Nicholson, Nicholas Denaro
+ *      William Bittner
  *
  *  Date Created:
- *      3/24/15
+ *      2/22/2016
  *
  *  Last Modified:
- *      2/8/2016 by William Bittner
+ *      2/22/2016 by William Bittner
  */
-function ModifyData(selectedRegions) 
+function AddRegion( cid )
 {
-    if(g_DataList == null)
-        g_DataList = new c_List();
-
-    for(i=0;i<selectedRegions.length;i++)
-    {
-            if(GetCID(selectedRegions[i]) == -1) 
-            {
-                selectedRegions.splice(i, 1);
-            }
-    }
-
-    if(selectedRegions.length > g_DataList.size)
-    {
-        // look for cc2 to add
-        var CC2Found = false;
-        for(var i=0; i <= selectedRegions.length && !CC2Found; i++)
-        {
-            if(selectedRegions[i]!= null && !g_DataList.contains(selectedRegions[i]))
-            {
-                CC2Found = true;
-                var cid = GetCID(selectedRegions[i]);
-                GetData( getSession(), getInstance(), cid );
-                 /*var newNode = new t_AsdsNode(cid,g_LookupTable[cid][0],g_LookupTable[cid][1],null);
-               $.when(GetData(cid)).done(function(data){
-                    var parsedData = ParseData(data);
-                    newNode.data = parsedData;
-                    //console.log(newNode);
-                    g_DataList.add(newNode);
-                    // draw graph with new node
-                    GenerateSubDivs();
-                    GenerateGraphs();
-                });*/
-            }
-        }
-    }
-    else if(selectedRegions.length < g_DataList.size)
-    {
-
-        var currentNode = g_DataList.start;
-
-        // look for cc2 to remove
-        for(var i = 0; i<g_DataList.size;i++)
-        {
-            if(g_DataList != null) 
-            {
-                cc2ToRemove = currentNode.cc2;
-                cid = GetCID(cc2ToRemove);
-                if(selectedRegions.indexOf(cc2ToRemove) == -1 && cid != -1)
-                {
-                    g_DataList.delete(cc2ToRemove);
-                    // redraw graphs
-                    GenerateSubDivs();
-                    GenerateGraphs();
-                }
-
-            }
-            currentNode = currentNode.next;
-        }
-    }
-    return g_DataList;
+	GetData( getSession(), getInstance(), cid );
 }
 
+/*
+ *  Function: RemoveRegion
+ *  
+ *  This function is called when a region is deselected on the map
+ *
+ *  Parameters:
+ *      cc2 - The cc2 of the region deselected from the JVectorMap
+ *
+ *  Pre:
+ *      GenerateSubDivs and GenerateGraph functions are defined, g_DataList is defined
+ *
+ *  Post:
+ *      Deletes the node with the cc2 regions data from the global list of nodes and redraws the charts
+ *
+ *  Authors:
+ *      William Bittner
+ *
+ *  Date Created:
+ *      2/22/2016
+ *
+ *  Last Modified:
+ *      2/22/2016 by William Bittner
+ */
+function RemoveRegion( cc2 )
+{
+    g_DataList.delete(cc2);
+    // redraw graphs
+    GenerateSubDivs();
+    GenerateGraphs();
+}
