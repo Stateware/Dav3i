@@ -537,9 +537,6 @@ function ParseStatList()
 		}
 	}
 	return parsedStatList;
-<<<<<<< HEAD
-	
-=======
 }
 
 /* Function GetHeadStatList()
@@ -589,5 +586,4 @@ function GetHeadStatList()
     }
 
     return headStatArray;
->>>>>>> new_tab_popup
 }
