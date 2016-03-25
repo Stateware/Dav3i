@@ -71,7 +71,8 @@ function ParseDescriptor(DescriptorJSON)
    	PopulateNewTabMenu(DescriptorJSON);
    	BuildTabs();
 
-    g_StatID = GetSelectedTabInfo()["stat1_id"];
+   	// This needs to be set to 1 to preserve ordering of future lists and graph correctly. TODO: Fix this!
+    g_StatID = 1;
 
     //Set the initial year displayed to the most current year for which we have data
     g_HMSYear = g_LastYear;
@@ -80,7 +81,7 @@ function ParseDescriptor(DescriptorJSON)
 
     g_TempSettings = UpdateInputs();
 
-    g_StatID = GetSelectedTabInfo()["stat1_id"];
+    g_StatID = 1;
     ColorByHMS();
 }
 
