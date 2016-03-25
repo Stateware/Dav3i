@@ -35,12 +35,11 @@ var g_FirstYear;        			// first year for which data is available.
 var g_LastYear;         			// last year for which data is available.
 var g_YearStart;        			// first year for which user wants data.
 var g_YearEnd;          			// last year for which user wants data.
-var g_DataList;         			// data list
+var g_DataList = new c_List();      // data list
 var g_StatID;           			// stat ID corresponding to selected HMS.
 var g_HMSYear;          			// year for which HMS data is wanted.
 var g_ParsedStatList;   			// parsed stat reference list
 var g_GraphType;        			// variable representing the graph type, enumerated 0 to 2
-var g_Clear = false;				// variable used by the clear selection function to avoid n^3 slowdown
 var g_Expanded = false; 			// variable used to determine whether or not the graph section is expanded
 var g_VaccHMS = 1;					// variable used to determine which vaccination stat to use when heat mapping
 var g_TempSettings = new Array(5);  // indicies are "first year, last year, Heat map year, graph type, vacc heat map"
@@ -51,6 +50,23 @@ var g_mapSelectedRegionsToDivs = {};
 var g_cache = new data_cache();
 
 
+/*
+ *  Enum: g_GraphTypeEnum
+ *      This is the enumeration to describe the different types of charts we may want to draw
+ *
+ */
+var g_GraphTypeEnum = 
+{
+ 
+    REGIONAL:  	0,
+    COMBINED:	1,
+    SUM:		2,
+   	VACCINE:	3
+     
+};
+
+
+
 //Object to store the cache
 function data_cache()
 {
@@ -58,15 +74,15 @@ function data_cache()
 	
     this.get = function(prop) {
         this[prop] = this[prop] || new data_cache();
-        if( this.keys.indexOf(prop) === -1 )
-        	this.keys.push(prop);
+        if( this.keys.indexOf(Number(prop)) === -1 )
+        	this.keys.push(Number(prop));
         return this[prop];
     };
     
     this.set = function(prop, value) {
         this[prop] = value;
-        if( this.keys.indexOf(prop) === -1 )
-        	this.keys.push(prop);
+        if( this.keys.indexOf(Number(prop)) === -1 )
+        	this.keys.push(Number(prop));
     };
 }
 
