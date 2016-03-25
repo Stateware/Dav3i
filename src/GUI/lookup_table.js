@@ -44,7 +44,6 @@ function ParseDescriptor(DescriptorJSON)
 	//Grab an object containing the first and last year 
     var yearRangeObject = GetInitialYears(DescriptorJSON);
     
-    
     //Set the globals for the year range and initial year values
     g_FirstYear = yearRangeObject.FirstYear;
 	g_YearStart = yearRangeObject.FirstYear;
@@ -63,19 +62,26 @@ function ParseDescriptor(DescriptorJSON)
     //Generate a parsed stat list
     //TODO: Figure out what this is doing and why
     g_ParsedStatList = ParseStatList();
-    
-    //Set initial stat displayed to deaths
-    g_StatID = 1;
-    
+
+    CleanStatNames();
+
+    // fill the dropdown menus and the new tab popup elements
+    FillSessionDropDown(DescriptorJSON,(document.getElementById("sessionSelect").options.length == 0));
+    FillInstanceDropDown(DescriptorJSON);
+   	PopulateNewTabMenu(DescriptorJSON);
+   	BuildTabs();
+
+    g_StatID = GetSelectedTabInfo()["stat1_id"];
+
     //Set the initial year displayed to the most current year for which we have data
     g_HMSYear = g_LastYear;
     
     FindCountriesNoData();
-    ColorByHMS();
-    BuildTabs();
 
     g_TempSettings = UpdateInputs();
-        
+
+    g_StatID = GetSelectedTabInfo()["stat1_id"];
+    ColorByHMS();
 }
 
 // Author: Emma Roudabush, William Bittner
@@ -223,7 +229,10 @@ function ReformatByStatData(instanceCache, statID, year)
 	for(var country = 0; country < keys.length; country++)
 	{
 		//console.log(cache.get(keys[country]));
-		data[country] = instanceCache.get(keys[country]).get(statID).get(year);
+		if( !isNaN( keys[country] ) )
+		{
+			data[ keys[country]-1 ] = instanceCache.get(keys[country]).get(statID).get(year);
+		}
 	}
 
 	return data;
@@ -307,9 +316,32 @@ function GetCID(cc2)
     return cid; 
 }
 
-// Author: Kyle Nicholson, William Bittner
+/*
+ * Function: CleanStatNames
+ */
+// Author: Nicholas Denaro, William Bittner
+// Date Created: 2/22/2016
+// Last Modified: 2/22/2016 by Nicholas Denaro
+// Description: Take the stat list and give them nicer names to display.
+// PRE: g_StatList exist
+// POST: g_StatList has friendlier names
+function CleanStatNames()
+{
+	g_StatList[g_StatList.indexOf("births")] = "Births";
+	g_StatList[g_StatList.indexOf("cases")] = "Reported Cases";
+	g_StatList[g_StatList.indexOf("deaths")] = "Deaths";
+	g_StatList[g_StatList.indexOf("e_cases")] = "Estimated Cases";
+	g_StatList[g_StatList.indexOf("e_mortality")] = "Estimated Mortality";
+	g_StatList[g_StatList.indexOf("populations")] = "Population";
+	g_StatList[g_StatList.indexOf("sia")] = "sia-VACCB";
+}
+
+/*
+ * Function: ParseStatList
+ */
+// Author: Nicholas Denaro, William Bittner
 // Date Created: 4/2/2015
-// Last Modified: 9/24/2015 by William Bittner
+// Last Modified: 2/22/2016 by Nicholas Denaro
 // Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
 // PRE: g_StatList exist
 // POST: return a 2D array A[x][y], in which each x value represents a selectable 
@@ -317,98 +349,127 @@ function GetCID(cc2)
 //		 associated data (2-3).
 function ParseStatList()
 {
-	var sortedStatList = g_StatList.slice();		// copy into a new array	
-	sortedStatList.sort();
+	var statList = g_StatList.slice();
 	var parsedStatList = [];						// 2d array
 	parsedStatList[0] = [];
 	parsedStatList[1] = [];
 	parsedStatList[2] = [];
 	parsedStatList[3] = [];
-	
-	var index = 0;
-	
-	// 'global' variables for index locations
-	var statType = 0;
-	var headStat = 1;
-	var assocStat1 = 2;
-	var assocStat2 = 3;
-	
+
 	// index variables for the vaccination stats
 	var vaccL1 = -1;
 	var vaccL2 = -1;
 	var vaccSIAHead = -1;
 	
-	// this loop searches through the g_statList and places only single stats
-	// in the parsedStatList in the appropriate slot
-	for(var i = 0; i<sortedStatList.length; i++)
+	var statType = {
+		NOT_VACCINE : 0,
+		VACCINE : 1
+	};
+
+	// 'global' variables for index locations
+	var parsedStatIndexes = { 
+		GRAPH_TYPE : 0,
+		HEAD_STAT : 1,
+		ASSOCIATED1 : 2,
+		ASSOCIATED2 : 3
+	};
+
+	var mcvRegex = new RegExp("^mcv(1|2)$");
+	var siaRegex = new RegExp("^sia$");
+	var estimatedRegex = new RegExp("^e_");
+	var estimatedBoundRegex = new RegExp("^(ube_|lbe_)");
+
+	var index = 0;
+
+	// Vaccines
+	var siaIndex = statList.indexOf("sia");
+	parsedStatList[parsedStatIndexes.GRAPH_TYPE][index] = statType.VACCINE;
+	parsedStatList[parsedStatIndexes.HEAD_STAT][index] = siaIndex;
+	var svaccSIAHead = index;
+	var mcv1Index = statList.indexOf("mcv1");
+	var mcv2Index = statList.indexOf("mcv2");
+	parsedStatList[parsedStatIndexes.ASSOCIATED1][index] = mcv1Index;
+	parsedStatList[parsedStatIndexes.ASSOCIATED2][index] = mcv2Index;
+
+	index++;
+
+	for(var i = statList.length - 1; i >= 0; i--)
 	{
-		var currentStat = sortedStatList[i];
-		var isAssociatedStat = false;
-		var isVacc = false;
-		
-		if(currentStat.indexOf('VACCL') >= 0)
+		var currentStat = statList[i];
+
+		if(estimatedRegex.test(currentStat) || (!estimatedBoundRegex.test(currentStat) && !mcvRegex.test(currentStat) && currentStat != "sia"))
 		{
-			// prevent any vaccination bounds from being put as a head stat and mark vaccl indexes
-			// also sets location of associated vaccination stats
-			isAssociatedStat = true;
-			if(vaccL1 == -1)
-			{
-				vaccL1 = g_StatList.indexOf(currentStat);
-			}
-			else if(vaccL2 == -1)
-			{
-				vaccL2 = g_StatList.indexOf(currentStat); 
-			}
-		}
-		
-		// sets the assocaited stat indexes
-		if(i > 0 && currentStat.indexOf(sortedStatList[i-1]) == 0)
-		{
-			isAssociatedStat = true;
-			parsedStatList[assocStat1][index-1] = g_StatList.indexOf(currentStat);
-		}
-		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) == 0)
-		{
-			isAssociatedStat = true;
-			parsedStatList[assocStat2][index-1] = g_StatList.indexOf(currentStat);
-		}
-		
-		// sets the head stats
-		if(!isAssociatedStat)
-		{
-			parsedStatList[headStat][index] = g_StatList.indexOf(currentStat);
-			// if the current stat doesn't contain vacc then set statType to 0
-			if(currentStat.indexOf('VACCB') < 0)
-			{
-				parsedStatList[statType][index] = 0;
-			}
-			else
-			{
-				parsedStatList[statType][index] = 1;
-				isSIAInList = true; 
-				vaccSIAHead = index;
-			}
+			parsedStatList[parsedStatIndexes.GRAPH_TYPE][index] = statType.NOT_VACCINE;
+			parsedStatList[parsedStatIndexes.HEAD_STAT][index] = i;
+			parsedStatList[parsedStatIndexes.ASSOCIATED1][index] = -1;
+			parsedStatList[parsedStatIndexes.ASSOCIATED2][index] = -1;
 			index++;
 		}
 	}
-	
-	// set the associated stats for the SIA vaccination stat
-	parsedStatList[assocStat1][vaccSIAHead] = vaccL1;
-	parsedStatList[assocStat2][vaccSIAHead] = vaccL2;
-	
-	
-	// hacky way of filling in nulls with -1 TODO: figure out how to do this better
-	for(var i=0;i<index;i++)
+
+	for(var i = parsedStatList.length - 1; i >= 0; i--)
 	{
-		for(var j=0;j<4;j++)
+		var statName = statList[parsedStatList[parsedStatIndexes.HEAD_STAT][i]];
+		var normalizedStatName = statName.replace("e_","");
+
+		if(estimatedRegex.test(statName))
 		{
-			if(parsedStatList[j][i] == null)
-			{
-				parsedStatList[j][i] = -1;
-			}
+			var lowerIndex = statList.indexOf("lbe_"+normalizedStatName);
+			var upperIndex = statList.indexOf("ube_"+normalizedStatName);
+
+			parsedStatList[parsedStatIndexes.ASSOCIATED1][i] = lowerIndex;
+			parsedStatList[parsedStatIndexes.ASSOCIATED2][i] = upperIndex;
 		}
 	}
+
 	return parsedStatList;
 }
 
+/* Function GetHeadStatList()
+/*
+/*      Retrieves the list of head stats from the global parsed stat list
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      g_ParsedStatList is correctly filled
+/*
+/* Post:
+/*
+/*      an array of head stats is returned
+/*
+/* Returns:
+/*
+/*      an array of head stats
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/26/2016
+/*
+/* Last Modified:
+/*
+/*      2/26/2016 by Paul Jang
+ */
+function GetHeadStatList()
+{
+	// retrieve the array from the parsed stat list that correlates with the head stats
+    var headStats = g_ParsedStatList[1];
 
+    // the array to be returned
+    var headStatArray = new Array();
+
+    // iterate through the array and add values to the return array
+    for(var i=0; i<headStats.length; i++)
+    {
+        headStatArray.push(g_StatList[headStats[i]]);
+    }
+
+    return headStatArray;
+}

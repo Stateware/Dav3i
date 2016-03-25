@@ -39,7 +39,7 @@ function initPage()
 {
     initMap();
     // Generate lookup table and heat map
-    GetDescriptor(getSession());
+    GetDescriptor();
 
     // Do below process when heat map is generated
     // Check opacity in testing?
@@ -47,8 +47,6 @@ function initPage()
     setTimeout(function () {
         $(".begin").fadeIn(1500);
     }, 1250);
-
-    fillSessionDropDown();
 };
 
 
