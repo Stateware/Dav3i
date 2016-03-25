@@ -105,7 +105,7 @@ function GetArgumentValue( $input, $required=true )
 // These are global variables that describe our default values for data of the given types
 define("DEFAULT_NUMBER", -1);
 define("DEFAULT_STRING", "");
-define("DEFAULT_SESSION", 35);
+define("DEFAULT_SESSION", 1);
 /*      EFFECTS OF TESTING == TRUE:
  * The ThrowFatalError doesn't kill the page
  */
