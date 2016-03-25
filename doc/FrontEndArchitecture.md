@@ -235,7 +235,6 @@ data.js is a JavaScript data module that contains all global variables needed ac
  * `g_statID` : stat ID representing selected stat
  * `g_HMSYear` : variable representing the year for which HMS data is stored
  * `g_GraphType` : variable representing the graph type, enumerated 0 to 2 (same as order defined in section 0.1.3)
- * `g_Clear` : boolean variable that allows clear selection function to run in constant time by bypassing normal single node deletion.
  * `g_Expanded` : boolean variable that is true in expanded view, false in compact view.
  * `g_VaccHMS` : variable representing which stat is heat mapped when vaccinations is selected.
 
@@ -581,6 +580,7 @@ Description: When more than ~5 countries are selected, clear causes massive slow
 Reason for bug: Because map.clearSelectedRegions removes each region one by one, and therefore triggers onRegionSelected each time, the n^2 algorithm which is used to add or remove a node becomes n^3, and because of an implementation bug in the deletion, it was actually n^4!
 Description of fix: Fixed implementation bug in region removal, then set clear to simply clear data list and only call the modify list function in onRegionSelected if it was called from something other than clearSelectedRegions.
 Additional Notes: Had to add an additional global variable to handle this fix, g_Clear. A fix without an additional global would be nice, but jVectorMap is difficult to manage in this case without it.
+Additional Notes: Correct use of the JVectorMap API allows for grabbing the country that is selected or cleared, thus removing the loops that caused the n^3 holdup. This allows for the removal of the g_Clear global variable.
 
  * \#5: HMS data is set in lookup table incorrectly  
 First Reported: April 5, 2015  

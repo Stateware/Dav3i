@@ -29,14 +29,25 @@
 // Dependencies: client_parser.js, ..., [Google Charts API]
 // Additional Notes: N/A
 
-// Author: Arun Kumar
-// Date Created: 4/14/2015
-// Last Modified: 10/8/2015 by Nicholas Denaro
-// Description: Creates switch case to determine which function to call
-// PRE: The divs for the graphs exist, and correct data is stored in g_DataList,
-//      g_GraphType and g_StatList 
-// POST: Calls the appropriate graphing functions depending on the g_GraphType and 
-//       whether the g_StatID selected is vaccination or not. FCTVAL == number of graphs generated, or -1 for failure.
+/*
+ * Function: GenerateGraphs
+ * Creates switch case to determine which function to call
+ *
+ * Pre: 
+ * The divs for the graphs exist, and correct data is stored in g_DataList, g_GraphType and g_StatList 
+ *
+ * Post: 
+ * Calls the appropriate graphing functions depending on the g_GraphType and whether the g_StatID selected is vaccination or not. FCTVAL == number of graphs generated, or -1 for failure.
+ *
+ * Authors: 
+ * Arun Kumar
+ *
+ * Date Created: 
+ * 4/14/2015
+ *
+ * Last Modified: 
+ * 10/8/2015 by Nicholas Denaro
+ */
 function GenerateGraphs()
 {
 	if(g_DataList != undefined && g_DataList.size != 0)
@@ -44,11 +55,11 @@ function GenerateGraphs()
     	var curr=g_DataList.start;    
 	    if (g_StatList[g_StatID].indexOf("VACC") > -1)
 	    {
-	        if (g_GraphType != 2)
+	        if (g_GraphType != g_GraphTypeEnum.SUM)
 	        {
 	            for(var i=1; i<=g_DataList.size; i++)
 	            {
-	                GraphVaccine("region-graphs-"+i, curr);
+	                Graph(g_GraphTypeEnum.VACCINE, "region-graphs-"+i, curr);
 	                curr=curr.next;
 	            }
                 return(g_DataList.size);
@@ -56,7 +67,7 @@ function GenerateGraphs()
 	        else
 	        {
 	            var sumNode = GenerateSumNode();
-	            GraphVaccine("region-graphs-"+1,sumNode);
+	            Graph(g_GraphTypeEnum.VACCINE, "region-graphs-"+1,sumNode);
                 return(1);
 	        }
 	    }
@@ -64,167 +75,147 @@ function GenerateGraphs()
 	    {
 	        switch(g_GraphType)
 	        {
-	            case 0:    
-                        var max = FindMax();
-	                for(var i=1; i<=g_DataList.size; i++)
-	                {
-	                    if(GraphRegional("region-graphs-"+i, curr, max) == -1)
-                        {
-                            var element = document.getElementById("region-graphs-"+i);
-                            element.parentNode.removeChild(element);
-                        }
-	                    curr=curr.next;
-	                }
-	                return(g_DataList.size);
-	            case 1:
-	                GraphCombined("region-graphs-"+1);
-	                return(1);
-	            case 2:
-	                var sumNode = GenerateSumNode();
-	                GraphRegional("region-graphs-"+1, sumNode);
-	                return(1);
+	            case g_GraphTypeEnum.REGIONAL:    
+			        var max = FindMax();
+			        for(var i=1; i<=g_DataList.size; i++)
+			        {
+			            if(Graph(g_GraphTypeEnum.REGIONAL, "region-graphs-"+i, curr, max) === -1 )
+			            {
+			                var element = document.getElementById("region-graphs-"+i);
+			                element.parentNode.removeChild(element);
+			            }
+			            curr=curr.next;
+			        }
+			        return(g_DataList.size);
+			    case g_GraphTypeEnum.COMBINED:
+			    
+			        if ( Graph(g_GraphTypeEnum.COMBINED, "region-graphs-"+1) === -1 )
+			        {
+			        	var element = document.getElementById("region-graphs-"+i);
+			            element.parentNode.removeChild(element);
+			            return 0;
+			        }
+			        return(1);
+			    case g_GraphTypeEnum.SUM:
+			        var sumNode = GenerateSumNode();
+			        Graph( g_GraphTypeEnum.SUM, "region-graphs-"+1, sumNode);
+			        return(1);
 	        }
 	    }
 	}
     return(-1);
 }
 
-// Author: Arun Kumar, Berty Ruan, Vanajam Soni
-// Date Created:4/2/2015
-// Last Modified: 4/25/2015 By Berty Ruan
-// Description: Takes stat data and divID to generate a graph for a single country and stat
-// PRE: divID is a div in the graphing section, node is a valid t_AsdsNode containing data for a country or 
-//      a sum of countries, and maxVal is the max is maximum value of the selected stat for the entire list
-// POST: generates a single Google ComboChart for the given node on the divID. FCTVAL == 0 on success, -1 on bad data
-function GraphRegional(divID, node, maxVal) {
-    var data = GenerateSingleData(node.data);
-    var options = {
-        title: node.name,
-        seriesType: "line",
-        legend: 'none',
-        vAxis: {
-            viewWindowMode:'explicit',
-            viewWindow: {min: 0, max: maxVal}
-        },
-        hAxis: {title: 'Year', format: '####'},
-        series: {1: {type: "area", color: "transparent"}, 2: {color: "navy"}, 3: {type: "area", color: "navy"}},
-        isStacked: true,
-        backgroundColor: '#EAE7C2',
-        tooltip: {trigger: 'both'}
-    };
-    	
-    if(data != null)
-    {
-        var formatter = new google.visualization.NumberFormat({pattern: '#,###.##'} );
-        for(var i=1; i < data.getNumberOfColumns(); i++)
+
+/*
+ *  Function: Graph
+ *  
+ *  This function is called from GenerateGraphs once the type of the graph is determined
+ *
+ *  Parameters:
+ *      graphType - the type of the graph as denoted by g_GraphTypeEnum
+ * 		divID - the id of the div to put the graph in
+ * 		node - the node containing the data to be charted
+ *
+ *  Pre:
+ *      g_GraphTypeEnum is defined with the states SUM, REGIONAL, COMBINED, and VACCINE
+ * 		Options class is defined
+ * 		google charting package is included
+ *
+ *  Post:
+ *		The graph of type graphType is output to the div of id divID with the data from node 
+ *
+ *  Authors:
+ *      William Bittner
+ *
+ *  Date Created:
+ *      2/22/2016
+ *
+ *  Last Modified:
+ *      2/22/2016 by William Bittner
+ */
+function Graph( graphType, divID, node )
+{
+	//Define variables that will be set based on graph type
+	var data; 
+	var nodeName;
+	var max;
+	var formatter;
+	var options;
+	
+	switch( graphType )
+	{
+		case g_GraphTypeEnum.SUM:
+		case g_GraphTypeEnum.REGIONAL:
+    		
+    		data = GenerateSingleData( node.data );
+    		max = FindMax();
+    		nodeName = node.name;  
+    		formatter = new google.visualization.NumberFormat({pattern: '#,###.##'} ); 
+			break;
+		
+	    case g_GraphTypeEnum.COMBINED:
+	    
+			data = GenerateCombinedData();
+			nodeName = null;
+			max = null;
+	    	formatter = new google.visualization.NumberFormat( {pattern: '#,###.##'} );
+			break;
+	    
+	    case g_GraphTypeEnum.VACCINE:
+	    
+	    	data = GenerateVaccineData( node.data );
+	    	nodeName = node.name;
+	    	max = null;
+	    	formatter = new google.visualization.NumberFormat( {pattern: '##.##%'} );
+			break;
+			
+		default:
+			break;
+	}
+	
+	if( data != null && (options = new Options( graphType, nodeName, max )) )
+	{
+			
+		for( var i = 1; i < data.getNumberOfColumns(); i++ )
         {
-            if(data != null)
-                formatter.format(data, i);
+        	formatter.format( data, i );
         }
 
         // instantiate and draw chart using prepared data
-        var chart = new google.visualization.ComboChart(document.getElementById(divID));
-        chart.draw(data, options);
+        var chart = new google.visualization.ComboChart( document.getElementById( divID ) );
+        chart.draw( data, options );
         return 0;
-    }
-    else
-        return -1;
-}
-
-// Authors: Josh Crafts, Arun Kumar, Berty Ruan
-// Date Created: 3/27/2015
-// Last Modified: 10/8/2015 by Nicholas Denaro
-// Description: Takes stat data from multiple countries and generates a graph
-// using data from multiple countries combined
-// PRE: divID is a div in the graphing section, GenerateCombinedData function is defined
-// POST: generates a single Google LineChart on divID for all regions on g_DataList. FCTVAL == 0 on success, -1 on bad data
-function GraphCombined(divID) {
-    var data = GenerateCombinedData();
-    var options = {
-        seriesType: "line",
-        legend: {position: 'top'},
-        vAxis: {
-            viewWindowMode:'explicit',
-            viewWindow: {min:0}
-        },
-        hAxis: {title: 'Year', format: '####'},
-        backgroundColor: '#EAE7C2',
-        tooltip: {trigger: 'both'}
-    };
 	
-	var num = [];
+	}
+	else //error has occured and we have null data
+		return -1;
 	
-    if(data != null)
-    {
-    	//console.log(num);
-    	var formatter = new google.visualization.NumberFormat({pattern: '#,###.##'});
-    	for(var i=1; i<data.getNumberOfColumns(); i++)
-    	{
-    		formatter.format(data, i);
-    	}
-    	
-    	
-        // instantiate and draw chart using prepared data
-        var chart = new google.visualization.LineChart(document.getElementById(divID));
-        chart.draw(data, options);
-        return(0);
-    }
-    else
-        return(-1);
-}
-
-// Author: Arun Kumar, Berty Ruan
-// Date Created: 4/14/2015
-// Last Modified: 10/8/2015 by Nicholas Denaro
-// Description: Takes stat data from multiple countries and generates a graph for vaccinations
-// creating bars with mass vaccinations and line graphs with periodic vaccinations
-// PRE: divID is a div in the graphing section, node is a valid t_AsdsNode containing data for a country or 
-//      a sum of countries, GenerateVaccineData function is defined
-// POST: generates a single Google ComboChart for the given node's vaccination data on the divID 
-//       SIA data is shown in bars, whereas MCV1 and MCV2 data is shown in lines. FCTVAL == 0 on success, -1 on bad data
-function GraphVaccine(divID, node) {
-    var data = GenerateVaccineData(node.data);
-    var options = {
-        title: node.name,
-        vAxis: {
-            viewWindowMode:'explicit',
-            viewWindow: {
-                min: 0,
-                max: 1
-            },
-            format: '###%'
-        },
-        hAxis: {title: 'Year', format: '####'},
-        backgroundColor: '#EAE7C2',
-        seriesType: "bars",
-        series: {
-            0: {type: "line"}, 1: {type: "line"}
-        },
-        tooltip: {trigger: 'both'}
-    };
 	
-    if(data != null)
-    {
-    	var formatter = new google.visualization.NumberFormat({pattern: '##.##%'});
-        for(var i=1; i<data.getNumberOfColumns(); i++)
-        {
-            formatter.format(data,i);
-        }
-    	
-        var chart = new google.visualization.ComboChart(document.getElementById(divID));
-        chart.draw(data, options);
-        return(0);
-    }
-    else
-        return(-1);
+	
 }
-
-// Author: Vanajam Soni, Berty Ruan
-// Date Created: 4/16/2015
-// Last Modified: 4/25/2015 by Berty Ruan
-// Description: Checks for missing data and returns null, if data is missing.
-// PRE: data is an integer or float, missing data is represented as -1
-// POST: FCTVAL == data if data is not -1, null otherwise
+ 
+/*
+ * Function: FixMissingData
+ * Checks for missing data and returns null, if data is missing.
+ *
+ * Parameters: 
+ *     data - a number
+ * Pre: 
+ * data is an integer or float, missing data is represented as -1
+ *
+ * Post: 
+ * FCTVAL == data if data is not -1, null otherwise
+ *
+ * Authors: 
+ * Vanajam Soni, Berty Ruan
+ *
+ * Date Created: 
+ * 4/16/2015
+ *
+ * Last Modified: 
+ * 4/25/2015 by Berty Ruan
+ */
 function FixMissingData(data)
 {
     if(data >= 0)
@@ -233,15 +224,28 @@ function FixMissingData(data)
         return null;
 }
 
-// Author: Vanajam Soni, Joshua Crafts, Berty Ruan
-// Date Created: 4/7/2015
-// Last Modified: 4/25/2015 by Berty Ruan 
-// Description: Prepares Data given for a single country (taken as argument) into data table, for the global statID, 
-//              Also depends on graph type for bounded or unbounded data
-// PRE: data is a 2d array, containing all data for one country, or a sum of countries,
-//      g_ParsedStatList exists and contains valid data
-// POST: FCTVAL == data table containing data from the year g_YearStart to g_YearEnd, for the given country's data
-//       so that we can graph
+/*
+ * Function: GenerateSingleData
+ * Prepares Data given for a single country (taken as argument) into data table, for the global statID, Also depends on graph type for bounded or unbounded data
+ *
+ * Parameters: 
+ *     data - 
+ *
+ * Pre: 
+ * data is a 2d array, containing all data for one country, or a sum of countries, g_ParsedStatList exists and contains valid data
+ *
+ * Post: 
+ * FCTVAL == data table containing data from the year g_YearStart to g_YearEnd, for the given country's data so that we can graph
+ *
+ * Authors: 
+ * Vanajam Soni, Joshua Crafts, Berty Ruan
+ *
+ * Date Created: 
+ * 4/7/2015
+ *
+ * Last Modified: 
+ * 4/25/2015 by Berty Ruan 
+ */
 function GenerateSingleData(data)
 {
     // type = 0 => unbounded or only has 1 bound
@@ -322,15 +326,25 @@ function GenerateSingleData(data)
         return null;
 }
 
-
-// Author: Joshua Crafts
-// Date Created: 3/27/2015
-// Last Modified: 3/27/2015 by Joshua Crafts
-// Description: Prepares data in terms of the data type needed by graphing api
-// PRE: g_DataList > 0, 
-//      g_ParsedStatList exists and contains valid data.
-// POST: FCTVAL == data table containing data from the year g_YearStart to g_YearEnd, for all countries on the 
-//       g_DataList, so that we can graph all data on one graph
+/*
+ * Function: GenerateCombinedData
+ * Prepares data in terms of the data type needed by graphing api
+ *
+ * Pre: 
+ * g_DataList > 0, g_ParsedStatList exists and contains valid data.
+ *
+ * Post: 
+ * FCTVAL == data table containing data from the year g_YearStart to g_YearEnd, for all countries on the g_DataList, so that we can graph all data on one graph
+ *
+ * Authors: 
+ * Joshua Crafts
+ *
+ * Date Created: 
+ * 3/27/2015
+ *
+ * Last Modified: 
+ * 3/27/2015 by Joshua Crafts
+ */
 function GenerateCombinedData()
 {
     // create array with indices for all years plus a header row
@@ -372,15 +386,25 @@ function GenerateCombinedData()
     return dataTable;
 }
 
-// Author: Vanajam Soni
-// Date Created: 4/7/2015
-// Last Modified: 4/13/2015 by Vanajam Soni
-// Description: Generates an ASDS node with all data summed over selected regions
-// PRE: g_DataList.size > 0, 
-//      g_ParsedStatList, g_YearEnd and g_FirstYear exist and contain correct data
-// POST: FCTVAL == t_AsdsNode with cid = -1, cc2 = "SUM", 
-//       name = comma separated names of all countries in g_DataList,
-//       data = sum of all data of the countries in g_DataList
+/*
+ * Function: GenerateSumNode
+ * Generates an ASDS node with all data summed over selected regions
+ *
+ * Pre: 
+ * g_DataList.size > 0, g_ParsedStatList, g_YearEnd and g_FirstYear exist and contain correct data
+ *
+ * Post: 
+ * FCTVAL == t_AsdsNode with cid = -1, cc2 = "SUM", name = comma separated names of all countries in g_DataList, data = sum of all data of the countries in g_DataList
+ *
+ * Authors: 
+ * Vanajam Soni
+ *
+ * Date Created: 
+ * 4/7/2015
+ *
+ * Last Modified: 
+ * 4/13/2015 by Vanajam Soni
+ */
 function GenerateSumNode(){
     
     var data = new Array(g_StatList.length);	// data for the new node
@@ -465,16 +489,28 @@ function GenerateSumNode(){
     return newNode;
 }
 
-
-// Author: Vanajam Soni, Berty Ruan
-// Date Created: 4/7/2015
-// Last Modified: 4/25/2015 by Berty Ruan
-// Description: Prepares data for vaccination stats, for a given country
-//              Takes data of the country as input.
-// PRE: data is a 2d array, containing all data for one country, or a sum of countries,
-//      g_ParsedStatList exists
-// POST: FCTVAL == data table containing vaccination data from the year g_YearStart to g_YearEnd, in the right format
-//       so that we can graph it. 
+/*
+ * Function: GenerateVaccineData
+ * Prepares data for vaccination stats, for a given country. Takes data of the country as input.
+ *
+ * Parameters: 
+ *     data -
+ *
+ * Pre: 
+ * data is a 2d array, containing all data for one country, or a sum of countries, g_ParsedStatList exists
+ *
+ * Post: 
+ * FCTVAL == data table containing vaccination data from the year g_YearStart to g_YearEnd, in the right format so that we can graph it. 
+ *
+ * Authors: 
+ * Vanajam Soni, Berty Ruan
+ *
+ * Date Created: 
+ * 4/7/2015
+ *
+ * Last Modified: 
+ * 4/25/2015 by Berty Ruan
+ */
 function GenerateVaccineData(data)
 {
     var dataTable = new google.visualization.DataTable();
@@ -512,13 +548,25 @@ function GenerateVaccineData(data)
     return dataTable;   
 }
 
-// Author: Joshua Crafts
-// Date Created: 4/7/2015
-// Last Modified: 4/13/2015 by Vanajam Soni
-// Description: Finds and returns maximum value of a stat for the entire list
-// PRE: g_DataList.size > 0, 
-//      g_ParsedStatList, g_YearFirst, g_FirstYear and g_YearEnd exist and contain correct data
-// POST: FCTVAL == maximum value of the selected stat for the entire list
+/*
+ * Function: FindMax
+ * Finds and returns maximum value of a stat for the entire list
+ *
+ * Pre: 
+ * g_DataList.size > 0, g_ParsedStatList, g_YearFirst, g_FirstYear and g_YearEnd exist and contain correct data
+ *
+ * Post: 
+ * FCTVAL == maximum value of the selected stat for the entire list
+ *
+ * Authors: 
+ * Joshua Crafts
+ *
+ * Date Created: 
+ * 4/7/2015
+ *
+ * Last Modified: 
+ * 4/13/2015 by Vanajam Soni
+ */
 function FindMax()
 {
     var max = Number.MIN_VALUE;
@@ -557,3 +605,65 @@ function FindMax()
     return max;   
 }
 
+/*
+ *  Class: Options
+ *      A class to streamline the creation of the options for charting
+ *
+ *  Parameters:
+ *      graphType - the type of the graph as denoted by g_GraphTypeEnum
+ *      nodeName - the name to apply to the title of the chart, typically the names of the region(s)
+ *      maxVal - the max value of the charts y axis
+ *
+ *  Members:
+ *      https://developers.google.com/chart/interactive/docs/customizing_charts
+ *      - This link and the subsequent links under the "Advanced Usage" section define all of the fields the options can hold and what values they may take.
+ *
+ */
+function Options( graphType, nodeName, maxVal )
+{
+    //Set all of the common properties here
+    this.vAxis = {};
+    this.vAxis.viewWindow = {};
+    this.vAxis.viewWindow.min = 0;
+    this.vAxis.viewWindowMode = 'explicit';
+    this.hAxis = {};
+    this.hAxis.title = 'Year';
+    this.hAxis.format = '####';
+    this.backgroundColor = '#EAE7C2';
+    this.tooltip = {trigger: 'both'};
+    
+    switch( graphType )
+    {
+        case g_GraphTypeEnum.SUM:
+        case g_GraphTypeEnum.REGIONAL:
+            
+            this.title = nodeName;
+            this.seriesType = "line";
+            this.legend = "none";
+            this.isStacked = true;
+            this.series = { 1: {type: "area", color: "transparent"}, 
+                            2: {color: "navy"}, 
+                            3: {type: "area", color: "navy"}};
+            this.vAxis.viewWindow.max = maxVal;
+            break;
+            
+        case g_GraphTypeEnum.COMBINED:
+            
+            this.seriesType = "line";
+            this.legend = {position: 'top'};
+            break;
+
+        case g_GraphTypeEnum.VACCINE:
+        
+            this.title = nodeName;
+            this.seriesType = "bar";
+            this.vAxis.viewWindow.max = 1;
+            this.vAxis.format = '###%';
+            break;  
+        
+        default://if graph type is not listed, then something is wrong..return null
+            return null;    
+    }
+    
+    return this;
+}

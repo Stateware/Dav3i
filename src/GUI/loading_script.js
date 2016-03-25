@@ -37,7 +37,7 @@
 // POST: lookup table is generated, generate map colored by default HMS, session and instance dropdowns are filled
 function initPage() 
 {
-    initMap();
+	initMap();
     // Generate lookup table and heat map
     GetDescriptor();
 
