@@ -906,8 +906,10 @@ function FillInstanceDropDown(descriptor)
  *
  * Parameters: 
  *
- *      name - name of the dropdown element
- *      type - either "value" or "id" of the selected option
+ *      name - name of the dropdown element ("sessionSelect" for sessions, "instanceSelect" for instances, "tabDropdown" for stat tabs)
+ *      type - "id" for the id of the selected option (session ID for sessionSelect, instance ID for instanceSelect)
+ *           - "text" for the text that is currently displaying as the selected option in the dropdown
+ *           - 'elem" for the selected option of the dropdown as an html element
  *
  * Pre:
  *
@@ -931,7 +933,7 @@ function FillInstanceDropDown(descriptor)
  *
  * Last Modified:
  *
- *      2/29/2016 by Paul Jang
+ *      3/25/2016 by Paul Jang
  */
 function GetSelectedDropdown(name,type)
 {
