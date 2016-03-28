@@ -191,6 +191,30 @@ QUnit.test( "PopulateInstanceNames test", function (assert) {
 	assert.deepEqual(PopulateInstanceNames(sessionID, instances, emptyCache),finalCache);
 });
 
+QUnit.test( "IsRegionSelected not in test", function (assert) {
+	var map = {};
+	map.getSelectedRegions = function(){ return ["US","MX","CA"]; };
+	var lookupTable = {};
+	lookupTable[1]={};
+	lookupTable[1][0]="UX";
+	
+	
+		
+	assert.equal(IsRegionSelected(1, map, lookupTable),false);
+});
+
+QUnit.test( "IsRegionSelected test", function (assert) {
+	var map = {};
+	map.getSelectedRegions = function(){ return ["US","MX","CA"]; };
+	var lookupTable = {};
+	lookupTable[1]={};
+	lookupTable[1][0]="US";
+	
+	
+		
+	assert.equal(IsRegionSelected(1, map, lookupTable),true);
+});
+
 
 QUnit.log( function( details )  {
 	console.log( "Log: ", details.actual, details.message );
