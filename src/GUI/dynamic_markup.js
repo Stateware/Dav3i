@@ -555,7 +555,15 @@ function Shrink()
     $(".expand-black").fadeOut(400);
     setTimeout(function()
     {
-        g_Expanded = false;
+        // keeps expanded as false if the context is multi-instance (for graph displaying/sizing purposes)
+        if(GetSelectedDropdown("tabDropdown", "elem").getAttribute("multi-instance") == "false")
+        {
+            g_Expanded = false;
+        }
+        else
+        {
+            g_Expanded = true;
+        }        
         GenerateSubDivs();
         GenerateGraphs();
     }, 500);
@@ -1058,6 +1066,10 @@ function ScaleContext(input)
     // set the map to float to the right, if not so already
     $(".map-container").css("float","right");
 
+    // make sure the expand arrow has correct function
+    $("#expand").attr("onclick","Expand('97.5%')");
+    $("#expand").attr("src","res/arrow_right.png");
+    
     // if the stat is multi instance, make the control panel the focus
     if(input == 'multi-instance')
     {
@@ -1065,21 +1077,23 @@ function ScaleContext(input)
         // resize the map when the function is done
         $(".map-container").animate({width:"25%"}, 500, 
             function() { /* redraw map and graphs */
-             $(".map-container").resize(); 
-             GenerateSubDivs(); 
-             GenerateGraphs();
-         });
+                $(".map-container").resize(); 
+                // set g_Expanded to true for graph display/sizing purposes
+                g_Expanded = true;
+                GenerateSubDivs(); 
+                GenerateGraphs();
+            });
     }
     // if the stat is single instance, make the map the focus
     else
     {
-        $("#expand").attr("onclick","Expand('97.5%')");
-        $("#expand").attr("src","res/arrow_right.png");
         $(".control-panel").animate({width:"25%"}, 500);
         // resize the map when the function is done
         $(".map-container").animate({width:"72%"}, 500, 
             function() { /* redraw map and graphs */
-                $(".map-container").resize(); 
+                $(".map-container").resize();
+                // set g_Expanded to false for graph display/sizing purposes 
+                g_Expanded = false;
                 GenerateSubDivs(); 
                 GenerateGraphs();
             });
