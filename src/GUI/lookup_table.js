@@ -79,12 +79,13 @@ function ParseDescriptor(DescriptorJSON)
     FillSessionDropDown(DescriptorJSON,(document.getElementById("sessionSelect").options.length == 0));
     FillInstanceDropDown(DescriptorJSON);
    	PopulateNewTabMenu(DescriptorJSON);
-   	BuildTabs();
-
    	// This needs to be set to 1 to preserve ordering of future lists and graph correctly. TODO: Fix this!
     g_StatID = 1;
 
-    //Set the initial year displayed to the most current year for which we have data
+    // create the dropdown menu of stat tabs
+   	BuildTabs();
+
+   	//Set the initial year displayed to the most current year for which we have data
     g_HMSYear = g_LastYear;
     
     FindCountriesNoData();

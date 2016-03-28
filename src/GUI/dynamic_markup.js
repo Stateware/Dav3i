@@ -85,6 +85,12 @@ function BuildTabs()
         
         tabDropdown.appendChild(statOnly);
 
+        // stat_ID currently needs to be 1, so make that option the selected one
+        if(statOnly.value == 1)
+        {
+            statOnly.setAttribute("selected", "selected");
+        }
+
         BuildDiv(temp);
 
         var statAllInstances = new Option(temp + " (all instances)", g_ParsedStatList[1][i]);
@@ -103,6 +109,9 @@ function BuildTabs()
 
         BuildDiv(temp+" (all instances)");
     }
+
+    // choose the tab to be the selected one, to make sure the graphs/graphs div are correctly generated
+    ChooseTab(GetSelectedDropdown("tabDropdown", "elem"));
 
     return(g_ParsedStatList[1].length);
 }
@@ -157,7 +166,7 @@ function BuildDiv(stat)
 /*
 /* Parameters: 
 /*
-/*      none
+/*      element: the html element of the tab to be chosen
 /*
 /* Pre:
 /*
