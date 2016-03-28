@@ -38,13 +38,27 @@ require_once("../../src/api/toolbox.php");
 
 parse();
 
-// Author:        William Bittner, Nicholas Denaro, Brent Mosier 
-// Date Created:  11/1/2015  
-// Last Modified: 11/5/2015 by Brent Mosier  
-// Description:   
+/*
+ *  Function: Parse
+ *  
+ *  Parses the files uploaded into the database
+ * 
+ *  Pre:
+ *     All $_POST and $_FILES variables are defined and valid as per the documentation.
+ * 
+ *  Post:
+ *      Data is uploaded to the database in the format as per documentation.
+ *
+ *  Authors:
+ *      William Bittner, Nicholas Denaro
+ *
+ *  Date Created:
+ *      3/28/2016
+ *
+ *  Last Modified:
+ *      3/28/2016 by William Bittner
+ */ 
 function parse()
-// PRE: All $_POST and $_FILES variables are defined and valid.
-// POST: Data is uploaded to the database
 {
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 {
