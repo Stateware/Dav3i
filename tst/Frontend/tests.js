@@ -25,7 +25,7 @@ QUnit.test( "Test GetCountryDataArray", function (assert) {
 	testData[1][4] = 27;
 	testData[1][5] = 26;
 	testData[1][6] = 25;
-	testData[1][7] = 22;`
+	testData[1][7] = 22;
 
 	//Stat 0, Year 1990-1997
 	test_cache.get(0).get(0).get(0).get(0).get(1990) = testData[0][0];
@@ -152,6 +152,45 @@ QUnit.test( "Fill Instance Drop Down Menu test", function (assert) {
 
 	assert.deepEqual( fillSessionDropDown(dataJSON) , output);
 });
+
+QUnit.test( "PopulateSessionNames test", function (assert) {
+	var sessions = {0:"zero", 1:"one", 2:"two"};
+	
+	var emptyCache = new data_cache();
+	
+	var finalCache = new data_cache();
+	finalCache[0] = new data_cache();
+	finalCache[0].name="zero";
+	finalCache[1] = new data_cache();
+	finalCache[1].name="one";
+	finalCache[2] = new data_cache();
+	finalCache[2].name="two";
+	finalCache.keys=[0,1,2];
+	
+	
+	assert.deepEqual(PopulateSessionNames(sessions,emptyCache),finalCache);
+});
+
+QUnit.test( "PopulateInstanceNames test", function (assert) {
+	var instances = {0:"zero", 1:"one", 2:"two"};
+	var sessionID = 0;
+	var emptyCache = new data_cache();
+	
+	var finalCache = new data_cache();
+	finalCache[0] = new data_cache();
+	finalCache[0][0] = new data_cache();
+	finalCache[0][0].name = "zero";
+	finalCache[0][1] = new data_cache();
+	finalCache[0][1].name = "one";
+	finalCache[0][2] = new data_cache();
+	finalCache[0][2].name = "two";
+	finalCache.keys=[0];
+	finalCache[0].keys = [0,1,2];
+	
+	
+	assert.deepEqual(PopulateInstanceNames(sessionID, instances, emptyCache),finalCache);
+});
+
 
 QUnit.log( function( details )  {
 	console.log( "Log: ", details.actual, details.message );

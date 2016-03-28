@@ -93,6 +93,83 @@ function ParseDescriptor(DescriptorJSON)
 
     g_StatID = 1;
     ColorByHMS();
+    
+    //prefill the session/instances and their names into the g_cache
+    PopulateSessionNames(DescriptorJSON.sessions, g_cache);
+    PopulateInstanceNames(getSession(), DescriptorJSON.instances, g_cache);
+        
+}
+
+/*
+ * Function: PopulateSessionNames
+ * Reads descriptor and populates cache with session names to be used later when graphing instances
+ * 
+ * Parameters: 
+ * sessions - the sessions json of the descriptor
+ * cache - the cache to put the names in to
+ * 
+ * Pre: 
+ * descriptorJSON is formatted as defined in the documentation
+ * cache is initialized as a data_cache object
+ * 
+ * Post: 
+ * cache has the names for sessions filled
+ * 
+ * Authors: 
+ * William Bittner
+ * 
+ * Date Created: 
+ * 3/21/16 
+ * 
+ * Last Modified: 
+ * 3/21/16 William Bittner
+ */
+function PopulateSessionNames(sessions, cache)
+{
+	var keys = Object.keys(sessions);
+	for(var i = 0; i < keys.length; i++)
+	{
+		//do not add "name" as key because we use keys to iterate through data points, and name is not a data point
+		cache.get(keys[i]).setAndDoNotAddKey("name",  sessions[keys[i]]);
+	}
+	
+	return cache;
+}
+
+/*
+ * Function: PopulateInstanceNames
+ * Reads descriptor and populates cache with session names to be used later when graphing instances
+ * 
+ * Parameters: 
+ * sessionID - the ID of the session of which to add the instances
+ * instances - the instances json of the descriptor
+ * cache - the cache to put the names in to
+ * 
+ * Pre: 
+ * cache is initialized as a data_cache object
+ * 
+ * Post: 
+ * instance names are inserted into the cache
+ * 
+ * Authors: 
+ * William Bittner
+ * 
+ * Date Created: 
+ * 3/21/16 
+ * 
+ * Last Modified: 
+ * 3/21/16 William Bittner
+ */
+function PopulateInstanceNames(sessionID, instances, cache)
+{
+	var keys = Object.keys(instances);
+	for(var i = 0; i < keys.length; i++)
+	{	
+		//do not add "name" as key because we use keys to iterate through data points, and name is not a data point
+		cache.get(sessionID).get(keys[i]).setAndDoNotAddKey("name",  instances[keys[i]]);
+	}
+	
+	return cache;
 }
 
 /*

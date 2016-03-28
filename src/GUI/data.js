@@ -84,6 +84,10 @@ function data_cache()
         if( this.keys.indexOf(Number(prop)) === -1 )
         	this.keys.push(Number(prop));
     };
+    
+    this.setAndDoNotAddKey = function(prop, value) {
+        this[prop] = value;
+    };
 }
 
 
