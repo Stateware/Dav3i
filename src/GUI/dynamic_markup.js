@@ -1063,7 +1063,12 @@ function ScaleContext(input)
     {
         $(".control-panel").animate({width:"72%"}, 500);
         // resize the map when the function is done
-        $(".map-container").animate({width:"25%"}, 500, function() { $(".map-container").resize();});
+        $(".map-container").animate({width:"25%"}, 500, 
+            function() { /* redraw map and graphs */
+             $(".map-container").resize(); 
+             GenerateSubDivs(); 
+             GenerateGraphs();
+         });
     }
     // if the stat is single instance, make the map the focus
     else
@@ -1072,6 +1077,11 @@ function ScaleContext(input)
         $("#expand").attr("src","res/arrow_right.png");
         $(".control-panel").animate({width:"25%"}, 500);
         // resize the map when the function is done
-        $(".map-container").animate({width:"72%"}, 500, function() { $(".map-container").resize();});
+        $(".map-container").animate({width:"72%"}, 500, 
+            function() { /* redraw map and graphs */
+                $(".map-container").resize(); 
+                GenerateSubDivs(); 
+                GenerateGraphs();
+            });
     }
 }
