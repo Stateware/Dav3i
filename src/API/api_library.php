@@ -51,10 +51,10 @@ function ByStat($statID, $year, $sessionID, $instanceID)
 //                 see "ParseIntoByStatPacket" function
 {
     $heatMapArray = array();						//initialize the array we will return as the heatmap
-    $descriptor = Descriptor($sessionID); 					//call our desciptor function and assign it to a variable
-    $yearRange = $descriptor['yearRange'];			//get the year range out of the descriptor 
-    $numStats = count($descriptor['stats']);		//get the number of stats out of the descriptor
+
     $databaseConnection = GetDatabaseConnection();	//store connection to the database
+
+    $yearRange = GetYearRange($databaseConnection, $sessionID); // Get the year range to see if year is valid
     
     //if year is null, there was no year entered and thus we give it the most recent year
     //this also means we don't need to check to see if the year is valid or sanitary 
@@ -82,12 +82,6 @@ function ByStat($statID, $year, $sessionID, $instanceID)
            ThrowFatalError("Input is unsanitary: statID");
     }
     
-    //Check inputs are valid, see IsValidStatID for details
-    if (!IsValidStatID($statID,$numStats))
-    {
-       ThrowFatalError("Input is invalid: statID");
-    }
-    
 	//TODO: validate and sanitize session and instance ids
 	
     // The statID given to us is expected to be indexed by 0, however our database is indexed by 1, so we'll add 1
@@ -105,6 +99,12 @@ function ByStat($statID, $year, $sessionID, $instanceID)
 	
 	$heatMapResults = $databaseConnection->query($heatMapQuery);
 	$results = array();
+
+    if($heatMapResults->num_rows == 0)
+    {
+        ThrowFatalError("Input is invalid: statID");
+    }
+
 	while($heatMapRow = $heatMapResults->fetch_assoc())
 	{
 		array_push($results,$heatMapRow);
@@ -145,9 +145,6 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
 //                 see "ParseIntoByCountryPacket" function
 {
     $databaseConnection = GetDatabaseConnection();		//store connection to database
-    $byCountryArray = array();							//initialize returning array
-    $descriptor = Descriptor($sessionID);							//grab descriptor
-    $numCountries = count($descriptor['countries']);	//use descriptor to get the number of countries
     $statTables = array();								//initialize statTables array
     
     if (!IsSanitaryCountryList($countryIDs))
@@ -160,15 +157,6 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
     $countryIDList = explode(",", $countryIDs);
     $databaseIndexedCountryIDList = array();
 
-    // validate each countryID
-    foreach ($countryIDList as $countryID)
-    {
-        if (!IsValidCountryID($countryID, $numCountries))
-        {
-            ThrowFatalError("Input is invalid: countryID (" . $countryID . ")");
-        }
-    }
-
     //TODO: add functionality for multiple country ids or fix IDs?
     $byCountryQuery = "SELECT value, stat_id, year ".
 						"FROM data ".
@@ -179,6 +167,10 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
 	
 	$countryDataResults = $databaseConnection->query($byCountryQuery);
 	$results = array();
+    if($countryDataResults->num_rows == 0)
+    {
+        ThrowFatalError("Input is invalid, no data in database: countryID (" . $countryID . ")");
+    }
 	while($countryRow = $countryDataResults->fetch_assoc())
 	{
 		array_push($results,$countryRow);
@@ -247,6 +239,7 @@ function Descriptor($sessionID = DEFAULT_SESSION)
 	
     // retrieve the stat map from the database, see GetStatMap for more details
     $stats = GetStatMap($databaseConnection, $sessionID);
+
 
     // if the retrieved stat map is null, that means that the given session ID does not have any data
     if($stats === null)
@@ -540,28 +533,14 @@ function GetYearRange($database, $sessionID)
     //TODO: Query the meta_session table for start and end year, rather than the data.
 
     // build the query that will retrieve each distinct year from the database in the current session
-	$yearRangeQuery = "SELECT DISTINCT year FROM data WHERE session_id='".$sessionID."' ORDER BY year ASC";
+	$yearRangeQuery = "SELECT start_year, end_year FROM meta_session WHERE session_id=".$sessionID;
     // execute the (just built) query
 	$yearRangeResult = $database->query($yearRangeQuery);
 	
-    // built an array to hold the years
-	$yearArray = array();
-	
-    // iterate through the result of the database query
-	while($yearRow = $yearRangeResult->fetch_assoc())
-	{
-        // push each resulting year from the query into the year array
-		array_push($yearArray, $yearRow["year"]);
-	}
-	
-    // return null if no years were retrieved
-	if(empty($yearArray))
-    {
-		return null;
-	}
+    $yearRow = $yearRangeResult->fetch_assoc();
 
     // create a new array that contains just the start and end years of the retrieved years
-	$yearRange = array("startYear"=>$yearArray[0], "endYear"=>$yearArray[count($yearArray)-1]);
+	$yearRange = array("startYear"=>$yearRow["start_year"], "endYear"=>$yearRow["end_year"]);
 	
     // return the (just built) year array
 	return $yearRange;
