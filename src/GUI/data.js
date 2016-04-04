@@ -143,14 +143,17 @@ var axisTypeEnum = {
  * 
  * Parameters: 
  * statData - stat data for a particular stat in the cache format
+ * name - string of the common name for the data that will appear on the graph
  * axisType - type of the axis when graphing. Value from axisTypeEnum
  * 
  * Members:
  * axisType - Axis type to be used when generating graph, value from axisTypeEnum
- * data - values for the stat in statData
- * years - years for the values in statData
+ * name - common name for the data that will appear on the graph
+ * data - values for the stat in statData indexed 0-data.length-1
+ * years - years for the values in data
  * min - the minimum value in data
  * max - the maximum value in data
+ * next - pointer to the next graphStat in the list
  * 
  * Authors: 
  * Kyle Yost, John Martin
@@ -161,23 +164,24 @@ var axisTypeEnum = {
  * Last Modified: 
  * 2/29/16 by Kyle Yost, John Martin
  */
-function t_graphStat(statData, axisType)
+function t_graphStat(statData, name)
 {
-    this.axisType = axisType;       //set axisTpe to enumerated value
+    //this.axisType = axisType;       //set axisTpe to enumerated value
+    this.name = name;               //common name for the data
     this.data = [];                 //year data for this stat
-    this.years;                     //years for values in data
-    this.min;                       //min year in data
-    this.max;                       //max year in data
+    this.years = [];                //years for values in data
+    this.min;                       //min value in data
+    this.max;                       //max value in data
 
-    this.years = statData.keys;
-    this.min = statData.get(this.years[0]);
-    this.max = statData.get(this.years[0]);
+    this.years = statData.keys.sort();
+    this.min = parseInt(statData.get(this.years[0]));
+    this.max = parseInt(statData.get(this.years[0]));
 
     //find min and max years and set data member array
     for(var i = 0; i < this.years.length; i++)
     {
         //put data into member array
-        this.data[i] = statData.get(this.years[i]);
+        this.data[i] = parseInt(statData.get(this.years[i]));
 
         //keep track of max and min 
         if(this.data[i] > this.max)

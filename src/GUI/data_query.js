@@ -138,7 +138,8 @@ function GetData( sessionid, instanceid, countryid )
  *      2/8/2016 by William Bittner
  */
 function GenerateCountryCharts( data, cid )
-{
+{    
+    ///OLD STUFF
 	var newNode = new t_AsdsNode(getSession(), getInstance(), cid, g_LookupTable[cid][0], g_LookupTable[cid][1], null);
 	var parsedData = FormatStatData(data);
     newNode.data = parsedData;
@@ -146,6 +147,184 @@ function GenerateCountryCharts( data, cid )
     // draw graph with new node
     GenerateSubDivs();
     GenerateGraphs();
+}
+
+function GenerateGraphStatNodes(cid)
+{
+    var multiInstance;
+    var selectedStats = [];
+    var newNodes = [];
+    var tempNodes = [];
+    var selectedTabs;
+
+    //call to get selected tabs
+    selectedTabs = GetSelectedTabInfo();
+    multiInstance = (String(selectedTabs["multi-instance"]) == "true");
+    selectedStats[0] = parseInt(selectedTabs["stat1_id"]);
+    if(selectedTabs["stat2_id"] != "null")
+    {
+        selectedStats[1] = parseInt(selectedTabs["stat2_id"]);    
+    }
+    
+    switch(g_GraphType) 
+    {
+        case g_GraphTypeEnum.VACCINE:
+            //for vaccines set the selected stats
+            selectedStats = [];
+            selectedStats[0] = g_ParsedStatList[1][0]; //siaIndex
+            selectedStats[1] = g_ParsedStatList[2][0]; //mcv1Index
+	        selectedStats[2] = g_ParsedStatList[3][0]; //mcv2Index
+            
+            //can only graph for one instance because there are multiple stats
+            multiInstance = false;
+        case g_GraphTypeEnum.REGIONAL:
+            //Regional - Many graphs - one for each country
+            if(multiInstance)   //if multiInstance is set, create chart_nodes for all instances of stat1 of cid
+            {
+                //loop for all instances
+                for(var i = 0; i < g_cache.get(getSession()).keys.length; i++)
+                {
+                    newNodes[i] = new t_graphStat(g_cache.get(getSession()).get(i).get(cid).get(selectedStats[0]), g_LookupTable[cid][1] + " - " + g_cache.get(getSession()).get(getInstance()).name);
+                }
+            }
+            else
+            {
+                //loop through every selectedStat and create a graphStat node for it
+                for(var i = 0; i < selectedStats.length; i++)
+                {
+                    newNodes[i] = new t_graphStat(g_cache.get(getSession()).get(getInstance()).get(cid).get(selectedStats[i]), g_LookupTable[cid][1] + " - " + g_StatList[selectedStats[i]]);
+                } 
+            }
+            break;
+        case g_GraphTypeEnum.COMBINED:
+            //Combined - One graph where each country has its own line
+            for(var i = 0; i < g_DataList.length; i++) //iterate through all of the selected countries
+            {
+                newNodes[i] = new t_graphStat(g_cache.get(getSession()).get(getInstance()).get(g_DataList[i].cid).get(selectedStats[0]), g_LookupTable[g_DataList[i].cid][1]);
+            }
+            break;
+        case g_GraphTypeEnum.SUM:
+            //Whole - One graph with the sum of all values for a selection
+            for(var i = 0; i < g_DataList.length; i++) //iterate through all of the selected countries
+            {
+                tempNodes[i] = new t_graphStat(g_cache.get(getSession()).get(getInstance()).get(g_DataList[i].cid).get(selectedStats[0]), g_LookupTable[g_DataList[i].cid][1]);
+            }
+            newNodes[0] = sumGraphStatNodes(tempNodes);
+            break;
+    }
+    
+    return newNodes;
+}
+
+function sumGraphStatNodes(nodeArray)
+{
+    var name = nodeArray[0].name;                   //common name for the data of the first object?
+    var data = [];                                  //new summed data array
+    var startYear = findMinStartYear(nodeArray);    //min start year for all years in nodeArray
+    var endYear = findMaxEndYear(nodeArray);        //max end year for all years in nodeArray
+    var years = [];                                 //new years array
+    var min = Number.MAX_SAFE_INTEGER;              //minimum value fo summed data
+    var max = Number.MIN_SAFE_INTEGER;              //maximum value of summed data
+    var sumNode = nodeArray[0];                     //need a t_graphStat object
+    
+    //generate years array && init data[]
+    for(var i = 0; i <= (endYear - startYear); i++)
+    {
+        years[i] = startYear + i;
+        data[i] = 0;
+    }
+    
+    //generate data array
+    for(var i = 0; i < nodeArray.length; i++) //interate through each node
+    {
+        for(var j = 0; j < nodeArray[i].data.length; j++) //iterate through each data point
+        {
+            //add to data array 
+            data[nodeArray[i].years[j] - startYear] += nodeArray[i].data[j];
+        }
+    }
+    
+    //find min & max
+    for (var i = 0; i < data.length; i++)
+    {
+        if(data[i] < min)
+        {
+            min = data[i];
+        }
+        if(data[i] > max)
+        {
+            max = data[i];
+        }
+    }
+        
+    //set sumNode fields
+    sumNode.name = name;
+    sumNode.data = data;
+    sumNode.years = years;
+    sumNode.min = min;
+    sumNode.max = max;
+    
+    return sumNode;
+}
+
+function findMinStartYear(nodeArray)
+{
+    var startYear = Number.MAX_SAFE_INTEGER;
+    
+    for(var i = 0; i < nodeArray.length; i++)
+    {
+        if(nodeArray[i].years[0] < startYear) //start year of this node is less than the previous start year
+        {
+            startYear = nodeArray[i].years[0]; //first year in data series
+        }
+    }
+    
+    if(startYear == Number.MAX_SAFE_INTEGER)
+    {
+        startYear = undefined;
+    }
+    
+    return startYear;
+}
+
+function findMaxEndYear(nodeArray)
+{
+    var endYear = Number.MIN_SAFE_INTEGER;
+    
+    for(var i = 0; i < nodeArray.length; i++)
+    {
+        if(nodeArray[i].years[nodeArray[i].years.length-1] > endYear) //end year of this node is greater than the previous end year
+        {
+            endYear = nodeArray[i].years[nodeArray[i].years.length-1]; //last year in data series
+        }
+    }
+    
+    if(endYear == Number.MIN_SAFE_INTEGER)
+    {
+        endYear = undefined;
+    }
+    
+    return endYear;
+}
+
+function findMaxValue(nodeArray)
+{
+    var curMax = Number.MIN_SAFE_INTEGER;
+    
+    for(var i = 0; i < nodeArray.length; i++)
+    {
+        if(nodeArray[i].max > curMax) //end year of this node is greater than the previous end year
+        {
+            curMax = nodeArray[i].max; //last year in data series
+        }
+    }
+    
+    if(curMax == Number.MIN_SAFE_INTEGER)
+    {
+        curMax = undefined;
+    }
+    
+    return curMax;
 }
 
 /*
