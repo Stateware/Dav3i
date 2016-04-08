@@ -85,6 +85,12 @@ function BuildTabs()
         
         tabDropdown.appendChild(statOnly);
 
+        // stat_ID currently needs to be 1, so make that option the selected one
+        if(statOnly.value == 1)
+        {
+            statOnly.setAttribute("selected", "selected");
+        }
+
         BuildDiv(temp);
 
         var statAllInstances = new Option(temp + " (all instances)", g_ParsedStatList[1][i]);
@@ -103,6 +109,9 @@ function BuildTabs()
 
         BuildDiv(temp+" (all instances)");
     }
+
+    // choose the tab to be the selected one, to make sure the graphs/graphs div are correctly generated
+    ChooseTab(GetSelectedDropdown("tabDropdown", "elem"));
 
     return(g_ParsedStatList[1].length);
 }
@@ -157,7 +166,7 @@ function BuildDiv(stat)
 /*
 /* Parameters: 
 /*
-/*      none
+/*      element: the html element of the tab to be chosen
 /*
 /* Pre:
 /*
@@ -546,7 +555,15 @@ function Shrink()
     $(".expand-black").fadeOut(400);
     setTimeout(function()
     {
-        g_Expanded = false;
+        // keeps expanded as false if the context is multi-instance (for graph displaying/sizing purposes)
+        if(GetSelectedDropdown("tabDropdown", "elem").getAttribute("multi-instance") == "false")
+        {
+            g_Expanded = false;
+        }
+        else
+        {
+            g_Expanded = true;
+        }        
         GenerateSubDivs();
         GenerateGraphs();
     }, 500);
@@ -1049,20 +1066,36 @@ function ScaleContext(input)
     // set the map to float to the right, if not so already
     $(".map-container").css("float","right");
 
+    // make sure the expand arrow has correct function
+    $("#expand").attr("onclick","Expand('97.5%')");
+    $("#expand").attr("src","res/arrow_right.png");
+    
     // if the stat is multi instance, make the control panel the focus
     if(input == 'multi-instance')
     {
         $(".control-panel").animate({width:"72%"}, 500);
         // resize the map when the function is done
-        $(".map-container").animate({width:"25%"}, 500, function() { $(".map-container").resize();});
+        $(".map-container").animate({width:"25%"}, 500, 
+            function() { /* redraw map and graphs */
+                $(".map-container").resize(); 
+                // set g_Expanded to true for graph display/sizing purposes
+                g_Expanded = true;
+                GenerateSubDivs(); 
+                GenerateGraphs();
+            });
     }
     // if the stat is single instance, make the map the focus
     else
     {
-        $("#expand").attr("onclick","Expand('97.5%')");
-        $("#expand").attr("src","res/arrow_right.png");
         $(".control-panel").animate({width:"25%"}, 500);
         // resize the map when the function is done
-        $(".map-container").animate({width:"72%"}, 500, function() { $(".map-container").resize();});
+        $(".map-container").animate({width:"72%"}, 500, 
+            function() { /* redraw map and graphs */
+                $(".map-container").resize();
+                // set g_Expanded to false for graph display/sizing purposes 
+                g_Expanded = false;
+                GenerateSubDivs(); 
+                GenerateGraphs();
+            });
     }
 }
