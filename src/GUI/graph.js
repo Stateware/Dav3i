@@ -684,13 +684,13 @@ function Options( graphType, nodeName, maxVal )
  * nodeArray - An array of t_graphStat nodes that will be used to create a data array for Google Charts
  *
  * Pre: 
- * nodeList is an array of t_graphStat nodes
+ * nodeArray is an array of t_graphStat nodes
  *
  * Post:
- * FCTVAL = data array containing   data[0] = ["Years"][Name from nodeList[0]][Name from nodeArray[1]]..[Name from nodeArray[nodeArray.length-1]]
- *                                  data[1] = [Year1][Value for Year1 from nodeList[0]][Value for Year1 from nodeList[1]]..[Value for Year1 from nodeArray[nodeArray.length-1]]
+ * FCTVAL = data array containing   data[0] = ["Years"][Name from nodeArray[0]][Name from nodeArray[1]]..[Name from nodeArray[nodeArray.length-1]]
+ *                                  data[1] = [Year1][Value for Year1 from nodeArray[0]][Value for Year1 from nodeArray[1]]..[Value for Year1 from nodeArray[nodeArray.length-1]]
  *                                  ...
- *                                  data[numYears] = [LastYear][Value for LastYear from nodeList[0]][Value for LastYear from nodeList[1]]..[Value for LastYear from nodeArray[nodeArray.length-1]]
+ *                                  data[numYears] = [LastYear][Value for LastYear from nodeArray[0]][Value for LastYear from nodeArray[1]]..[Value for LastYear from nodeArray[nodeArray.length-1]]
  *
  * Authors:
  * John Matin
@@ -699,7 +699,7 @@ function Options( graphType, nodeName, maxVal )
  * 3/1/2016 by John Martin
  * 
  * Last Modified:
- * 3/1/2016 by John Martin
+ * 4/8/2016 by John Martin
  */
 function GenerateDataArray(nodeArray, startYear, endYear)
 {

@@ -184,6 +184,43 @@ function IsRegionSelected( cid, map, lookupTable )
 	return (index != -1);
 }
 
+/*
+ * Function: GenerateGraphStatNodes
+ *      Generates an array of t_graphStat nodes based upon g_GraphType
+ *          - VACCINE: generates 3 grapStat nodes for the country with countryid = cid
+ *          - REGIONAL: generates a graphStat node for each selected stat for the country
+ *                  with countryid = cid
+ *          - COMBINED: generates a graphStat node for each country in g_DataList
+ *          - SUM: generates 1 graphStat node with the sum of data values for each
+ *                  country in g_DataList
+ *
+ * Parameters:
+ *      - cid - The country ID of the newly added country (only relevant when g_GraphType = VACCINE or REGIONAL)
+ *
+ * Pre: 
+ *      - g_graphType is set to VACCINE, REGIONAL, COMBINED or SUM
+ *      - cid is a valid country id when g_graphType is VACCINE or REGIONAL
+ *      - g_cache contains valid entries for a country with cid and all countries
+ *          in g_DataList
+ *
+ * Post:
+ *      FCTVAL = array of graphStat nodes based upon the following values for g_GraphType:
+ *          - VACCINE: generates 3 grapStat nodes for the country with countryid = cid
+ *          - REGIONAL: generates a graphStat node for each selected stat for the country
+ *                  with countryid = cid
+ *          - COMBINED: generates a graphStat node for each country in g_DataList
+ *          - SUM: generates 1 graphStat node with the sum of data values for each
+ *                  country in g_DataList
+ * 
+ * Authors:
+ * John Matin
+ *
+ * Date Created:
+ * 4//2016 by John Martin
+ * 
+ * Last Modified:
+ * 4//2016 by John Martin
+ */
 function GenerateGraphStatNodes(cid)
 {
     var multiInstance;
@@ -251,6 +288,30 @@ function GenerateGraphStatNodes(cid)
     return newNodes;
 }
 
+/*
+ * Function: sumGraphStatNodes
+ *      Generates a graph stat node (of type t_graphStat) with the sum of data values for
+ *      each year in nodeArray 
+ *
+ * Parameters:
+ *      - nodeArray - An array of t_graphStat nodes indexed from 0..nodeArray.length-1
+ * 
+ * Pre: 
+ *      nodeArray contains objects of type t_graphStat indexed from 0..nodeArray.length-1
+ *
+ * Post:
+ *      FCTVAL = t_graphStat node where FCTVAL.data is the sum of data for all nodes in 
+ *      nodeArray[0..length-1]
+ * 
+ * Authors:
+ * John Matin
+ *
+ * Date Created:
+ * 4/4/2016 by John Martin
+ * 
+ * Last Modified:
+ * 4/8/2016 by John Martin
+ */
 function sumGraphStatNodes(nodeArray)
 {
     var name = nodeArray[0].name;                   //common name for the data of the first object?
@@ -302,6 +363,28 @@ function sumGraphStatNodes(nodeArray)
     return sumNode;
 }
 
+/*
+ * Function: findMinStartYear
+ *      Returns the minimum year from all t_graphStat nodes in nodeArray
+ *
+ * Parameters:
+ *      - nodeArray - An array of t_graphStat nodes indexed from 0..nodeArray.length-1
+ * 
+ * Pre: 
+ *      nodeArray contains objects of type t_graphStat indexed from 0..nodeArray.length-1
+ *
+ * Post:
+ *      FCTVAL = minimum year value from all of the t_graphStat nodes in nodeArray
+ * 
+ * Authors:
+ * John Matin
+ *
+ * Date Created:
+ * 4/4/2016 by John Martin
+ * 
+ * Last Modified:
+ * 4/8/2016 by John Martin
+ */
 function findMinStartYear(nodeArray)
 {
     var startYear = Number.MAX_SAFE_INTEGER;
@@ -322,6 +405,28 @@ function findMinStartYear(nodeArray)
     return startYear;
 }
 
+/*
+ * Function: findMaxEndYear
+ *      Returns the maximum year from all t_graphStat nodes in nodeArray
+ *
+ * Parameters:
+ *      - nodeArray - An array of t_graphStat nodes indexed from 0..nodeArray.length-1
+ * 
+ * Pre: 
+ *      nodeArray contains objects of type t_graphStat indexed from 0..nodeArray.length-1
+ *
+ * Post:
+ *      FCTVAL = maximum year value from all of the t_graphStat nodes in nodeArray
+ * 
+ * Authors:
+ * John Matin
+ *
+ * Date Created:
+ * 4/4/2016 by John Martin
+ * 
+ * Last Modified:
+ * 4/8/2016 by John Martin
+ */
 function findMaxEndYear(nodeArray)
 {
     var endYear = Number.MIN_SAFE_INTEGER;
@@ -342,6 +447,28 @@ function findMaxEndYear(nodeArray)
     return endYear;
 }
 
+/*
+ * Function: findMaxValue
+ *      Returns the maximum data value from all t_graphStat nodes in nodeArray
+ *
+ * Parameters:
+ *      - nodeArray - An array of t_graphStat nodes indexed from 0..nodeArray.length-1
+ * 
+ * Pre: 
+ *      nodeArray contains objects of type t_graphStat indexed from 0..nodeArray.length-1
+ *
+ * Post:
+ *      FCTVAL = maximum data value from all of the t_graphStat nodes in nodeArray
+ * 
+ * Authors:
+ * John Matin
+ *
+ * Date Created:
+ * 4/4/2016 by John Martin
+ * 
+ * Last Modified:
+ * 4/8/2016 by John Martin
+ */
 function findMaxValue(nodeArray)
 {
     var curMax = Number.MIN_SAFE_INTEGER;
