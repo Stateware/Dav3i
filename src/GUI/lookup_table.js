@@ -76,7 +76,15 @@ function ParseDescriptor(DescriptorJSON)
     CleanStatNames();
 
     // fill the dropdown menus and the new tab popup elements
-    FillSessionDropDown(DescriptorJSON,(document.getElementById("sessionSelect").options.length == 0));
+    var sessionSelect = document.getElementById("sessionSelect");
+    
+    if( sessionSelect == undefined)
+    {
+    	alert("An error has occured. Please try again in a few moments and if the problem persists contact the developers.");
+    	return -1;
+    }
+    
+    FillSessionDropDown(DescriptorJSON,(sessionSelect.options.length == 0));
     FillInstanceDropDown(DescriptorJSON);
    	PopulateNewTabMenu(DescriptorJSON);
    	BuildTabs();

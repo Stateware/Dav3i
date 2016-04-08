@@ -138,15 +138,50 @@ function GetData( sessionid, instanceid, countryid )
  *      2/8/2016 by William Bittner
  */
 function GenerateCountryCharts( data, cid )
-{    
-    ///OLD STUFF
-	var newNode = new t_AsdsNode(getSession(), getInstance(), cid, g_LookupTable[cid][0], g_LookupTable[cid][1], null);
-	var parsedData = FormatStatData(data);
-    newNode.data = parsedData;
-    g_DataList.add(newNode);
-    // draw graph with new node
-    GenerateSubDivs();
-    GenerateGraphs();
+{
+	//check if country is still selected after we retrieve the data since async retrieval
+	if( IsRegionSelected(cid,g_Map, g_LookupTable) )
+	{
+		var newNode = new t_AsdsNode(getSession(), getInstance(), cid, g_LookupTable[cid][0], g_LookupTable[cid][1], null);
+		var parsedData = FormatStatData(data);
+	    newNode.data = parsedData;
+	    g_DataList.add(newNode);
+	    // draw graph with new node
+	    GenerateSubDivs();
+	    GenerateGraphs();
+	}
+}
+
+/*
+ *  Function: IsRegionSelected
+ *  
+ *  This function checks whether the specified region is selected
+ *
+ *  Parameters:
+ *      cid - The country id of the region for which to check 
+ *
+ *  Pre:
+ *      map is defined and has a function getSelectedRegions which will return the CC2 of all selected regions
+ * 		lookupTable is defined and as described in the documentation
+ *
+ *  Post:
+ *      Returns true if region is selected, false if region is not
+ *
+ *  Authors:
+ *      William Bittner
+ *
+ *  Date Created:
+ *      3/28/2016
+ *
+ *  Last Modified:
+ *      3/28/2016 by William Bittner
+ */
+function IsRegionSelected( cid, map, lookupTable )
+{
+	var selectedRegions = map.getSelectedRegions();
+	var index = selectedRegions.indexOf(lookupTable[cid][0]);
+	
+	return (index != -1);
 }
 
 function GenerateGraphStatNodes(cid)
