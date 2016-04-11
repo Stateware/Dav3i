@@ -85,6 +85,12 @@ function BuildTabs()
         
         tabDropdown.appendChild(statOnly);
 
+        // stat_ID currently needs to be 1, so make that option the selected one
+        if(statOnly.value == 1)
+        {
+            statOnly.setAttribute("selected", "selected");
+        }
+
         BuildDiv(temp);
 
         var statAllInstances = new Option(temp + " (all instances)", g_ParsedStatList[1][i]);
@@ -103,6 +109,9 @@ function BuildTabs()
 
         BuildDiv(temp+" (all instances)");
     }
+
+    // choose the tab to be the selected one, to make sure the graphs/graphs div are correctly generated
+    ChooseTab(GetSelectedDropdown("tabDropdown", "elem"));
 
     return(g_ParsedStatList[1].length);
 }
@@ -157,7 +166,7 @@ function BuildDiv(stat)
 /*
 /* Parameters: 
 /*
-/*      none
+/*      element: the html element of the tab to be chosen
 /*
 /* Pre:
 /*
@@ -203,11 +212,11 @@ function ChooseTab(element)
     // expands the graph section if the currently selected stat is multi instance
     if(GetSelectedDropdown("tabDropdown","elem").getAttribute("shrink-map") == "true")
     {
-        ScaleContext("multi-instance");
+        ScaleContext("shrink-map");
     }
     else
     {
-        ScaleContext("single-instance");
+        ScaleContext("normal-map");
     }
 
     return(g_StatID);
@@ -461,6 +470,10 @@ function OkNewTabMenu()
     {
         alert("Stat 1 and Stat 2 cannot be the same.");
     }
+    else if(DropdownElementAlreadyExists("tabDropdown", name))
+    {
+        alert("A tab with that name already exists.");
+    }
     else
     {
         // add option to dropdown
@@ -469,11 +482,68 @@ function OkNewTabMenu()
         newOption.setAttribute("multi-instance", false);
         newOption.setAttribute("stat1_id", GetSelectedDropdown("stat_stat1", "id"));
         newOption.setAttribute("stat2_id", GetSelectedDropdown("stat_stat2", "id"));
+        newOption.id = "id-"+name;
+
         document.getElementById("tabDropdown").appendChild(newOption);
+
+        // create div elements where graphs will go
+        BuildDiv(name);
         
         // return back to main page
         CloseNewTabMenu();
     }
+}
+
+/* Function DropdownElementAlreadyExists()
+/*
+/*      Checks to see if the dropdown menu inputted contains an element with the given name
+/*
+/* Parameters: 
+/*
+/*      dropdown - name of the dropdown element to be searched
+/*      name - name to be searched for in the text values of the dropbox options
+/*
+/* Pre:
+/*
+/*      the given dropdown exists
+/*
+/* Post:
+/*
+/*      a boolean will be returned
+/*
+/* Returns:
+/*
+/*      true - if the inputted name is already an element in the dropdown
+/*      false - if the inputted name is not an element in the dropdown
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      4/11/2016
+/*
+/* Last Modified:
+/*
+/*      4/11/2016 by Paul Jang
+ */
+function DropdownElementAlreadyExists(dropdown,name)
+{
+    var retval = false;
+    var dropdownElem = document.getElementById(dropdown);
+    var options = dropdownElem.options;
+
+    for(var i=0; i<options.length; i++)
+    {
+        if(options[i].text === name)
+        {
+            retval = true;
+            break;
+        }
+    }
+
+    return retval;
 }
 
 // Author: Emma Roudabush
@@ -546,17 +616,25 @@ function Shrink()
     $(".expand-black").fadeOut(400);
     setTimeout(function()
     {
-        g_Expanded = false;
+        // keeps expanded as false if the context is multi-instance (for graph displaying/sizing purposes)
+        if(GetSelectedDropdown("tabDropdown", "elem").getAttribute("shrink-map") == "false")
+        {
+            g_Expanded = false;
+        }
+        else
+        {
+            g_Expanded = true;
+        }        
         GenerateSubDivs();
         GenerateGraphs();
     }, 500);
-    if(GetSelectedDropdown("tabDropdown","elem").getAttribute("multi-instance") == "true")
+    if(GetSelectedDropdown("tabDropdown","elem").getAttribute("shrink-map") == "true")
     {
-        ScaleContext("multi-instance");
+        ScaleContext("shrink-map");
     }  
     else
     {
-        ScaleContext("single-instance");
+        ScaleContext("normal-map");
     }
 }
 
@@ -1049,20 +1127,36 @@ function ScaleContext(input)
     // set the map to float to the right, if not so already
     $(".map-container").css("float","right");
 
+    // make sure the expand arrow has correct function
+    $("#expand").attr("onclick","Expand('97.5%')");
+    $("#expand").attr("src","res/arrow_right.png");
+    
     // if the stat is multi instance, make the control panel the focus
-    if(input == 'multi-instance')
+    if(input == 'shrink-map')
     {
         $(".control-panel").animate({width:"72%"}, 500);
         // resize the map when the function is done
-        $(".map-container").animate({width:"25%"}, 500, function() { $(".map-container").resize();});
+        $(".map-container").animate({width:"25%"}, 500, 
+            function() { /* redraw map and graphs */
+                $(".map-container").resize(); 
+                // set g_Expanded to true for graph display/sizing purposes
+                g_Expanded = true;
+                GenerateSubDivs(); 
+                GenerateGraphs();
+            });
     }
     // if the stat is single instance, make the map the focus
     else
     {
-        $("#expand").attr("onclick","Expand('97.5%')");
-        $("#expand").attr("src","res/arrow_right.png");
         $(".control-panel").animate({width:"25%"}, 500);
         // resize the map when the function is done
-        $(".map-container").animate({width:"72%"}, 500, function() { $(".map-container").resize();});
+        $(".map-container").animate({width:"72%"}, 500, 
+            function() { /* redraw map and graphs */
+                $(".map-container").resize();
+                // set g_Expanded to false for graph display/sizing purposes 
+                g_Expanded = false;
+                GenerateSubDivs(); 
+                GenerateGraphs();
+            });
     }
 }
