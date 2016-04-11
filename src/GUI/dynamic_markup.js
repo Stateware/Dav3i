@@ -212,11 +212,11 @@ function ChooseTab(element)
     // expands the graph section if the currently selected stat is multi instance
     if(GetSelectedDropdown("tabDropdown","elem").getAttribute("shrink-map") == "true")
     {
-        ScaleContext("multi-instance");
+        ScaleContext("shrink-map");
     }
     else
     {
-        ScaleContext("single-instance");
+        ScaleContext("normal-map");
     }
 
     return(g_StatID);
@@ -470,6 +470,10 @@ function OkNewTabMenu()
     {
         alert("Stat 1 and Stat 2 cannot be the same.");
     }
+    else if(DropdownElementAlreadyExists("tabDropdown", name))
+    {
+        alert("A tab with that name already exists.");
+    }
     else
     {
         // add option to dropdown
@@ -478,11 +482,68 @@ function OkNewTabMenu()
         newOption.setAttribute("multi-instance", false);
         newOption.setAttribute("stat1_id", GetSelectedDropdown("stat_stat1", "id"));
         newOption.setAttribute("stat2_id", GetSelectedDropdown("stat_stat2", "id"));
+        newOption.id = "id-"+name;
+
         document.getElementById("tabDropdown").appendChild(newOption);
+
+        // create div elements where graphs will go
+        BuildDiv(name);
         
         // return back to main page
         CloseNewTabMenu();
     }
+}
+
+/* Function DropdownElementAlreadyExists()
+/*
+/*      Checks to see if the dropdown menu inputted contains an element with the given name
+/*
+/* Parameters: 
+/*
+/*      dropdown - name of the dropdown element to be searched
+/*      name - name to be searched for in the text values of the dropbox options
+/*
+/* Pre:
+/*
+/*      the given dropdown exists
+/*
+/* Post:
+/*
+/*      a boolean will be returned
+/*
+/* Returns:
+/*
+/*      true - if the inputted name is already an element in the dropdown
+/*      false - if the inputted name is not an element in the dropdown
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      4/11/2016
+/*
+/* Last Modified:
+/*
+/*      4/11/2016 by Paul Jang
+ */
+function DropdownElementAlreadyExists(dropdown,name)
+{
+    var retval = false;
+    var dropdownElem = document.getElementById(dropdown);
+    var options = dropdownElem.options;
+
+    for(var i=0; i<options.length; i++)
+    {
+        if(options[i].text === name)
+        {
+            retval = true;
+            break;
+        }
+    }
+
+    return retval;
 }
 
 // Author: Emma Roudabush
@@ -556,7 +617,7 @@ function Shrink()
     setTimeout(function()
     {
         // keeps expanded as false if the context is multi-instance (for graph displaying/sizing purposes)
-        if(GetSelectedDropdown("tabDropdown", "elem").getAttribute("multi-instance") == "false")
+        if(GetSelectedDropdown("tabDropdown", "elem").getAttribute("shrink-map") == "false")
         {
             g_Expanded = false;
         }
@@ -567,13 +628,13 @@ function Shrink()
         GenerateSubDivs();
         GenerateGraphs();
     }, 500);
-    if(GetSelectedDropdown("tabDropdown","elem").getAttribute("multi-instance") == "true")
+    if(GetSelectedDropdown("tabDropdown","elem").getAttribute("shrink-map") == "true")
     {
-        ScaleContext("multi-instance");
+        ScaleContext("shrink-map");
     }  
     else
     {
-        ScaleContext("single-instance");
+        ScaleContext("normal-map");
     }
 }
 
@@ -1071,7 +1132,7 @@ function ScaleContext(input)
     $("#expand").attr("src","res/arrow_right.png");
     
     // if the stat is multi instance, make the control panel the focus
-    if(input == 'multi-instance')
+    if(input == 'shrink-map')
     {
         $(".control-panel").animate({width:"72%"}, 500);
         // resize the map when the function is done
