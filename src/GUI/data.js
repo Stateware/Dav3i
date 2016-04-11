@@ -74,14 +74,14 @@ function data_cache()
 	
     this.get = function(prop) {
         this[prop] = this[prop] || new data_cache();
-        if( this.keys.indexOf(Number(prop)) === -1 )
+        if( !isNaN(prop) && this.keys.indexOf(Number(prop)) === -1 )
         	this.keys.push(Number(prop));
         return this[prop];
     };
     
     this.set = function(prop, value) {
         this[prop] = value;
-        if( this.keys.indexOf(Number(prop)) === -1 )
+        if( !isNaN(prop) && this.keys.indexOf(Number(prop)) === -1 )
         	this.keys.push(Number(prop));
     };
     

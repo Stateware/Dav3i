@@ -111,7 +111,7 @@ function BuildTabs()
     }
 
     // choose the tab to be the selected one, to make sure the graphs/graphs div are correctly generated
-    ChooseTab(GetSelectedDropdown("tabDropdown", "elem"));
+    //ChooseTab(GetSelectedDropdown("tabDropdown", "elem"));
 
     return(g_ParsedStatList[1].length);
 }

@@ -110,7 +110,7 @@ function ByStat($statID, $year, $sessionID, $instanceID)
 		array_push($results,$heatMapRow);
 	}
 
-	return ParseIntoByStatPacket($sessionID, $instanceID, $databaseIndexedStatID, $results, $year);
+	return ParseIntoByStatPacket($sessionID, $instanceID, $statID, $results, $year);
 } //END ByStat
 
 // Author:        William Bittner, Drew Lopreiato

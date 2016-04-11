@@ -285,7 +285,7 @@ function parseStatPacket(packet)
 	packet = JSON.parse(packet);
 	var sessionID = packet["session"];
 	var instanceID = packet["instance"];
-	var statID = packet["stat_id"];
+	var statID = packet["stat_id"] + 1;
 	var year = packet["year"];
 	var data = packet["data"];
 	var instanceCache = g_cache.get(sessionID).get(instanceID);
@@ -296,6 +296,6 @@ function parseStatPacket(packet)
 		var pair = data[i];
 		var country = Object.keys(pair)[0]; // the first key is the only key =)
 		var value = pair[country];
-		instanceCache.get(country).get(statID).set(year,value);
+		instanceCache.get(country - 1).get(statID).set(year,value); // the server sends us the ID from the database, but we 0 index ;)
 	}
 }

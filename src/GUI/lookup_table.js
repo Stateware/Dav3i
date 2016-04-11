@@ -90,11 +90,13 @@ function ParseDescriptor(DescriptorJSON)
    	// This needs to be set to 1 to preserve ordering of future lists and graph correctly. TODO: Fix this!
     g_StatID = 1;
 
+    //Set the initial year displayed to the most current year for which we have data
+    g_HMSYear = g_LastYear;
+
     // create the dropdown menu of stat tabs
    	BuildTabs();
 
-   	//Set the initial year displayed to the most current year for which we have data
-    g_HMSYear = g_LastYear;
+   	
     
     FindCountriesNoData();
 
@@ -393,7 +395,7 @@ function ReformatByStatData(instanceCache, statID, year)
 		//console.log(cache.get(keys[country]));
 		if( !isNaN( keys[country] ) )
 		{
-			data[ keys[country]-1 ] = instanceCache.get(keys[country]).get(statID).get(year);
+			data[ keys[country] ] = instanceCache.get(keys[country]).get(statID).get(year);
 		}
 	}
 
