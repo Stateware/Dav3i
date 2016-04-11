@@ -38,28 +38,15 @@ class connectTest extends \PHPUnit_Framework_TestCase
 	
 	function testGetDatabaseConnection()
 	{
-		$dbc = GetDatabaseConnection(/*use current config. It should work...*/);
+		$dbc = GetDatabaseConnection(".\..\..\src\CONF\backend_connection_strings.conf");
 		
-		$this->assertTrue($databaseConnection->connect_error == NULL);
+		$this->assertTrue($dbc->connect_error == NULL);
 	}
-	
- 	function testGetDatabaseConnectionErrorHost()
-    {
-        try{
-        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_host.conf");
-        $this->assertTrue(false);
-
-        }
-        catch (Exception $e) {
-            $errorMessage = $e->getMessage();
-            $this->assertTrue(true);        
-        }
-    }
 	
     function testGetDatabaseConnectionErrorHost()
     {
         try{
-        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_host.conf");
+        $dbc = GetDatabaseConnection(".\backend_connection_strings_bad_host.conf");
         $this->assertTrue(false);
 
         }
@@ -72,7 +59,7 @@ class connectTest extends \PHPUnit_Framework_TestCase
     function testGetDatabaseConnectionErrorUser()
     {
         try{
-        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_user.conf");
+        $dbc = GetDatabaseConnection(".\backend_connection_strings_bad_user.conf");
         $this->assertTrue(false);
 
         }
@@ -85,7 +72,7 @@ class connectTest extends \PHPUnit_Framework_TestCase
     function testGetDatabaseConnectionErrorPassword()
     {
         try{
-        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_password.conf");
+        $dbc = GetDatabaseConnection(".\backend_connection_strings_bad_password.conf");
         $this->assertTrue(false);
 
         }
@@ -97,7 +84,7 @@ class connectTest extends \PHPUnit_Framework_TestCase
 	function testGetDatabaseConnectionErrorEnvironment()
     {
         try{
-        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_environment.conf");
+        $dbc = GetDatabaseConnection(".\backend_connection_strings_bad_environment.conf");
         $this->assertTrue(false);
 
         }
@@ -110,7 +97,7 @@ class connectTest extends \PHPUnit_Framework_TestCase
     function testGetDatabaseConnectionErrorDatabase()
     {
         try{
-        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_name.conf");
+        $dbc = GetDatabaseConnection(".\backend_connection_strings_bad_name.conf");
         $this->assertTrue(false);
 
         }
