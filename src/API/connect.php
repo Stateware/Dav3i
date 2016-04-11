@@ -24,27 +24,70 @@
  * Description:         This file contains a function to create a mysqli connection.
  * 
  * Date Created:        2/7/2015
- * Contributors:        Kyle Nicholson, Berty Ruan, Drew Lopreiato, William Bittner, Brent Mosier
- * Date Last Modified:  9/27/2015
- * Last Modified By:    Brent Mosier
+ * Contributors:        Kyle Nicholson, Berty Ruan, Drew Lopreiato, William Bittner, Brent Mosier, Nicholas Denaro
+ * Date Last Modified:  4/4/2016
+ * Last Modified By:    William Bittner
  * Dependencies:        Toolbox.php
  * Input:               NONE
  * Output:              NONE
- * Additional Notes:    Replace HOST, USER, PASSWORD, and DATABASE with information relvant to your build.
  */
 require_once("toolbox.php");
 
+//define globally for use as "singleton" in GetDatabaseConnection function
+$_databaseConnection;
 
-function GetDatabaseConnection()
+/*
+ * Function: GetDatabaseConnection
+ * This function returns a "singleton" object $_databaseConnection that can be used to connect to the database
+ * 
+ *
+ * Pre: A config file exists in $configLocation structured as defined in the documentation
+ * 
+ *
+ * Post: A database connection object is returned
+ * 
+ *
+ * Authors: William Bittner, Nicholas Denaro
+ * 
+ *
+ * Date Created: 4/4/2016
+ * 
+ *
+ * Last Modified: 4/4/2016 by William Bittner
+ * 
+ */
+function GetDatabaseConnection( $configLocation ="..\\CONF\\backend_connection_strings.conf" )
 //Post: A database connection has been created and returned
 {
-	$databaseConnection = new mysqli("localhost", "root", "", "Dav3i");
-    
-    if ($databaseConnection->connect_error)
-    {
-        ThrowFatalError("Could not connect to database.");
-    }
-    return $databaseConnection;
+	if( !isset( $_databaseConnection ) )
+	{
+		//read conf file
+		$string = file_get_contents( $configLocation );
+		
+		//parse conf string
+		$json = json_decode($string);
+		
+		//set db credentials
+		$environment = $json->environment;
+		
+		if ( !isset( $json->$environment) )
+		{
+			ThrowFatalError("Invalid Environment in Connection Strings config");
+		}
+		
+		$host = $json->$environment->DBHost;
+		$user = $json->$environment->DBUser;
+		$pass = $json->$environment->DBPass;
+		$name = $json->$environment->DBName;
+		
+		$_databaseConnection = new mysqli($host, $user, $pass, $name);
+		
+	    if ($_databaseConnection->connect_error)
+	    {
+	        ThrowFatalError("Could not connect to database.");
+	    }
+	}
+    return $_databaseConnection;
 } // END GetDatabaseConnection
 
 ?>

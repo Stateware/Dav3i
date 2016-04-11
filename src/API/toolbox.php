@@ -82,25 +82,6 @@ function GetArgumentValue( $input, $required=true )
 } // END GetArgumentValue
 
 
-/*function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = false)
-//PRE:     database: the database to query tableName: the table in the database to get the data from
-//            columnName: the column of the table from which to return the first row
-//            filter: when supplied, will add a filter to the query
-//POST: FCTVAL == The first row from the "columnName" column of the "tableName" table of the "database" database
-//            with optional "filter" filter
-{
-    $query = "SELECT " . $columnName . " FROM " . $tableName;
-    if ($filter !== false)
-    {
-        $query .= " WHERE " . $filter;
-    }
-    $results = $database->query($query);
-    $row = $results->fetch_assoc();
-    $results->free();
-    return $row[$columnName];
-} // END GetFirstRowFromColumn*/
-
-
 // ===================== Variable Declaration =====================
 // These are global variables that describe our default values for data of the given types
 define("DEFAULT_NUMBER", -1);

@@ -1,6 +1,6 @@
 QUnit.module("Init Phase Tests", {
 	beforeEach: function(assert) {
-		initPage();
+		ReadConfig();
 	}
 });
 
@@ -25,7 +25,7 @@ QUnit.test( "Test GetCountryDataArray", function (assert) {
 	testData[1][4] = 27;
 	testData[1][5] = 26;
 	testData[1][6] = 25;
-	testData[1][7] = 22;`
+	testData[1][7] = 22;
 
 	//Stat 0, Year 1990-1997
 	test_cache.get(0).get(0).get(0).get(0).get(1990) = testData[0][0];
@@ -152,6 +152,50 @@ QUnit.test( "Fill Instance Drop Down Menu test", function (assert) {
 
 	assert.deepEqual( fillSessionDropDown(dataJSON) , output);
 });
+
+QUnit.module("Config Tests", {
+	/*beforeEach: function(assert) {
+		initPage();
+	}*/
+});
+
+QUnit.test( "Load Config Test", function (assert) {
+	var data = "Hi, I'm a data!";
+	data.getAPI = _getAPI;
+	data.setEnvironment = _setEnvironment;
+	
+	assert.deepEqual( LoadConfig(data), data);
+	
+});
+
+QUnit.test( "_getAPI Test", function (assert) {
+	this.environment="env";
+	this.env = {};
+	this.env.API = "Hi, I'm an API URL!";
+	this._getAPI = _getAPI;
+	
+	assert.equal( this._getAPI(), this.env.API);
+	
+});
+
+QUnit.test( "_setEnvironment succeed Test", function (assert) {
+	var newEnvironment="env";
+	this.env = {};
+	this._setEnvironment = _setEnvironment;
+	
+	assert.equal( this._setEnvironment(newEnvironment), true);
+	
+});
+
+QUnit.test( "_setEnvironment fail Test", function (assert) {
+	var newEnvironment="env";
+	this.env = undefined;
+	this._setEnvironment = _setEnvironment;
+	
+	assert.equal( this._setEnvironment(newEnvironment), false);
+	
+});
+
 
 QUnit.log( function( details )  {
 	console.log( "Log: ", details.actual, details.message );

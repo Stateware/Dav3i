@@ -1,4 +1,23 @@
-/*TEMP FUNCTIONS FOR GET INSTANCE AND SESSION*/
+/*
+ * Copyright 2015 Stateware Team: William Bittner, Joshua Crafts, 
+ * Nicholas Denaro, Dylan Fetch, Paul Jang, Arun Kumar, Drew Lopreiato,
+ * Kyle Nicholson, Emma Roudabush, Berty Ruan, Vanajam Soni
+ * 
+ * This file is part of Dav3i.
+ * 
+ * Dav3i is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Dav3i is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Dav3i.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 function getInstance()
 {
@@ -150,7 +169,7 @@ function checkCacheByCountry(sessionID, instanceID, countryID)
 function getDataByStat(sessionID, instanceID, statID, year, callback)
 {
 	//TODO: fix undefined year...?
-	var URL = "http://localhost/dav3i/API/by_stat.php?sessionID=" + sessionID +
+	var URL = g_Config.getAPI() + "by_stat.php?sessionID=" + sessionID +
 				"&instanceID=" + instanceID + "&statID=" + statID + "&year=" + year;
 
 	//get the data and send it to be parsed
@@ -194,7 +213,7 @@ function getDataByStat(sessionID, instanceID, statID, year, callback)
 function getDataByCountry(sessionID, instanceID, countryID, callback)
 {
 	
-	var URL = "http://localhost/dav3i/API/by_country.php?sessionID=" + sessionID +
+	var URL = g_Config.getAPI() + "by_country.php?sessionID=" + sessionID +
 				"&instanceID=" + instanceID + "&countryIDs=" + countryID;
 	
 	//get the data and send it to be parsed

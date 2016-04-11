@@ -114,10 +114,10 @@ function ParseDescriptor(DescriptorJSON)
  * Last Modified: 
  * 2/8/2016 by Nicholas Denaro
  */
-function GetDescriptor(sessionID)
+function GetDescriptor(sessionID, callback)
 {
-	var URL = 'http://localhost/dav3i/API/descriptor.php';
-	if(sessionID != undefined)
+	var URL = g_Config.getAPI() + 'descriptor.php';
+	if(sessionID != null)
 	{
 		URL += '?sessionID=' + sessionID;
 	}
@@ -128,6 +128,10 @@ function GetDescriptor(sessionID)
         	ParseDescriptor(data);
         	//initMap();
     		FindCountriesNoData();
+    		if(typeof(callback) == 'function')
+			{
+				callback();
+			}
         },
         error: function(xhr, textStatus, errorThrown){
        		console.log('Descriptor could not be fetched. The error is as follows: ' + errorThrown);
@@ -365,7 +369,7 @@ function SuccessfulByStat(data, statID, year)
  */
 function GetHMS(sessionID, instanceID, hmsID, year)
 {
-	var URL = 'http://localhost/dav3i/API/by_stat.php?sessionID='.concat(sessionID.toString()+"&instanceID="+instanceID.toString()+"&statID="+hmsID.toString()+"&year="+year.toString());
+	var URL = g_Config.getAPI() + 'by_stat.php?sessionID='.concat(sessionID.toString()+"&instanceID="+instanceID.toString()+"&statID="+hmsID.toString()+"&year="+year.toString());
 
     $.ajax({        
         url: URL,                                                     

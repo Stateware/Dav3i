@@ -20,45 +20,46 @@
  * along with Dav3i.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* File Name:           connect_test.php
+/* File Name:           connectTest.php
  * Description:         This file tests the functions of connect.php using PHP Unit.
  * 
- * Date Created:        9/11/2015
- * Contributors:        Brent Mosier
- * Date Last Modified:  10/1/2015
- * Last Modified By:    Brent Mosier
- * Dependencies:        connect.php, Toolbox.php
+ * Date Created:        4/11/2016
+ * Contributors:        William Bittner
+ * Date Last Modified:  4/11/2016
+ * Last Modified By:    William Bittner
+ * Dependencies:        connect.php
  * Input:               NONE
  * Output:              NONE
- * Additional Notes:    In its current iteration, this document has security vulnerabilities
- *                      that could seriously damage the database. Keeping this file uploaded
- *                      while not actively being developed is NOT recommended.
  */
-
+ 
+require_once (".\..\..\src\api\connect.php");
 class connectTest extends \PHPUnit_Framework_TestCase
 {
-    function testGetDatabaseConnection()
+	
+	function testGetDatabaseConnection()
+	{
+		$dbc = GetDatabaseConnection(/*use current config. It should work...*/);
+		
+		$this->assertTrue($databaseConnection->connect_error == NULL);
+	}
+	
+ 	function testGetDatabaseConnectionErrorHost()
     {
-        $host = "localhost";
-        $user = "root";
-        $password = "";
-        $database = "Dav3i";
+        try{
+        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_host.conf");
+        $this->assertTrue(false);
 
-        $databaseConnection = new mysqli($host, $user, $password, $database);
-
-        $this->assertTrue($databaseConnection->connect_error == NULL);
+        }
+        catch (Exception $e) {
+            $errorMessage = $e->getMessage();
+            $this->assertTrue(true);        
+        }
     }
-
+	
     function testGetDatabaseConnectionErrorHost()
     {
-        $host = "x";
-        $user = "root";
-        $password = "";
-        $database = "Dav3i";
-        $expectedMessage = "No such host is known.";
-
         try{
-        $databaseConnection = new mysqli($host, $user, $password, $database);
+        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_host.conf");
         $this->assertTrue(false);
 
         }
@@ -70,13 +71,8 @@ class connectTest extends \PHPUnit_Framework_TestCase
 
     function testGetDatabaseConnectionErrorUser()
     {
-        $host = "localhost";
-        $user = "";
-        $password = "";
-        $database = "Dav3i";
-
         try{
-        $databaseConnection = new mysqli($host, $user, $password, $database);
+        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_user.conf");
         $this->assertTrue(false);
 
         }
@@ -88,13 +84,20 @@ class connectTest extends \PHPUnit_Framework_TestCase
 
     function testGetDatabaseConnectionErrorPassword()
     {
-        $host = "localhost";
-        $user = "root";
-        $password = "x";
-        $database = "Dav3i";
-
         try{
-        $databaseConnection = new mysqli($host, $user, $password, $database);
+        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_password.conf");
+        $this->assertTrue(false);
+
+        }
+        catch (Exception $e) {
+            $errorMessage = $e->getMessage();
+            $this->assertTrue(true);        
+        }
+    }
+	function testGetDatabaseConnectionErrorEnvironment()
+    {
+        try{
+        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_environment.conf");
         $this->assertTrue(false);
 
         }
@@ -106,13 +109,8 @@ class connectTest extends \PHPUnit_Framework_TestCase
 
     function testGetDatabaseConnectionErrorDatabase()
     {
-        $host = "localhost";
-        $user = "root";
-        $password = "";
-        $database = "x";
-
         try{
-        $databaseConnection = new mysqli($host, $user, $password, $database);
+        $dbc = GetDatabasConnection(".\backend_connection_strings_bad_name.conf");
         $this->assertTrue(false);
 
         }
@@ -121,7 +119,6 @@ class connectTest extends \PHPUnit_Framework_TestCase
             $this->assertTrue(true);        
         }
     }
-
 }
 
 ?>

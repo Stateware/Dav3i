@@ -43,12 +43,13 @@
     <link rel="stylesheet" href="GUI/jvectormap/jquery-jvectormap-2.0.1.css" type="text/css" media="screen"/>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="GUI/jvectormap/jquery.js"></script>
+    <script type="text/javascript" src="GUI/data.js"></script>
+	<script type="text/javascript" src="GUI/conf.js"></script>
 	<script type="text/javascript" src="GUI/wnumb-1.0.0/wNumb.js"></script>
     <script type="text/javascript" src="GUI/data_model.js"></script>
     <script type="text/javascript" src="GUI/data_query.js"></script>
     <script type="text/javascript" src="GUI/loading_script.js"></script>
     <script type="text/javascript" src="GUI/map.js"></script>
-    <script type="text/javascript" src="GUI/data.js"></script>
     <script type="text/javascript" src="GUI/lookup_table.js"></script>
     <script type="text/javascript" src="GUI/settings.js"></script>
     <script type="text/javascript" src="GUI/graph.js"></script>
@@ -63,7 +64,7 @@
 
 <body>
     <div class="loading-screen">
-        <body onload="initPage()"></body>
+        <body onload="ReadConfig()"></body>
         <center>
             <img src="res/logo.png" alt="Logo"/>
             <br>
