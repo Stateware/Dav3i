@@ -647,6 +647,18 @@ function Options( graphType, nodeName, maxVal )
             this.title = nodeName;
             this.seriesType = "line";
             this.legend = "none";
+            this.series = { 1: {color: "red", targetAxisIndex: 1}, 
+                            2: {color: "navy", targetAxisIndex: 0}, 
+                            3: {color: "green", targetAxisIndex: 1}};
+            this.vAxes = {
+                0: {viewWindow: {min: 0}},
+                1: {viewWindow: {min: 0}}
+            };
+            break;
+        case g_GraphTypeEnum.ESTIMATED:
+            this.title = nodeName;
+            this.seriesType = "line";
+            this.legend = "none";
             this.isStacked = true;
             this.series = { 1: {type: "area", color: "transparent"}, 
                             2: {color: "navy"}, 

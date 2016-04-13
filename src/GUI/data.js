@@ -61,7 +61,8 @@ var g_GraphTypeEnum =
     REGIONAL:  	0,
     COMBINED:	1,
     SUM:		2,
-   	VACCINE:	3
+   	VACCINE:	3,
+    ESTIMATED:  4
      
 };
 
