@@ -243,7 +243,7 @@ function parseCountryPacket(packet)
 		sessionID = packet[j]["session"];
 		instanceID = packet[j]["instance"];
 		countryID = packet[j]["country"];
-		stat = packet[j]["stat_id"];
+		stat = packet[j]["stat_id"] - 1; // because we 0 index
 		data = packet[j]["data"];
 		//var countryCache = g_cache.get(sessionID).get(instanceID).get(countryID);
 
