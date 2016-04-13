@@ -91,8 +91,6 @@ function BuildTabs()
             statOnly.setAttribute("selected", "selected");
         }
 
-        BuildDiv(temp);
-
         var statAllInstances = new Option(temp + " (all instances)", g_ParsedStatList[1][i]);
         statAllInstances.id="id-"+temp;
         statAllInstances.setAttribute("shrink-map", true);
@@ -106,12 +104,12 @@ function BuildTabs()
         }
 
         tabDropdown.appendChild(statAllInstances);
-
-        BuildDiv(temp+" (all instances)");
     }
 
+    BuildDiv("charts"); // We only need 1 div for all of the charts
+
     // choose the tab to be the selected one, to make sure the graphs/graphs div are correctly generated
-    //ChooseTab(GetSelectedDropdown("tabDropdown", "elem"));
+    ChooseTab(GetSelectedDropdown("tabDropdown", "elem"));
 
     return(g_ParsedStatList[1].length);
 }
@@ -152,7 +150,6 @@ function BuildDiv(stat)
 {
     var div=document.createElement("DIV");
     div.id="id-"+stat+"-graphs";
-    div.style.display="none";
     div.style.top="8%";
     div.style.height="87%";
     div.className="graph";
@@ -194,15 +191,10 @@ function BuildDiv(stat)
  */
 function ChooseTab(element)
 {
-    // remove divs in previous tab
-    var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+    // Clear the divs from the chart area
+    var parentTabDivName = "id-charts-graphs";
     document.getElementById(parentTabDivName).innerHTML = "";
-    var prevTab=document.getElementById("id-"+g_StatList[g_StatID]);
-    // sets class names of tabs
-    prevTab.className="graph-tab";
-    element.className="graph-tab selected-tab";
-    document.getElementById("id-"+g_StatList[g_StatID]+"-graphs").style.display="none";
-    document.getElementById(element.id+"-graphs").style.display="block";
+
     g_StatID=GetSelectedDropdown("tabDropdown", "id");
     ColorByHMS();
 
@@ -485,9 +477,6 @@ function OkNewTabMenu()
         newOption.id = "id-"+name;
 
         document.getElementById("tabDropdown").appendChild(newOption);
-
-        // create div elements where graphs will go
-        BuildDiv(name);
         
         // return back to main page
         CloseNewTabMenu();
@@ -652,7 +641,7 @@ function GenerateSubDivs()
     if(g_DataList != undefined)
     {
         var size = g_DataList.size;
-        var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+        var parentTabDivName = "id-charts-graphs";
         var currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
         var children = document.getElementById(parentTabDivName).childNodes;
         var newNumDivs = size - currentNumDivs;
