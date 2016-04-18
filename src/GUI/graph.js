@@ -143,9 +143,20 @@ function Graph( graphType, divID, node )
 	var nodeName;
 	var max;
 	var formatter;
-	var options;    
+	var options;
+    var cid;
     
-    nodes = GenerateGraphStatNodes(node.cid)
+    //Get CID
+    if(typeof(node) != 'undefined')
+    {
+        cid = node.cid;
+    }
+    else
+    {
+        cid = null;
+    }
+
+    nodes = GenerateGraphStatNodes(cid);
     dataArray = GenerateDataArray(nodes, g_YearStart, g_YearEnd);
     data = google.visualization.arrayToDataTable(dataArray, false);
     
