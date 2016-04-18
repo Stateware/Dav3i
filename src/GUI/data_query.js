@@ -221,7 +221,7 @@ function IsRegionSelected( cid, map, lookupTable )
  * Last Modified:
  * 4//2016 by John Martin
  */
-function GenerateGraphStatNodes(cid)
+function GenerateGraphStatNodes(cid, graphType)
 {
     var multiInstance;
     var selectedStats = [];
@@ -238,7 +238,7 @@ function GenerateGraphStatNodes(cid)
         selectedStats[1] = parseInt(selectedTabs["stat2_id"]);    
     }
     
-    switch(g_GraphType) 
+    switch(graphType) 
     {
         case g_GraphTypeEnum.VACCINE:
             //for vaccines set the selected stats
@@ -246,6 +246,12 @@ function GenerateGraphStatNodes(cid)
             selectedStats[0] = g_ParsedStatList[1][0]; //siaIndex
             selectedStats[1] = g_ParsedStatList[2][0]; //mcv1Index
 	        selectedStats[2] = g_ParsedStatList[3][0]; //mcv2Index
+
+            //loop through every selectedStat and create a graphStat node for it
+            for(var i = 0; i < selectedStats.length; i++)
+            {
+                newNodes[i] = new t_graphStat(g_cache.get(getSession()).get(getInstance()).get(cid).get(selectedStats[i]), g_LookupTable[cid][1] + " - " + g_StatList[selectedStats[i]]);
+            } 
             
             //can only graph for one instance because there are multiple stats
             multiInstance = false;

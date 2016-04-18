@@ -145,7 +145,7 @@ function Graph( graphType, divID, node )
 	var formatter;
 	var options;    
     
-    nodes = GenerateGraphStatNodes(node.cid)
+    nodes = GenerateGraphStatNodes(node.cid, graphType);
     dataArray = GenerateDataArray(nodes, g_YearStart, g_YearEnd);
     data = google.visualization.arrayToDataTable(dataArray, false);
     
@@ -747,7 +747,7 @@ function GenerateDataArray(nodeArray, startYear, endYear)
         {
             if(j - firstYear < 0 || j - lastYear > 0) //data point doesn't exist in data[] for this node
             {
-                data[curIndex][i+1] = null;
+                data[curIndex+1][i+1] = null;
             }
             else //data point exists in data[] for this node
             {

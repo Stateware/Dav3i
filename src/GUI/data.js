@@ -175,14 +175,14 @@ function t_graphStat(statData, name)
     this.max;                       //max value in data
 
     this.years = statData.keys.sort();
-    this.min = parseInt(statData.get(this.years[0]));
-    this.max = parseInt(statData.get(this.years[0]));
+    this.min = parseFloat(statData.get(this.years[0]));
+    this.max = parseFloat(statData.get(this.years[0]));
 
     //find min and max years and set data member array
     for(var i = 0; i < this.years.length; i++)
     {
         //put data into member array
-        this.data[i] = parseInt(statData.get(this.years[i]));
+        this.data[i] = parseFloat(statData.get(this.years[i]));
 
         //keep track of max and min 
         if(this.data[i] > this.max)
