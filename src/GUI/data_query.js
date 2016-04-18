@@ -190,9 +190,8 @@ function IsRegionSelected( cid, map, lookupTable )
  *          - VACCINE: generates 3 grapStat nodes for the country with countryid = cid
  *          - REGIONAL: generates a graphStat node for each selected stat for the country
  *                  with countryid = cid
- *          - COMBINED: generates a graphStat node for each country in g_DataList
- *          - SUM: generates 1 graphStat node with the sum of data values for each
- *                  country in g_DataList
+ *          - COMBINED: generates a graphStat node for each selected country
+ *          - SUM: generates 1 graphStat node with the sum of data values for each selected country
  *
  * Parameters:
  *      - cid - The country ID of the newly added country (only relevant when g_GraphType = VACCINE or REGIONAL)
@@ -200,17 +199,15 @@ function IsRegionSelected( cid, map, lookupTable )
  * Pre: 
  *      - g_graphType is set to VACCINE, REGIONAL, COMBINED or SUM
  *      - cid is a valid country id when g_graphType is VACCINE or REGIONAL
- *      - g_cache contains valid entries for a country with cid and all countries
- *          in g_DataList
+ *      - g_cache contains valid entries for a country with cid and all selected countries
  *
  * Post:
  *      FCTVAL = array of graphStat nodes based upon the following values for g_GraphType:
  *          - VACCINE: generates 3 grapStat nodes for the country with countryid = cid
  *          - REGIONAL: generates a graphStat node for each selected stat for the country
  *                  with countryid = cid
- *          - COMBINED: generates a graphStat node for each country in g_DataList
- *          - SUM: generates 1 graphStat node with the sum of data values for each
- *                  country in g_DataList
+ *          - COMBINED: generates a graphStat node for each selected country
+ *          - SUM: generates 1 graphStat node with the sum of data values for each selected country
  * 
  * Authors:
  * John Matin
@@ -228,6 +225,8 @@ function GenerateGraphStatNodes(cid)
     var newNodes = [];
     var tempNodes = [];
     var selectedTabs;
+    var selectedRegions;
+    var selectedCountries;
 
     //call to get selected tabs
     selectedTabs = GetSelectedTabInfo();
@@ -236,6 +235,14 @@ function GenerateGraphStatNodes(cid)
     if(selectedTabs["stat2_id"] != "null")
     {
         selectedStats[1] = parseInt(selectedTabs["stat2_id"]);    
+    }
+    
+    //get selected countries
+    selectedRegions = g_Map.getSelectedRegions();
+    selectedCountries = new Array(selectedRegions.length);
+    for(var i = 0; i < selectedRegions.length; i++) //THIS IS SLOW
+    {
+        selectedCountries[i] = getCountryID(selectedRegions[i]);
     }
     
     switch(g_GraphType) 
@@ -270,16 +277,16 @@ function GenerateGraphStatNodes(cid)
             break;
         case g_GraphTypeEnum.COMBINED:
             //Combined - One graph where each country has its own line
-            for(var i = 0; i < g_DataList.length; i++) //iterate through all of the selected countries
+            for(var i = 0; i < selectedCountries.length; i++) //iterate through all of the selected countries
             {
-                newNodes[i] = new t_graphStat(g_cache.get(getSession()).get(getInstance()).get(g_DataList[i].cid).get(selectedStats[0]), g_LookupTable[g_DataList[i].cid][1]);
+                newNodes[i] = new t_graphStat(g_cache.get(getSession()).get(getInstance()).get(selectedCountries[i]).get(selectedStats[0]), g_LookupTable[selectedCountries[i]][1]);
             }
             break;
         case g_GraphTypeEnum.SUM:
             //Whole - One graph with the sum of all values for a selection
-            for(var i = 0; i < g_DataList.length; i++) //iterate through all of the selected countries
+            for(var i = 0; i < selectedCountries.length; i++) //iterate through all of the selected countries
             {
-                tempNodes[i] = new t_graphStat(g_cache.get(getSession()).get(getInstance()).get(g_DataList[i].cid).get(selectedStats[0]), g_LookupTable[g_DataList[i].cid][1]);
+                tempNodes[i] = new t_graphStat(g_cache.get(getSession()).get(getInstance()).get(selectedCountries[i]).get(selectedStats[0]), g_LookupTable[selectedCountries[i]][1]);
             }
             newNodes[0] = sumGraphStatNodes(tempNodes);
             break;
@@ -487,6 +494,15 @@ function findMaxValue(nodeArray)
     }
     
     return curMax;
+}
+
+function getCountryID(countryCode)
+{
+    for(var i = 0; i < g_LookupTable.length; i++)
+    {
+        if(g_LookupTable[i][0] == countryCode)
+            return i;
+    }
 }
 
 /*
