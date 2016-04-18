@@ -193,10 +193,159 @@ QUnit.test( "_setEnvironment fail Test", function (assert) {
 	this._setEnvironment = _setEnvironment;
 	
 	assert.equal( this._setEnvironment(newEnvironment), false);
+});
+
+QUnit.test( "PopulateSessionNames test", function (assert) {
+	var sessions = {0:"zero", 1:"one", 2:"two"};
 	
+	var emptyCache = new data_cache();
+	
+	var finalCache = new data_cache();
+	finalCache[0] = new data_cache();
+	finalCache[0].name="zero";
+	finalCache[1] = new data_cache();
+	finalCache[1].name="one";
+	finalCache[2] = new data_cache();
+	finalCache[2].name="two";
+	finalCache.keys=[0,1,2];
+	
+	
+	assert.deepEqual(PopulateSessionNames(sessions,emptyCache),finalCache);
+});
+
+QUnit.test( "PopulateInstanceNames test", function (assert) {
+	var instances = {0:"zero", 1:"one", 2:"two"};
+	var sessionID = 0;
+	var emptyCache = new data_cache();
+	
+	var finalCache = new data_cache();
+	finalCache[0] = new data_cache();
+	finalCache[0][0] = new data_cache();
+	finalCache[0][0].name = "zero";
+	finalCache[0][1] = new data_cache();
+	finalCache[0][1].name = "one";
+	finalCache[0][2] = new data_cache();
+	finalCache[0][2].name = "two";
+	finalCache.keys=[0];
+	finalCache[0].keys = [0,1,2];
+	
+	
+	assert.deepEqual(PopulateInstanceNames(sessionID, instances, emptyCache),finalCache);
+});
+
+QUnit.test( "IsRegionSelected not in test", function (assert) {
+	var map = {};
+	map.getSelectedRegions = function(){ return ["US","MX","CA"]; };
+	var lookupTable = {};
+	lookupTable[1]={};
+	lookupTable[1][0]="UX";
+	
+	
+		
+	assert.equal(IsRegionSelected(1, map, lookupTable),false);
+});
+
+QUnit.test( "IsRegionSelected test", function (assert) {
+	var map = {};
+	map.getSelectedRegions = function(){ return ["US","MX","CA"]; };
+	var lookupTable = {};
+	lookupTable[1]={};
+	lookupTable[1][0]="US";
+	
+	
+		
+	assert.equal(IsRegionSelected(1, map, lookupTable),true);
 });
 
 
 QUnit.log( function( details )  {
 	console.log( "Log: ", details.actual, details.message );
+});
+
+
+
+QUnit.test( "t_AsdsNode Constructor test", function (assert) {
+    //params
+    var numRuns = 3;
+    var startYear = 1990;
+    var name = "TEST NODE";
+    var runParams = [];
+    
+    //run params
+    runParams[0] = new Array(2);
+    runParams[0]["numYears"] = 10;
+    runParams[0]["shuffleYears"] = false;
+    
+    runParams[1] = new Array(2);
+    runParams[1]["numYears"] = 10;
+    runParams[1]["shuffleYears"] = true;
+    
+    runParams[2] = new Array(2);
+    runParams[2]["numYears"] = 1;
+    runParams[2]["shuffleYears"] = false;
+    
+    //do test runs
+    for(var run = 0; run < numRuns; run++)
+    {
+        var numYears = runParams[run]["numYears"];
+        
+        //variables
+        var cache = new data_cache();
+        var testNode;
+        var years = new Array(numYears);
+        var data = new Array(numYears);
+        var minData = Number.MAX_SAFE_INTEGER;
+        var maxData = Number.MIN_SAFE_INTEGER;
+        
+        //fill years & data arrays
+        for(var i = 0; i < numYears; i++)
+        {
+            years[i] = startYear + i;
+            data[i] = Math.floor((Math.random() * 100) + 1);
+            
+            //check for new min & max Data
+            if(data[i] < minData)
+                minData = data[i];
+            if(data[i] > maxData)
+                maxData = data[i];
+        }
+        
+        //shuffle years so they aren't sorted
+        if(runParams[run]["shuffleYears"])
+        {
+            var a = 0;
+            var b = 0;
+            var temp = null;
+
+            for (a = years.length - 1; a > 0; a -= 1) {
+                b = Math.floor(Math.random() * (a + 1))
+                temp = years[a]
+                years[a] = years[b]
+                years[b] = temp
+            }
+        }
+        
+        //create cache object
+        for(var i = 0; i < numYears; i++)
+        {
+            cache.set(years[i], data[i]);
+        }
+        
+        //call to function under test
+        testNode = t_graphStat(cache, name); 
+        
+        //check values
+        for(var i = 1; i < numYears; i++) //years are sorted
+        {
+            assert.equal(testNode.years[i-1] < testNode.years[i], true); 
+        }
+        
+        for(var i = 0; i < numYears; i++) //data matches for each year
+        {
+            assert.equal(cache.get(testNode.years[i]), testNode.data[i]);
+        }
+        assert.equal(testNode.name, name); //name is correct
+        assert.equal(testNode.min, minData); //min is correct
+        assert.equal(testNode.max, maxData); //max is correct
+    }
 });

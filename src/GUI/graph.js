@@ -71,6 +71,15 @@ function GenerateGraphs()
                 return(1);
 	        }
 	    }
+	    else if (g_StatList[g_StatID].indexOf("Estimated") > -1)
+	    {
+	    	for(var i=1; i<=g_DataList.size; i++)
+            {
+                Graph(g_GraphTypeEnum.ESTIMATED, "region-graphs-"+i, curr);
+                curr=curr.next;
+            }
+            return(g_DataList.size);
+	    }
 	    else
 	    {
 	        switch(g_GraphType)
@@ -137,26 +146,45 @@ function GenerateGraphs()
 function Graph( graphType, divID, node )
 {
 	//Define variables that will be set based on graph type
-	var data; 
+    var nodes;
+	var data;
+    var dataArray; 
 	var nodeName;
 	var max;
 	var formatter;
 	var options;
+    var cid;
+    
+    //Get CID
+    if(typeof(node) != 'undefined')
+    {
+        cid = node.cid;
+    }
+    else
+    {
+        cid = null;
+    }
+
+    nodes = GenerateGraphStatNodes(node.cid, graphType);
+    dataArray = GenerateDataArray(nodes, g_YearStart, g_YearEnd);
+    data = google.visualization.arrayToDataTable(dataArray, false);
+    
 	
 	switch( graphType )
 	{
 		case g_GraphTypeEnum.SUM:
 		case g_GraphTypeEnum.REGIONAL:
+		case g_GraphTypeEnum.ESTIMATED:
     		
-    		data = GenerateSingleData( node.data );
-    		max = FindMax();
+    		//data = GenerateSingleData( node.data );
+    		max = findMaxValue(nodes);
     		nodeName = node.name;  
     		formatter = new google.visualization.NumberFormat({pattern: '#,###.##'} ); 
 			break;
 		
 	    case g_GraphTypeEnum.COMBINED:
 	    
-			data = GenerateCombinedData();
+			//data = GenerateCombinedData();
 			nodeName = null;
 			max = null;
 	    	formatter = new google.visualization.NumberFormat( {pattern: '#,###.##'} );
@@ -164,12 +192,12 @@ function Graph( graphType, divID, node )
 	    
 	    case g_GraphTypeEnum.VACCINE:
 	    
-	    	data = GenerateVaccineData( node.data );
+	    	//data = GenerateVaccineData( node.data );
 	    	nodeName = node.name;
 	    	max = null;
 	    	formatter = new google.visualization.NumberFormat( {pattern: '##.##%'} );
 			break;
-			
+
 		default:
 			break;
 	}
@@ -639,11 +667,27 @@ function Options( graphType, nodeName, maxVal )
             
             this.title = nodeName;
             this.seriesType = "line";
+            if(GetSelectedTabInfo()["stat2_id"] == "null") // if it is NOT multi-stat, then we don't want a legend
+            {
+            	this.legend = "none";
+        	}
+            this.series = { 1: {color: "red", targetAxisIndex: 1}, 
+                            2: {color: "navy", targetAxisIndex: 0}, 
+                            3: {color: "green", targetAxisIndex: 1}};
+            this.vAxes = {
+                0: {viewWindow: {min: 0}, textStyle: {color: "navy"}},
+                1: {viewWindow: {min: 0}, textStyle: {color: "red"}}
+            };
+            break;
+        case g_GraphTypeEnum.ESTIMATED:
+            this.title = nodeName;
+            this.seriesType = "line";
             this.legend = "none";
             this.isStacked = true;
-            this.series = { 1: {type: "area", color: "transparent"}, 
-                            2: {color: "navy"}, 
-                            3: {type: "area", color: "navy"}};
+            this.series = { 0: {color: "white"},
+            				1: {type: "area", color: "transparent"}, 
+                            2: {type: "area", color: "navy"}, 
+                            3: {color: "navy"}};
             this.vAxis.viewWindow.max = maxVal;
             break;
             
@@ -656,9 +700,12 @@ function Options( graphType, nodeName, maxVal )
         case g_GraphTypeEnum.VACCINE:
         
             this.title = nodeName;
-            this.seriesType = "bar";
+            //this.seriesType = "bar";
             this.vAxis.viewWindow.max = 1;
             this.vAxis.format = '###%';
+            this.series = { 0: {type: "bars", color: "orange"},
+            				1: {color: "red"}, 
+                            2: {color: "blue"}};
             break;  
         
         default://if graph type is not listed, then something is wrong..return null
@@ -666,4 +713,78 @@ function Options( graphType, nodeName, maxVal )
     }
     
     return this;
+}
+
+
+/*
+ * Function: GenerateDataArray
+ * Generates a data array usable by the Google Charts API from an array of t_graphStat nodes
+ *
+ * Parameters:
+ * nodeArray - An array of t_graphStat nodes that will be used to create a data array for Google Charts
+ *
+ * Pre: 
+ * nodeArray is an array of t_graphStat nodes
+ *
+ * Post:
+ * FCTVAL = data array containing   data[0] = ["Years"][Name from nodeArray[0]][Name from nodeArray[1]]..[Name from nodeArray[nodeArray.length-1]]
+ *                                  data[1] = [Year1][Value for Year1 from nodeArray[0]][Value for Year1 from nodeArray[1]]..[Value for Year1 from nodeArray[nodeArray.length-1]]
+ *                                  ...
+ *                                  data[numYears] = [LastYear][Value for LastYear from nodeArray[0]][Value for LastYear from nodeArray[1]]..[Value for LastYear from nodeArray[nodeArray.length-1]]
+ *
+ * Authors:
+ * John Matin
+ *
+ * Date Created:
+ * 3/1/2016 by John Martin
+ * 
+ * Last Modified:
+ * 4/8/2016 by John Martin
+ */
+function GenerateDataArray(nodeArray, startYear, endYear)
+{
+    var data = [];
+    
+    if(typeof startYear == 'undefined')
+    {
+        startYear = findMinStartYear(nodeArray);
+    }
+    
+    if(typeof endYear == 'undefined')
+    {
+        endYear = findMaxEndYear(nodeArray);
+    }
+    
+    //populate Years
+    data[0] = [];
+    data[0][0] = "Year";
+    for(var i = startYear; i <= endYear; i++)
+    {
+        data[(i-startYear)+1] = [];
+        data[(i-startYear)+1][0] = i;
+    }
+    
+    //fill in data
+    for(var i = 0; i < nodeArray.length; i++)
+    {
+        data[0][i+1] = nodeArray[i].name;
+        var firstYear = nodeArray[i].years[0];
+        var lastYear = nodeArray[i].years[nodeArray[i].years.length-1];
+        var curIndex = 0;
+        for(var j = startYear; j <= endYear; j++)
+        {
+            if(j - firstYear < 0 || j - lastYear > 0) //data point doesn't exist in data[] for this node
+            {
+                data[curIndex+1][i+1] = null;
+            }
+            else //data point exists in data[] for this node
+            {
+                var dataArr = nodeArray[i].data;
+                data[curIndex+1][i+1] = dataArr[curIndex];
+            }
+            curIndex++;
+        }
+    }
+    
+    return data;
 }

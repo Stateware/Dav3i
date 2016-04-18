@@ -62,7 +62,8 @@ var g_GraphTypeEnum =
     REGIONAL:  	0,
     COMBINED:	1,
     SUM:		2,
-   	VACCINE:	3
+   	VACCINE:	3,
+    ESTIMATED:  4
      
 };
 
@@ -75,15 +76,19 @@ function data_cache()
 	
     this.get = function(prop) {
         this[prop] = this[prop] || new data_cache();
-        if( this.keys.indexOf(Number(prop)) === -1 )
+        if( !isNaN(prop) && this.keys.indexOf(Number(prop)) === -1 )
         	this.keys.push(Number(prop));
         return this[prop];
     };
     
     this.set = function(prop, value) {
         this[prop] = value;
-        if( this.keys.indexOf(Number(prop)) === -1 )
+        if( !isNaN(prop) && this.keys.indexOf(Number(prop)) === -1 )
         	this.keys.push(Number(prop));
+    };
+    
+    this.setAndDoNotAddKey = function(prop, value) {
+        this[prop] = value;
     };
 }
 
@@ -110,6 +115,87 @@ function t_AsdsNode(sessionid, instanceid, cid, cc2, name, data)
     this.name = name;
     this.data = data;
     this.next = null;
+}
+
+
+/*
+ * Enum: axisTypeEnum
+ * Enumerated type for the axis type of a stat when graphing
+ * 
+ * Parameters: 
+ * 
+ * Authors: 
+ * Kyle Yost, John Martin
+ * 
+ * Date Created: 
+ * 2/26/16 
+ * 
+ * Last Modified: 
+ * 2/29/16 by Kyle Yost, John Martin
+ */
+var axisTypeEnum = {
+    ZeroToMax: 0,
+    ZeroToOneHundred: 1,
+    ZeroToOne: 2
+};
+
+/*
+ * Class: t_graphStat
+ * Creates an object for a stat data that is used in graphing.
+ * 
+ * Parameters: 
+ * statData - stat data for a particular stat in the cache format
+ * name - string of the common name for the data that will appear on the graph
+ * axisType - type of the axis when graphing. Value from axisTypeEnum
+ * 
+ * Members:
+ * axisType - Axis type to be used when generating graph, value from axisTypeEnum
+ * name - common name for the data that will appear on the graph
+ * data - values for the stat in statData indexed 0-data.length-1
+ * years - years for the values in data
+ * min - the minimum value in data
+ * max - the maximum value in data
+ * next - pointer to the next graphStat in the list
+ * 
+ * Authors: 
+ * Kyle Yost, John Martin
+ * 
+ * Date Created: 
+ * 2/26/16 
+ * 
+ * Last Modified: 
+ * 2/29/16 by Kyle Yost, John Martin
+ */
+function t_graphStat(statData, name)
+{
+    //this.axisType = axisType;       //set axisTpe to enumerated value
+    this.name = name;               //common name for the data
+    this.data = [];                 //year data for this stat
+    this.years = [];                //years for values in data
+    this.min;                       //min value in data
+    this.max;                       //max value in data
+
+    this.years = statData.keys.sort();
+    this.min = parseFloat(statData.get(this.years[0]));
+    this.max = parseFloat(statData.get(this.years[0]));
+
+    //find min and max years and set data member array
+    for(var i = 0; i < this.years.length; i++)
+    {
+        //put data into member array
+        this.data[i] = parseFloat(statData.get(this.years[i]));
+
+        //keep track of max and min 
+        if(this.data[i] > this.max)
+        {
+            this.max = this.data[i];
+        }
+        if(this.data[i] < this.min)
+        {
+            this.min = this.data[i];
+        }
+    }
+    return this;
 }
 
 // prototype for variable containing list of nodes

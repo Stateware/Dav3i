@@ -91,8 +91,6 @@ function BuildTabs()
             statOnly.setAttribute("selected", "selected");
         }
 
-        BuildDiv(temp);
-
         var statAllInstances = new Option(temp + " (all instances)", g_ParsedStatList[1][i]);
         statAllInstances.id="id-"+temp;
         statAllInstances.setAttribute("shrink-map", true);
@@ -106,9 +104,9 @@ function BuildTabs()
         }
 
         tabDropdown.appendChild(statAllInstances);
-
-        BuildDiv(temp+" (all instances)");
     }
+
+    BuildDiv("charts"); // We only need 1 div for all of the charts
 
     // choose the tab to be the selected one, to make sure the graphs/graphs div are correctly generated
     ChooseTab(GetSelectedDropdown("tabDropdown", "elem"));
@@ -150,9 +148,12 @@ function UpdateInputs()
 // POST: appropriate divs are created. FCTVAL == The created div.
 function BuildDiv(stat)
 {
+    if(document.getElementById("id-"+stat+"-graphs") != undefined)
+    {
+        return;
+    }
     var div=document.createElement("DIV");
     div.id="id-"+stat+"-graphs";
-    div.style.display="none";
     div.style.top="8%";
     div.style.height="87%";
     div.className="graph";
@@ -194,15 +195,10 @@ function BuildDiv(stat)
  */
 function ChooseTab(element)
 {
-    // remove divs in previous tab
-    var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+    // Clear the divs from the chart area
+    var parentTabDivName = "id-charts-graphs";
     document.getElementById(parentTabDivName).innerHTML = "";
-    var prevTab=document.getElementById("id-"+g_StatList[g_StatID]);
-    // sets class names of tabs
-    prevTab.className="graph-tab";
-    element.className="graph-tab selected-tab";
-    document.getElementById("id-"+g_StatList[g_StatID]+"-graphs").style.display="none";
-    document.getElementById(element.id+"-graphs").style.display="block";
+
     g_StatID=GetSelectedDropdown("tabDropdown", "id");
     ColorByHMS();
 
@@ -212,11 +208,11 @@ function ChooseTab(element)
     // expands the graph section if the currently selected stat is multi instance
     if(GetSelectedDropdown("tabDropdown","elem").getAttribute("shrink-map") == "true")
     {
-        ScaleContext("multi-instance");
+        ScaleContext("shrink-map");
     }
     else
     {
-        ScaleContext("single-instance");
+        ScaleContext("normal-map");
     }
 
     return(g_StatID);
@@ -470,6 +466,10 @@ function OkNewTabMenu()
     {
         alert("Stat 1 and Stat 2 cannot be the same.");
     }
+    else if(DropdownElementAlreadyExists("tabDropdown", name))
+    {
+        alert("A tab with that name already exists.");
+    }
     else
     {
         // add option to dropdown
@@ -478,11 +478,65 @@ function OkNewTabMenu()
         newOption.setAttribute("multi-instance", false);
         newOption.setAttribute("stat1_id", GetSelectedDropdown("stat_stat1", "id"));
         newOption.setAttribute("stat2_id", GetSelectedDropdown("stat_stat2", "id"));
+        newOption.id = "id-"+name;
+
         document.getElementById("tabDropdown").appendChild(newOption);
         
         // return back to main page
         CloseNewTabMenu();
     }
+}
+
+/* Function DropdownElementAlreadyExists()
+/*
+/*      Checks to see if the dropdown menu inputted contains an element with the given name
+/*
+/* Parameters: 
+/*
+/*      dropdown - name of the dropdown element to be searched
+/*      name - name to be searched for in the text values of the dropbox options
+/*
+/* Pre:
+/*
+/*      the given dropdown exists
+/*
+/* Post:
+/*
+/*      a boolean will be returned
+/*
+/* Returns:
+/*
+/*      true - if the inputted name is already an element in the dropdown
+/*      false - if the inputted name is not an element in the dropdown
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      4/11/2016
+/*
+/* Last Modified:
+/*
+/*      4/11/2016 by Paul Jang
+ */
+function DropdownElementAlreadyExists(dropdown,name)
+{
+    var retval = false;
+    var dropdownElem = document.getElementById(dropdown);
+    var options = dropdownElem.options;
+
+    for(var i=0; i<options.length; i++)
+    {
+        if(options[i].text === name)
+        {
+            retval = true;
+            break;
+        }
+    }
+
+    return retval;
 }
 
 // Author: Emma Roudabush
@@ -556,7 +610,7 @@ function Shrink()
     setTimeout(function()
     {
         // keeps expanded as false if the context is multi-instance (for graph displaying/sizing purposes)
-        if(GetSelectedDropdown("tabDropdown", "elem").getAttribute("multi-instance") == "false")
+        if(GetSelectedDropdown("tabDropdown", "elem").getAttribute("shrink-map") == "false")
         {
             g_Expanded = false;
         }
@@ -567,13 +621,13 @@ function Shrink()
         GenerateSubDivs();
         GenerateGraphs();
     }, 500);
-    if(GetSelectedDropdown("tabDropdown","elem").getAttribute("multi-instance") == "true")
+    if(GetSelectedDropdown("tabDropdown","elem").getAttribute("shrink-map") == "true")
     {
-        ScaleContext("multi-instance");
+        ScaleContext("shrink-map");
     }  
     else
     {
-        ScaleContext("single-instance");
+        ScaleContext("normal-map");
     }
 }
 
@@ -591,7 +645,7 @@ function GenerateSubDivs()
     if(g_DataList != undefined)
     {
         var size = g_DataList.size;
-        var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+        var parentTabDivName = "id-charts-graphs";
         var currentNumDivs = document.getElementById(parentTabDivName).childNodes.length;
         var children = document.getElementById(parentTabDivName).childNodes;
         var newNumDivs = size - currentNumDivs;
@@ -1073,7 +1127,7 @@ function ScaleContext(input)
     $("#expand").attr("src","res/arrow_right.png");
     
     // if the stat is multi instance, make the control panel the focus
-    if(input == 'multi-instance')
+    if(input == 'shrink-map')
     {
         $(".control-panel").animate({width:"72%"}, 500);
         // resize the map when the function is done

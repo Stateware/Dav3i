@@ -76,17 +76,27 @@ function ParseDescriptor(DescriptorJSON)
     CleanStatNames();
 
     // fill the dropdown menus and the new tab popup elements
-    FillSessionDropDown(DescriptorJSON,(document.getElementById("sessionSelect").options.length == 0));
+    var sessionSelect = document.getElementById("sessionSelect");
+    
+    if( sessionSelect == undefined)
+    {
+    	alert("An error has occured. Please try again in a few moments and if the problem persists contact the developers.");
+    	return -1;
+    }
+    
+    FillSessionDropDown(DescriptorJSON,(sessionSelect.options.length == 0));
     FillInstanceDropDown(DescriptorJSON);
    	PopulateNewTabMenu(DescriptorJSON);
    	// This needs to be set to 1 to preserve ordering of future lists and graph correctly. TODO: Fix this!
     g_StatID = 1;
 
+    //Set the initial year displayed to the most current year for which we have data
+    g_HMSYear = g_LastYear;
+
     // create the dropdown menu of stat tabs
    	BuildTabs();
 
-   	//Set the initial year displayed to the most current year for which we have data
-    g_HMSYear = g_LastYear;
+   	
     
     FindCountriesNoData();
 
@@ -94,6 +104,83 @@ function ParseDescriptor(DescriptorJSON)
 
     g_StatID = 1;
     ColorByHMS();
+    
+    //prefill the session/instances and their names into the g_cache
+    PopulateSessionNames(DescriptorJSON.sessions, g_cache);
+    PopulateInstanceNames(getSession(), DescriptorJSON.instances, g_cache);
+        
+}
+
+/*
+ * Function: PopulateSessionNames
+ * Reads descriptor and populates cache with session names to be used later when graphing instances
+ * 
+ * Parameters: 
+ * sessions - the sessions json of the descriptor
+ * cache - the cache to put the names in to
+ * 
+ * Pre: 
+ * descriptorJSON is formatted as defined in the documentation
+ * cache is initialized as a data_cache object
+ * 
+ * Post: 
+ * cache has the names for sessions filled
+ * 
+ * Authors: 
+ * William Bittner
+ * 
+ * Date Created: 
+ * 3/21/16 
+ * 
+ * Last Modified: 
+ * 3/21/16 William Bittner
+ */
+function PopulateSessionNames(sessions, cache)
+{
+	var keys = Object.keys(sessions);
+	for(var i = 0; i < keys.length; i++)
+	{
+		//do not add "name" as key because we use keys to iterate through data points, and name is not a data point
+		cache.get(keys[i]).setAndDoNotAddKey("name",  sessions[keys[i]]);
+	}
+	
+	return cache;
+}
+
+/*
+ * Function: PopulateInstanceNames
+ * Reads descriptor and populates cache with session names to be used later when graphing instances
+ * 
+ * Parameters: 
+ * sessionID - the ID of the session of which to add the instances
+ * instances - the instances json of the descriptor
+ * cache - the cache to put the names in to
+ * 
+ * Pre: 
+ * cache is initialized as a data_cache object
+ * 
+ * Post: 
+ * instance names are inserted into the cache
+ * 
+ * Authors: 
+ * William Bittner
+ * 
+ * Date Created: 
+ * 3/21/16 
+ * 
+ * Last Modified: 
+ * 3/21/16 William Bittner
+ */
+function PopulateInstanceNames(sessionID, instances, cache)
+{
+	var keys = Object.keys(instances);
+	for(var i = 0; i < keys.length; i++)
+	{	
+		//do not add "name" as key because we use keys to iterate through data points, and name is not a data point
+		cache.get(sessionID).get(keys[i]).setAndDoNotAddKey("name",  instances[keys[i]]);
+	}
+	
+	return cache;
 }
 
 /*
@@ -312,7 +399,7 @@ function ReformatByStatData(instanceCache, statID, year)
 		//console.log(cache.get(keys[country]));
 		if( !isNaN( keys[country] ) )
 		{
-			data[ keys[country]-1 ] = instanceCache.get(keys[country]).get(statID).get(year);
+			data[ keys[country] ] = instanceCache.get(keys[country]).get(statID).get(year);
 		}
 	}
 
