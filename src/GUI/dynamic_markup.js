@@ -148,6 +148,10 @@ function UpdateInputs()
 // POST: appropriate divs are created. FCTVAL == The created div.
 function BuildDiv(stat)
 {
+    if(document.getElementById("id-"+stat+"-graphs") != undefined)
+    {
+        return;
+    }
     var div=document.createElement("DIV");
     div.id="id-"+stat+"-graphs";
     div.style.top="8%";
