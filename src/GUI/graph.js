@@ -667,13 +667,16 @@ function Options( graphType, nodeName, maxVal )
             
             this.title = nodeName;
             this.seriesType = "line";
-            this.legend = "none";
+            if(GetSelectedTabInfo()["stat2_id"] == "null") // if it is NOT multi-stat, then we don't want a legend
+            {
+            	this.legend = "none";
+        	}
             this.series = { 1: {color: "red", targetAxisIndex: 1}, 
                             2: {color: "navy", targetAxisIndex: 0}, 
                             3: {color: "green", targetAxisIndex: 1}};
             this.vAxes = {
-                0: {viewWindow: {min: 0}},
-                1: {viewWindow: {min: 0}}
+                0: {viewWindow: {min: 0}, textStyle: {color: "navy"}},
+                1: {viewWindow: {min: 0}, textStyle: {color: "red"}}
             };
             break;
         case g_GraphTypeEnum.ESTIMATED:
