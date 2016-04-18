@@ -300,7 +300,7 @@ QUnit.test( "t_AsdsNode Constructor test", function (assert) {
         
         for(var i = 0; i < numYears; i++) //data matches for each year
         {
-            assert.equal(cache.get(years[i]), testNode.data[i]);
+            assert.equal(cache.get(testNode.years[i]), testNode.data[i]);
         }
         assert.equal(testNode.name, name); //name is correct
         assert.equal(testNode.min, minData); //min is correct
