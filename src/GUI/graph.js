@@ -71,6 +71,15 @@ function GenerateGraphs()
                 return(1);
 	        }
 	    }
+	    else if (g_StatList[g_StatID].indexOf("Estimated") > -1)
+	    {
+	    	for(var i=1; i<=g_DataList.size; i++)
+            {
+                Graph(g_GraphTypeEnum.ESTIMATED, "region-graphs-"+i, curr);
+                curr=curr.next;
+            }
+            return(g_DataList.size);
+	    }
 	    else
 	    {
 	        switch(g_GraphType)
@@ -154,6 +163,7 @@ function Graph( graphType, divID, node )
 	{
 		case g_GraphTypeEnum.SUM:
 		case g_GraphTypeEnum.REGIONAL:
+		case g_GraphTypeEnum.ESTIMATED:
     		
     		//data = GenerateSingleData( node.data );
     		max = findMaxValue(nodes);
@@ -176,7 +186,7 @@ function Graph( graphType, divID, node )
 	    	max = null;
 	    	formatter = new google.visualization.NumberFormat( {pattern: '##.##%'} );
 			break;
-			
+
 		default:
 			break;
 	}
@@ -660,9 +670,10 @@ function Options( graphType, nodeName, maxVal )
             this.seriesType = "line";
             this.legend = "none";
             this.isStacked = true;
-            this.series = { 1: {type: "area", color: "transparent"}, 
-                            2: {color: "navy"}, 
-                            3: {type: "area", color: "navy"}};
+            this.series = { 0: {color: "white"},
+            				1: {type: "area", color: "transparent"}, 
+                            2: {type: "area", color: "navy"}, 
+                            3: {color: "navy"}};
             this.vAxis.viewWindow.max = maxVal;
             break;
             
@@ -675,9 +686,12 @@ function Options( graphType, nodeName, maxVal )
         case g_GraphTypeEnum.VACCINE:
         
             this.title = nodeName;
-            this.seriesType = "bar";
+            //this.seriesType = "bar";
             this.vAxis.viewWindow.max = 1;
             this.vAxis.format = '###%';
+            this.series = { 0: {type: "bars", color: "orange"},
+            				1: {color: "red"}, 
+                            2: {color: "blue"}};
             break;  
         
         default://if graph type is not listed, then something is wrong..return null

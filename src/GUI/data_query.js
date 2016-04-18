@@ -255,6 +255,45 @@ function GenerateGraphStatNodes(cid, graphType)
             
             //can only graph for one instance because there are multiple stats
             multiInstance = false;
+        break;
+        case g_GraphTypeEnum.ESTIMATED:
+            var parsedStat = -1;
+            for(var i = 0; i < g_ParsedStatList.length; i++)
+            {
+                if(g_ParsedStatList[1][i] == g_StatID)
+                {
+                    parsedStat = i;
+                }
+            }
+
+            if(parsedStat == -1)
+            {
+                console.log("invalid parsed stat id");
+                return;
+            }
+
+            //for estimated set the upper and lower bounds
+            selectedStats = [];
+            selectedStats[0] = g_ParsedStatList[1][parsedStat]; //head
+            selectedStats[1] = g_ParsedStatList[2][parsedStat]; //lower
+            selectedStats[2] = g_ParsedStatList[3][parsedStat]; //upper
+            selectedStats[3] = g_ParsedStatList[2][parsedStat]; //lower again so we can outline it
+            selectedStats[4] = g_ParsedStatList[3][parsedStat]; //upper because the tooltip is messed up
+
+            //loop through every selectedStat and create a graphStat node for it
+            for(var i = 0; i < selectedStats.length; i++)
+            {
+                newNodes[i] = new t_graphStat(g_cache.get(getSession()).get(getInstance()).get(cid).get(selectedStats[i]), g_LookupTable[cid][1] + " - " + g_StatList[selectedStats[i]]);
+            } 
+
+            for(var i = 0; i < newNodes[2].data.length; i++)
+            {
+                newNodes[2].data[i] -= newNodes[1].data[i];
+            }
+            
+            //can only graph for one instance because there are multiple stats
+            multiInstance = false;
+        break;
         case g_GraphTypeEnum.REGIONAL:
             //Regional - Many graphs - one for each country
             if(multiInstance)   //if multiInstance is set, create chart_nodes for all instances of stat1 of cid
