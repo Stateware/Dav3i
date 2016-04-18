@@ -23,8 +23,8 @@
 // Description:             This module holds all global data for the other modules of the project
 // Date Created:            3/19/2015
 // Contributors:            Joshua Crafts, Vanajam Soni, Paul Jang
-// Date Last Modified:      4/23/2015
-// Last Modified By:        Kyle Nicholson
+// Date Last Modified:      4/4/2016
+// Last Modified By:        William Bittner
 // Dependencies:            index.html
 // Additional Notes:        N/A
 
@@ -44,6 +44,7 @@ var g_Expanded = false; 			// variable used to determine whether or not the grap
 var g_VaccHMS = 1;					// variable used to determine which vaccination stat to use when heat mapping
 var g_TempSettings = new Array(5);  // indicies are "first year, last year, Heat map year, graph type, vacc heat map"
 var g_Map;
+var g_Config;						// connection strings (API calls) config
 
 //key:value as region:div
 var g_mapSelectedRegionsToDivs = {};

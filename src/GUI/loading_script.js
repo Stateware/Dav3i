@@ -28,25 +28,82 @@
 // Dependencies:            descriptor.php, by_stat.php, lookup_table.js, map.js, data.js, dynamic_markup.js, index.html
 // Additional Notes:        N/A
 
-// Author: Emma Roudabush, William Bittner
-// Date Created: 3/5/2015
-// Last Modified: 11/13/2015 by Paul Jang
-// Description: Generates lookup table and heat map while 
-//              displaying loading screen
-// PRE: divs with class "spinner" and "begin" exist, and the function GetDescriptor is defined somewhere
-// POST: lookup table is generated, generate map colored by default HMS, session and instance dropdowns are filled
-function initPage() 
-{
-	initMap();
-    // Generate lookup table and heat map
-    GetDescriptor();
 
-    // Do below process when heat map is generated
-    // Check opacity in testing?
-    $(".spinner").fadeOut(1250);
-    setTimeout(function () {
-        $(".begin").fadeIn(1500);
-    }, 1250);
+/*
+ * Function: ReadConfig
+ * This function is called on page load of Dav3i. It reads the config file, then calls the initPage function
+ * 
+ *
+ * Pre: initPage is a defined function
+ * 
+ *
+ * Post: initPage is called with the json of the file located at CONF/frontend_connection_strings.conf
+ * 
+ *
+ * Authors: William Bittner, Nicholas Denaro
+ * 
+ *
+ * Date Created: 4/4/2016
+ * 
+ *
+ * Last Modified: 4/4/2016 by William Bittner
+ * 
+ */
+function ReadConfig()
+{
+	$.getJSON( "CONF/frontend_connection_strings.conf", initPage);
+}
+
+/*
+ * Function: initPage
+ * This page called all of the functions necessary to initialize the page
+ * 
+ *
+ * Pre: functions LoadConfig, initMap, GetDescriptor, and RemoveSpinnerAndBegin are defined
+ * 
+ *
+ * Post: LoadConfig is called with the configData, initMap is called, and GetDescriptor is called and passed with RemoveSpinnerAndBegin as a callback
+ * 
+ *
+ * Authors: William Bittner, Nicholas Denaro
+ * 
+ *
+ * Date Created: 4/4/2016 
+ * 
+ *
+ * Last Modified: 4/4/2016 by William Bittner
+ * 
+ */
+function initPage( configData ) 
+{
+	 LoadConfig( configData ); 
+	 initMap(); 
+	 GetDescriptor(null, RemoveSpinnerAddBegin);
+	
 };
 
+/*
+ * Function: RemoveSpinnerAndBegin
+ * This function removes the loading screen spinner and shows the begin button
+ * 
+ *
+ * Pre: spinner and begin classes defined
+ * 
+ *
+ * Post: spinner is gone and begin has appeared
+ * 
+ *
+ * Authors: William Bittner, Nicholas Denaro
+ * 
+ *
+ * Date Created: 4/4/2016
+ * 
+ *
+ * Last Modified: 4/4/2016 by William Bittner
+ * 
+ */
+function RemoveSpinnerAddBegin()
+{
+    $(".spinner").fadeOut(1250, function() { $(".begin").fadeIn(1500); });
+}
 
