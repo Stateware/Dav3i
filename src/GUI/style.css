@@ -60,6 +60,25 @@
     
 }
 
+.color_scale
+{
+    height:10px;
+    width:20px;
+    display:inline-block;
+    margin:0px;
+}
+
+#color_scale_container
+{
+    float:middle; 
+    width:400px; 
+    height:15px; 
+    position:absolute; 
+    bottom:1%; 
+    z-index:2; 
+    left:30%
+}
+
 #clear {
     position: absolute;
     /*left: 28%;

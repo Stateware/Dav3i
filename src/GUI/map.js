@@ -73,7 +73,7 @@ function initMap() {
                 attribute: 'fill',
                 // needs some random init values, otherwise dynamic region coloring won't work
                 values: { ID: 148576, PG: 13120.4, MX: 40264.8, EE: 78.6, DZ: 30744.6, MA: 24344.4, MR: 14117.6, SN: 39722.6, GM: 7832.6, GW: 9902.2 },
-                scale: ['#22FF70', '#1D7950'],
+                scale: ['#0000ff','#0040ff','#0080ff','#00bfff','#00ffff','#00ffbf','#80ff00','#bfff00','#ffff00','#ffbf00','#ff8000','#ff4000','#ff0000'],
                 normalizeFunction: 'polynomial'
             }]
         },

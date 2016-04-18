@@ -194,6 +194,7 @@ function t_graphStat(statData, name)
             this.min = this.data[i];
         }
     }
+    return this;
 }
 
 // prototype for variable containing list of nodes
