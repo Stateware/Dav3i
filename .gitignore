@@ -8,6 +8,7 @@
 *.project
 *.sublime-project
 *.sublime-workspace
+*.metadata
 
 # Build results
 [Dd]ebug/

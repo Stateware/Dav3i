@@ -27,145 +27,471 @@
 // Dependencies:        descriptor.php, by_stat.php, data.js
 // Additional Notes:    N/A
 
-// Author: Emma Roudabush, Joshua Crafts
-// Date Created: 3/5/2015
-// Last Modified: 4/16/2015 by Nicholas Denaro
-// Description: Fills g_DescriptorJSON with the contents of descriptor.php,
-//              fills g_LookupTable and g_StatList with their corresponding data
-//              and logs the resulting variables to the console.
-// PRE: DescriptorJSON, g_StatList, and g_LookupTable exist,
-//      GenerateLookupTable and GenerateStatReferenceList function correctly
-// POST: DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
-function ParseDescriptor()
+/*
+ * Function: ParseDescriptor
+ * Fills g_DescriptorJSON with the contents of descriptor.php, fills g_LookupTable and g_StatList with their corresponding data and logs the resulting variables to the console.
+ *
+ * Pre: 
+ * DescriptorJSON is not null, g_StatList and g_LookupTable exist, GenerateLookupTable and GenerateStatReferenceList function correctly
+ *
+ * Post: 
+ * DescriptorJSON, g_StatList, g_LookupTable contain their correct data.
+ *
+ * Authors: 
+ * Emma Roudabush, Joshua Crafts, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 9/24/2015 by William Bittner
+ */
+function ParseDescriptor(DescriptorJSON)
 {
-    var DescriptorJSON;
     var hmsData;
 
-    $.when(GetDescriptor()).done(function(DescriptorJSON){
-        SetInitalYears(DescriptorJSON);
-        SetGraphType(0);
-        GenerateLookupTable(DescriptorJSON);
-        GenerateStatReferenceList(DescriptorJSON);
-        ParseStatList();
-        g_StatID = 1;
-        g_HMSYear = g_LastYear;
-        ColorByHMS();
-        //console.log(g_LookupTable);
-        //console.log(g_StatList);
-        BuildTabs();
-        UpdateInputs();
-    });
-}
+	//Grab an object containing the first and last year 
+    var yearRangeObject = GetInitialYears(DescriptorJSON);
+    
+    //Set the globals for the year range and initial year values
+    g_FirstYear = yearRangeObject.FirstYear;
+	g_YearStart = yearRangeObject.FirstYear;
+	g_LastYear = yearRangeObject.LastYear;
+	g_YearEnd = yearRangeObject.LastYear;
+    
+    //settings.js
+    SetGraphType(0);
+    
+    //Set global for lookup table
+    g_LookupTable = InitializeLookupTable(DescriptorJSON);
+    
+    //Generate an array of stat names
+    g_StatList = GenerateStatReferenceList(DescriptorJSON);
+    
+    //Generate a parsed stat list
+    //TODO: Figure out what this is doing and why
+    g_ParsedStatList = ParseStatList();
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 3/19/2015 by Emma Roudabush
-// Description: Retrieves descriptor.php from the server                
-// PRE: descriptor.php exists on the server.
-// POST: returns the contents of descriptor.php
-function GetDescriptor()
-{
-    return $.ajax({                                      
-        url: 'http://usve74985.serverprofi24.com/API/descriptor.php',                                                     
-        dataType: 'JSON',                 
-        success: function(data){     
-            //console.log("Successfully received descriptor.php");
-        } 
-    });
-}
+    CleanStatNames();
 
-// Author: Emma Roudabush
-// Date Created: 4/7/2015
-// Last Modified: 4/7/2015 by Emma Roudabush
-// Description: Sets the time span to the correct span given by descriptor.php				
-// PRE: DescriptorJSON exists with the correct data from descriptor.php,
-//		g_FirstYear, g_YearStart, g_LastYear and g_YearEnd exist
-// POST: g_FirstYear and g_YearStart have the correct beginning year of statistics.
-// 		 g_LastYear and g_YearEnd have the correct ending year of statistics. 
-function SetInitalYears(DescriptorJSON)
-{
-	g_FirstYear = Number(DescriptorJSON.yearRange[0]);
-	g_YearStart = Number(DescriptorJSON.yearRange[0]);
-	g_LastYear = Number(DescriptorJSON.yearRange[1]);
-	g_YearEnd = Number(DescriptorJSON.yearRange[1]);
-}
-
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 3/19/2015 by Emma Roudabush
-// Description: Fills the contents of g_LookupTable with data from
-//              DescriptorJSON. This includes the CC2 codes, the 
-//              names, and the HMS values are set to 0.
-// PRE: DescriptorJSON exists with the correct data from descriptor.php,
-//      g_LookupTable exists
-// POST: g_LookupTable has the correct CC2, name, and HMS values
-function GenerateLookupTable(DescriptorJSON)
-{
-    g_LookupTable = new Array(DescriptorJSON.cc2.length);
-    for (i = 0; i < DescriptorJSON.cc2.length; i++)
+    // fill the dropdown menus and the new tab popup elements
+    var sessionSelect = document.getElementById("sessionSelect");
+    
+    if( sessionSelect == undefined)
     {
-        g_LookupTable[i] = new Array(3);
-        g_LookupTable[i][0] = DescriptorJSON.cc2[i];
-        g_LookupTable[i][1] = DescriptorJSON.common_name[i];
-        g_LookupTable[i][2] = 0;
+    	alert("An error has occured. Please try again in a few moments and if the problem persists contact the developers.");
+    	return -1;
     }
+    
+    FillSessionDropDown(DescriptorJSON,(sessionSelect.options.length == 0));
+    FillInstanceDropDown(DescriptorJSON);
+   	PopulateNewTabMenu(DescriptorJSON);
+   	// This needs to be set to 1 to preserve ordering of future lists and graph correctly. TODO: Fix this!
+    g_StatID = 1;
+
+    //Set the initial year displayed to the most current year for which we have data
+    g_HMSYear = g_LastYear;
+
+    // create the dropdown menu of stat tabs
+   	BuildTabs();
+
+   	
+    
+    FindCountriesNoData();
+
+    g_TempSettings = UpdateInputs();
+
+    g_StatID = 1;
+    ColorByHMS();
+    
+    //prefill the session/instances and their names into the g_cache
+    PopulateSessionNames(DescriptorJSON.sessions, g_cache);
+    PopulateInstanceNames(getSession(), DescriptorJSON.instances, g_cache);
+        
 }
 
-// Author: Emma Roudabush
-// Date Created: 3/5/2015
-// Last Modified: 3/19/2015 by Emma Roudabush
-// Description: Fills the contents of g_StatList with the stats
-//              data from DescriptorJSON            
-// PRE: DescriptorJSON exists with the correct data from descriptor.php,
-//      g_StatList exists
-// POST: g_StatList has the correct stat values
+/*
+ * Function: PopulateSessionNames
+ * Reads descriptor and populates cache with session names to be used later when graphing instances
+ * 
+ * Parameters: 
+ * sessions - the sessions json of the descriptor
+ * cache - the cache to put the names in to
+ * 
+ * Pre: 
+ * descriptorJSON is formatted as defined in the documentation
+ * cache is initialized as a data_cache object
+ * 
+ * Post: 
+ * cache has the names for sessions filled
+ * 
+ * Authors: 
+ * William Bittner
+ * 
+ * Date Created: 
+ * 3/21/16 
+ * 
+ * Last Modified: 
+ * 3/21/16 William Bittner
+ */
+function PopulateSessionNames(sessions, cache)
+{
+	var keys = Object.keys(sessions);
+	for(var i = 0; i < keys.length; i++)
+	{
+		//do not add "name" as key because we use keys to iterate through data points, and name is not a data point
+		cache.get(keys[i]).setAndDoNotAddKey("name",  sessions[keys[i]]);
+	}
+	
+	return cache;
+}
+
+/*
+ * Function: PopulateInstanceNames
+ * Reads descriptor and populates cache with session names to be used later when graphing instances
+ * 
+ * Parameters: 
+ * sessionID - the ID of the session of which to add the instances
+ * instances - the instances json of the descriptor
+ * cache - the cache to put the names in to
+ * 
+ * Pre: 
+ * cache is initialized as a data_cache object
+ * 
+ * Post: 
+ * instance names are inserted into the cache
+ * 
+ * Authors: 
+ * William Bittner
+ * 
+ * Date Created: 
+ * 3/21/16 
+ * 
+ * Last Modified: 
+ * 3/21/16 William Bittner
+ */
+function PopulateInstanceNames(sessionID, instances, cache)
+{
+	var keys = Object.keys(instances);
+	for(var i = 0; i < keys.length; i++)
+	{	
+		//do not add "name" as key because we use keys to iterate through data points, and name is not a data point
+		cache.get(sessionID).get(keys[i]).setAndDoNotAddKey("name",  instances[keys[i]]);
+	}
+	
+	return cache;
+}
+
+/*
+ * Function: GetDescriptor
+ * Retrieves descriptor.php from the server  
+ *
+ * Pre: 
+ * descriptor.php exists on the server.
+ *
+ * Post: I
+ * f retrieval is successful, call the function to parse the descriptor if retrieval is not, error is logged.
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
+function GetDescriptor(sessionID, callback)
+{
+	var URL = g_Config.getAPI() + 'descriptor.php';
+	if(sessionID != null)
+	{
+		URL += '?sessionID=' + sessionID;
+	}
+    return $.ajax({                                      
+        url: URL,                                                     
+        dataType: 'JSON',                 
+        success: function(data){
+        	ParseDescriptor(data);
+        	//initMap();
+    		FindCountriesNoData();
+    		if(typeof(callback) == 'function')
+			{
+				callback();
+			}
+        },
+        error: function(xhr, textStatus, errorThrown){
+       		console.log('Descriptor could not be fetched. The error is as follows: ' + errorThrown);
+       		console.log(URL);
+    	}
+    });
+}
+
+/*
+ * Function: GetInitialYears
+ * Returns an object corresponding to the year range defined in the descriptor	
+ *
+ * Pre: 
+ * DescriptorJSON is formatted as to the specifications in the documentation
+ *
+ * Post: 
+ * An object with the first and last year values defined
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 4/7/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
+function GetInitialYears(DescriptorJSON)
+{
+	var firstYear = Number(DescriptorJSON.yearRange["startYear"]);
+	var lastYear = Number(DescriptorJSON.yearRange["endYear"]);
+	var yearRangeObject = {
+						FirstYear : firstYear,
+						LastYear  : lastYear
+					};
+
+	return yearRangeObject;
+}
+
+/*
+ * Function: 
+ * Returns a table of Countries CC2 codes, the country names, and HMS values are set to 0.
+ *
+ * Pre: 
+ * DescriptorJSON exists with the correct data from descriptor.php,
+ *
+ * Post: 
+ * A 2d array is returned that has the correct CC2, name, and HMS values zero'd for each country
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
+function InitializeLookupTable(DescriptorJSON)
+{
+	var countryKeys = Object.keys(DescriptorJSON.countries)
+
+    var lookupTable = new Array(countryKeys.length);
+
+    for (i = 0; i < countryKeys.length; i++)
+    {
+    	//TODO: Get rid of magic numbers?
+        lookupTable[i] = new Array(3);
+        lookupTable[i][0] = DescriptorJSON.countries[countryKeys[i]].cc2;
+        lookupTable[i][1] = DescriptorJSON.countries[countryKeys[i]].common_name;
+        lookupTable[i][2] = 0;
+    }
+    
+    return lookupTable;
+}
+
+/*
+ * Function: GenerateStatReferenceList
+ * Returns an array of stat names gathered from DescriptorJSON
+ *
+ * Pre: 
+ * DescriptorJSON exists with the correct data from descriptor.php
+ *
+ * Post: 
+ * returns an array containing the correct stat names
+ *
+ * Authors: 
+ * Emma Roudabush, William Bittner
+ *
+ * Date Created: 
+ * 3/5/2015
+ *
+ * Last Modified: 
+ * 9/24/2015 by William Bittner
+ */
 function GenerateStatReferenceList(DescriptorJSON)
 {
-    g_StatList = new Array(DescriptorJSON.stats.length); 
-    for (i = 0; i < DescriptorJSON.stats.length; i++)
+	var statKeys = Object.keys(DescriptorJSON.stats);
+
+    var statList = new Array(statKeys.length); 
+    
+    for (i = 0; i < statKeys.length; i++)
     {
-        g_StatList[i] = DescriptorJSON.stats[i];
+        statList[i] = DescriptorJSON.stats[statKeys[i]];
     }
+    
+    return statList;
 }
 
-// Author: Emma Roudabush, Joshua Crafts
-// Date Created: 3/17/2015
-// Last Modified: 3/23/2015 by Joshua Crafts
-// Description:Replace HMS values in lookup table with new HMS data (will happen just after lookup table generation for default HMS)
-// PRE: hmsData contains valid heat map values and hmsData is of size g_LookupTable.length
-// POST: g_LookupTable has heat map values of hmsData
+/*
+ * Function: SetHMS
+ * Replace HMS values in lookup table with new HMS data (will happen just after lookup table generation for default HMS)
+ *
+ * Pre: 
+ * hmsData contains valid heat map values and hmsData is of size g_LookupTable.length
+ *
+ * Post: 
+ * g_LookupTable has heat map values of hmsData
+ *
+ * Authors: 
+ * Emma Roudabush, Joshua Crafts
+ *
+ * Date Created: 
+ * 3/17/2015
+ *
+ * Last Modified: 
+ * 9/28/2015 by Murlin Wei
+ */
 function SetHMS(hmsData)
 {
+	var heatMapValues = [];
     for (var i = 0; i < g_LookupTable.length; i++)
     {
-        g_LookupTable[i][2] = Number(hmsData[i]);
+    	heatMapValues[i] = hmsData[i]
     }
+
+    return heatMapValues
 }
 
-// Author: Vanajam Soni, Kyle Nicholson, Joshua Crafts
-// Date Created: 3/19/2015
-// Last Modified: 3/23/2015 by Joshua Crafts
-// Description: Returns HMS data based on hmsID
-// PRE: hmsID is an integer and a valid heat map stat id, year is an integer and within the valid range
-// POST: FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
-function GetHMS(hmsID, year)
+
+/*
+ * Function: ReformatByStatData
+ * Takes a cache instance object for a particular session and returns an
+ * array of the values
+ * 
+ * Parameters: 
+ * cache - 
+ * statID - 
+ * year - 
+ * 
+ * Pre: 
+ * instanceCache contains valid instance data for the stat and all countries in the
+ * cache storage format
+ * 
+ * Post: 
+ * FCTVAL == array containing [country] = value at year
+ * 
+ * Returns: 
+ * array [country]
+ * 
+ * Authors: 
+ * Nicholas Denaro
+ * 
+ * Date Created: 
+ * 2/12/16 
+ * 
+ * Last Modified: 
+ * 2/15/16 by Nicholas Denaro
+ */
+function ReformatByStatData(instanceCache, statID, year)
 {
-    return $.ajax({                                      
-        url: 'http://usve74985.serverprofi24.com/API/by_stat.php?statID='.concat(hmsID.toString()+"&year="+year.toString()),                                                     
+	var data = [];
+	var keys = instanceCache.keys;
+
+	for(var country = 0; country < keys.length; country++)
+	{
+		//console.log(cache.get(keys[country]));
+		if( !isNaN( keys[country] ) )
+		{
+			data[ keys[country] ] = instanceCache.get(keys[country]).get(statID).get(year);
+		}
+	}
+
+	return data;
+}
+
+/*
+ * Function: SuccessfulByStat
+ * Connects the formatting of the data from the server and the updating of the heatmap
+ * 
+ * Parameters: 
+ * data - The data received from the server
+ * statID - The stat id for the call
+ * year - the year for the call
+ * 
+ * Pre: 
+ * data is valid and does not contain an error
+ * 
+ * Post: 
+ * Heatmap is updated
+ * 
+ * Authors: 
+ * Nicholas Denaro
+ * 
+ * Date Created: 
+ * 2/12/16 
+ * 
+ * Last Modified: 
+ * 2/15/16 by Nicholas Denaro
+ */
+function SuccessfulByStat(data, statID, year)
+{
+	data = ReformatByStatData(data, statID, year);
+   	ParseMapData(data,statID);
+}
+
+/*
+ * Function: 
+ * Returns HMS data based on hmsID
+ *
+ * Pre: 
+ * hmsID is an integer and a valid heat map stat id, year is an integer and within the valid range
+ *
+ * Post: 
+ * FCTVAL == HMS data corresponding to stat enumerated by hmsID in the stat reference list, in JSON format
+ *
+ * Authors: 
+ * Vanajam Soni, Kyle Nicholson, Joshua Crafts
+ *
+ * Date Created: 
+ * 3/19/2015
+ *
+ * Last Modified: 
+ * 2/8/2016 by Nicholas Denaro
+ */
+function GetHMS(sessionID, instanceID, hmsID, year)
+{
+	var URL = g_Config.getAPI() + 'by_stat.php?sessionID='.concat(sessionID.toString()+"&instanceID="+instanceID.toString()+"&statID="+hmsID.toString()+"&year="+year.toString());
+
+    $.ajax({        
+        url: URL,                                                     
         dataType: 'JSON',
         success: function(data){     
+        	data = ReformatByStatData(data);
+        	ParseMapData(data,hmsID);
             //console.log("Successfully received by_stat.php?statID=".concat(hmsID.toString()));
-        } 
+        },
+        error: function(xhr, textStatus, errorThrown){
+       		console.log('HMS could not be fetched. The error is as follows: ' + errorThrown);
+       		console.log('HMS could not be fetched. URL: ' + URL);
+    	}
     });
 }
 
-// Author: Emma Rouabush, Joshua Crafts
-// Date Created: 3/17/2015
-// Last Modified: 3/22/2015 by Joshua Crafts
-// Description: Translate CC2 to CID using g_LookupTable
-// PRE: cc2 is a string that is a valid CC2 code corresponding to a country/region in the lookup table,
-//		g_LookupTable exists and has the correct data
-// POST: FCTVAL = cid (CID corresponding to the input CC2 in the lookup table), -1 if cc2 not found
+/*
+ * Function: 
+ * Translate CC2 to CID using g_LookupTable
+ *
+ * Pre: 
+ * cc2 is a string that is a valid CC2 code corresponding to a country/region in the lookup table, g_LookupTable exists and has the correct data
+ *
+ * Post: 
+ * FCTVAL = cid (CID corresponding to the input CC2 in the lookup table), -1 if cc2 not found
+ *
+ * Authors: 
+ * Emma Rouabush, Joshua Crafts
+ *
+ * Date Created: 
+ * 3/17/2015
+ *
+ * Last Modified: 
+ * 3/22/2015 by Joshua Crafts
+ */
 function GetCID(cc2)
 {
     var length = g_LookupTable.length;
@@ -183,114 +509,176 @@ function GetCID(cc2)
 }
 
 /*
-// I'm keeping this here just in case something breaks TODO: Delete these comments when approval is granted
-function ParseStatList()
+ * Function: CleanStatNames
+ * Take the stat list and give them nicer names to display.
+ *
+ * Pre: 
+ * g_StatList exist
+ *
+ * Post: 
+ * g_StatList has friendlier names
+ *
+ * Authors: 
+ * Nicholas Denaro, William Bittner
+ *
+ * Date Created: 
+ * 2/22/2016
+ *
+ * Last Modified: 
+ * 2/22/2016 by Nicholas Denaro
+ */
+function CleanStatNames()
 {
-    g_ParsedStatList = [[1,0,0,0,0,0,0],[12,0,1,2,3,5,8],[4,-1,-1,-1,-1,10,11],[6,-1,-1,-1,-1,9,7]];
-}*/
+	g_StatList[g_StatList.indexOf("births")] = "Births";
+	g_StatList[g_StatList.indexOf("cases")] = "Reported Cases";
+	g_StatList[g_StatList.indexOf("deaths")] = "Deaths";
+	g_StatList[g_StatList.indexOf("e_cases")] = "Estimated Cases";
+	g_StatList[g_StatList.indexOf("e_mortality")] = "Estimated Mortality";
+	g_StatList[g_StatList.indexOf("populations")] = "Population";
+	g_StatList[g_StatList.indexOf("sia")] = "sia-VACCB";
+}
 
-// Author: Kyle Nicholson
-// Date Created: 4/2/2015
-// Last Modified: 4/15/2015 by Kyle Nicholson
-// Description: Take the stat list and populate a parsed data 2d array for use in creating graphs
-// PRE: g_StatList, g_ParsedStatList exist
-// POST: g_ParsedStat is set up as a 2D array A[x][y], in which each x value represents a selectable 
-// 		 stat, and each y value either represents stat type (0), indicates head stat (1), or indicates 
-//		 associated data (2-3).
+/*
+ * Function: ParseStatList
+ * Take the stat list and populate a parsed data 2d array for use in creating graphs
+ *
+ * Pre: 
+ * g_StatList exist
+ *
+ * Post: 
+ * return a 2D array A[x][y], in which each x value represents a selectable stat, and each y value either represents stat type (0), indicates head stat (1), or indicates associated data (2-3).
+ *
+ * Authors: 
+ * Nicholas Denaro, William Bittner
+ *
+ * Date Created: 
+ * 4/2/2015
+ *
+ * Last Modified: 
+ * 2/22/2016 by Nicholas Denaro
+ */
 function ParseStatList()
 {
-	var sortedStatList = g_StatList.slice();
-	sortedStatList.sort();
+	var statList = g_StatList.slice();
 	var parsedStatList = [];						// 2d array
 	parsedStatList[0] = [];
 	parsedStatList[1] = [];
 	parsedStatList[2] = [];
 	parsedStatList[3] = [];
-	
-	var index = 0;
-	
-	// 'global' variables for index locations
-	var statType = 0;
-	var headStat = 1;
-	var assocStat1 = 2;
-	var assocStat2 = 3;
-	
+
 	// index variables for the vaccination stats
 	var vaccL1 = -1;
 	var vaccL2 = -1;
 	var vaccSIAHead = -1;
 	
-	// this loop searches through the g_statList and places only single stats
-	// in the parsedStatList in the appropriate slot
-	for(var i = 0; i<sortedStatList.length; i++)
+	var statType = {
+		NOT_VACCINE : 0,
+		VACCINE : 1
+	};
+
+	// 'global' variables for index locations
+	var parsedStatIndexes = { 
+		GRAPH_TYPE : 0,
+		HEAD_STAT : 1,
+		ASSOCIATED1 : 2,
+		ASSOCIATED2 : 3
+	};
+
+	var mcvRegex = new RegExp("^mcv(1|2)$");
+	var siaRegex = new RegExp("^sia$");
+	var estimatedRegex = new RegExp("^e_");
+	var estimatedBoundRegex = new RegExp("^(ube_|lbe_)");
+
+	var index = 0;
+
+	// Vaccines
+	var siaIndex = statList.indexOf("sia");
+	parsedStatList[parsedStatIndexes.GRAPH_TYPE][index] = statType.VACCINE;
+	parsedStatList[parsedStatIndexes.HEAD_STAT][index] = siaIndex;
+	var svaccSIAHead = index;
+	var mcv1Index = statList.indexOf("mcv1");
+	var mcv2Index = statList.indexOf("mcv2");
+	parsedStatList[parsedStatIndexes.ASSOCIATED1][index] = mcv1Index;
+	parsedStatList[parsedStatIndexes.ASSOCIATED2][index] = mcv2Index;
+
+	index++;
+
+	for(var i = statList.length - 1; i >= 0; i--)
 	{
-		var currentStat = sortedStatList[i];
-		var isAssociatedStat = false;
-		var isVacc = false;
-		
-		if(currentStat.indexOf('VACCL') >= 0)
+		var currentStat = statList[i];
+
+		if(estimatedRegex.test(currentStat) || (!estimatedBoundRegex.test(currentStat) && !mcvRegex.test(currentStat) && currentStat != "sia"))
 		{
-			// prevent any vaccination bounds from being put as a head stat and mark vaccl indexes
-			// also sets location of associated vaccination stats
-			isAssociatedStat = true;
-			if(vaccL1 == -1)
-			{
-				vaccL1 = g_StatList.indexOf(currentStat);
-			}
-			else if(vaccL2 == -1)
-			{
-				vaccL2 = g_StatList.indexOf(currentStat); 
-			}
-		}
-		
-		// sets the assocaited stat indexes
-		if(i > 0 && currentStat.indexOf(sortedStatList[i-1]) == 0)
-		{
-			isAssociatedStat = true;
-			parsedStatList[assocStat1][index-1] = g_StatList.indexOf(currentStat);
-		}
-		else if(i > 1 && currentStat.indexOf(sortedStatList[i-2]) == 0)
-		{
-			isAssociatedStat = true;
-			parsedStatList[assocStat2][index-1] = g_StatList.indexOf(currentStat);
-		}
-		
-		// sets the head stats
-		if(!isAssociatedStat)
-		{
-			parsedStatList[headStat][index] = g_StatList.indexOf(currentStat);
-			// if the current stat doesn't contain vacc then set statType to 0
-			if(currentStat.indexOf('VACCB') < 0)
-			{
-				parsedStatList[statType][index] = 0;
-			}
-			else
-			{
-				parsedStatList[statType][index] = 1;
-				isSIAInList = true; 
-				vaccSIAHead = index;
-			}
+			parsedStatList[parsedStatIndexes.GRAPH_TYPE][index] = statType.NOT_VACCINE;
+			parsedStatList[parsedStatIndexes.HEAD_STAT][index] = i;
+			parsedStatList[parsedStatIndexes.ASSOCIATED1][index] = -1;
+			parsedStatList[parsedStatIndexes.ASSOCIATED2][index] = -1;
 			index++;
 		}
 	}
-	
-	// set the associated stats for the SIA vaccination stat
-	parsedStatList[assocStat1][vaccSIAHead] = vaccL1;
-	parsedStatList[assocStat2][vaccSIAHead] = vaccL2;
-	
-	
-	// hacky way of filling in nulls with -1 TODO: figure out how to do this better
-	for(var i=0;i<index;i++)
+
+	for(var i = parsedStatList.length - 1; i >= 0; i--)
 	{
-		for(var j=0;j<4;j++)
+		var statName = statList[parsedStatList[parsedStatIndexes.HEAD_STAT][i]];
+		var normalizedStatName = statName.replace("e_","");
+
+		if(estimatedRegex.test(statName))
 		{
-			if(parsedStatList[j][i] == null)
-			{
-				parsedStatList[j][i] = -1;
-			}
+			var lowerIndex = statList.indexOf("lbe_"+normalizedStatName);
+			var upperIndex = statList.indexOf("ube_"+normalizedStatName);
+
+			parsedStatList[parsedStatIndexes.ASSOCIATED1][i] = lowerIndex;
+			parsedStatList[parsedStatIndexes.ASSOCIATED2][i] = upperIndex;
 		}
 	}
-	g_ParsedStatList = parsedStatList;
+	return parsedStatList;
 }
 
+/* Function GetHeadStatList()
+/*
+/*      Retrieves the list of head stats from the global parsed stat list
+/*
+/* Parameters: 
+/*
+/*      none
+/*
+/* Pre:
+/*
+/*      g_ParsedStatList is correctly filled
+/*
+/* Post:
+/*
+/*      an array of head stats is returned
+/*
+/* Returns:
+/*
+/*      an array of head stats
+/*
+/* Authors:
+/*
+/*      Paul Jang
+/*
+/* Date Created:
+/*
+/*      2/26/2016
+/*
+/* Last Modified:
+/*
+/*      2/26/2016 by Paul Jang
+ */
+function GetHeadStatList()
+{
+	// retrieve the array from the parsed stat list that correlates with the head stats
+    var headStats = g_ParsedStatList[1];
 
+    // the array to be returned
+    var headStatArray = new Array();
+
+    // iterate through the array and add values to the return array
+    for(var i=0; i<headStats.length; i++)
+    {
+        headStatArray.push(g_StatList[headStats[i]]);
+    }
+
+    return headStatArray;
+}

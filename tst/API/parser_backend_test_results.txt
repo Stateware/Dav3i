@@ -1,0 +1,13 @@
+.error with selected file 1................
+Time: 22 seconds, Memory: 3.50Mb
+OK (17 tests, 17 assertions)
+
+Code Coverage Report 
+  2015-12-13 02:49:40
+
+ Summary: 
+  Classes:  (0/0)
+  Methods:  (0/0)
+  Lines:   44.09% (56/127)
+
+//"error with selected file 1" is the output of a particular test that gives an improper file to the parser. This failure indicates a successful test

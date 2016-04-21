@@ -37,10 +37,10 @@
 //      on the click of button "clear"
 // PRE: index.html and div with id "map" exist 
 // POST: The map is initialized in the div "map"
-$(function(){
+function initMap() {
     // Author: Joshua Crafts
     // Date Created: 3/21/2015
-    // Last Modified: 4/14/2015 by Paul Jang
+    // Last Modified: 9/28/2015 by Murlin Wei
     // Description: This function matches each country/region object in the vector map
     //              to its corresponding value in the HMS section of g_LookupTable and
     //              returns the array, indexed by CC2
@@ -48,63 +48,7 @@ $(function(){
     // POST: FCTVAL == object containing the as many elements as the total number of 
     //       initialized elements of g_LookupTable, composed of cc2 and the related
     //       HMS value. Should be used as argument to maps.series.regions[0].setValues()
-    ColorByHMS = function(){
-        var data = {},
-            key,
-            isFound,
-            min,
-            max,
-            hmsID = g_StatID,
-            type = 0;
-
-        for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)
-            {
-                if (g_ParsedStatList[1][i] == g_StatID && g_ParsedStatList[0][i] == 1)
-                {
-                    type = 1;
-                    if (g_VaccHMS == 1)
-                        hmsID = g_ParsedStatList[2][i];
-                    else if (g_VaccHMS == 2)
-                        hmsID = g_ParsedStatList[3][i];
-                }
-            }
-
-        $.when(GetHMS(hmsID,g_HMSYear)).done(function(hmsData){
-            isFound = false;
-            min = Number.MAX_VALUE;
-            max = Number.MIN_VALUE;
-            SetHMS(hmsData[hmsID]);     // Need to index in due to JSON format of by_stat.php
-            // iterate through regions by key
-            for (key in map.regions) {
-                // iterate through lookup table by index
-                for (var i = 0; i < g_LookupTable.length && isFound == false; i++)
-                {
-                    // set value by key if key is equal to cc2 in lookup table
-                    if (key === g_LookupTable[i][0] && g_LookupTable[i][2] != -1)
-                    {
-                        data[key] = g_LookupTable[i][2];
-                        if (data[key] < min)
-                            min = data[key];
-                        if (data[key] > max)
-                            max = data[key];
-                        isFound = true;
-                    }
-                    else
-                    {
-                        //data[key] = -1;
-                    }
-                }
-                isFound = false;
-            }
-            
-            map.series.regions[0].params.min = min;
-            map.series.regions[0].params.max = max;
-            map.reset();
-            map.series.regions[0].setValues(data);
-        });
-    };
-
-    map = new jvm.Map(
+    var localMap = new jvm.Map(
     {
         map: 'world_mill_en',
         container: $('#map'),
@@ -128,15 +72,31 @@ $(function(){
                 attribute: 'fill',
                 // needs some random init values, otherwise dynamic region coloring won't work
                 values: { ID: 148576, PG: 13120.4, MX: 40264.8, EE: 78.6, DZ: 30744.6, MA: 24344.4, MR: 14117.6, SN: 39722.6, GM: 7832.6, GW: 9902.2 },
-                scale: ['#22FF70', '#1D7950'],
+                scale: ['#0000ff','#0040ff','#0080ff','#00bfff','#00ffff','#00ffbf','#80ff00','#bfff00','#ffff00','#ffbf00','#ff8000','#ff4000','#ff0000'],
                 normalizeFunction: 'polynomial'
             }]
         },
         // runs when a region is selected
-        onRegionSelected: function()
-        {
-            if (g_Clear != true)
-                ModifyData(map.getSelectedRegions());
+        onRegionSelected: function(jvectorMapEvent, regionCC2, regionSelected, selectedRegionsList)
+        {        	
+        	//make sure we have data for the country before attempting to fetch
+        	if( g_CountriesNoData.indexOf( regionCC2 ) === -1)
+        	{
+	            if( regionSelected )
+	            {
+	            	AddRegion( GetCID( regionCC2 ) );
+	            }
+	            else //region deselected
+	            {
+	            	RemoveRegion( regionCC2 );
+	            }
+	        }
+	        else //no data for region
+	        {
+	        	//kind of ugly - just set it to not selected 
+	        	// I don't think there is a way to make a region not selectable - this has similar effect. 
+	        	g_Map.regions[regionCC2].element.setSelected( false );
+	        }
         },
         // runs when region is hovered over
         onRegionTipShow: function(e, label, key){
@@ -170,56 +130,168 @@ $(function(){
             else
                 tipString += g_StatList[hmsID];
             tipString += " in " + g_HMSYear + ": ";
-            if (map.series.regions[0].values[key] === undefined)            
+            if (g_Map.series.regions[0].values[key] === undefined)            
                 tipString += "No Data Available";
             else if (type == 1)
-                tipString += (map.series.regions[0].values[key] * 100).toFixed(0) + "%";
+                tipString += (g_Map.series.regions[0].values[key] * 100).toFixed(0) + "%";
             else
             {
-                tipString += Format.to(Number(map.series.regions[0].values[key]));
+                tipString += Format.to(Number(g_Map.series.regions[0].values[key]));
             }
             label.html(tipString);
         }
     });
-    // after lookup table is loaded, color map
-    setTimeout(function(){
-        var isFound = false;
-        g_CountriesNoData = new Array();
-        for (var key in map.regions) 
-        {
-        	isFound = false;
-            // iterate through lookup table by index
-            for (var i=0; i<g_LookupTable.length && !isFound; i++)
-            {
-                // set value by key if key is equal to cc2 in lookup table
-                if (key == g_LookupTable[i][0])
-                {
-                    isFound = true;
-                }
-            }
-            if(!isFound)
-            {
-	        	g_CountriesNoData.push(key);
-	        }
-	            
-        }
-        //console.log(g_CountriesNoData);
-        
-    }, 1000);
-    // clearing selected regions when the "clear" button in clicked
-    document.getElementById("clear").onclick = function()
+
+    g_Map = localMap;
+    SetClearButtonOnClick();
+
+    return localMap;
+};
+
+// Author: Murlin Wei, William Bittner
+// Date Created: 3/21/2015
+// Last Modified: 10/5/2015 by Murlin Wei
+// Description: This is like the 'main' function which sets up the the main variables and then
+//              passes those variables through the GetHMS function.
+// PRE:  g_ParsedStateList is initalized and contains values
+// POST: We have found the selected data from the lookup table and g_Map is populated with min and max values
+function ColorByHMS() {
+    var hmsID = g_StatID,
+        type = 0;
+
+    var key,
+        isFound,
+        min,
+        max;
+
+    // iterate through list of stats until we found the one chosen by user
+    for (i = 0; i < g_ParsedStatList[1].length && type != 1; i++)
     {
-        var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
-        // removes graphs subdivs
-        document.getElementById(parentTabDivName).innerHTML = "";
-        // removes map selections
+        if (g_ParsedStatList[1][i] == g_StatID && g_ParsedStatList[0][i] == 1)
+        {
+            type = 1;
+            if (g_VaccHMS == 1)
+                hmsID = g_ParsedStatList[2][i];
+            else if (g_VaccHMS == 2)
+                hmsID = g_ParsedStatList[3][i];
+        }
+    }
 
-        g_DataList.size = 0;
-        g_DataList.start = null;
-        g_DataList.end = null;
+    retrieveByStatData(getSession(), getInstance(), hmsID, g_HMSYear, SuccessfulByStat);
+};
 
-        g_Clear = true;
-        map.clearSelectedRegions();
-        g_Clear = false;
-    };
-});
+// Author: Murlin Wei, William Bittner
+// Date Created: 3/21/2015
+// Last Modified: 10/5/2015 by Murlin Wei
+// Description: Finding and setting our min and max values for our heat map.
+// PRE:  hmsData is valid and hmsID is a valid year
+// POST: We have found the selected data from the lookup table and g_Map is populated with min and max values
+function ParseMapData(hmsData,hmsID) {
+    var data = {};
+    var isFound = false;
+    var min = Number.MAX_VALUE;
+    var max = Number.MIN_VALUE;
+
+    //console.log(JSON.stringify(hmsData,' ',' '));
+    var hms = SetHMS(hmsData);
+    for (var i = 0; i < g_LookupTable.length; i++)
+    {
+        g_LookupTable[i][2] = Number(hms[i]);
+    }
+
+    // iterate through regions by key
+    for (key in g_Map.regions) {
+        // iterate through lookup table by index
+        for (var i = 0; i < g_LookupTable.length && isFound == false; i++)
+        {
+            // set value by key if key is equal to cc2 in lookup table
+            if (key === g_LookupTable[i][0] && g_LookupTable[i][2] != -1)
+            {
+                //raw numbers?
+                data[key] = g_LookupTable[i][2];
+                if (data[key] < min)
+                    min = data[key];
+                if (data[key] > max)
+                    max = data[key];
+                isFound = true;
+            }
+            else
+            {
+                //data[key] = -1;
+            }
+        }
+        isFound = false;
+    }
+
+    g_Map.series.regions[0].params.min = min;
+    g_Map.series.regions[0].params.max = max;
+    g_Map.reset();
+    g_Map.series.regions[0].setValues(data);
+    //g_Map.series.regions[0].values = data;
+
+    var dataArray = {
+        Data : data,
+        Min : min,
+        Max : max
+    }
+
+    return dataArray;
+};
+
+// Author: Murlin Wei, William Bittner
+// Date Created: 3/21/2015
+// Last Modified: 10/5/2015 by Murlin Wei
+// Description: Sets the country that have no data into an array that is called g_CountriesNoData.
+//              We wait a second before calling it is because the map may not have been fully populated yet.
+// PRE:  g_Map regions countains a list of countries
+// POST: g_CountriesNoData is populated with countries with no data
+function FindCountriesNoData() {
+    var isFound = false;
+    g_CountriesNoData = [];
+    for (var key in g_Map.regions) 
+    {
+        isFound = false;
+        // iterate through lookup table by index
+        for (var i=0; i<g_LookupTable.length && !isFound; i++)
+        {
+            // set value by key if key is equal to cc2 in lookup table
+            if (key == g_LookupTable[i][0])
+            {
+                isFound = true;
+            }
+        }
+        if(!isFound)
+        {
+            g_CountriesNoData.push(key);
+        }
+    }
+};
+
+// Author: Murlin Wei, William Bittner
+// Date Created: 3/21/2015
+// Last Modified: 10/5/2015 by Murlin Wei
+// Description: Sets up the function for the clear button method
+// PRE:  The "clear" div exists and is created
+// POST: returns 0 if setting up the onclick method succeeds, 1 otherwise.
+function SetClearButtonOnClick() {
+    // clearing selected regions when the "clear" button in clicked
+    var clearButton = document.getElementById("clear");
+    if(clearButton == null) {
+        return 1;
+    } else {
+        clearButton.onclick = function() {
+            var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+            // removes graphs subdivs
+            document.getElementById(parentTabDivName).innerHTML = "";
+            // removes map selections
+
+            g_DataList.size = 0;
+            g_DataList.start = null;
+            g_DataList.end = null;
+
+            g_Map.clearSelectedRegions();
+        };
+        return 0;
+    }
+
+};

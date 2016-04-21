@@ -31,26 +31,64 @@
  * POST:              FCTVAL == Formatted JSON String containing the statistics of the countries
  */
 
+ 
+ 
 require_once("api_library.php");
-
 // enable foreign access in testing
 if (EXTERNAL_ACCESS)
 {
 	header("Access-Control-Allow-Origin: *");
 }
-
-//This checks to see if anything was passed in for the parameter countryID
-if (!isset($_GET['countryIDs']))
+//Checks if this is running from a request
+if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 {
-	ThrowFatalError("Input is not defined: countryIDs");
+	//This checks to see if anything was passed into the parameter countryIDs
+	$_countryIDs=GetArgumentValue('countryIDs', true);
+
+	$_instanceID=GetArgumentValue('instanceID', true);
+	$_sessionID=GetArgumentValue('sessionID', true);
+	
+	country_exe($_countryIDs, $_sessionID, $_instanceID);
 }
 
-//Here we are calling our function ByCountry - which is in api_library.php - and assigning the output to an array
-$byCountryArray = ByCountry($_GET['countryIDs']);
+function country_exe($country_id, $session_id, $instance_id )
+{
+	if (is_null($country_id))
+	{
+		ThrowFatalError("Input is not defined: countryIDs");
+	}
+	if (is_null($session_id))
+	{
+		ThrowFatalError("Input is not defined: sessionID");
+	}
+	if (is_null($instance_id))
+	{
+		ThrowFatalError("Input is not defined: instanceID");
+	}
 
-//encode results of ByCountry into json
-$byCountryJSON = json_encode($byCountryArray);
+	//Here we are calling our function ByCountry - which is in api_library.php - and assigning the output to an array
+	$byCountryPacketArray = ByCountry($country_id, $session_id, $instance_id);
 
-// return byCountry json string
-echo $byCountryJSON;
+	$keys = array_keys($byCountryPacketArray);
+
+	$i = 0;
+
+	$prettyprint = isset($_GET['prettyprint']) ? true : false;
+
+	echo "{";
+
+	if(count($keys) > 0)
+	{
+		echo "\"".($i++)."\":";
+		$byCountryPacketArray[$keys[0]]->send($prettyprint);
+	}
+	for(; $i < count($keys) ;$i++)
+	{
+		echo ",\"".$i."\":";
+		$byCountryPacketArray[$keys[$i]]->send($prettyprint);
+		
+	}
+
+	echo "}";
+}
 ?>

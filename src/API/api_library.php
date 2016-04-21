@@ -29,9 +29,12 @@
  * Input:               none                     
  * Output:              none
  */
- 
+
+// make sure to include all the necessary php files that are referenced in these functions
 require_once("toolbox.php");
 require_once("connect.php");
+require_once("by_stat_packet.php");
+require_once("by_country_packet.php");
  
 // ======================== API Functions =========================
 
@@ -40,238 +43,238 @@ require_once("connect.php");
 // Date Created:  2/22/2015  
 // Last Modified: 5/1/2015 by William Bittner  
 // Description:   This function queries the database for one specific stat for one specific year for every country
-function ByStat($statID, $year)
-// PRE: statID is a valid ID of a stat in the database, and year is a valid year in the database
-// POST: FCTVAL == array of key value pairs whose index are:
-//			0: key: statID, value: an array containing each countries data for that stat in the index that corresponds
-// 					to the countries ID
-//			1: key: "force", value: "object" - this is so that the json returned to the caller of this function 
-//					returns an object, not an array of one element.
+function ByStat($statID, $year, $sessionID, $instanceID)
+// PRE: statID is a valid ID of a stat in the database, year is a valid year in the database, sessionID is a valid id that points to a session
+//      in the database, and instanceID is a valid id that points to an instance in the database
+// POST: FCTVAL == packet resulting from call to parse function with parameters determined in this function
+//                 see "ParseIntoByStatPacket" function
 {
     $heatMapArray = array();						//initialize the array we will return as the heatmap
-    $descriptor = Descriptor(); 					//call our desciptor function and assign it to a variable
-    $yearRange = $descriptor['yearRange'];			//get the year range out of the descriptor 
-    $numStats = count($descriptor['stats']);		//get the number of stats out of the descriptor
+
     $databaseConnection = GetDatabaseConnection();	//store connection to the database
+
+    $yearRange = GetYearRange($databaseConnection, $sessionID); // Get the year range to see if year is valid
     
-    //if year is set to default, there was no year entered and thus we give it the most recent year
+    //if year is null, there was no year entered and thus we give it the most recent year
     //this also means we don't need to check to see if the year is valid or sanitary 
-    if($year == DEFAULT_STRING)
+    if(is_null($year))
     {
-        $year = $yearRange[1];
+        $year = $yearRange["endYear"];
     }
     else
     {
-        //check year is sanitary
+        //check year is sanitary, see IsSanitaryYear for details
         if (!IsSanitaryYear($year))
         {
             ThrowFatalError("Input is unsanitary: year");
         }
 
-        //Check inputs are valid
+        //Check inputs are validm see IsValidYear for details
         if (!IsValidYear($year, $yearRange))
         {
             ThrowFatalError("Input is invalid: year");
         }
     }
-    //check statID is sanitary
+    //check statID is sanitary, see IsSanitaryStatID for details
     if (!IsSanitaryStatID($statID))
     {
            ThrowFatalError("Input is unsanitary: statID");
     }
     
-    //Check inputs are valid
-    if (!IsValidStatID($statID,$numStats))
-    {
-       ThrowFatalError("Input is invalid: statID");
-    }
-    
+	//TODO: validate and sanitize session and instance ids
+	
     // The statID given to us is expected to be indexed by 0, however our database is indexed by 1, so we'll add 1
     $databaseIndexedStatID = $statID + 1;
     
     // Retrieve the table name of the inputted stat ID.
-    $tableName = GetFirstRowFromColumn($databaseConnection, "meta_stats", "table_name", "table_id = $databaseIndexedStatID");
-    $heatMapQuery = "SELECT `" . $year . "` FROM " . $tableName . " ORDER BY country_id ASC";
-    $heatMapResults = $databaseConnection->query($heatMapQuery);
-    if ($heatMapResults === FALSE)
-    {
-        ThrowFatalError("Database missing data.");
-    }
-    //fetch assoc grabs each row individually from the result of the query, so we take each row and turn the stat for 
-    //the year we are searching for and throw it into the returning array
-    while($heatMapRow = $heatMapResults->fetch_assoc())
-    {
-           array_push($heatMapArray, $heatMapRow[$year]);
-    }
+    //$tableName = GetFirstRowFromColumn($databaseConnection, "meta_stats", "table_name", "table_id = $databaseIndexedStatID");
+    //$heatMapQuery = "SELECT `" . $year . "` FROM " . $tableName . " ORDER BY country_id ASC";
+    $heatMapQuery = "SELECT value, country_id ".
+						"FROM data ".
+						"WHERE session_id =".$sessionID." AND ".
+	  					"instance_id=".$instanceID." AND ". 
+						"year=".$year." AND ".
+						"stat_id=".$databaseIndexedStatID." ORDER BY country_id ASC;";
+	
+	$heatMapResults = $databaseConnection->query($heatMapQuery);
+	$results = array();
 
-    if (count($heatMapArray) != count($descriptor['cc2']))
+    if($heatMapResults->num_rows == 0)
     {
-        ThrowFatalError("Database missing country data.");
+        ThrowFatalError("Input is invalid: statID");
     }
 
-    // if we don't return an array with more than one element in it, it'll come out not as an object, but as an array
-    // this line of code forces the json_decode to output the data as an object.
-    $containingArray = array($statID => $heatMapArray, 'force' => "object");
+	while($heatMapRow = $heatMapResults->fetch_assoc())
+	{
+		array_push($results,$heatMapRow);
+	}
 
-    return ($containingArray);    
+	return ParseIntoByStatPacket($sessionID, $instanceID, $statID, $results, $year);
 } //END ByStat
 
+// Author:        William Bittner, Drew Lopreiato
+// Date Created:  10/29/2015  
+// Last Modified: 11/19/2015 by Paul Jang  
+// Description:   This function creates a data packet with results from a bystat call
+function ParseIntoByStatPacket($sessionID, $instanceID, $statID, $queryResults, $year)
+// PRE: all of the inputted id's and the year are valid, query results is successfully populated
+// POST: FCTVAL == packet with the correct stat data that will be passed to the front end,
+//                 reference "by_stat_packet.php" for packet structure
+{
+	$packetData = array();
+    // loop through the results of the query and populate the array
+	foreach($queryResults as $result)
+	{
+        // push the data from the result array to the outbound packet data array
+		$obj = array($result["country_id"] => $result["value"]);
+		array_push($packetData, $obj);
+	}
 
+    // return the packet using the previously created array
+	return new by_stat_packet($sessionID,$instanceID,$statID - 1,$packetData,$year);
+}//END ParseIntoByStatPacket
 
 // Author:        William Bittner, Drew Lopreiato
 // Date Created:  2/22/2015  
 // Last Modified: 5/1/2015 by William Bittner    
 // Description:   This function queries the database for every stat for every year for any number of countries
-function ByCountry($countryIDs)
+function ByCountry($countryIDs, $sessionID, $instanceID)
 // PRE: countryIDs a string of valid countryIDs separated by a comma, or just one valid countryID
-// POST: an array containing all of the stats for each country ID input, with each stat in the index corresponding to its stat ID
+// POST: FCTVAL == the result of calling the parse function with the country data determined in the function,
+//                 see "ParseIntoByCountryPacket" function
 {
     $databaseConnection = GetDatabaseConnection();		//store connection to database
-    $byCountryArray = array();							//initialize returning array
-    $descriptor = Descriptor();							//grab descriptor
-    $numCountries = count($descriptor['common_name']);	//use descriptor to get the number of countries
     $statTables = array();								//initialize statTables array
     
     if (!IsSanitaryCountryList($countryIDs))
     {
         ThrowFatalError("Input is unsanitary: countryIDs");
     }
+
+    //TODO: validate and sanitize session and instance ids
     
     $countryIDList = explode(",", $countryIDs);
     $databaseIndexedCountryIDList = array();
 
-    // THIS ACTUALLY IS INCORRECT BEHAVIOR. IT LETS THE USER THINK THAT THE DATA IS INTENTIONALLY
-    // NONEXISTeNT, WHEN IN REALITY, IT IS MISSING
-    // TODO: Communicate with front end on better error handling methods, and then throw an inconvenient error.
-    $numberOfCountries = count($countryIDList);
-    $numberOfStats = count($descriptor['stats']);
-    $numberOfYears = $descriptor['yearRange'][1] - $descriptor['yearRange'][0] + 1;
-    for ($i = 0; $i < $numberOfCountries; $i++)
+    //TODO: add functionality for multiple country ids or fix IDs?
+    $byCountryQuery = "SELECT value, stat_id, year ".
+						"FROM data ".
+						"WHERE session_id =".$sessionID." AND ".
+	  					"instance_id=".$instanceID." AND ". 
+						"country_id=".($countryIDs + 1)." ORDER BY country_id ASC;";
+						
+	
+	$countryDataResults = $databaseConnection->query($byCountryQuery);
+	$results = array();
+    if($countryDataResults->num_rows == 0)
     {
-        $byCountryArray[$countryIDList[$i]] = array();
-        for ($j = 0; $j < $numberOfStats; $j++)
-        {
-            $byCountryArray[$countryIDList[$i]][$j] = array();
-            for ($k = 0; $k < $numberOfYears; $k++)
-            {
-                array_push($byCountryArray[$countryIDList[$i]][$j], "-1");
-            }
-        }
+        ThrowFatalError("Input is invalid, no data in database: countryID (" . $countryID . ")");
     }
+	while($countryRow = $countryDataResults->fetch_assoc())
+	{
+		array_push($results,$countryRow);
+	}
 
-    // validate each countryID
-    foreach ($countryIDList as $countryID)
-    {
-        if (!IsValidCountryID($countryID, $numCountries))
-        {
-            ThrowFatalError("Input is invalid: countryID (" . $countryID . ")");
-        }
-    }
-    
-    // The countryIDs given to us is expected to be indexed by 0, however our database is indexed by 1, so we add 1
-    foreach ($countryIDList as $countryID)
-    {
-        array_push($databaseIndexedCountryIDList, $countryID + 1);
-    }
-
-    // put each stat table into an array, where its index is the id for that table
-    $statTablesQuery = "SELECT table_id, table_name FROM meta_stats";
-    $statTablesResults = $databaseConnection->query($statTablesQuery);
-    while ($statTablesRow = $statTablesResults->fetch_assoc())
-    {
-        $statTables[$statTablesRow['table_id']] = $statTablesRow['table_name'];
-    }
-    
-    // get the queries for each country and stat
-    $countryDataQueries = GetCountryQueries($statTables, $databaseIndexedCountryIDList);
-    
-    // query the database for each country then grab the returning database rows and put them into an array
-    foreach($countryDataQueries as $statID => $query)
-    {
-        $countryDataResults = $databaseConnection->query($query);
-        if ($countryDataResults === FALSE)
-        {
-            // do nothing - should probably throw an error when front end can catch them
-        }
-        else
-        {
-            while ($countryDataRow = $countryDataResults->fetch_array(MYSQLI_NUM))
-            {
-                $countryID = $countryDataRow[0];
-                // THIS IS INCORRECT BEHAVIOR. IN THE CASE OF A MISSING STATISTIC, WE SHOULD BE THROWING AN ERROR.
-                // This makes it so that if we're missing a column of data, we're going to replace that entire
-                // tables worth of data with a -1.
-                $dataSlice = array_slice($countryDataRow, 1);
-                if (count ($dataSlice) == $numberOfYears)
-                {
-                    $byCountryArray[$countryID - 1][$statID - 1] = $dataSlice;
-                }
-            }
-        }
-    }
-
-    // if we don't return an array with more than one element in it, it'll come out not as an object, but as an array
-    // this line of code forces the json_decode to output the data as an object.
-    $byCountryArray['force'] = "object";
-
-    return $byCountryArray;
+	return ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs, $results);
 } //END ByCountry
+
+
+// Author:        William Bittner, Drew Lopreiato
+// Date Created:  10/29/2015  
+// Last Modified: 11/19/2015 by Paul Jang    
+// Description:   This function creates a data packet with the results of a bycountry call
+function ParseIntoByCountryPacket($sessionID, $instanceID, $countryIDs, $queryResults)
+// PRE: all of the inputted ids are valid and query results contains the appropriate data that will be sent
+// POST: FCTVAL == an array all of the data from the by country query results in the form of packets,
+//                 reference "by_country_packet.php" for packet structure
+{
+	$packetData = array();
+	foreach($queryResults as $result)
+	{
+        // loops through the query results and retrieves all the data values in the result array
+		$obj = array($result["year"] => $result["value"]);
+        // creates an entry in the array for the stat id if it doesn't already exist
+    	if(!array_key_exists($result["stat_id"],$packetData))
+        {
+			$packetData[$result["stat_id"]] = array();
+		}
+        array_push($packetData[$result["stat_id"]], $obj);
+	}
+
+	$countryPackets = array();
+	foreach($packetData as $statID => $data)
+	{
+        // encapsulate all of the packets into an array that will be returned
+		array_push($countryPackets, new by_country_packet($sessionID, $instanceID, $statID, $data, $countryIDs));
+	}
+	return $countryPackets;
+} //END ParseIntoByCountryPacket
 
 // Author:        Kyle Nicholson, Berty Ruan, William Bittner
 // Date Created:  2/7/2015
 // Last Modified: 5/1/2015 by William Bittner  
 // Description: Returns an array of the indecies that get turned into 
 // 				the Descriptor Table - See BackEndArchitecture.md for contents of Descriptor Table
-function Descriptor()
-// POST: FCTVAL = an array of key value pairs whose indecies are: 	
-//		0: year range of data in database
-//		1: cc2: the 2 digit country code for each country in the database
-//		2: cc3: the 3 digit country code for each country in the database
-//		3: common_name: the name for each country, in american english
-//		4: stats: an array of all the stats, where the index of the stat is its stat ID
+function Descriptor($sessionID = DEFAULT_SESSION)
+// POST: FCTVAL = an array of key value pairs whose indices are: 	
+//		"yearRange": year range of session as key pair values startYear: value, endYear:value
+//		"countries": "cc2": the 2 digit country code for each country in the session
+//		             "cc3": the 3 digit country code for each country in the session
+//		             "common_name": the name for each country in the session, in american english
+//		"stats": stats: an array key-pair values of stat id: stat name for all the stats in the session
+//		"instances": array of instances in the session as key pair instance id: instance name.
+//		"sessions": array of sessions as key pair values of session id: session name
 {
     $databaseConnection = GetDatabaseConnection();	//get the connection to the database
-    $cc2 = array();									//initialize array for cc2
-    $cc3 = array();									//initialize array for cc3
-    $countryName = array();							//initialize array for countryName
     
-    // This will iterate through the tables looking for the first one that exists,
-    // and then pick the year range from that
-    $tableNames = GetTableNames($databaseConnection);
-    $i = 0;
-    $yearRange = GetYearRange($databaseConnection, $tableNames[$i]);
-    while ($yearRange === false)
-    {
-        $i++;
-        if (isset($tableNames[$i]))
-        {
-            $yearRange = GetYearRange($databaseConnection, $tableNames[$i]);
-        }
-        else
-        {
-            ThrowFatalError("No tables with years exist");
-        }
-    }
-    $stats = GetStatNames($databaseConnection);
-    
-    $countriesQuery = "SELECT cc2, cc3, common_name FROM meta_countries ORDER BY country_id";
-    $countriesResult = $databaseConnection->query($countriesQuery);
+    // retrieve the year range of the data that is currently in the database
+    $yearRange = GetYearRange($databaseConnection, $sessionID);
 
-    if ($countriesResult === false)
+    // sanitize the year range, if it is not valid than the database is empty
+    if ($yearRange === null)
     {
-        ThrowFatalError("The meta_country data is corrupt");
+    	ThrowFatalError("SessionID does not have data. Year Range is null.");
     }
-    
-    //fill cc2, cc3, and countryName arrays in order by ID
-    while($countriesRow = $countriesResult->fetch_assoc())
+	
+    // retrieve the stat map from the database, see GetStatMap for more details
+    $stats = GetStatMap($databaseConnection, $sessionID);
+
+
+    // if the retrieved stat map is null, that means that the given session ID does not have any data
+    if($stats === null)
     {
-        array_push($cc2, $countriesRow['cc2']);
-        array_push($cc3, $countriesRow['cc3']);
-        array_push($countryName, $countriesRow['common_name']);
+        ThrowFatalError("SessionID does not have data. Stats is null.");
+    }
+
+    // retrieve the country map from the database, see GetCountryMap for more details
+    $countries = GetCountryMap($databaseConnection, $sessionID);
+
+    // if the retrieved country map is null, that means that the given session ID does not have any data
+    if ($countries === null)
+    {
+        ThrowFatalError("SessionID does not have data. Countries is null.");
+    }
+
+    // retrieve the instance map from the database, see GetInstanceMap for more details
+    $instances = GetInstanceMap($databaseConnection, $sessionID);
+
+    // if the retrieved instance map is null, that means that the given session ID does not have any data
+    if ($instances === null)
+    {
+        ThrowFatalError("SessionID does not have data. Instances is null.");
+    }
+
+    // retrieve the session map from the database, see GetSessionMap for more details
+    $sessions = GetSessionMap($databaseConnection);
+
+    // if the retrieved session map is null, that means that there was some error in retrieving the sessions from the database
+    if ($sessions === null)
+    {
+        ThrowFatalError("Error getting sessions");
     }
     
     //return the nested arrays
-    return(array("yearRange" => $yearRange, "cc2" => $cc2, "cc3"=> $cc3, "common_name" => $countryName, "stats" => $stats));
+    return(array("yearRange" => $yearRange, "countries" => $countries, "stats" => $stats, "instances"=>$instances, "sessions"=>$sessions));
 } //END Descriptor
 
 // ======================= Helper Functions =======================
@@ -287,6 +290,7 @@ function IsSanitaryYear($year)
 {
     return preg_match("/^\d{4}$/", $year) === 1;
 }
+
 // Author:        William Bittner, Andrew Lopreiato
 // Date Created:  2/22/2015
 // Last Modified: 4/7/2015 by Andrew Lopreiato
@@ -320,7 +324,8 @@ function IsValidYear($year, $yearRange)
 // PRE:  year is a number, and yearRange is an array with two elements which are numbers
 // POST: true if the year falls within the given year range
 {
-    return ($year >= $yearRange[0] && $year <= $yearRange[1]);
+    //TODO: Query database for if country is in session
+    return ($year >= $yearRange["startYear"] && $year <= $yearRange["endYear"]);
 } //END IsValidYear
 
 // Author:        William Bittner, Andrew Lopreiato
@@ -331,6 +336,7 @@ function IsValidStatID($statID, $numStats)
 // PRE:  statID is a number, and numStats is a number
 // POST: true if statID falls between 0 and numStats
 {
+    //TODO: Query database for if stats is in session
     return($statID < $numStats && $statID >= 0);
 } //END IsValidStatID
 
@@ -344,8 +350,9 @@ function IsValidCountryID($countryID, $numCountries)
 // POST: true if countryID falls between 0 and numCountries
 {
     //As countries are numbered starting at one, the count of the array is equal to the highest value country.
-    //Check > 0 and <= the number of countries as a country id can't be less than 1, or more than the number of
-    //countries
+    //Check >= 0 and < the number of countries as a country id can't be less than 0, or more than or equal
+    //the number of countries
+    //TODO: Query database for if country is in session
     return($countryID < $numCountries && $countryID >= 0);
 } //END IsValidCountryID
 
@@ -353,126 +360,190 @@ function IsValidCountryID($countryID, $numCountries)
 // Date Created:  2/22/2015 
 // Last Modified: 2/22/2015 by William Bittner, Drew Lopreiato, Berty Ruan, Dylan Fetch  
 // Description:   This function returns an array containing every statistic that is in the database
-function GetStatNames($database)
+function GetStatMap($database,$sessionID)
 // PRE:  $database is a mysqli database connection
 // POST: FCTVAL == array of the human readable names of all statistics in the database
 {
-    //returning array
+    // stat storage array for later use
     $statArray = array();
     
-    $statQuery = "SELECT stat_name FROM meta_stats";
-    $statResult = $database->query($statQuery);
-    
-    //If the table is empty, statResults will have a value of false. If this happens something has deleted
-    //the meta_stats table - refer to the mySQL architecture
-    if($statResult === false)
+    // build the query that will retrieve the list of stats that are contained in the given session ID
+	$statListQuery = "SELECT DISTINCT stat_id FROM data WHERE session_id='".$sessionID."' ORDER BY stat_id ASC";
+    // execute the aforementioned query and store the resulting stat list into a variable
+	$statListResult = $database->query($statListQuery);
+	
+    // iterate through each of the elements (stats) in the retrieved stat list
+    // fetch_assoc() is a member of the return type of the query, which is the actual data value
+	while($statRow = $statListResult->fetch_assoc())
+	{
+        // push the retrieved data into the returning array, indexed in the "stat_id" row
+		array_push($statArray, $statRow["stat_id"]);
+	}
+
+	// returns null if the returning array is null, meaning that nothing was retrieved from the stat list in the database 
+	if(empty($statArray))
     {
-        ThrowFatalError("MySQL Architecture error");
+		return null;
     }
+
+    // build the query that will retrieve the name of the stats that are in the (just build) stat array, from the meta_stats table
+    $statNameQuery = "SELECT stat_id, stat_name FROM meta_stats WHERE stat_id IN (" . implode($statArray,",") . ");";
+    // execute the query that was just built
+    $statNameResult = $database->query($statNameQuery);
     
-    //Put each row's column of "stat_name" into an array
-    while($statRow = $statResult->fetch_assoc())
+    // build the returning array
+    $statMap = array();
+
+    // iterate through the rows of the result of the previous query, which will be stat names from meta_stats
+    // fetch_assoc() is a member that will be the actual data (stat name) from the query
+    while($statRow = $statNameResult->fetch_assoc())
     {
-        array_push($statArray, $statRow['stat_name']);
+        // push each stat name in the query result into the returning stat map array
+        $statMap[$statRow["stat_id"]]=$statRow["stat_name"];
     }
-    
-    return $statArray;
+
+    // return the map of all the stat names in the database
+    return $statMap;
 } //END GetStatNames
 
-// Author:        William Bittner, Drew Lopreiato  
-// Date Created:  4/21/2015 
-// Last Modified: 4/23/2015 by William Bittner, Drew Lopreiato  
-// Description:   This function returns an array containing every statistic's table name that in the database
-function GetTableNames($database)
-// PRE:  $database is a mysqli database connection
-// POST: FCTVAL == array of the table names of all statistics in the database
+// Author:        William Bittner, Nick Denaro
+// Date Created:  11/5/2015 
+// Last Modified: 11/19/2015 by Paul Jang  
+// Description:   This function, given a session, returns an array of all the countries in the session and all their corresponding info
+function GetCountryMap($database, $sessionID)
+// PRE:  $database is a mysqli database connection, sessionid points to a session that currently exists and has data
+// POST: FCTVAL == array of the country info of every country in the session, indexed by country id
 {
     //returning array
-    $statArray = array();
+    $countryArray = array();
     
-    $statQuery = "SELECT table_name FROM meta_stats";
-    $statResult = $database->query($statQuery);
+    // queries the database for the country id's of the countries that have data in the current session
+    $countryListQuery = "SELECT DISTINCT country_id FROM data WHERE session_id='".$sessionID."' ORDER BY country_id ASC";
+    $countryListResult = $database->query($countryListQuery);
     
-    //If the table is empty, statResults will have a value of false. If this happens something has deleted
-    //the meta_stats table - refer to the mySQL architecture
-    if($statResult === false)
+    // populates an array indexed by country ids and containing the corresponding row from the database
+    while($countryRow = $countryListResult->fetch_assoc())
     {
-        ThrowFatalError("MySQL Architecture error");
+        array_push($countryArray, $countryRow["country_id"]);
     }
     
-    //Put each row's column of "stat_name" into an array
-    while($statRow = $statResult->fetch_assoc())
+    // returns null if nothing was successfully retrieved from the database
+    if(empty($countryArray))
     {
-        array_push($statArray, $statRow['table_name']);
+        return null;
+    }
+
+    // queries the database for all the country data from the meta_countries table of all the countries retrieved from the previous query
+    $countryNameQuery = "SELECT country_id, cc2, cc3, common_name FROM meta_countries WHERE country_id IN (" . implode($countryArray,",") . ");";
+    $countryNameResult = $database->query($countryNameQuery);
+    
+    // create the actual country map structure
+    $countryMap = array();
+
+    // iterate through all rows retrieved from the previous query
+    while($countryRow = $countryNameResult->fetch_assoc())
+    {
+        // map the cc2, cc3, and common name to the appropriate country_id index in the country map
+        $countryMap[$countryRow["country_id"]]=array("cc2"=>$countryRow["cc2"], "cc3"=>$countryRow["cc3"], "common_name"=>$countryRow["common_name"]);
+    }
+
+    // return an array of all the countries in the session that have data, as well as their info
+    return $countryMap;
+} //END GetCountryMap
+
+// Author:        William Bittner, Nick Denaro
+// Date Created:  11/5/2015 
+// Last Modified: 11/19/2015 by Paul Jang  
+// Description:   This function, given a session, returns an array of all the instances names in the session indexed by id
+function GetInstanceMap($database, $sessionID)
+// PRE:  $database is a mysqli database connection, sessionid points to a session that currently exists and has data
+// POST: FCTVAL == array of the instance names indexed by the instance id
+{
+    // array that will be returned
+    $instanceArray = array();
+
+    // query the database for each instance id in the session given by session_id
+    $instanceListQuery = "SELECT DISTINCT instance_id FROM data WHERE session_id='".$sessionID."' ORDER BY instance_id ASC";
+    $instanceListResult = $database->query($instanceListQuery);
+
+    // iterates through all the instances and push them to the instance array, mapped by their id
+    while($instanceRow = $instanceListResult->fetch_assoc())
+    {
+        array_push($instanceArray, $instanceRow["instance_id"]);
     }
     
-    return $statArray;
-} //END GetTableNames
+    // returns null if nothing was retrieved from the database
+    if(empty($instanceArray))
+    {
+        return null;
+    }
+
+    // query the database for the instance id and instance name for each instance in the array
+    $instanceNameQuery = "SELECT instance_id, instance_name FROM meta_instance WHERE instance_id IN (" . implode($instanceArray,",") . ");";
+    $instanceNameResult = $database->query($instanceNameQuery);
+    
+    // create the instance map structure
+    $instanceMap = array();
+
+    // push each instance name into the array indexed by it's id
+    while($instanceRow = $instanceNameResult->fetch_assoc())
+    {
+        $instanceMap[$instanceRow["instance_id"]]=$instanceRow["instance_name"];
+    }
+
+    // return an array of all the instance names in the current session
+    return $instanceMap;
+} //END GetInstanceMap
+
+// Author:        William Bittner, Nick Denaro
+// Date Created:  11/5/2015 
+// Last Modified: 11/19/2015 by Paul Jang  
+// Description:   This function, queries the database for each session that currently exists within
+function GetSessionMap($database)
+// PRE:  $database is a mysqli database connection
+// POST: FCTVAL == array of the session names in the database indexed by their session id
+{
+    // query the database for each session name and session id
+    $sessionNameQuery = "SELECT session_id, session_name FROM meta_session;";
+    $sessionNameResult = $database->query($sessionNameQuery);
+    
+    // create the return session map array
+    $sessionMap = array();
+
+    // iterate through each session row
+    while($sessionRow = $sessionNameResult->fetch_assoc())
+    {
+        // map each session to it's id, in the returning session map array
+        $sessionMap[$sessionRow["session_id"]]=$sessionRow["session_name"];
+    }
+
+    // return an array of all the sessions in the database
+    return $sessionMap;
+} //END GetSessionMap
 
 // Author:        William Bittner, Drew Lopreiato  
 // Date Created:  2/19/2015 
 // Last Modified: 2/19/2015 by William Bittner, Drew Lopreiato  
 // Description:   This function returns the first and last year of a given table, which is the second and last columns header 
-function GetYearRange($database, $table)
-// PRE:  $database is a mysqli database connection, and table is a valid table in that connection
-// POST: return an array with exactly two indices: index 0 is the lowest year, index 1 is the highest year  
+function GetYearRange($database, $sessionID)
+// PRE:  $database is a mysqli database connection, and sessioID is a valid session 
+// POST: return an array with exactly two key value pairs: startYear is the lowest year, endYear is the highest year  
 {
-    $indexOfFirstYearColumn = 1;
-    $descriptionArray = array();
-    $yearRange = array();
-        
-    //Create the query and query the query
-    $descriptionQuery = "DESCRIBE " . $table;
-    $descriptionResult = $database->query($descriptionQuery);
-    
-    if($descriptionResult === false)
-    {
-        //ThrowFatalError("Invalid table name for year range.");
-        return false;
-    }
-    
-    //Throw each column's 'field' value into an array 
-    while($descriptionRow = $descriptionResult->fetch_assoc())
-    {
-        array_push($descriptionArray, $descriptionRow['Field']);
-    } 
-    
-    //Put the first and last year into the returning array
-    array_push($yearRange, $descriptionArray[$indexOfFirstYearColumn]);
-    array_push($yearRange, $descriptionArray[count($descriptionArray) - 1]);
-    
-    
-    return $yearRange;
-} //END GetYearRange
+    //TODO: Query the meta_session table for start and end year, rather than the data.
 
-// Author:        William Bittner, Drew Lopreiato  
-// Date Created:  2/19/2015 
-// Last Modified: 5/1/2015 by William Bittner  
-// Description:   Returns an array of queries given a set of tables to be queried, and the countries to be queried
-function GetCountryQueries($tableNames, $countries)
-// PRE: $tableNames must be in format: tableID => tableName, $countries must be an array of integers
-// POST: Returns an array of queries given a set of tables to be queried, and the countries to be queried
-{
-    $returnValue = array();
-    // iterate through each table name
-    foreach ($tableNames as $tableID => $tableName) 
-    {
-        $getDataQuery = "SELECT * FROM " . $tableName . " WHERE";
-        $firstOne=true;
-        // iterate through each country identifier and append it to the query
-        foreach ($countries as $countryID) 
-        {
-            if(!$firstOne)// append OR before each country after the first one
-            {
-                $getDataQuery.= " OR";
-            }
-            
-            $getDataQuery.= " country_id=" . $countryID;
-            $firstOne=false;
-        }
-        $returnValue[$tableID] = $getDataQuery;
-    }
-    return $returnValue;
-} // END getCountryQueries
+    // build the query that will retrieve each distinct year from the database in the current session
+	$yearRangeQuery = "SELECT start_year, end_year FROM meta_session WHERE session_id=".$sessionID;
+    // execute the (just built) query
+	$yearRangeResult = $database->query($yearRangeQuery);
+	
+    $yearRow = $yearRangeResult->fetch_assoc();
+
+    // create a new array that contains just the start and end years of the retrieved years
+	$yearRange = array("startYear"=>$yearRow["start_year"], "endYear"=>$yearRow["end_year"]);
+	
+    // return the (just built) year array
+	return $yearRange;
+	
+} //END GetYearRange
 
 ?>

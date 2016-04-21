@@ -32,15 +32,18 @@
  */ 
      
 // ===================== Function Definitions =====================     
-
 function ThrowFatalError($message = "An error has occured - the program has been terminated.") 
 //PRE: string message - optional further description of error
 //POST: This function will cause the program to close itself after echoing an error message.
 {
-    echo "{\"error\" : \"" . $message . "\"}";
     if(!TESTING)
     {
+        echo "{\"error\" : \"" . $message . "\"}";
         die();
+    }
+    else
+    {
+        throw new Exception("{\"error\" : \"" . $message . "\"}");
     }
 } // END ThrowFatalError
 
@@ -52,35 +55,41 @@ function ThrowInconvenientError($message = "An inconvenient error has occured - 
 } // END ThrowInconvenientError
 
 
-
-
-function GetFirstRowFromColumn($database, $tableName, $columnName, $filter = false)
-//PRE:     database: the database to query tableName: the table in the database to get the data from
-//            columnName: the column of the table from which to return the first row
-//            filter: when supplied, will add a filter to the query
-//POST: FCTVAL == The first row from the "columnName" column of the "tableName" table of the "database" database
-//            with optional "filter" filter
+function flushedPrint($message)
+//PRE: message is a valid string.
+//POST: The message is printed followed by a line break to the web page.
 {
-    $query = "SELECT " . $columnName . " FROM " . $tableName;
-    if ($filter !== false)
-    {
-        $query .= " WHERE " . $filter;
-    }
-    $results = $database->query($query);
-    $row = $results->fetch_assoc();
-    $results->free();
-    return $row[$columnName];
-} // END GetFirstRowFromColumn
+    echo $message . "<br>";
+    flush();
+}
+
+function GetArgumentValue( $input, $required=true ) 
+//PRE: input is defined, required is optional, defaults to true
+//POST: This function will return the arguments passed in on the $input parameter, or null if it is not set and not required
+{
+    if( !isset($_GET[ $input ]) )
+	{
+		if( $required )
+			ThrowFatalError("Input is not defined: ".$input);
+		
+		return null;
+	}
+	else
+	{
+		return $_GET[ $input ];
+	}
+} // END GetArgumentValue
 
 
 // ===================== Variable Declaration =====================
 // These are global variables that describe our default values for data of the given types
 define("DEFAULT_NUMBER", -1);
 define("DEFAULT_STRING", "");
+define("DEFAULT_SESSION", 1);
 /*      EFFECTS OF TESTING == TRUE:
  * The ThrowFatalError doesn't kill the page
  */
-define("TESTING", FALSE);
+define("TESTING", TRUE);
 /*  EFFECTS OF EXTERNAL_ACCESS == TRUE:
  * All API calls are allowed to be accessed by non-server users
  */

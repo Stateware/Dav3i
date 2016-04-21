@@ -41,11 +41,14 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="GUI/jvectormap/jquery-jvectormap-2.0.1.css" type="text/css" media="screen"/>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="GUI/jvectormap/jquery.js"></script>
+    <script type="text/javascript" src="GUI/data.js"></script>
+	<script type="text/javascript" src="GUI/conf.js"></script>
 	<script type="text/javascript" src="GUI/wnumb-1.0.0/wNumb.js"></script>
+    <script type="text/javascript" src="GUI/data_model.js"></script>
     <script type="text/javascript" src="GUI/data_query.js"></script>
     <script type="text/javascript" src="GUI/loading_script.js"></script>
     <script type="text/javascript" src="GUI/map.js"></script>
-    <script type="text/javascript" src="GUI/data.js"></script>
     <script type="text/javascript" src="GUI/lookup_table.js"></script>
     <script type="text/javascript" src="GUI/settings.js"></script>
     <script type="text/javascript" src="GUI/graph.js"></script>
@@ -54,13 +57,13 @@
     <script type="text/javascript">
         google.load('visualization', '1.0', {'packages':['corechart']});
     </script>
-    <script src="GUI/jvectormap/jquery.js"></script>
     <script src="GUI/jvectormap/jquery-jvectormap-2.0.1.min.js"></script>
     <script src="GUI/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
 </head>
 
 <body>
     <div class="loading-screen">
+        <body onload="ReadConfig()"></body>
         <center>
             <img src="res/logo.png" alt="Logo"/>
             <br>
@@ -78,7 +81,7 @@
     </div>
     <div class="help-black" onclick="CloseHelp()">
     </div>
-	
+    
     <div class="settings-screen">
         <h1 style="position: relative; top: 5%;">Settings</h1>
         <div class="graph-choice">
@@ -106,12 +109,39 @@
             </form>
         </div>
         <div class="buttons">
-	            <button id="apply-button" class="flat-button" onclick="ApplySettings()">Apply</button>
-		        <button id="ok-button" class="flat-button" onclick="ApplyAndClose()">OK</button>
-		        <button id="close-button" class="flat-button" onclick="CancelSettings()">Cancel</button>
-	    </div>
+                <button id="apply-button" class="flat-button" onclick="ApplySettings()">Apply</button>
+                <button id="ok-button" class="flat-button" onclick="ApplyAndClose()">OK</button>
+                <button id="close-button" class="flat-button" onclick="CancelSettings()">Cancel</button>
+        </div>
       
     </div>
+
+    <div class="new-custom-tab-menu">
+        <h1 style="position: relative; top: 5%;">New Custom Tab</h1>
+
+        <div class="new-tab-name-input" id="name-input">
+            <form>
+                <span>Name: <input type="text" id="new-tab-name"></span>
+            </form>
+        </div>
+
+        <div class="stat-custom-tab" id="stat">
+            <div class="custom-Tab-Dropdowns" id="StatDropdowns">
+                <div class="stat_dropdown" id="stat1dropdown">
+                    <select class="dropdown" id="stat_stat1"></select>
+                </div>
+                <div class="stat_dropdown" id ="stat2dropdown">
+                    <select class="dropdown" id="stat_stat2"></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="new-tab-buttons">
+            <button id="new-tab-ok-button" class="flat-button" onclick="OkNewTabMenu()">OK</button>
+            <button id="new-tab-close-button" class="flat-button" onclick="CloseNewTabMenu()">Cancel</button>
+        </div>
+    </div>
+
 
     <div class="help-screen">
         <div class="scrollbar-hover" style="overflow-y: scroll; height: 85%;">
@@ -137,45 +167,69 @@
         </div>
         <button id="close-help" class="flat-button" style="position: relative; top: 0" onclick="CloseHelp()">Close</button>
     </div>
-	
+    
     <div class="main-screen">
         <section class="spacer">
         </section>
 
-        <div class="control-panel">
+        <div class="control-panel" id="control">
             <section class="settings">
                 <img class="logo" src="res/logo.png" alt="Logo"/>
                 <h1 class="open-sans" style="margin: 0">Measles Data Visualization</h1>
                 <button id="settings" class="flat-button" onclick="OpenSettings()">Settings</button>
                 <button id="help" class="flat-button" onclick="OpenHelp()">Help</button>
+                <button id="upload" class="flat-button" onclick="window.location = 'Upload/data_upload.html';">Upload</button>
             </section>
             <section class="graph" id="graph">
                 <div>
-                    <img src="res/arrow_left.png" width="22" height="22" id="scroll-left" class="graph-tab" onclick="RotateTabs(-1);" style="cursor: pointer;"></img>
-                    <div id="tabsDiv" class="tabWrapper"></div>
-                    <img src="res/arrow_right.png" width="22" height="22" id="scroll-right" class="graph-tab" onclick="RotateTabs(1);" style="cursor: pointer;"></img>
+                    <div id="tabs" class="tabWrapper">
+                        <select class="tab-dropdown" id="tabDropdown" onChange="ChooseTab(GetSelectedDropdown('tabDropdown', 'elem'))"></select>
+                        <button id="new-custom-tab" class="tab-addition-button" onclick="OpenNewTabMenu()">+</button>
+                    </div>
                 </div>
                 <div id="graphs">
                 </div>
             </section>
-			
+            
             <section class="expand">
-                <img src="res/arrow_right.png" id="expand" onclick="Expand()"/>
+                <img src="res/arrow_right.png" id="expand" onclick="Expand('97.5%')"/>
+                <select class="dropdown" id="sessionSelect" onchange="OnSessionChange()">
+                </select>
+                <select class="dropdown" id="instanceSelect" onchange="OnInstanceChange()">
+                </select>
             </section>
         </div>
         
         <div class="expand-black">
         </div>
-		
-        <div id="map-container">
-            <div id="map">
+        
+        <div id="map-container" class="map-container">
+            <div id="map" class="map">
+                <button id="clear" class="flat-button" onclick>Clear Selection</button>
+                <div id="color_scale_container">
+                    <b>Low</b> <div class="color_scale" style="background-color:#0000ff;"></div
+                    ><div class="color_scale" style="background-color:#0040ff;"></div
+                    ><div class="color_scale" style="background-color:#0080ff;"></div
+                    ><div class="color_scale" style="background-color:#00bfff;"></div
+                    ><div class="color_scale" style="background-color:#00ffff;"></div
+                    ><div class="color_scale" style="background-color:#00ffbf;"></div
+                    ><div class="color_scale" style="background-color:#00ff80;"></div
+                    ><div class="color_scale" style="background-color:#00ff00;"></div
+                    ><div class="color_scale" style="background-color:#80ff00;"></div
+                    ><div class="color_scale" style="background-color:#bfff00;"></div
+                    ><div class="color_scale" style="background-color:#ffff00;"></div
+                    ><div class="color_scale" style="background-color:#ffbf00;"></div
+                    ><div class="color_scale" style="background-color:#ff8000;"></div
+                    ><div class="color_scale" style="background-color:#ff4000;"></div
+                    ><div class="color_scale" style="background-color:#ff0000;"></div>
+                    <b>High</b>
+                </div>
             </div>
-            <button id="clear" class="flat-button" onclick>Clear Selection</button>
         </div>
 
-    	
+        
         <div class="footer">
-            <p class="footer-text">Copyright <span onclick="teamPopup()" onmouseover="this.style.cursor='pointer'"><strong>Stateware Team</strong></span>. Licensed under version 3 of the <strong><a href="http://www.gnu.org/licenses/">GNU General Public License</a></strong>. Built using <strong><a href="http://jvectormap.com/">jVectorMap</a></strong> and <strong><a href ="https://developers.google.com/chart/">Google Charts</a></strong>. <strong><a href ="http://stateware.wikia.com/">Learn more about Stateware</a></strong></p>
+            <p class="footer-text">Copyright <span onclick="teamPopup()" onmouseover="this.style.cursor='pointer'"><strong>Stateware Team</strong></span>. Licensed under the <strong><a target="_blank" href="http://opensource.org/licenses/MIT">MIT License</a></strong>. Built using <strong><a target="_blank" href="http://jvectormap.com/">jVectorMap</a></strong> and <strong><a target="_blank" href ="https://developers.google.com/chart/">Google Charts</a></strong>. <strong><a target="_blank" href ="http://stateware.org/">Learn more about Stateware</a></strong></p>
             <p onclick="bugPopup()" onmouseover="this.style.cursor='pointer'" class="bug-report"><strong>Report an issue</strong></p>
         </div>
     </div>

@@ -15,7 +15,7 @@ This document will assist you in setting up a development environment. This will
     2. Create a database  called "Dav3i".
     3. Click on "Dav3i" and it should bring you to that database, which should be empty.
     4. Navigate to the Import tab.
-    5. Click Browse and search for the file called "davvvisqldump.sql".
+    5. Click Browse and search for the file called "dav3i_database_schema.sql".
     6. Click the Go buttom to finish the import.
   6. Stop Apache.
   7. Open the Apache config, "httpd.conf", and insert the following into the `<IfModule alias_module>` tag:

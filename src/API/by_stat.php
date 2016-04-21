@@ -33,24 +33,51 @@
  * POST:              FCTVAL = Formatted JSON string containing the data for the specified stat and year for 
  *								every country.
  */
+ 
+ 
 require_once("api_library.php");
-
 // enable foreign access in testing
 if (EXTERNAL_ACCESS)
 {
 	header("Access-Control-Allow-Origin: *");
 }
-//This checks to see if anything was passed into the parameter statID
-if(!isset($_GET['statID']))
+//Checks if this is running from a request
+if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET')
 {
-	ThrowFatalError("Input is not defined: statID");
+	//This checks to see if anything was passed into the parameter statID
+	$_stat_id = GetArgumentValue('statID', true);
+	$_year = GetArgumentValue('year', false);
+	
+	$_instanceID=GetArgumentValue('instanceID', true);
+	$_sessionID=GetArgumentValue('sessionID', true);
+
+	stat_exe($_stat_id,$_year, $_sessionID, $_instanceID ); 
 }
 
-//call ByStats function with first argument as statID and
-//second argument as ternary operator: if the year is not set, pass DEFAULT_STRING value
-$byStatsArray = ByStat($_GET['statID'], (isset($_GET['year'])) ? ($_GET['year']) : (DEFAULT_STRING));
+function stat_exe($stat_id, $year, $session_id, $instance_id)
+{
 
-$byStatJSON = json_encode($byStatsArray);
+	//This checks to see if anything was passed into the parameter statID
+	if (is_null($stat_id))
+	{
+		ThrowFatalError("Input is not defined: statID");
+	}
+	if (is_null($session_id))
+	{
+		ThrowFatalError("Input is not defined: sessionID");
+	}
+	if (is_null($instance_id))
+	{
+		ThrowFatalError("Input is not defined: instanceID");
+	}
 
-echo $byStatJSON;
+	$prettyprint = isset($_GET['prettyprint']) ? true : false;
+
+	//call ByStats function with first argument as statID and second argument as year
+	$byStatsPacket = ByStat($stat_id, $year, $session_id, $instance_id);
+
+	$byStatsPacket->send($prettyprint);
+
+}
+
 ?>

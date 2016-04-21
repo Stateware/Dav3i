@@ -27,48 +27,100 @@
 // Dependencies:            data.js, index.html
 // Additional Notes:        N/A
 
-// Author: Emma Roudabush
-// Date Created: 4/14/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: To set g_GraphType
-// PRE: type is a number between 0-2
-// POST: g_GraphType is set to the appropriate graph type
+/*
+ * Function: SetGraphType
+ * To set g_GraphType
+ *
+ * Pre: 
+ * type is a number between 0-2
+ *
+ * Post: 
+ * g_GraphType is set to the appropriate graph type
+ *
+ * Authors: 
+ * Emma Roudabush
+ *
+ * Date Created: 
+ * 4/14/2015
+ *
+ * Last Modified: 
+ * 4/23/2015 by Kyle Nicholson
+ */
 function SetGraphType(type)
 {
     g_GraphType = type;
 }
 
-// Author: Joshua Crafts
-// Date Created: 4/19/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: To set g_VaccHMS
-// PRE: new is a number between 0-2
-// POST: g_VaccHMS is set to the appropriate stat, and the map is recolored/revalued accordingly
+/*
+ * Function: SetVaccHMS
+ * To set g_VaccHMS
+ *
+ * Pre: 
+ * new is a number between 0-2
+ *
+ * Post: 
+ * g_VaccHMS is set to the appropriate stat, and the map is recolored/revalued accordingly
+ *
+ * Authors: 
+ * Joshua Crafts
+ *
+ * Date Created: 
+ * 4/19/2015
+ *
+ * Last Modified: 
+ * 4/23/2015 by Kyle Nicholson
+ */
 function SetVaccHMS(newVaccHMS)
 {
     g_VaccHMS = newVaccHMS;
 }
 
-// Author: Kyle Nicholson
-// Date Created: 4/23/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: To set settings for the year ranges
-// PRE: See ApplySettings() and CloseSettings()
-// POST: if apply settings fails nothing happens, else apply settings and close the menu
+/*
+ * Function: ApplyAndClose
+ * To set settings for the year ranges.
+ *
+ * Pre: 
+ * See ApplySettings() and CloseSettings()
+ *
+ * Post: 
+ * If apply settings fails nothing happens, else apply settings and close the menu. FCTVAL = true on successful close, false on failure to close.
+ *
+ * Authors: 
+ * Kyle Nicholson
+ *
+ * Date Created: 
+ * 4/23/2015
+ *
+ * Last Modified: 
+ * 10/6/2015 by Nicholas Denaro
+ */
 function ApplyAndClose()
 {
 	if(ApplySettings())
 	{
 		CloseSettings();
+        return(true);
 	}
+    return(false);
 }
 
-// Author: Kyle Nicholson
-// Date Created: 4/23/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: To set settings for the year ranges
-// PRE: N/A
-// POST: 
+/*
+ * Function: CancelSettings
+ * To set settings for the year ranges
+ *
+ * Pre: N/A
+ *
+ * Post: 
+ *
+ * Authors: 
+ * Kyle Nicholson
+ *
+ * Date Created: 
+ * 4/23/2015
+ *
+ * Last Modified: 
+ * 4/23/2015 by Kyle Nicholson
+ */
 function CancelSettings()
 {
 	// remove box shadow and check marks or x marks	
@@ -90,13 +142,25 @@ function CancelSettings()
     CloseSettings();
 }
 
-// Author: Kyle Nicholson
-// Date Created: 4/23/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: sets all of the settings based on the g_TempSettings array
-// PRE: g_TempSettingsArray is initialized
-// POST: all settings in the settings menu are visually set and their global variables are set
-//       based on the g_TempSettings array
+/*
+ * Function: ResetAllStatValues
+ * sets all of the settings based on the g_TempSettings array
+ *
+ * Pre: 
+ * g_TempSettingsArray is initialized
+ *
+ * Post: 
+ * All settings in the settings menu are visually set and their global variables are set based on the g_TempSettings array
+ *
+ * Authors: 
+ * Kyle Nicholson
+ *
+ * Date Created: 
+ * 4/23/2015
+ *
+ * Last Modified: 
+ * 4/23/2015 by Kyle Nicholson
+ */
 function ResetAllStatValues()
 {
 	var startDiv=document.getElementById("year-range-start");
@@ -143,12 +207,25 @@ function ResetAllStatValues()
     g_VaccHMS = g_TempSettings[4];	
 }
 
-// Author: Kyle Nicholson
-// Date Created: 4/23/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: saves all current radio buttons and dates 
-// PRE: there are values in each radio button and date div
-// POST: saves all current radio buttons and dates and stores them in g_TempSettings array
+/*
+ * Function: SaveCurrentStatValues
+ * Saves all current radio buttons and dates 
+ *
+ * Pre: 
+ * There are values in each radio button and date div
+ *
+ * Post: 
+ * Saves all current radio buttons and dates and stores them in g_TempSettings array
+ *
+ * Authors: 
+ * Kyle Nicholson
+ *
+ * Date Created: 
+ * 4/23/2015
+ *
+ * Last Modified: 
+ * 4/23/2015 by Kyle Nicholson
+ */
 function SaveCurrentStatValues()
 {
 	var startDiv=document.getElementById("year-range-start");
@@ -162,12 +239,24 @@ function SaveCurrentStatValues()
     g_TempSettings[4] = g_VaccHMS;	
 }
 
-// Author: Nicholas Denaro
-// Date Created: 4/18/2015
-// Last Modified: 4/23/2015 by Kyle Nicholson
-// Description: To set settings for the year ranges
-// PRE: N/A
-// POST: Assigns the global variables if ranges are valid, otherwise display error.
+/*
+ * Function: 
+ * To set settings for the year ranges
+ *
+ * Pre: N/A
+ *
+ * Post: 
+ * Assigns the global variables if ranges are valid, otherwise display error.
+ *
+ * Authors: 
+ * Nicholas Denaro
+ *
+ * Date Created: 
+ * 4/18/2015
+ *
+ * Last Modified: 
+ * 4/23/2015 by Kyle Nicholson
+ */
 function ApplySettings()
 {
     var canContinue=true;
