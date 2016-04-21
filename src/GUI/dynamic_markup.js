@@ -91,7 +91,7 @@ function BuildTabs()
             statOnly.setAttribute("selected", "selected");
         }
 
-        var statAllInstances = new Option(temp + " (all instances)", g_ParsedStatList[1][i]);
+        /*var statAllInstances = new Option(temp + " (all instances)", g_ParsedStatList[1][i]);
         statAllInstances.id="id-"+temp;
         statAllInstances.setAttribute("shrink-map", true);
         statAllInstances.setAttribute("multi-instance", true);
@@ -103,7 +103,7 @@ function BuildTabs()
             statAllInstances.text="Vaccinations (all instances)";
         }
 
-        tabDropdown.appendChild(statAllInstances);
+        tabDropdown.appendChild(statAllInstances);*/
     }
 
     BuildDiv("charts"); // We only need 1 div for all of the charts
