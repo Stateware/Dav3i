@@ -64,8 +64,8 @@ function initMap() {
             },
             selected: {
                 "stroke-width": 0.4,
-                stroke: '#000000',
-                fill: '#7FDBFF'
+                stroke: '#46467A',
+                fill: '#C6C6EA'
             }
         },
         series: {
