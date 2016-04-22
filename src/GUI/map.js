@@ -281,7 +281,7 @@ function SetClearButtonOnClick() {
         return 1;
     } else {
         clearButton.onclick = function() {
-            var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+            var parentTabDivName = "id-charts-graphs";
             // removes graphs subdivs
             document.getElementById(parentTabDivName).innerHTML = "";
             // removes map selections
