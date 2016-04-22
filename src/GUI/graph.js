@@ -163,7 +163,7 @@ function Graph( graphType, divID, node )
         cid = null;
     }
 
-    nodes = GenerateGraphStatNodes(node.cid, graphType);
+    nodes = GenerateGraphStatNodes(cid, graphType);
     dataArray = GenerateDataArray(nodes, g_YearStart, g_YearEnd);
     data = google.visualization.arrayToDataTable(dataArray, false);
     
