@@ -63,8 +63,8 @@ function initMap() {
             },
             selected: {
                 "stroke-width": 0.4,
-                stroke: '#000000',
-                fill: '#7FDBFF'
+                stroke: '#46467A',
+                fill: '#C6C6EA'
             }
         },
         series: {
@@ -280,7 +280,7 @@ function SetClearButtonOnClick() {
         return 1;
     } else {
         clearButton.onclick = function() {
-            var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
+            var parentTabDivName = "id-charts-graphs";
             // removes graphs subdivs
             document.getElementById(parentTabDivName).innerHTML = "";
             // removes map selections
