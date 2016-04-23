@@ -189,6 +189,8 @@ function ChooseTab(element)
     var parentTabDivName = "id-"+g_StatList[g_StatID]+"-graphs";
     document.getElementById(parentTabDivName).innerHTML = "";
     var prevTab=document.getElementById("id-"+g_StatList[g_StatID]);
+    GeneratePDF.deleteAllGraphURIs();
+
     // sets class names of tabs
     prevTab.className="graph-tab";
     element.className="graph-tab selected-tab";

@@ -229,6 +229,7 @@ function ModifyData(selectedRegions)
                 {
                     g_DataList.delete(cc2ToRemove);
                     // redraw graphs
+                    GeneratePDF.deleteAllGraphURIs();
                     GenerateSubDivs();
                     GenerateGraphs();
                 }

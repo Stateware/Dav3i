@@ -124,6 +124,9 @@ function GraphRegional(divID, node, maxVal) {
 
         // instantiate and draw chart using prepared data
         var chart = new google.visualization.ComboChart(document.getElementById(divID));
+        google.visualization.events.addListener(chart, 'ready', function () {
+            GeneratePDF.addGraphURI(chart.getImageURI());
+        });
         chart.draw(data, options);
         return 0;
     }
@@ -166,6 +169,9 @@ function GraphCombined(divID) {
     	
         // instantiate and draw chart using prepared data
         var chart = new google.visualization.LineChart(document.getElementById(divID));
+        google.visualization.events.addListener(chart, 'ready', function () {
+            GeneratePDF.addGraphURI(chart.getImageURI());
+        });
         chart.draw(data, options);
         return(0);
     }
@@ -212,6 +218,9 @@ function GraphVaccine(divID, node) {
         }
     	
         var chart = new google.visualization.ComboChart(document.getElementById(divID));
+        google.visualization.events.addListener(chart, 'ready', function () {
+            GeneratePDF.addGraphURI(chart.getImageURI());
+        });
         chart.draw(data, options);
         return(0);
     }
@@ -559,40 +568,61 @@ function FindMax()
 
 var GeneratePDF = (function() {
     var graphURIs = [];
+    var URIcount = 0;
 
     var addGraphURI = function(URI) {
         if(!graphURIs.includes(URI))
+        {
             graphURIs.push(URI);
+            URIcount++;
+        }
 
         return true;
     };
 
-    var deleteGraphURI = function(URI) {
-        uriIndex = graphURIs.indexOf(URI);
-        if(uriIndex != -1)
-        {
-            graphURIs = graphURIs.splice(uriIndex, 1);
-            return true;
-        }
-
-        return false;
-    }
+    var deleteAllGraphURIs = function() {
+        graphURIs = [];
+        URIcount = 0;
+    };
 
     var execute = function() {
-        var doc = new jsPDF(),
-            itr = 0;
-        
-        for(itr; itr < graphURIs.length; itr++)
+
+        var saveData = (function () {
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display: none";
+            return function (blob, fileName) {
+                var url = window.URL.createObjectURL(blob);
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            };
+        }());
+
+        var doc = new PDFDocument();
+        var stream = doc.pipe(blobStream());
+        var itr = 0;
+
+        doc.fontSize(25).text('Here are the graphs...', 100, 80);
+
+        for(itr; itr < URIcount; itr++)
         {
-          doc.addImage(graphURIs[itr], 10, 40, 180, 180);
+            if(itr !== 0 && itr % 3 === 0)
+                doc.addPage();
+            doc.image(graphURIs[itr]);
         }
 
-        doc.output('dataurlnewwindow');
-    };    
+        doc.end();
+        stream.on('finish', function() {
+            var blob = stream.toBlob('application/pdf');
+            saveData(blob, 'graphs.pdf');  
+        });
+    };
 
     return {
         addGraphURI: addGraphURI,
-        deleteGraphURI: deleteGraphURI,
+        deleteAllGraphURIs: deleteAllGraphURIs ,        
         execute: execute
     };
 })();
