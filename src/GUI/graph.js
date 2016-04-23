@@ -583,6 +583,8 @@ var GeneratePDF = (function() {
     var deleteAllGraphURIs = function() {
         graphURIs = [];
         URIcount = 0;
+
+        return true;
     };
 
     var execute = function() {
