@@ -566,9 +566,82 @@ function FindMax()
     return max;   
 }
 
+
+/* 
+ * NameSpace: GeneratePDF
+ *
+ *      A javascript module that contains functions to modify PDF contents and generate PDFs
+ *
+ * Parameters: 
+ *
+ *      none
+ *
+ * Pre:
+ *
+ *      Both scripts are loaded
+ *      <script src="https://github.com/devongovett/pdfkit/releases/download/v0.6.2/pdfkit.js"></script>
+ *      <script src="https://github.com/devongovett/blob-stream/releases/download/v0.1.2/blob-stream-v0.1.2.js"></script>
+ *      PDFKit is a Javascript PDF generator library. For more info about pdfkit, visit http://pdfkit.org/. 
+ *      Blob-stream is a javscript file management library. For more information, visit https://github.com/devongovett/blob-stream/.
+ *
+ * Post:
+ *
+ *      none
+ *
+ * Returns:
+ *
+ *      none
+ *
+ * Authors:
+ *
+ *      Berty Ruan
+ *
+ * Date Created:
+ *
+ *      3/18/2016
+ *
+ * Last Modified:
+ *
+ *      4/23/2016 by Berty Ruan
+ */
 var GeneratePDF = (function() {
     var graphURIs = [];
     var URIcount = 0;
+
+
+    /* 
+     * Function: addGraphURI
+     *
+     *      adds an image URI to the list graphURI. The function is used when graphs are drawn
+     *
+     * Parameters: 
+     *
+     *      a JPEG or PNG image URI
+     *
+     * Pre:
+     *
+     *      GeneratePDF is initialized
+     *
+     * Post:
+     *
+     *      None
+     *
+     * Returns:
+     *
+     *      True
+     *
+     * Authors:
+     *
+     *      Berty Ruan
+     *
+     * Date Created:
+     *
+     *      3/18/2016
+     *
+     * Last Modified:
+     *
+     *      4/23/2016 by Berty Ruan
+     */
 
     var addGraphURI = function(URI) {
         if(!graphURIs.includes(URI))
@@ -580,12 +653,80 @@ var GeneratePDF = (function() {
         return true;
     };
 
+    /* 
+     * Function: deleteAllGraphURIs
+     *
+     *      deletes all graph URIs from the list graphURIs. The function is used when all the graph div's are removed.
+     *
+     * Parameters: 
+     *
+     *      None
+     *
+     * Pre:
+     *
+     *      GeneratePDF is initialized
+     *
+     * Post:
+     *
+     *      None
+     *
+     * Returns:
+     *
+     *      True
+     *
+     * Authors:
+     *
+     *      Berty Ruan
+     *
+     * Date Created:
+     *
+     *      3/18/2016
+     *
+     * Last Modified:
+     *
+     *      4/23/2016 by Berty Ruan
+     */
+
     var deleteAllGraphURIs = function() {
         graphURIs = [];
         URIcount = 0;
 
         return true;
     };
+
+    /* 
+     * Function: execute
+     *
+     *      creates PDF object, adds images to PDF object, and then streams the PDF into a downloadable file
+     *
+     * Parameters: 
+     *
+     *      None
+     *
+     * Pre:
+     *
+     *      GeneratePDF is initialized
+     *
+     * Post:
+     *
+     *      None
+     *
+     * Returns:
+     *
+     *      True
+     *
+     * Authors:
+     *
+     *      Berty Ruan
+     *
+     * Date Created:
+     *
+     *      3/18/2016
+     *
+     * Last Modified:
+     *
+     *      4/23/2016 by Berty Ruan
+     */
 
     var execute = function() {
 
@@ -620,6 +761,7 @@ var GeneratePDF = (function() {
             var blob = stream.toBlob('application/pdf');
             saveData(blob, 'graphs.pdf');  
         });
+
     };
 
     return {
