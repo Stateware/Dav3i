@@ -1,6 +1,6 @@
-#Back End Architecture Document
+# Back End Architecture Document
 
-###Table of Contents
+### Table of Contents
 * Introduction to the Back End
 * Definitions
 * Requirements
@@ -12,11 +12,11 @@
 * Format of Data Sent to Front End
 * Design Decisions
 
-###Introduction to the Back End
+### Introduction to the Back End
 
 The back end is a web server which will host the website for the Fall 2015 iteration of the Stateware Project and the database which contains all of the data that the website will be displaying. The server will send the HTML5 page when the domain is visited, and will send the data to be displayed when the front end requests it. The server will use the LAMP stack to accomplish all of this(see design decisions section).
 
-###Definitions
+### Definitions
 1. **descriptor table** JSON object sent to the front end containing the list of sessions in the database along with the year range, list of countries(cc2, cc3, and common name), list of stats, and list of instances for a specific session
 2. **instance** a collection of data on various countries, there can be data on one or more statistics pertaining to one or more countries
 3. **session** a collection of instances
@@ -30,14 +30,14 @@ The back end is a web server which will host the website for the Fall 2015 itera
 
 
 
-###Requirements
+### Requirements
 The server must
 * Upon connection, deliver a descriptor table for the default session, containing the names of all sessions in the database, the list of instances contained in the default session, and the list of stats in each of those instances
 * Upon receipt of a countryID, sessionID, and instanceID deliver all data for that country in that instance of that session
 * Upon receipt of a statID, year, sessionID and instanceID, deliver data of all countries in that session and isntance for that stat in that year(if no year is provided, the current year is given)
 * Be able to receive updated database tables via a secure login
 
-###PHP Files
+### PHP Files
 
 
 **descriptor.php:** API call to get descriptor table for a specific sesssion, takes data in arrays given by Descriptor library function and encodes them into JSON, takes a sessionID as an argument, if none provided default value is used
@@ -64,7 +64,7 @@ The server must
 **packet.php** parent class of both by_stat_packet.php and by_country_packet.php
 
 
-###Syntax for API Calls
+### Syntax for API Calls
 **descriptor.php**  url/API/descriptor.php
 
 **by_stat.php**  url/API/by_stat.php?statID=x&year=y&sessionID=z&instanceID=a
@@ -73,7 +73,7 @@ x must be a single valid statID, y must be a single valid year, if no year is gi
 **by_country.php**  url/API/by_country.php?countryID=x&sessionID=y&instanceID=z
 x must be a single valid countryID, y must be a single vaid sessionID, and z must be a single valid instanceID representing an instance in that session
 
-###Error Handling
+### Error Handling
 The two error handling functions are ThrowFatalError and ThrowInconvenientError from toolbox.php
 * **ThrowFatalError** will kill the page, and print a concise error message stating the nature and location of the error.
 *  **ThrowInconvenientError** will be used in cases where it isn't necessary for the page to be killed, it will print a concise error message stating the nature and location of the error.  For each function the error message is an argument to the function.
@@ -81,12 +81,12 @@ The two error handling functions are ThrowFatalError and ThrowInconvenientError 
 All functions within api_library.php will validate and sanitize their input data.  In the case of unsanitary or invalid data, ThrowFatalError is called.
 
 
-###Security
+### Security
 Functions that receive input from the front end will sanitize and validate their data using regular expressions. This insures that no unforeseen data can be used to attack the system.
 
 The upload feature is only available on the developer version, which is password protected.
 
-###Database Setup
+### Database Setup
 
 **meta_stats:** This table provides an easy way to search our list of data tables. It has a columns: Stat table ID, Stat id Name, and SQL table name.
 
@@ -102,73 +102,112 @@ The data in the data table can be accessed through the following foreign keys: s
 
 We chose this format over dynamically creating tables for each stat in each session because this resulted in one table, where as if we created a table for each stat of each session, the tables would grow disorderly and out of control very quickly. 
 
-###Format of Data Sent to Front End
+### Format of Data Sent to Front End
 The data will be encoded in JSON(see design decisions section). This is how it will be formatted:
 
 
 	var Descriptor =
 	{
-    	"yearRange" : 
-    	{
-        	1980, 
-        	2014
-    	},
-    	"cc2" :
-    	{
-        	"US",
-        	"MX",
-        	"HU"
-    	},
-		"common_name" : 
-    	{
-        	"United States of America",
-        	"Mexico",
-        	"Hungary"
-    	},
-    	"stats" : 
-    	{
-        	"births",
-        	"deaths",
-        	"vaccinations"
-    	}
+        "yearRange":
+        {
+            "startYear": "1981",
+            "endYear": "2012"
+        },
+        "countries":
+        {
+            "1": {
+                "cc2": "AF",
+                "cc3": "AFG",
+                "common_name": "Afghanistan"
+            },
+            "2": {
+                "cc2": "AO",
+                "cc3": "AGO",
+                "common_name": "Angola"
+            }
+        },
+    	"stats":
+        {
+            "1": "births",
+            "2": "deaths",
+            "3": "cases"
+        },
         "instances" :
         {
-        	"instance1",
-            "instance2"
+        	"1": "Base",
+            "2": "No Vacc"
         },
-        "sessions" :
+        "sessions":
         {
-        	"session1",
-            "session2"
+            "1": "Original",
+            "2": "Multi-Instance"
         }
 	};
 
 
 	var ByStat =
 	{
-		"1":
-		[
-			"123",
-			"134534",
-			"123534647"
-		],
-        "force":"object"
-	}
+        "year": "2012",
+        "session": "1",
+        "instance": "1",
+        "stat_id": 1,
+        "data": [
+            {
+                "1": "1053370"
+            },
+            {
+                "2": "934096"
+            },
+            {
+                "3": "40416"
+            }
+        ]
+    }
 
 	var ByCountry =
 	{
-    	1 :
-    	[
-        	[ "1337", "1338", ... ],
-        	[ "5", "1338", ... ],
-        	[ "5", "1338", ... ]
-    	],
-        "force":"object"
+    	"0":
+        {
+            "country": "1",
+            "session": "1",
+            "instance": "1",
+            "stat_id": 1,
+            "data": [
+                {
+                    "1980": "405187"
+                },
+                {
+                    "1981": "418898"
+                },
+                {
+                    "1982": "432971"
+                }
+            ]
+        },
+        "1":
+        {
+            "country": "1",
+            "session": "1",
+            "instance": "1",
+            "stat_id": 1,
+            "data": [
+                {
+                    "1980": "405187"
+                },
+                {
+                    "1981": "418898"
+                },
+                {
+                    "1982": "432971"
+                }
+            ]
+        }
+
    	};
 
 ByStat is a key-value pair with the key being the StatID and the value being an array containing the value of the stat in the requested year indexed by CountryID. ByCountry returns a key-value pair with the key being the CountryID and the value being an array indexed by StatID, each index being the data for that stat for the requested country indexed by years after 1980(1980+index=year of data). Both sets of data have the key-value pair "force":"object" as a second entry. The purpose of this key-value pair is to force the JSON encoding function in PHP to output the data as an object rather than an array. When only one key-value pair is output, the whole thing is converted to an array which affects the ability to parse it.
 
-###Design Decisions
+### Design Decisions
 
 **Server Software Decision**
 We decided to install a LAMP stack on our server. This choice was made for a few reasons, namely that it is what we are most familiar with and that we know its capabilities extend farther than our requirements for this project. We know that the LAMP stack is a time-tested standard for web servers.

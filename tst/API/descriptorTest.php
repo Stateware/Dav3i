@@ -36,20 +36,20 @@
  */
 require_once '.\..\..\src\api\descriptor.php';
 
- class descriptorTest extends \PHPUnit_Framework_TestCase
- {
- 	
- 	function testDescNull()
- 	{
- 		$val = desc(null);
- 		$this->assertTrue(true);
- 	}
+class descriptorTest extends \PHPUnit_Framework_TestCase
+{
 
- 	function testDescNotNull()
- 	{
- 		$sessionID = 35;
- 		$val = desc($sessionID);
- 		$this->assertTrue(true);
- 	}
- }
+    function testDescNull()
+    {
+        $val = desc(null);
+        $this->assertTrue(true);
+    }
+
+    function testDescNotNull()
+    {
+        $sessionID = 35;
+        $val = desc($sessionID);
+        $this->assertTrue(true);
+    }
+}
 ?>

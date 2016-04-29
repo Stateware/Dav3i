@@ -1,6 +1,6 @@
-#Dav3i Front End Test Plan
+# Dav3i Front End Test Plan
 
-###Table of Contents
+### Table of Contents
  * 1.0 : Introduction  
  * 2.0 : Selection of Countries  
  &nbsp;&nbsp;&nbsp;&nbsp;2.1 : Specification Tests  

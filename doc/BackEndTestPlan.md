@@ -1,4 +1,4 @@
-#Davvvi Back End Test Plan
+# Davvvi Back End Test Plan
 
 
 
@@ -10,15 +10,15 @@ The tests framework was constructed using JSoup, a Java extension that provides 
 
 
 
-##by_country.php
+## by_country.php
 
-####Normal Operation Tests
+#### Normal Operation Tests
 
 by_country takes a CountryID as input and returns the data for all stats and all years for the specified country. Under normal operation, this function will be called whenever the user clicks on a country. Each test will be comprised of a call to the function, and a subsequent validation of data. The test was run with all countryIDs for by_country and all tests were successful
 
 
 
-####Pathological Tests
+#### Pathological Tests
 
 The function is designed to take integers from 1 to 193 as arguments. During these tests the function will be called with as many bad inputs as possible. Examples of bad input include: no input, negative integers, integers outside of the useable range, real numbers, fractions, characters, null operators, etc. During these tests error handling and error response must be noted and assessed.
 
@@ -93,7 +93,7 @@ All tests performed as expected.
 
 
 
-####Tests of Corrupted/Lost Data
+#### Tests of Corrupted/Lost Data
 
 by_country.php will be called after dropping each of these from the database individually:
 
@@ -117,15 +117,15 @@ Not all of these tests handled the event successfully, so additional error handl
 
 
 
-##by_stat.php
+## by_stat.php
 
-####Normal Operation Tests
+#### Normal Operation Tests
 
 by_stat takes a StatID and a year as input and returns the data for the specified stat in the specified year for all countries. If a year is not given, the year is defaulted to the most recent year. Under normal operation, this function will be called when a new heatmap is generated. There will be two varieties of test: tests where a year argument is given, and tests without a year argument. During the tests without an argument, it must be ensured that the function is properly defaulting to the most recent year. Each test will consist of calling the function with a StatID, and either with or without a year, plus the subsequent data validation. The test was run with all combinations of years and statIDs and all tests were successful.
 
 
 
-####Pathological Tests
+#### Pathological Tests
 
 The function is designed to take integers between 1 and *max StatID* as arguments for StatID and integers between 1980 and 2012(*most recent year*). During these tests, the function will be called with bad input for StatID and no year, bad input for StatID and good input for year, bad input for StatID and bad input for year, and good input for StatID, bad input for year. Examples of bad input for StatID are: no input, negative integers, integers outside of the useable range, real numbers, fractions, characters, null operators, etc. Examples of bad input for year are:  negative integers, integers outside of the useable range, real numbers, fractions, characters, null operators, etc. During these tests, error handling and error response must be noted and assessed.
 
@@ -197,7 +197,7 @@ The function is designed to take integers between 1 and *max StatID* as argument
 All tests performed as expected. Unfortunately, the year parameter of by_stat.php was neglected in testing.
 
 
-####Tests of Corrupted/Lost Data
+#### Tests of Corrupted/Lost Data
 
 by_stat.php will be called after dropping each of these from the database individually:
 
@@ -219,9 +219,9 @@ Not all of these tests handled the event successfully, so additional error handl
 
 
 
-##descriptor.php
+## descriptor.php
 
-####Tests of Corrupted/Lost Data
+#### Tests of Corrupted/Lost Data
 
 descriptor.php will be called after dropping each of these from the database individually:
 

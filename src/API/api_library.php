@@ -169,7 +169,7 @@ function ByCountry($countryIDs, $sessionID, $instanceID)
 	$results = array();
     if($countryDataResults->num_rows == 0)
     {
-        ThrowFatalError("Input is invalid, no data in database: countryID (" . $countryID . ")");
+        ThrowFatalError("Input is invalid, no data in database: countryIDs (" . $countryIDs . ")");
     }
 	while($countryRow = $countryDataResults->fetch_assoc())
 	{

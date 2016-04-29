@@ -1,4 +1,4 @@
-#Code Commit Checklist
+# Code Commit Checklist
 
 Ask yourself these questions before you commit your code:
 
@@ -8,7 +8,7 @@ Ask yourself these questions before you commit your code:
 * Are all parts of my commit functional?
 * Are my commit title and description descriptive and follow the guidelines set by my team leader?
 
-#####If your answer to any of the above questions is "no", you should work more on your code before committing
+##### If your answer to any of the above questions is "no", you should work more on your code before committing
 
 * Is this the correct branch to commit to?
 * Have I pulled from this branch yet?
@@ -16,4 +16,4 @@ Ask yourself these questions before you commit your code:
 * Does everyone else working on the task know that I am committing?
 * Is my commit going to be incompatible with any dependencies?
 
-#####If your answer to any of the above questions is "no", you should discuss your commit with your team and team leader
+##### If your answer to any of the above questions is "no", you should discuss your commit with your team and team leader
