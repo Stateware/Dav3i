@@ -1,6 +1,6 @@
-#Front End Design
+# Front End Design
 
-###Table of Contents
+### Table of Contents
 
 Section 0  
  * 0.0 : Introduction
@@ -50,9 +50,9 @@ Section 4
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.0.2.2 : Main Screen Layout  
  * 4.1 : Bug History
 
-#Section 0
+# Section 0
 
-##0.0 : Introduction
+## 0.0 : Introduction
 
 This document describes the overall design of the front end components of Dav3i, the Stateware project begun in the Spring 2015 semester. 
 
@@ -66,9 +66,9 @@ Section 3 defines the use cases and how we satisfy them, features of the user in
 
 Section 4 defines major design decisions, including previously specification of discarded design components and rationale for discarding them, as well as keeps a bug history for the front end.
 
-##0.1 : Definitions
+## 0.1 : Definitions
 
-###0.1.0 : High-level Components
+### 0.1.0 : High-level Components
 
 **back end** refers to all code in /API/ or any program processes that take place on the server or database as opposed to on the user's machine.
 
@@ -86,13 +86,13 @@ Section 4 defines major design decisions, including previously specification of 
 
 **UX** or **user experience** refers to user interaction with screen elements as a way of interacting with data. To differentiate from UI, this more accurately refers to *how* the user interacts with the UI.
 
-###0.1.1 : Elements
+### 0.1.1 : Elements
 
 **area selection** refers to the complete list of selected regions for which graphs are desired.
 
 **bounds** refers to the upper and lower bounds of stats whose values are estimated.
 
-**control panel** refers to the section of the page which includes graphs, stat selection tabs, and the settings button.
+**control panel** refers to the section of the page which includes graphs, stat selection dropdown, and the settings button.
 
 **graphs** refers to the graph or graphs drawn to represent the values of the selected stat for an area selection over the selected timespan.
 
@@ -116,7 +116,7 @@ Section 4 defines major design decisions, including previously specification of 
 
 **timespan** refers to the time interval for which data is available.
 
-###0.1.2 : Processes
+### 0.1.2 : Processes
 
 **data query** refers to the process of querying the server for region data.
 
@@ -124,9 +124,9 @@ Section 4 defines major design decisions, including previously specification of 
 
 **loading script** refers to the front end script in loading_script.js which loads the lookup table, draws the map, and initializes the dynamically generated portions of the UI.
 
-**UI script** refers to dynamic_markup.js, which is used to drive tab selection and UI elements which require javascript (excluding third party APIs, which have their own UI scripts).
+**UI script** refers to dynamic_markup.js, which is used to drive dropdown selection and UI elements which require javascript (excluding third party APIs, which have their own UI scripts).
 
-###0.1.3 : Identifiers
+### 0.1.3 : Identifiers
 
 **CC2** refers to a unique 2 character code used to refer to a region.
 
@@ -145,7 +145,7 @@ Section 4 defines major design decisions, including previously specification of 
 
 **stat name** refers to the name of a given stat, also used as a label for graphs and as part of the hover tip when that stat is the selected stat.
 
-###0.1.4 : Data
+### 0.1.4 : Data
 
 **area selection data** refers to the entire set of data stored for an area selection.
 
@@ -169,9 +169,9 @@ Section 4 defines major design decisions, including previously specification of 
 
 **stat value** refers to the value of a stat for 1 region at a particular time t.
 
-#Section 1
+# Section 1
 
-##1.0 : Requirements
+## 1.0 : Requirements
 
 Each year, the World Health Organization makes strategic decisions for the deployment of Measles vaccines worldwide. At present, these decisions are based on the comparison of large data sets on statistics associated with the Measles virus worldwide. At present, these data sets are compared by generating graphs in a slow and error prone case by case process. This project aims to address the inefficiencies and inaccuracies of this approach by providing an accessible and transparent platform with which to visualize this data, the results of which will be a more effective approach to vaccination strategy worldwide.
 
@@ -193,24 +193,24 @@ Necessary data for each area selection:
  * Estimated Measles Cases
  * Estimated Mortality Rate
 
-##1.1 : Platform/Architecture
+## 1.1 : Platform/Architecture
 
 Our front end is a web page, which will communicate with a LAMP stack server using AJAX PHP function calls. Due to the varying nature of web platforms, we define that our target will be functionality on the following browsers:  
  * Firefox 3.0 and up
  * Chrome 5.0 and up
  * Internet Explorer 8 and up
 
-##1.2 : Languages Used
+## 1.2 : Languages Used
 
 Our front end web page is built using HTML, CSS, and JavaScript, including some JavaScript libraries like jQuery.
 
-##1.3 : Third Party Resources
+## 1.3 : Third Party Resources
 
 In building the front end, we utilize Google Charts API to generate graphs, and jVectorMap to generate the map.
 
-#Section 2
+# Section 2
 
-##2.0 : Files
+## 2.0 : Files
 
 **index.html**
 
@@ -328,14 +328,14 @@ dynamic_markup.js is a front end script that includes functions to:
  * switch between expanded view and compact view
  * create alert popups for team and bug report
 
-##2.1 : Client/Server Interface
+## 2.1 : Client/Server Interface
 
 The front end interacts with the back end using 3 distinct AJAX php calls:  
  * descriptor.php : gets data for lookup table, timespan, and stat reference list
  * by_country.php : gets area selection data based on CID
  * by_stat.php : gets HMS data
 
-##2.2 : API Call Syntax
+## 2.2 : API Call Syntax
 
  * descriptor.php    
 Query:       `http://[server-domain]/API/descriptor.php`    
@@ -344,13 +344,13 @@ Query:       `http://[server-domain]/API/by_country.php?countryIDs=[CID]`, where
  * by_stat.php  
 Query:       `http://[server-domain]/API/by_stat.php?statID=[ID]&year=[year]`, where [ID] is the enumerated value from the stat reference list, and [year] is the year desired.  
 
-##2.3 : Module Architecture
+## 2.3 : Module Architecture
 
 The module architecture is defined in section 2.0 : Files. It can be seen visually in the diagram in FrontEndBlockDiagram.png.
 
-##2.4 : Data Structure Specifications
+## 2.4 : Data Structure Specifications
 
-###2.4.0 : ASDS
+### 2.4.0 : ASDS
 
 The area selection data structure is defined below:
 
@@ -379,7 +379,7 @@ The ASDS is a singly-linked list of ASDS nodes. It is defined in data.js as:
 `}`  
 Each member pointer is initialized to null, but will point to ASDS nodes as they are added to the list.
 
-###2.4.1 : Lookup Table Structure
+### 2.4.1 : Lookup Table Structure
 
 The structure of the lookup table is a 2D array, defined in lookup_table.js by the table generation function as:  
 `function CreateTable(cc2, name, size)`  
@@ -400,7 +400,7 @@ For `g_LookupTable[x][y]`:
  * `x =` CID
  * `y =` CC2 if `y = 0`, name if `y = 1`, or HMS value if `y = 2`.
 
-###2.4.2 : Parsed Data List Structure
+### 2.4.2 : Parsed Data List Structure
 
 The Parsed Data List is set up as a 2D array A[x][y], in which each x value represents a selectable stat, and each y value either represents stat type (0), indicates head stat (1), or indicates associated data (2-3).
 
@@ -419,7 +419,7 @@ Stat type 0 represents a regular time series, either bounded or unbounded. If it
 
 Stat type 1 represents vaccinations. Its head stat is MCV1, and its associated data is MCV2 and SIA.
 
-###2.4.3 : Cache Structure
+### 2.4.3 : Cache Structure
 
 The cache itself doesn't have an actual structure, but must be created in such a way that it does. 
 
@@ -427,9 +427,9 @@ The cache should be structured in a hierarchical manner as:
 
 SessionID > InstanceID > CountryID > StatID > Year,Value
 
-#Section 3
+# Section 3
 
-##3.0 : Use cases
+## 3.0 : Use cases
 
 The obvious use case of this program is for the purposes of composing vaccine deployment strategies. As our target audience, making sure WHO can effectively use our platform to inform policy decisions is our most important goal.
 
@@ -439,7 +439,7 @@ As an external use case, we may also consider that as a public platform, the ava
 
 Luckily, these three use cases are not mutually exclusive, and won't require much in the way of specific attention to one that would not satisfy all at once.
 
-##3.1 : How to Satisfy Use Cases in the UI
+## 3.1 : How to Satisfy Use Cases in the UI
 
 To satisfy these use cases and deliver the ideal user experience, we must:
 
@@ -449,23 +449,23 @@ To satisfy these use cases and deliver the ideal user experience, we must:
  * Allow the user to easily understand which stats are being displayed, for which countries, over what period of time
  * Display graphs in a way where the data is easily understood, without giving the ability for the user or the program itself to misrepresent data for political, malicious, or otherwise negative purposes
 
-##3.2 : Features of the UI
+## 3.2 : Features of the UI
 
  Our UI includes a loading screen, during which the loading script is run. Once this is done, the user can click a button to begin, and the loading screen slides down to reveal the main screen, which includes:  
  * A map of the world, from which a user can make an area selection.  
  * A control panel, which contains the following:  
 &nbsp;&nbsp;&nbsp;&nbsp;- The Dav3i logo  
 &nbsp;&nbsp;&nbsp;&nbsp;- The search bar  
-&nbsp;&nbsp;&nbsp;&nbsp;- Stat selection tabs  
+&nbsp;&nbsp;&nbsp;&nbsp;- Stat selection dropdown  
 &nbsp;&nbsp;&nbsp;&nbsp;- Graph section  
 &nbsp;&nbsp;&nbsp;&nbsp;- A button to extend the graph section  
  * A footer, which includes links to contact information and a legal notice with a link to a copy of the GPL.  
 
-##3.3 : User Experience and Paths of Action
+## 3.3 : User Experience and Paths of Action
 
 The UX is defined in UserExperience.png. The 'default' block points to default settings values.
 
-##3.4 : Input Handing
+## 3.4 : Input Handing
 
 The front end receives 2 types of input:  
  * Mouse input, in the form of region selection, stat selection, settings changes, and various minor actions
@@ -484,18 +484,21 @@ The year change inputs function as follows:
  * if it is valid, the action completes successfully and change is applied.
  * if it is not valid, the location of the error is highlighted and the user can not continue until putting in valid input.
 
-#Section 4
+# Section 4
 
-##4.0 : Major Design Decisions
+## 4.0 : Major Design Decisions
 
-###4.0.0 : Architecture  
+### 4.0.0 : Architecture  
  * Platform: We chose a web platform both due to the client's vision of the product, and its inherent accessibility across many platforms. In future releases, we plan to extend functionality to mobile platforms.
  * Languages: HTML/CSS/JavaScript were chosen because they are the de facto technologies of the world wide web. We opted not to use development frameworks like Angular or Node because most of us came into the project without previous JavaScript experience, and were much more easily ramped up by first working with the basics.
  * Third Party Resources: Google Charts API and jVectorMap were chosen for their performance and feature sets, as well as their ease of use under the terms of the GPL.
 
-###4.0.1 : Data Structures  
+### 4.0.1 : Data Structures  
 
-####4.0.1.0 : ASDS:
+#### 4.0.1.0 : ASDS:
+
+*The ASDS nodes are largely phased out*
+This is because we have the cache and can get a list of selected countries. This allowed us to find which stats were selected, and then removed some of the need to store this data in these nodes.
 
 The ASDS was redone in the new scheme (discarded ASDS below) because it gave us the following advantages:  
  * Can store bounds for all countries
@@ -528,59 +531,61 @@ For a single country/region area selection, both schemes 0 and 1 will be used, w
 For multiple country/region area selection, scheme 2 will be used for all stats.  
 *end of discarded design*  
 
-####4.0.1.1 : Lookup Table Structure:
+#### 4.0.1.1 : Lookup Table Structure:
 
 The lookup table structure was chosen for its simplicity in being able to index CC2, name, and HMS value for each region by its CID.
 
-####4.0.1.2 : Stat Reference List:
+#### 4.0.1.2 : Stat Reference List:
 
 The stat reference list's setup as a 1D array is ideal as it is easily used to enumerate the indices of parsed data contained in ASDS nodes, allowing each module to correctly interpret the data.
 
-####4.0.1.3 : Parsed Stat List:
+#### 4.0.1.3 : Parsed Stat List:
 
 The Parsed Stat List Structure was chosen because it allowed an easy way for us to interpret which graphing function is appropriate to call based on the type of data to be graphed. The graph type enumeration was put first because the number of enumerated values is constant, regardless of stat, while the number of values for vaccinations may vary. By putting the enumeration first, there is a constant index into the head stat across all stats.
 
-####4.0.1.4 : Cache:
+#### 4.0.1.4 : Cache:
 
 The cache is a heavily structured object which holds all of the data received from the API calls. The cache was created in order to store the increased amount of data received from the server for handling sessions and instances. It is used as a temporary cache, which clears upon refreshing the page.
 
 ### 4.0.2 : UX  
 
-####4.0.2.0 : Control Panel
+#### 4.0.2.0 : Control Panel
 
 The design of the control panel was chosen so that a lot of functionality could fit into the small area allotted to it, while allowing the user to expand it out. The tab selection was chosen so that heat mapping and graph selection could be done easily and transparently. We also chose to give the user the option to scroll through the available stats so that any stat could be selected to heat map in the compact view. We also wanted to include a logo, so we put that on top with the settings menu link.
 
-####4.0.2.1 : Map
+#### 4.0.2.1 : Map
 
 The map was chosen from the available vectors because it included more of the countries we needed, and the polygonal style made it easier to add the rest of them. The toggle selection on the map was chosen because that is the inherent functionality of jVectorMap. While this decision was made for us, we found that it made for a better user experience than what we had planned on. In order to make deselection easier, we added a clear selection button as well.
 
-####4.0.2.2 : Main Screen Layout
+#### 4.0.2.2 : Main Screen Layout
 
 The main screen layout was chosen because the original design left the map feeling claustrophobic and closed off due to the border sections surrounding it. Instead, the map now fills most of the screen. It is on the right side so that user attention is directed mostly toward the control panel when viewing data, as users generally look left when using web applications according to eye tracking studies.
 
-####4.0.2.3 : Settings
+#### 4.0.2.3 : Settings
 
 The settings menu layout was chosen for 2 reasons:
  * The simplicity of selection from enumerated lists is most easily expressed in a UI by radio buttons.
  * Our ideal year selection element, a slider, introduced a lot of difficulty into our work, and text inputs were chosen instead. We may reinvestigate a slider in the future.
 
 *discarded UX design*  
+ * Tabs are removed in place of a dropdown. This is becasue with the addition of multi-stat, the tab selection menu may become very long, and difficult to navigate through.  
  * Checkboxes, radio buttons, and a slider were chosen for the settings menu, as they are a simple interface to toggling, selection of one from a set, and selecting a timespan, which are the fundamental requirements of the menu.  
  * Toggle selecting country/region was chosen as a bit of an accident. Originally, we had the idea to select one country/region by clicking, and ctrl+click to add to the list, or simply click to start a new one. However, we saw in implementing map.js that toggling was a much better experience in interfacing with the map, so we used that. To remove the hassle of untoggling every country when selecting a new area selection, we added a "clear selection" button.  
  * Based on eyetracking studies, most of the user's attention focuses to the left side of the page. Thus, we decided to put the graphs on that side, and put the easily viewable map on the right. This way, the user is able to focus on the data as it is presented, rather than being distracted by the map being overprominent.  
 
 *end of discarded design*  
 
-##4.1 : Bug History
+## 4.1 : Bug History
 
  * \#6: Clear Button Causes Excessive Slowdowns
 First Reported: April 15, 2015
-Status: Fixed
+Status: Fixed - Better fix, check Additional Notes
 Description: When more than ~5 countries are selected, clear causes massive slowdowns, sometimes prompting the browser to ask the user to stop the script.
 Reason for bug: Because map.clearSelectedRegions removes each region one by one, and therefore triggers onRegionSelected each time, the n^2 algorithm which is used to add or remove a node becomes n^3, and because of an implementation bug in the deletion, it was actually n^4!
 Description of fix: Fixed implementation bug in region removal, then set clear to simply clear data list and only call the modify list function in onRegionSelected if it was called from something other than clearSelectedRegions.
 Additional Notes: Had to add an additional global variable to handle this fix, g_Clear. A fix without an additional global would be nice, but jVectorMap is difficult to manage in this case without it.
-Additional Notes: Correct use of the JVectorMap API allows for grabbing the country that is selected or cleared, thus removing the loops that caused the n^3 holdup. This allows for the removal of the g_Clear global variable.
+Additional Notes: Correct use of the JVectorMap API allows for grabbing the country that is selected or cleared, thus removing the loops that caused the n^3 holdup. This allows for the removal of the g_Clear global variable.  
+Additional Notes: This problem has been fixed by properly using the JVectorMap API. We now get only the currently (de)selected country and handle the cases properly, rather than looping through a list to determine whether or not it needs to be added or removed.
 
  * \#5: HMS data is set in lookup table incorrectly  
 First Reported: April 5, 2015  
