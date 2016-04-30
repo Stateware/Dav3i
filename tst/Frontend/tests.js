@@ -25,7 +25,7 @@ QUnit.test( "Test GetCountryDataArray", function (assert) {
 	testData[1][4] = 27;
 	testData[1][5] = 26;
 	testData[1][6] = 25;
-	testData[1][7] = 22;`
+	testData[1][7] = 22;
 
 	//Stat 0, Year 1990-1997
 	test_cache.get(0).get(0).get(0).get(0).get(1990) = testData[0][0];
